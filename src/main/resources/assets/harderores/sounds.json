@@ -1,0 +1,5 @@
+{
+  "grain-mill-loop": {
+    "category": "block","sounds": [{"name": "harderores:grain-mill-loop","stream": false}]
+  }
+}
