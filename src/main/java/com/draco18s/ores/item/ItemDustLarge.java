@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemRawOre extends Item {
-	public ItemRawOre() {
+public class ItemDustLarge extends Item {
+	public ItemDustLarge() {
 		this.setHasSubtypes(true);
 		this.setMaxDamage(0);
 		this.setCreativeTab(CreativeTabs.MATERIALS);
@@ -29,19 +29,10 @@ public class ItemRawOre extends Item {
 		switch(v) {
 			case IRON:
 			case GOLD:
-			case DIAMOND:
-			case LIMONITE:
-			case TIN:
-			case COPPER:
-			case LEAD:
-			case URANIUM:
-			case SILVER:
-			case NICKEL:
-			case ALUMINUM:
-			case OSMIUM:
-				return "item.harderores:"+v.name+"_ore";
+			case FLOUR:
+				return "item.harderores:large_"+v.name+"_dust";
 			default:
-				return "item.harderores:unknown_raw_ore";
+				return "item.harderores:unknown_large_dust";
 		}
 	}
 
@@ -49,15 +40,6 @@ public class ItemRawOre extends Item {
 	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.GOLD.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.DIAMOND.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.LIMONITE.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.TIN.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.COPPER.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.LEAD.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.URANIUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.SILVER.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.NICKEL.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.ALUMINUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.OSMIUM.meta));
+		subItems.add(new ItemStack(itemIn, 1, EnumOreType.FLOUR.meta));
 	}
 }

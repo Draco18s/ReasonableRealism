@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class CommonProxy {
@@ -49,5 +50,9 @@ public class CommonProxy {
 		item.setRegistryName(registryname);
 		item.setUnlocalizedName(item.getRegistryName().toString());
 		GameRegistry.register(item);
+	}
+
+	public void registerEventHandlers() {
+		MinecraftForge.EVENT_BUS.register(new OreEventHandler());
 	}
 }

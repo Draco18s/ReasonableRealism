@@ -39,11 +39,11 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	OSMIUM;   /*24*/
 	
 	
-	public int value;
+	public int meta;
 	public String name;
 	
 	private EnumOreType() {
-		value = ordinal();
+		meta = ordinal();
 		name = toString().toLowerCase();
 	}
 
@@ -54,7 +54,7 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	
 	@Override
 	public int getOrdinal() {
-		return value;
+		return meta;
 	}
 	
 	@Override

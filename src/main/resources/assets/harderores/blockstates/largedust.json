@@ -1,0 +1,13 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "harderores:item/generated"
+    },
+    "variants": {
+        "ore_type": {
+            "iron":     {"textures": {"layer0": "harderores:items/irondust_lg"} },
+            "gold":     {"textures": {"layer0": "harderores:items/golddust_lg"} },
+            "flour":    {"textures": {"layer0": "harderores:items/flourdust_lg"} }
+        }
+    }
+}

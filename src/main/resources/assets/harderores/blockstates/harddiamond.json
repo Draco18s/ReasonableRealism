@@ -2,9 +2,9 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "all": "harderores:blocks/ore/iron_ore",
+            "all": "harderores:blocks/ore/diamond_ore",
             "overlay": "harderores:blocks/ore/overlay_0",
-            "particle": "harderores:blocks/ore/iron_ore"
+            "particle": "harderores:blocks/ore/diamond_ore"
         },
         "model": "harderores:hardore",
         "uvlock": true

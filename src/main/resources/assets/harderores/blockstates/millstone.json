@@ -1,0 +1,96 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "up":"harderores:blocks/mill-top",
+            "down":"harderores:blocks/mill-top",
+            "north":"harderores:blocks/mill-side",
+            "south":"harderores:blocks/mill-side",
+            "east":"harderores:blocks/mill-side",
+            "west":"harderores:blocks/mill-side",
+            "particle": "harderores:blocks/mill-generic"
+        },
+        "model": "cube"
+    },
+    "variants": {
+        "normal": [{ }],
+        "inventory": [{
+            "textures": {
+                "up":"harderores:blocks/mill-top",
+                "down":"harderores:blocks/mill-top",
+                "north":"harderores:blocks/mill-side",
+                "south":"harderores:blocks/mill-side",
+                "east":"harderores:blocks/mill-side",
+                "west":"harderores:blocks/mill-side"
+            }
+        }],
+        "mill_orientation": {
+            "none": {
+                "textures": {
+                    "up":"harderores:blocks/mill-generic",
+                    "down":"harderores:blocks/mill-generic"
+                }
+            },
+            "center": {
+                "textures": {
+                    "up":"harderores:blocks/mill-center",
+                    "down":"harderores:blocks/mill-center"
+                }
+            },
+            "east": {
+                "textures": {
+                    "up":"harderores:blocks/mill-edge",
+                    "down":"harderores:blocks/mill-edge"
+                }
+            },
+            "north": {
+                "textures": {
+                    "up":"harderores:blocks/mill-edge",
+                    "down":"harderores:blocks/mill-edge"
+                },
+                "y": 90
+            },
+            "west": {
+                "textures": {
+                    "up":"harderores:blocks/mill-edge",
+                    "down":"harderores:blocks/mill-edge"
+                },
+                "y": 180
+            },
+            "south": {
+                "textures": {
+                    "up":"harderores:blocks/mill-edge",
+                    "down":"harderores:blocks/mill-edge"
+                },
+                "y": 270
+            },
+            "north_east": {
+                "textures": {
+                    "up":"harderores:blocks/mill-corner",
+                    "down":"harderores:blocks/mill-corner"
+                }
+            },
+            "north_west": {
+                "textures": {
+                    "up":"harderores:blocks/mill-corner",
+                    "down":"harderores:blocks/mill-corner"
+                },
+                "y": 270
+            },
+            "south_west": {
+                "textures": {
+                    "up":"harderores:blocks/mill-corner",
+                    "down":"harderores:blocks/mill-corner"
+                },
+                "y": 180
+            },
+            "south_east": {
+                "textures": {
+                    "up":"harderores:blocks/mill-corner",
+                    "down":"harderores:blocks/mill-corner"
+                },
+                "y": 90
+            }
+        }
+    }
+}

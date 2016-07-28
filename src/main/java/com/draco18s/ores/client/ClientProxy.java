@@ -19,6 +19,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import com.draco18s.hardlib.blockproperties.EnumOreType;
@@ -30,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerRenderers() {
-		
+		OBJLoader.INSTANCE.addDomain("harderores");
 	}
 
 	@Override
