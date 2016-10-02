@@ -7,6 +7,7 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -17,6 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.ores.GuiHandler;
@@ -61,4 +64,25 @@ public class BlockSifter extends Block {
 		playerIn.openGui(OresBase.instance, GuiHandler.SIFTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
+	
+	@Override
+	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+	//public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        TileEntity tileentity = worldIn.getTileEntity(pos);
+
+        IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        for(int i=0; i < inventory.getSlots(); i++) {
+        	ItemStack stack = inventory.getStackInSlot(i);
+    		EntityItem entityIn;
+    		if(stack != null) {
+    			entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+    			entityIn.setDefaultPickupDelay();
+    			worldIn.spawnEntityInWorld(entityIn);
+    		}
+        }
+        /*Props.MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
+        BlockPos p = pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
+        worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority*/
+        return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
+    }
 }

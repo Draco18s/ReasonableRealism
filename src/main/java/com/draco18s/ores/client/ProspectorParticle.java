@@ -69,7 +69,7 @@ public class ProspectorParticle extends Particle {
 			float f1 = f + 0.0625f;
 			float f2 = (float)(i / 16) / 16.0F;
 			float f3 = f2 + 0.0625f;
-			float f4 = .5f;//2.0F * this.size;
+			float f4 = .3f;//2.0F * this.size;
 			float f5 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
 			float f6 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
 			float f7 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);

@@ -17,9 +17,9 @@ public class ContainerSifter extends CommonContainer {
 	public ContainerSifter(InventoryPlayer inventory, TileEntitySifter te) {
 		tileEntity = te;
 		IItemHandler inven = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		
-		addSlotToContainer(new SlotDust(inven, 0, 89, 13));
-		addSlotToContainer(new SlotDust(inven, 1, 71, 13));
+
+		addSlotToContainer(new SlotDust(inven, 0, 71, 13));
+		addSlotToContainer(new SlotDust(inven, 1, 89, 13));
 		addSlotToContainer(new SlotOutput(inven, 2, 80, 58));
 		bindPlayerInventory(inventory);
 	}

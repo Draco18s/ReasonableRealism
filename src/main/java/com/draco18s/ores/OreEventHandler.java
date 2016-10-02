@@ -10,8 +10,10 @@ import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
 import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.networking.Packets;
-import com.draco18s.ores.networking.ToClientMessage;
+import com.draco18s.ores.networking.ToClientMessageOreParticles;
 
+import CustomOreGen.Util.CogOreGenEvent;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
@@ -63,7 +65,7 @@ public class OreEventHandler {
 					}
 				}
 				level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchPulverize, harvester.getHeldItemMainhand());
-				
+
 				if(level > 0 && state.getValue(Props.ORE_DENSITY) <= level*2+3) {
 					//System.out.println("level " + level +", " + event.getDrops().size());
 					Iterator<ItemStack> it = event.getDrops().iterator();
@@ -93,13 +95,14 @@ public class OreEventHandler {
 					event.getDrops().addAll(newItems);
 				}
 			}
-			
+
 			if(state.getBlock() == Blocks.STONE) {
 				//System.out.println("Stone broken");
-				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchProspector, harvester.getHeldItemOffhand())*2+1;
+				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchProspector, harvester.getHeldItemOffhand());
 
 				//System.out.println("Level: " + level);
 				if(level > 0) {
+					level = level*2+1;
 					boolean anyOre = false;
 					for(EnumFacing dir : EnumFacing.VALUES) {
 						if(world.getBlockState(pos).getProperties().containsKey(Props.ORE_DENSITY)) {
@@ -107,12 +110,12 @@ public class OreEventHandler {
 						}
 					}
 					if(!anyOre) {
-						System.out.println("No ore adjacent");
+						//System.out.println("No ore adjacent");
 						Iterable<BlockPos> cube = pos.getAllInBox(pos.add(-level, -level, -level), pos.add(level, level, level));
 						for(BlockPos p : cube) {
 							if(world.getBlockState(p).getProperties().containsKey(Props.ORE_DENSITY)) {
-								System.out.println("Sending packet");
-								ToClientMessage packet = new ToClientMessage(Packets.PROSPECTING, p);
+								//System.out.println("Sending packet");
+								ToClientMessageOreParticles packet = new ToClientMessageOreParticles(Packets.PROSPECTING, p);
 								OresBase.networkWrapper.sendTo(packet, (EntityPlayerMP) event.getHarvester());
 							}
 						}
@@ -122,12 +125,16 @@ public class OreEventHandler {
 		}
 	}
 
+	public void postOreGen(CogOreGenEvent event) {
+		
+	}
+	
 	private void dropStack(World worldIn, BlockPos pos, ItemStack stack) {
-        float f = 0.7F;
+		float f = 0.7F;
 		double d0 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-        double d1 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-        double d2 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-        for(EnumFacing dir : BlockHardOreBase.DROP_SEARCH_DIRECTIONS) {
+		double d1 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
+		double d2 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
+		for(EnumFacing dir : BlockHardOreBase.DROP_SEARCH_DIRECTIONS) {
 			if(!worldIn.getBlockState(pos.offset(dir)).isNormalCube() || dir == EnumFacing.DOWN) {
 				EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0+dir.getFrontOffsetX(), (double)pos.getY() + d1+dir.getFrontOffsetY(), (double)pos.getZ() + d2+dir.getFrontOffsetZ(), stack);
 				entityitem.setDefaultPickupDelay();

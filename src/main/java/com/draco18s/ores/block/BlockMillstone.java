@@ -81,7 +81,9 @@ public class BlockMillstone extends Block {
 		return false;
 	}
 	
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+	@Override
+	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+	//public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
         IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
@@ -97,7 +99,7 @@ public class BlockMillstone extends Block {
         Props.MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
         BlockPos p = pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
         worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority
-        super.breakBlock(worldIn, pos, state);
+        return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
     }
 	
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {

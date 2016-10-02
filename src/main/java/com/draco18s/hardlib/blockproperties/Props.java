@@ -3,6 +3,7 @@ package com.draco18s.hardlib.blockproperties;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.item.EnumDyeColor;
@@ -13,6 +14,8 @@ public class Props {
 	public static final PropertyInteger ORE_DENSITY = PropertyInteger.create("ore_density", 0, 15);
 	public static final PropertyEnum<MillstoneOrientation> MILL_ORIENTATION = PropertyEnum.<MillstoneOrientation>create("mill_orientation", MillstoneOrientation.class);
 	public static final PropertyEnum<AxelOrientation> AXEL_ORIENTATION = PropertyEnum.<AxelOrientation>create("axel_orientation", AxelOrientation.class);
+	public static final PropertyEnum<EnumOreType> ORE_TYPE = PropertyEnum.<EnumOreType>create("ore_type", EnumOreType.class);
+	public static final PropertyBool FLOWER_STALK = PropertyBool.create("flower_stalk");
 	
 	public static enum MillstoneOrientation implements IStringSerializable,IMetaLookup<MillstoneOrientation>
     {
@@ -53,7 +56,7 @@ public class Props {
 
 		@Override
 		public MillstoneOrientation getByOrdinal(int i) {
-			return null;
+			return MillstoneOrientation.values()[i];
 		}
 
 		@Override
@@ -94,7 +97,7 @@ public class Props {
 
 		@Override
 		public AxelOrientation getByOrdinal(int i) {
-			return null;
+			return AxelOrientation.values()[i];
 		}
 
 		@Override

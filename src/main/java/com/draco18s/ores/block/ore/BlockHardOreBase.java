@@ -171,23 +171,25 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		if(player != null && player.capabilities.isCreativeMode) {
+		/*if(player != null && player.capabilities.isCreativeMode) {
 			avoidGeneration = true;
 			world.setBlockToAir(pos);
 			return true;
+		}*/
+		if(willHarvest) {
+			this.onBlockHarvested(world, pos, state, player);
+			int m = state.getValue(Props.ORE_DENSITY);
+			m -= metaChange;
+			if(m < 0)
+				return world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+	
+			world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
+			ItemStack itemstack1 = player.getHeldItemMainhand();
+			ItemStack itemstack2 = itemstack1 == null ? null : itemstack1.copy();
+			this.harvestBlock(world, player, pos, state, null, itemstack2);
+			return false;
 		}
-		this.onBlockHarvested(world, pos, state, player);
-		int m = state.getValue(Props.ORE_DENSITY);
-		m -= metaChange;
-		if(m < 0)
-			return world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-
-		world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
-		ItemStack itemstack1 = player.getHeldItemMainhand();
-		ItemStack itemstack2 = itemstack1 == null ? null : itemstack1.copy();
-		this.harvestBlock(world, player, pos, state, null, itemstack2);
-
-		return false;
+		return true;
 	}
 
 	@Override

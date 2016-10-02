@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class RecipesUtil {
 
@@ -21,8 +24,9 @@ public class RecipesUtil {
 			IRecipe tmpRecipe = iterator.next();
 			recipeResult = tmpRecipe.getRecipeOutput();
 			if (ItemStack.areItemStacksEqual(resultStack, recipeResult)) {
-				 System.out.println(modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
-				 iterator.remove();
+				HardLib.instance.logger.log(Level.INFO, modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
+				//System.out.println(modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
+				iterator.remove();
 			 }
 		}
 	}
@@ -36,9 +40,14 @@ public class RecipesUtil {
 			ItemStack tmpRecipe = iterator.next();
 			recipeResult = recipes.get(tmpRecipe);
 			if (ItemStack.areItemStacksEqual(resultStack, recipeResult)) {
-				 System.out.println(modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
-				 iterator.remove();
+				HardLib.instance.logger.log(Level.INFO,modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
+				//System.out.println(modID + " Removed Recipe: " + tmpRecipe + " -> " + recipeResult);
+				iterator.remove();
 			 }
 		}
+	}
+
+	public static void craftNineOf(ItemStack input, ItemStack output) {
+		GameRegistry.addRecipe(output,"xxx","xxx","xxx",'x',input);
 	}
 }
