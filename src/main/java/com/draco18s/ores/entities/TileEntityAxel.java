@@ -2,6 +2,7 @@ package com.draco18s.ores.entities;
 
 import java.util.Random;
 
+import com.draco18s.hardlib.blockproperties.AxelOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
@@ -30,7 +31,7 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 			//System.out.println(powerAmt + " " + powerScale(powerAmt));
 		}
 		else if(this.pos.getY() >= worldObj.provider.getAverageGroundLevel()-4) {
-			if(worldObj.getBlockState(pos).getValue(Props.AXEL_ORIENTATION) != Props.AxelOrientation.HUB) return;
+			if(worldObj.getBlockState(pos).getValue(Props.AXEL_ORIENTATION) != AxelOrientation.HUB) return;
 			
 			int rawPower = checkAirVolumeFull(pos.down(2), this.worldObj.getBlockState(this.pos).getValue(BlockHorizontal.FACING));
 			powerSupply.setRawPower(rawPower);
@@ -70,9 +71,9 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 	@Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
-		Props.AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
+		AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
 		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
-			if(millpos == Props.AxelOrientation.HUB) {
+			if(millpos == AxelOrientation.HUB) {
 				return (T) powerSupply;
 			}
 		}

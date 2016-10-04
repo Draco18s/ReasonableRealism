@@ -38,16 +38,9 @@ public class OreDataHooks {
 			while(it.hasNext()) {
 				BlockPos pos = it.next();
 				IBlockState state = world.getBlockState(pos);
-				/*if(state.getBlock() == Blocks.IRON_ORE) {
-					System.out.println("Found iron");
-				}
-				/*if(pos.getY() == 35) {
-					System.out.println("Block at " + pos + " " + state.getBlock().getRegistryName());
-				}*/
 				BlockWrapper key = new BlockWrapper(state);
 				OreCounter count = blockList.get(key);
 				if(count != null) {
-					System.out.println("Block at " + pos + " " + state.getBlock().getRegistryName());
 					count.increment(state);
 					HardLibAPI.oreFlowers.trySpawnFlowerCluster(world, pos, key);
 				}

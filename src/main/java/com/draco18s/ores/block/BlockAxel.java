@@ -2,6 +2,7 @@ package com.draco18s.ores.block;
 
 import java.util.Random;
 
+import com.draco18s.hardlib.blockproperties.AxelOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.OresBase;
@@ -37,7 +38,7 @@ public class BlockAxel extends Block{
 		setHarvestLevel("axe", 1);
 		setResistance(2.0f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.NONE).withProperty(BlockHorizontal.FACING, EnumFacing.NORTH));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.AXEL_ORIENTATION, AxelOrientation.NONE).withProperty(BlockHorizontal.FACING, EnumFacing.NORTH));
 	}
 	
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
@@ -45,7 +46,7 @@ public class BlockAxel extends Block{
 		IBlockState state = this.getDefaultState();
 		if(dir == EnumFacing.UP || dir == EnumFacing.DOWN) {
 			dir = EnumFacing.NORTH;
-			state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.UP);
+			state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.UP);
 		}
 		worldIn.scheduleBlockUpdate(pos, this, 1, 10);
 		state = state.withProperty(BlockHorizontal.FACING, dir);
@@ -60,7 +61,7 @@ public class BlockAxel extends Block{
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		int face = (meta & 3) + 2;
-		return this.getDefaultState().withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.values()[meta>>2]).withProperty(BlockHorizontal.FACING, EnumFacing.VALUES[face]);
+		return this.getDefaultState().withProperty(Props.AXEL_ORIENTATION, AxelOrientation.values()[meta>>2]).withProperty(BlockHorizontal.FACING, EnumFacing.VALUES[face]);
 	}
 
 	@Override
@@ -86,12 +87,12 @@ public class BlockAxel extends Block{
 	
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
-		return state.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.HUB;
+		return state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.HUB;
 	}
 	
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
-		if(state.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.HUB) {
+		if(state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.HUB) {
 			return new TileEntityAxel();
 		}
 		return null;
@@ -124,10 +125,10 @@ public class BlockAxel extends Block{
 		System.out.println("Checking, is [" + facing + "]");
 		if(worldIn.getBlockState(pos.up()).getBlock() == this) {
 			System.out.println("Should point up");
-			if(stateIn.getValue(Props.AXEL_ORIENTATION) != Props.AxelOrientation.UP) {
+			if(stateIn.getValue(Props.AXEL_ORIENTATION) != AxelOrientation.UP) {
 				worldIn.scheduleBlockUpdate(pos.up(), this, 1, 10);
 			}
-			state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.UP);
+			state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.UP);
 		}
 		else {
 			if(worldIn.getBlockState(pos.down()).getBlock() == this) {
@@ -139,10 +140,10 @@ public class BlockAxel extends Block{
 					state = state.withProperty(BlockHorizontal.FACING, facing.getOpposite());
 					worldIn.scheduleBlockUpdate(pos.offset(facing.getOpposite()), this, 1, 10);
 				}
-				if(stateIn.getValue(Props.AXEL_ORIENTATION) != Props.AxelOrientation.GEARS) {
+				if(stateIn.getValue(Props.AXEL_ORIENTATION) != AxelOrientation.GEARS) {
 					worldIn.scheduleBlockUpdate(pos.down(), this, 1, 10);
 				}
-				state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.GEARS);
+				state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.GEARS);
 			}
 			else if(worldIn.getTileEntity(pos.down()) != null && worldIn.getTileEntity(pos.down()).hasCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, EnumFacing.DOWN)) {
 				System.out.println("Should be gears (power user); " + facing);
@@ -152,7 +153,7 @@ public class BlockAxel extends Block{
 					state = state.withProperty(BlockHorizontal.FACING, facing.getOpposite());
 					worldIn.scheduleBlockUpdate(pos.offset(facing.getOpposite()), this, 1, 10);
 				}
-				state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.GEARS);
+				state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.GEARS);
 				worldIn.scheduleBlockUpdate(pos.offset(facing,1), this, 1, 10);
 			}
 			else {
@@ -176,11 +177,11 @@ public class BlockAxel extends Block{
 				}
 				if(numMatching == 2) {
 					System.out.println("    Yes");
-					state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.HUB);
+					state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.HUB);
 				}
 				else {
 					System.out.println("    No");
-					state = state.withProperty(Props.AXEL_ORIENTATION, Props.AxelOrientation.NONE);
+					state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.NONE);
 				}
 			}
 			if(worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock() != this) {
@@ -191,12 +192,12 @@ public class BlockAxel extends Block{
 					System.out.println("   " + check.getOpposite() + " is " + worldIn.getBlockState(pos.offset(check.getOpposite())).getBlock());
 					IBlockState checkState = worldIn.getBlockState(pos.offset(check.getOpposite()));
 					if(checkState.getBlock() == this) {
-						if(checkState.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.GEARS) {
+						if(checkState.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.GEARS) {
 							System.out.println("Neighbor is gears, adopting neighbor's facing");
 							state = state.withProperty(BlockHorizontal.FACING, check);
 							worldIn.scheduleBlockUpdate(pos.offset(check.getOpposite()), this, 1, 10);
 						}
-						else if(state.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.GEARS) {
+						else if(state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.GEARS) {
 							System.out.println("I am gears, forcing my facing on neighbor");
 							state = state.withProperty(BlockHorizontal.FACING, check.getOpposite());
 							worldIn.scheduleBlockUpdate(pos.offset(check.getOpposite()), this, 1, 10);
@@ -234,7 +235,7 @@ public class BlockAxel extends Block{
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
 		if(blockIn != this)
 			worldIn.scheduleBlockUpdate(pos, this, 1, 10);
-		else if(state.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.GEARS)
+		else if(state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.GEARS)
 			worldIn.scheduleBlockUpdate(pos, this, 1, 10);
     }
 }

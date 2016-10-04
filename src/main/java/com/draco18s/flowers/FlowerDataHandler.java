@@ -53,12 +53,12 @@ public class FlowerDataHandler implements IFlowerData {
 			OreFlowerData dat = it.next();
 			int radius = dictator.spawnDistance;
 			BlockPos clusterPos = pos.add(Math.round(u[0]*radius), 0, Math.round(u[1]*radius));
-			doSpawnFlowerCluster(world, clusterPos, dat.flower.withProperty(Props.FLOWER_STALK, false), r, dat.clusterNum, dat.clusterSize, dat.flower.getValue(Props.FLOWER_STALK));
+			doSpawnFlowerCluster(world, clusterPos, dat.flower.withProperty(Props.FLOWER_STALK, false), r, dat.clusterNum, dat.clusterSize, dat.flower.getValue(Props.FLOWER_STALK), dat.twoBlockChance);
 		}
 	}
 
 	@Override
-	public void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant) {
+	public void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance) {
 		
 		int fails = 0;
 		BlockPos newPos;
@@ -70,17 +70,17 @@ public class FlowerDataHandler implements IFlowerData {
 			while(it.hasNext()) {
 				BlockPos p = it.next();
 				IBlockState wb = world.getBlockState(p);
-				boolean place = flowerState.getBlock().canPlaceBlockAt(world, p);
+				/*boolean place = flowerState.getBlock().canPlaceBlockAt(world, p);
 				boolean replace = (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES);
-				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);
-				if(flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
-					if(canBeTallPlant && r.nextInt(3) == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
+				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);*/
+				
+				if(world.getBlockState(p.down()).isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
+					if(canBeTallPlant && r.nextInt(tallChance) == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
 						world.setBlockState(p.up(), flowerState, 3);
 						world.setBlockState(p, flowerState.withProperty(Props.FLOWER_STALK, true), 3);
 					}
 					else {
 						world.setBlockState(p, flowerState, 3);
-						System.out.println("Flower at " + p);
 					}
 					break;
 				}

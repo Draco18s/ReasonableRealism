@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.draco18s.hardlib.blockproperties.MillstoneOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.ores.entities.TileEntityMillstone;
 
@@ -37,7 +38,7 @@ public class BlockMillstone extends Block {
 		setHarvestLevel("pickaxe", 1);
 		setResistance(2.0f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE));
 	}
 	
 	@Override
@@ -47,7 +48,7 @@ public class BlockMillstone extends Block {
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.values()[meta]);
+		return this.getDefaultState().withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.values()[meta]);
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class BlockMillstone extends Block {
     			worldIn.spawnEntityInWorld(entityIn);
     		}
         }
-        Props.MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
+        MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
         BlockPos p = pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
         worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority
         return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
@@ -131,36 +132,36 @@ public class BlockMillstone extends Block {
 			world.getBlockState(pos.west()).getBlock()			 == this &&
 			world.getBlockState(pos.north().west()).getBlock()	 == this &&
 			world.getBlockState(pos.north()).getBlock()			 == this) {
-				world.setBlockState(pos.north().east(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NORTH_EAST), 3);
-				world.setBlockState(pos.east(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.EAST), 3);
-				world.setBlockState(pos.south().east(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.SOUTH_EAST), 3);
-				world.setBlockState(pos.south(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.SOUTH), 3);
-				world.setBlockState(pos.south().west(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.SOUTH_WEST), 3);
-				world.setBlockState(pos.west(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.WEST), 3);
-				world.setBlockState(pos.north().west(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NORTH_WEST), 3);
-				world.setBlockState(pos.north(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NORTH), 3);
-				world.setBlockState(pos, 				state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.CENTER), 3);
+				world.setBlockState(pos.north().east(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NORTH_EAST), 3);
+				world.setBlockState(pos.east(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.EAST), 3);
+				world.setBlockState(pos.south().east(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.SOUTH_EAST), 3);
+				world.setBlockState(pos.south(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.SOUTH), 3);
+				world.setBlockState(pos.south().west(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.SOUTH_WEST), 3);
+				world.setBlockState(pos.west(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.WEST), 3);
+				world.setBlockState(pos.north().west(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NORTH_WEST), 3);
+				world.setBlockState(pos.north(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NORTH), 3);
+				world.setBlockState(pos, 				state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.CENTER), 3);
 				return true;
 		}
 		else {
 			if( world.getBlockState(pos.north().east()).getBlock()	 == this)
-				world.setBlockState(pos.north().east(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.north().east(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.east()).getBlock()	 == this)
-				world.setBlockState(pos.east(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.east(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.south().east()).getBlock()	 == this)
-				world.setBlockState(pos.south().east(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.south().east(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.south()).getBlock()	 == this)
-				world.setBlockState(pos.south(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.south(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.south().west()).getBlock()	 == this)
-				world.setBlockState(pos.south().west(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.south().west(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.west()).getBlock()	 == this)
-				world.setBlockState(pos.west(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.west(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.north().west()).getBlock()	 == this)
-				world.setBlockState(pos.north().west(), state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.north().west(), state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos.north()).getBlock()	 == this)
-				world.setBlockState(pos.north(), 		state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos.north(), 		state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 			if( world.getBlockState(pos).getBlock()	 == this)
-				world.setBlockState(pos, 				state.withProperty(Props.MILL_ORIENTATION, Props.MillstoneOrientation.NONE), 3);
+				world.setBlockState(pos, 				state.withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE), 3);
 		}
 		return false;
 	}

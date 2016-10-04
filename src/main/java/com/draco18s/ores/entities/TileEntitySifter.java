@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.Props.MillstoneOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.ores.inventory.ContainerSifter;

@@ -36,8 +36,9 @@ public interface IFlowerData {
 	 * @param num
 	 * @param clusterRadius
 	 * @param canBeTallPlant
+	 * @param tallChance - if the flower can be two blocks tall, weighted probability of doing so
 	 */
-	void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState ore, Random r, int num, int clusterRadius, boolean canBeTallPlant);
+	void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance);
 	
 	/**
 	 * Gets an existing OreFlowerDictator if one exists

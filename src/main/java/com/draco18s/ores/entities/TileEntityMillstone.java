@@ -5,8 +5,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.blockproperties.AxelOrientation;
+import com.draco18s.hardlib.blockproperties.MillstoneOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.Props.MillstoneOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.interfaces.IMechanicalPower;
@@ -52,8 +53,8 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	public void update() {
 		if(worldObj.isRemote) return;
 		if(worldObj.getBlockState(pos).getBlock() != this.getBlockType()) return;
-		Props.MillstoneOrientation millpos = worldObj.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
-		if(millpos == Props.MillstoneOrientation.CENTER) {
+		MillstoneOrientation millpos = worldObj.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
+		if(millpos == MillstoneOrientation.CENTER) {
 			if(grindTime > 0) {
 				float pow = calcAndGetPower();
 	            grindTime -= pow;
@@ -110,7 +111,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		do {
 			p = p.offset(searchDir,1);
 			if(worldObj.getBlockState(p).getBlock() == OresBase.axel) {
-				if(worldObj.getBlockState(p).getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.UP) {
+				if(worldObj.getBlockState(p).getValue(Props.AXEL_ORIENTATION) == AxelOrientation.UP) {
 					searchDir = EnumFacing.UP;
 				}
 				else {
@@ -124,7 +125,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			}
 		} while(numBlocksOut <= 8);
 		IBlockState s = worldObj.getBlockState(p);
-		if(s.getBlock() == OresBase.axel && s.getValue(Props.AXEL_ORIENTATION) == Props.AxelOrientation.HUB) {
+		if(s.getBlock() == OresBase.axel && s.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.HUB) {
 			TileEntity te = worldObj.getTileEntity(p);
 			if(te.hasCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir)) {
 				IMechanicalPower pow = te.getCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir);
@@ -166,7 +167,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	@Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
-		Props.MillstoneOrientation millpos = bs.getValue(Props.MILL_ORIENTATION);
+		MillstoneOrientation millpos = bs.getValue(Props.MILL_ORIENTATION);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
@@ -180,12 +181,12 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			if(millpos.canAcceptOutput && facing == EnumFacing.DOWN) {
 	            return (T) outputSlot;
 			}
-			if(millpos == Props.MillstoneOrientation.CENTER && facing == EnumFacing.EAST) {
+			if(millpos == MillstoneOrientation.CENTER && facing == EnumFacing.EAST) {
 				return (T) inputSlot;
 			}
 		}
 		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
-			if(millpos == Props.MillstoneOrientation.CENTER) {
+			if(millpos == MillstoneOrientation.CENTER) {
 				return (T) new RawMechanicalPowerHandler();
 			}
 		}
