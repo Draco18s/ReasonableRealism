@@ -14,7 +14,7 @@ public class Props {
 	public static final PropertyInteger ORE_DENSITY = PropertyInteger.create("ore_density", 0, 15);
 	public static final PropertyEnum<MillstoneOrientation> MILL_ORIENTATION = PropertyEnum.<MillstoneOrientation>create("mill_orientation", MillstoneOrientation.class);
 	public static final PropertyEnum<AxelOrientation> AXEL_ORIENTATION = PropertyEnum.<AxelOrientation>create("axel_orientation", AxelOrientation.class);
-	public static final PropertyEnum<EnumOreType> ORE_TYPE = PropertyEnum.<EnumOreType>create("ore_type", EnumOreType.class);
+	public static final PropertyEnum<EnumOreFlower1> FLOWER_TYPE = PropertyEnum.<EnumOreFlower1>create("flower_type", EnumOreFlower1.class);
 	public static final PropertyBool FLOWER_STALK = PropertyBool.create("flower_stalk");
 	
 	public static enum MillstoneOrientation implements IStringSerializable,IMetaLookup<MillstoneOrientation>
@@ -110,4 +110,52 @@ public class Props {
 			return this.meta;
 		}
     }
+
+	public static enum EnumOreFlower1 implements IStringSerializable,IMetaLookup<EnumOreFlower1> {
+		POORJOE(EnumOreType.IRON),
+		HORSETAIL(EnumOreType.GOLD),
+		VALLOZIA(EnumOreType.DIAMOND),
+		FLAME_LILY(EnumOreType.REDSTONE),
+		TANSY(EnumOreType.TIN),
+		HAUMAN(EnumOreType.COPPER),
+		LEADPLANT(EnumOreType.LEAD),
+		PRIMROSE(EnumOreType.URANIUM);
+
+		private String name;
+		private EnumOreType ore;
+		
+		EnumOreFlower1(EnumOreType oreType) {
+			name = toString().toLowerCase();
+			ore = oreType;
+		}
+		
+		@Override
+		public String getID() {
+			return "flower_type";
+		}
+
+		@Override
+		public EnumOreFlower1 getByOrdinal(int i) {
+			return EnumOreFlower1.values()[i];
+		}
+
+		@Override
+		public String getVariantName() {
+			return name;
+		}
+
+		@Override
+		public int getOrdinal() {
+			return this.ordinal();
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+	
+		public EnumOreType getOreType() {
+			return this.ore;
+		}
+	}
 }

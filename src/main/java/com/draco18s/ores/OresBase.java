@@ -66,7 +66,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="HarderOres", name="HarderOres", version="{@version:ore}"/*, dependencies = "required-after:HardLib,CustomOreGen"*/)
+@Mod(modid="harderores", name="HarderOres", version="{@version:ore}"/*, dependencies = "required-after:HardLib,CustomOreGen"*/)
 public class OresBase {
 	@Instance("HarderOres")
 	public static OresBase instance;

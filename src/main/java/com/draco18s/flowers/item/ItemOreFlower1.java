@@ -1,4 +1,4 @@
-package com.draco18s.ores.item;
+package com.draco18s.flowers.item;
 
 import java.util.List;
 
@@ -14,10 +14,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemOreFlower1 extends ItemBlock {
+	private final int metaOffset;
 
-	public ItemOreFlower1(Block block) {
+	public ItemOreFlower1(Block block, int metaoffset) {
 		super(block);
 		setHasSubtypes(true);
+		this.metaOffset = metaoffset;
 	}
 
 	@Override
@@ -27,14 +29,14 @@ public class ItemOreFlower1 extends ItemBlock {
 	
 	@Override
     public String getUnlocalizedName(ItemStack stack) {
-		EnumOreType type = EnumOreType.values()[stack.getMetadata()];
-        return "item." + type.getVariantName();
+		EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
+        return "item." + type.getFlowerName();
     }
 	
 	@Override
 	@SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean advanced) {
-		EnumOreType type = EnumOreType.values()[stack.getMetadata()];
+		EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
 		I18n.format(type.getVariantName() + ".indicator");
 	}
 }

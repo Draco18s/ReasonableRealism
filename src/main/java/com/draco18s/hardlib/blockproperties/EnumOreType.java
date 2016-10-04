@@ -4,7 +4,7 @@ import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.util.IStringSerializable;
 
-public enum EnumOreType implements IStringSerializable,IMetaLookup<EnumOreType> {
+public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	LIMONITE(""), /*0*/
 	FLOUR(""),    /*1*/
 	SUGAR(""),    /*2*/
@@ -67,11 +67,6 @@ public enum EnumOreType implements IStringSerializable,IMetaLookup<EnumOreType> 
 	@Override
 	public String getID() {
 		return "ore_type";
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 	
 	public String getFlowerName() {

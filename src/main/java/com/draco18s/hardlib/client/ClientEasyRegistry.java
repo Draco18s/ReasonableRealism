@@ -20,12 +20,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ClientEasyRegistry extends EasyRegistry {
 
 	@Override
 	public void _registerBlock(Block block, String registryname) {
-		super.registerBlock(block, registryname);
+		super._registerBlock(block, registryname);
 	}
 
 	@Override
@@ -41,7 +42,19 @@ public class ClientEasyRegistry extends EasyRegistry {
 		BlockStateContainer bsc = block.getBlockState();
 		ImmutableList<IBlockState> values = bsc.getValidStates();
 		for(IBlockState state : values) {
-			_registerBlockItemModelForMeta(block, block.getMetaFromState(state), b.getPropertyString(state.getProperties()));
+			String str = b.getPropertyString(state.getProperties());
+			_registerBlockItemModelForMeta(block, block.getMetaFromState(state), str);
+		}
+	}
+
+	@Override
+	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
+		super._registerBlockWithCustomItemAndMapper(block, iBlock, mapper, registryname);
+		BlockStateContainer bsc = block.getBlockState();
+		ImmutableList<IBlockState> values = bsc.getValidStates();
+		for(IBlockState state : values) {
+			String str = mapper.getPropertyString(state.getProperties());
+			_registerBlockItemModelForMeta(block, block.getMetaFromState(state), str);
 		}
 	}
 

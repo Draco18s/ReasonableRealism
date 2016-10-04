@@ -1,11 +1,15 @@
 package com.draco18s.hardlib;
 
+import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class EasyRegistry {
@@ -20,6 +24,10 @@ public class EasyRegistry {
 	
 	public static void registerBlockWithCustomItem(Block block, ItemBlock iBlock, String registryname) {
 		HardLib.proxy._registerBlockWithCustomItem(block, iBlock, registryname);
+	}
+	
+	public static void registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
+		HardLib.proxy._registerBlockWithCustomItemAndMapper(block, iBlock, mapper, registryname);
 	}
 
 	public static void registerItem(Item item, String registryname) {
@@ -46,6 +54,15 @@ public class EasyRegistry {
 	}
 
 	public void _registerBlockWithCustomItem(Block block, ItemBlock iBlock, String registryname) {
+		block.setRegistryName(registryname);
+		block.setUnlocalizedName(block.getRegistryName().toString());
+		iBlock.setRegistryName(registryname);
+		GameRegistry.register(block);
+		GameRegistry.register(iBlock);
+	}
+
+	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
+		ModelLoader.setCustomStateMapper(block, mapper);
 		block.setRegistryName(registryname);
 		block.setUnlocalizedName(block.getRegistryName().toString());
 		iBlock.setRegistryName(registryname);

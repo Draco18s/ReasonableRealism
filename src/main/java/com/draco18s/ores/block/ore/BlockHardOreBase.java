@@ -171,11 +171,11 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		/*if(player != null && player.capabilities.isCreativeMode) {
+		if(player != null && player.capabilities.isCreativeMode) {
 			avoidGeneration = true;
 			world.setBlockToAir(pos);
 			return true;
-		}*/
+		}
 		if(willHarvest) {
 			this.onBlockHarvested(world, pos, state, player);
 			int m = state.getValue(Props.ORE_DENSITY);

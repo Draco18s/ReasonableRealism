@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid="HardLib", name="HardLib", version="{@version:lib}"/*, dependencies = "required-after:HardLib"*/)
+@Mod(modid="hardlib", name="HardLib", version="{@version:lib}"/*, dependencies = "required-after:HardLib"*/)
 public class HardLib {
 	@Instance("HardLib")
 	public static HardLib instance;
