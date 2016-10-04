@@ -13,6 +13,7 @@ import com.draco18s.hardlib.internal.OreFlowerDictator;
 import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
@@ -39,18 +40,6 @@ public interface IFlowerData {
 	 * @param tallChance - if the flower can be two blocks tall, weighted probability of doing so
 	 */
 	void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance);
-	
-	/**
-	 * Gets an existing OreFlowerDictator if one exists
-	 * @param ore
-	 */
-	@Nullable OreFlowerDictator getDictator(@Nonnull IBlockState ore);
-	
-	/**
-	 * Gets an existing OreFlowerDictator if one exists
-	 * @param ore
-	 */
-	@Nullable OreFlowerDictator getDictator(@Nonnull Block ore);
 	
 	/**
 	 * Registers an ore (with metadata) with its matching indicator plant.<br>
@@ -90,4 +79,10 @@ public interface IFlowerData {
 	 * @return
 	 */
 	@Nullable Iterable<OreFlowerData> getDataForOre(BlockWrapper ore);
+	
+	/**
+	 * Get the default flower for a given flower type IProperty
+	 * @return
+	 */
+	IBlockState getDefaultFlower(IProperty prop);
 }

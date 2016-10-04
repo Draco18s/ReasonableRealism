@@ -4,20 +4,20 @@ import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.util.IStringSerializable;
 
-public enum EnumOreFlower1 implements IStringSerializable,IMetaLookup<EnumOreFlower1> {
-	_1POORJOE(EnumOreType.IRON),
-	_2HORSETAIL(EnumOreType.GOLD),
-	_3VALLOZIA(EnumOreType.DIAMOND),
-	_4FLAME_LILY(EnumOreType.REDSTONE),
-	_5TANSY(EnumOreType.TIN),
-	_6HAUMAN(EnumOreType.COPPER),
-	_7LEADPLANT(EnumOreType.LEAD),
-	_8RED_AMARANTH(EnumOreType.URANIUM);
+public enum EnumOreFlowerDesert1 implements IStringSerializable,IMetaLookup<EnumOreFlowerDesert1> {
+	_1RED_SORREL(EnumOreType.IRON),
+	_2GOLD(EnumOreType.GOLD),
+	_3CHANDELIER_TREE(EnumOreType.DIAMOND),
+	_4AVELOZ(EnumOreType.REDSTONE),
+	_5TIN(EnumOreType.TIN),
+	_6ALPINE_CATCHFLY(EnumOreType.COPPER),
+	_7SHEEPS_FESCUE(EnumOreType.LEAD),
+	_8PRIMROSE(EnumOreType.URANIUM);
 
 	private String name;
 	private EnumOreType ore;
 	
-	EnumOreFlower1(EnumOreType oreType) {
+	EnumOreFlowerDesert1(EnumOreType oreType) {
 		name = toString().toLowerCase().substring(2);
 		ore = oreType;
 	}
@@ -28,8 +28,8 @@ public enum EnumOreFlower1 implements IStringSerializable,IMetaLookup<EnumOreFlo
 	}
 
 	@Override
-	public EnumOreFlower1 getByOrdinal(int i) {
-		return EnumOreFlower1.values()[i];
+	public EnumOreFlowerDesert1 getByOrdinal(int i) {
+		return EnumOreFlowerDesert1.values()[i];
 	}
 
 	@Override

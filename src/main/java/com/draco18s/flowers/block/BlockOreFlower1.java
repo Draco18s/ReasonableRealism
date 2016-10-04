@@ -41,7 +41,7 @@ public class BlockOreFlower1 extends BlockBush {
 		setHardness(0.0F);
 		setSoundType(SoundType.PLANT);
         setCreativeTab(CreativeTabs.DECORATIONS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.FLOWER_TYPE, EnumOreFlower1.POORJOE).withProperty(Props.FLOWER_STALK, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.FLOWER_TYPE, EnumOreFlower1._1POORJOE).withProperty(Props.FLOWER_STALK, false));
 	}
 	
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -78,10 +78,10 @@ public class BlockOreFlower1 extends BlockBush {
     public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
     	boolean f = world.getBlockState(pos.down()).getBlock() != this;
     	if(plantable.getPlant(world, pos).getBlock() == this) {
-    		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1.TANSY) {
+    		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1._5TANSY) {
     			return true&f;
     		}
-    		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1.FLAME_LILY) {
+    		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1._4FLAME_LILY) {
     			return true&f;
     		}
     	}
@@ -93,7 +93,7 @@ public class BlockOreFlower1 extends BlockBush {
         IBlockState state = this.getStateFromMeta(meta);
         state = state.withProperty(Props.FLOWER_STALK, false);
         EnumOreFlower1 thisType = state.getValue(Props.FLOWER_TYPE);
-        if(thisType == EnumOreFlower1.TANSY || thisType == EnumOreFlower1.FLAME_LILY) {
+        if(thisType == EnumOreFlower1._5TANSY || thisType == EnumOreFlower1._4FLAME_LILY) {
 			IBlockState stateBelow = worldIn.getBlockState(pos.down());
 			if(stateBelow.getBlock() == this && stateBelow.getValue(Props.FLOWER_TYPE) == thisType) {
 				stateBelow = stateBelow.withProperty(Props.FLOWER_STALK, true);
@@ -130,7 +130,7 @@ public class BlockOreFlower1 extends BlockBush {
 	@Override
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
 		super.updateTick(world, pos, state, rand);
-		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1.HORSETAIL && rand.nextInt(100) == 0) {
+		if(state.getValue(Props.FLOWER_TYPE) == EnumOreFlower1._2HORSETAIL && rand.nextInt(100) == 0) {
     		world.setBlockState(pos, state.withProperty(Props.FLOWER_STALK, !state.getValue(Props.FLOWER_STALK)), 3);
     	}
     }

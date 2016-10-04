@@ -21,6 +21,7 @@ import com.draco18s.hardlib.math.MathUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.Tuple;
@@ -94,7 +95,7 @@ public class FlowerDataHandler implements IFlowerData {
 	public void addOreFlowerData(@Nonnull BlockWrapper ore, @Nonnull OreFlowerDictator dictator, @Nonnull OreFlowerData data) {
 		if(flowerList.containsKey(ore)) {
 			if(flowerList.get(ore).getFirst() != dictator) {
-				throw new RuntimeException("Non-matching dictators for " + ore.block.getRegistryName() + "!");
+				throw new RuntimeException("Non-matching dictators for " + ore.block.getRegistryName() + "! Use getDictatorForOre(BlockWrapper)");
 			}
 			List<OreFlowerData> val = flowerList.get(ore).getSecond();
 			val.add(data);
@@ -150,13 +151,11 @@ public class FlowerDataHandler implements IFlowerData {
 
 	@Override
 	@Nullable
-	public OreFlowerDictator getDictator(IBlockState ore) {
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public OreFlowerDictator getDictator(Block ore) {
+	public IBlockState getDefaultFlower(@Nonnull IProperty prop) {
+		if(OreFlowersBase.oreFlowers1.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowers1.getDefaultState();
+		if(OreFlowersBase.oreFlowers2.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowers2.getDefaultState();
 		return null;
 	}
 }

@@ -12,5 +12,5 @@ public class Props {
 	public static final PropertyEnum<AxelOrientation> AXEL_ORIENTATION = PropertyEnum.<AxelOrientation>create("axel_orientation", AxelOrientation.class);
 	public static final PropertyBool FLOWER_STALK = PropertyBool.create("flower_stalk");
 	public static final PropertyEnum<EnumOreFlower1> FLOWER_TYPE = PropertyEnum.<EnumOreFlower1>create("flower_type", EnumOreFlower1.class);
-	public static final PropertyEnum<EnumOreFlower2> DESERT_FLOWER_TYPE = PropertyEnum.<EnumOreFlower2>create("flower_type", EnumOreFlower2.class);
+	public static final PropertyEnum<EnumOreFlowerDesert1> DESERT_FLOWER_TYPE = PropertyEnum.<EnumOreFlowerDesert1>create("flower_type", EnumOreFlowerDesert1.class);
 }

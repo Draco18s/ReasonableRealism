@@ -5,7 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.EnumOreFlower2;
+import com.draco18s.hardlib.blockproperties.EnumOreFlowerDesert1;
 import com.draco18s.hardlib.blockproperties.Props;
 
 import net.minecraft.block.Block;
@@ -42,7 +42,7 @@ public class BlockOreFlowerDesert extends BlockBush {
 		setHardness(0.0F);
 		setSoundType(SoundType.PLANT);
 		setCreativeTab(CreativeTabs.DECORATIONS);
-		this.setDefaultState( this.blockState.getBaseState().withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlower2.RED_SORREL).withProperty(Props.FLOWER_STALK, false));
+		this.setDefaultState( this.blockState.getBaseState().withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._1RED_SORREL).withProperty(Props.FLOWER_STALK, false));
 	}
 
 	@Override
@@ -79,10 +79,10 @@ public class BlockOreFlowerDesert extends BlockBush {
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
 		list.add(new ItemStack(item, 1, 0));
-		// list.add(new ItemStack(item, 1, 1));
+		//list.add(new ItemStack(item, 1, 1));
 		list.add(new ItemStack(item, 1, 2));
-		// list.add(new ItemStack(item, 1, 3));
-		// list.add(new ItemStack(item, 1, 4));
+		list.add(new ItemStack(item, 1, 3));
+		//list.add(new ItemStack(item, 1, 4));
 		list.add(new ItemStack(item, 1, 5));
 		list.add(new ItemStack(item, 1, 6));
 		list.add(new ItemStack(item, 1, 7));
@@ -92,7 +92,8 @@ public class BlockOreFlowerDesert extends BlockBush {
 	public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
 		boolean f = world.getBlockState(pos.down()).getBlock() != this;
 		if (plantable.getPlant(world, pos).getBlock() == this) {
-			if (state.getValue(Props.DESERT_FLOWER_TYPE) == EnumOreFlower2.CHANDELIER_TREE) {
+			EnumOreFlowerDesert1 thisType = state.getValue(Props.DESERT_FLOWER_TYPE);
+			if (thisType == EnumOreFlowerDesert1._3CHANDELIER_TREE || thisType == EnumOreFlowerDesert1._4AVELOZ) {
 				return true & f;
 			}
 		}
@@ -103,8 +104,8 @@ public class BlockOreFlowerDesert extends BlockBush {
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		IBlockState state = this.getStateFromMeta(meta);
 		state = state.withProperty(Props.FLOWER_STALK, false);
-		EnumOreFlower2 thisType = state.getValue(Props.DESERT_FLOWER_TYPE);
-		if (thisType == EnumOreFlower2.CHANDELIER_TREE) {
+		EnumOreFlowerDesert1 thisType = state.getValue(Props.DESERT_FLOWER_TYPE);
+		if (thisType == EnumOreFlowerDesert1._3CHANDELIER_TREE || thisType == EnumOreFlowerDesert1._4AVELOZ) {
 			IBlockState stateBelow = worldIn.getBlockState(pos.down());
 			if (stateBelow.getBlock() == this && stateBelow.getValue(Props.DESERT_FLOWER_TYPE) == thisType) {
 				stateBelow = stateBelow.withProperty(Props.FLOWER_STALK, true);
@@ -123,7 +124,7 @@ public class BlockOreFlowerDesert extends BlockBush {
 	public IBlockState getStateFromMeta(int meta) {
 		int stalk = meta & 8;
 		int type = meta & 7; // +8 hackery
-		return this.getDefaultState().withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlower2.values()[type]).withProperty(Props.FLOWER_STALK, stalk > 0);
+		return this.getDefaultState().withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1.values()[type]).withProperty(Props.FLOWER_STALK, stalk > 0);
 	}
 
 	@Override

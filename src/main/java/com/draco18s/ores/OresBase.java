@@ -24,6 +24,7 @@ import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntitySifter;
+import com.draco18s.ores.flowers.FlowerIntegration;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
 import com.draco18s.ores.item.ItemDiamondStudShovel;
@@ -66,7 +67,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="harderores", name="HarderOres", version="{@version:ore}"/*, dependencies = "required-after:HardLib,CustomOreGen"*/)
+@Mod(modid="harderores", name="HarderOres", version="{@version:ore}"/*, dependencies = "required-after:HardLib@[{@version:flowers},);required-after:oreflowers[{@version:flowers},)"*/)
 public class OresBase {
 	@Instance("HarderOres")
 	public static OresBase instance;
@@ -182,6 +183,8 @@ public class OresBase {
 		//networkWrapper.registerMessage(PacketHandlerServer.class, ToServerMessage.class, serverMessageID, Side.SERVER);
 		networkWrapper.registerMessage(ClientOreParticleHandler.class, ToClientMessageOreParticles.class, clientMessageID, Side.CLIENT);
 		networkWrapper.registerMessage(ServerOreCartHandler.class, ToServerMessageOreCart.class, serverMessageID, Side.SERVER);
+		
+		FlowerIntegration.registerFlowerGen();
 	}
 	
 	@EventHandler
