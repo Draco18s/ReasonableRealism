@@ -71,11 +71,12 @@ public class FlowerDataHandler implements IFlowerData {
 			while(it.hasNext()) {
 				BlockPos p = it.next();
 				IBlockState wb = world.getBlockState(p);
+				IBlockState pDown = world.getBlockState(p.down());
 				/*boolean place = flowerState.getBlock().canPlaceBlockAt(world, p);
 				boolean replace = (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES);
-				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);*/
-				
-				if(world.getBlockState(p.down()).isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
+				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);
+				IBlockState wb2 = pDown;*/
+				if(pDown.isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
 					if(canBeTallPlant && r.nextInt(tallChance) == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
 						world.setBlockState(p.up(), flowerState, 3);
 						world.setBlockState(p, flowerState.withProperty(Props.FLOWER_STALK, true), 3);
@@ -83,6 +84,7 @@ public class FlowerDataHandler implements IFlowerData {
 					else {
 						world.setBlockState(p, flowerState, 3);
 					}
+					num--;
 					break;
 				}
 			}

@@ -2,14 +2,17 @@ package com.draco18s.flowers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
 
 import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.chunk.Chunk;
@@ -17,23 +20,53 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 
 public class FlowerEventHandler {
 	private boolean poopBonemealFlowers = false;
+	private Random rand = new Random();
 
 	@SubscribeEvent
 	public void onBonemeal(BonemealEvent event) {
+		if(event.isCanceled()) return;
 		Block eventBlock = event.getBlock().getBlock();
-		if(!event.getWorld().isRemote && (eventBlock == Blocks.GRASS || eventBlock == Blocks.SAND) && (event.getEntityPlayer() != null || poopBonemealFlowers)) {
+		if((eventBlock == Blocks.GRASS || eventBlock == Blocks.SAND) && (event.getEntityPlayer() != null || poopBonemealFlowers)) {
+			event.setResult(Result.ALLOW);
+			if(event.getWorld().isRemote) {
+				return;
+			}
 			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
-			OreFlowerData entry;
+			List<OreFlowerData> entry;
 			for(BlockWrapper ore : list.keySet()) {
 				int count = HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos(), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(8), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(16), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(24), ore);
 				
-				System.out.println("Found: " + ore.block.getRegistryName() + " = " + count);
+				if(count > 0) {
+					count = (int)Math.min(Math.round(Math.log(count)), 10);
+					entry = list.get(ore).getSecond();
+					
+					for(;--count >= 0;) {
+						for(OreFlowerData data : entry) {
+							if(rand.nextBoolean() && (event.getEntityPlayer() != null || rand.nextInt(128) == 0)) {
+								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower.withProperty(Props.FLOWER_STALK, false), rand, 1, 7, data.flower.getValue(Props.FLOWER_STALK), data.twoBlockChance);
+							}
+						}
+					}
+
+					if(event.getEntityPlayer() != null) {
+						//event.getEntityPlayer().addStat(StatsAchievements.prospecting, 1);
+					}
+				}
+			}
+			if(eventBlock == Blocks.SAND) {
+				int count = rand.nextInt(4) + 3;
+				for(;--count >= 0;) {
+					if(rand.nextBoolean() && (event.getEntityPlayer() != null || rand.nextInt(128) == 0)) {
+						HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), Blocks.DEADBUSH.getDefaultState(), rand, 1, 7, false, 0);
+					}
+				}
 			}
 		}
 	}

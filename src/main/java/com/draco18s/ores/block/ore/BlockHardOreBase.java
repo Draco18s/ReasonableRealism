@@ -39,7 +39,6 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 
 	public final int metaChange;
 	public final EnumOreType oreType;
-	private boolean avoidGeneration = false;
 
 	public BlockHardOreBase(EnumOreType type, int metaDecrement) {
 		super(Material.ROCK, MapColor.STONE);
@@ -172,7 +171,6 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 		if(player != null && player.capabilities.isCreativeMode) {
-			avoidGeneration = true;
 			world.setBlockToAir(pos);
 			return true;
 		}
