@@ -67,7 +67,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="harderores", name="HarderOres", version="{@version:ore}"/*, dependencies = "required-after:HardLib@[{@version:flowers},);required-after:oreflowers[{@version:flowers},)"*/)
+@Mod(modid="harderores", name="HarderOres", version="{@version:ore}", dependencies = "required-after:hardlib;required-after:oreflowers")//@[{@version:lib},)  [{@version:flowers},)
 public class OresBase {
 	@Instance("HarderOres")
 	public static OresBase instance;
@@ -116,6 +116,7 @@ public class OresBase {
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		CapabilityMechanicalPower.register();
+		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		
 		oreIron = new BlockHardIron();
 		EasyRegistry.registerBlockWithCustomItem(oreIron, new ItemOreBlock(oreIron), "hardiron");
@@ -203,7 +204,6 @@ public class OresBase {
 		OreDictionary.registerOre("nuggetIron", new ItemStack(nuggets, 1, EnumOreType.IRON.meta));
 		
 		/*Milling*/
-		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.IRON.meta), new ItemStack(smallDust,2,EnumOreType.IRON.meta));
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.GOLD.meta), new ItemStack(smallDust,2,EnumOreType.GOLD.meta));
 		

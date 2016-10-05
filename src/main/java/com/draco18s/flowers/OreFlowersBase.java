@@ -7,6 +7,7 @@ import com.draco18s.flowers.block.BlockOreFlowerDesert;
 import com.draco18s.flowers.item.ItemOreFlower1;
 import com.draco18s.flowers.item.ItemStickyBlob;
 import com.draco18s.flowers.states.StateMapperFlowers;
+import com.draco18s.flowers.util.ChunkOreCounter;
 import com.draco18s.flowers.util.OreDataHooks;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -32,7 +33,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}"/*, dependencies = "required-after:HardLib@[{@version:lib},);required-after:CustomOreGen"*/)
+@Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")//@[{@version:lib},)
 public class OreFlowersBase {
 	@Instance("OreFlowers")
 	public static OreFlowersBase instance;
@@ -47,13 +48,15 @@ public class OreFlowersBase {
 	
 	public static Logger logger;
 
-	public static OreDataHooks oreCounter;
+	public static ChunkOreCounter oreCounter;
+	protected static OreDataHooks dataHooks; 
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
-		oreCounter = new OreDataHooks();
+		oreCounter = new ChunkOreCounter();
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
+		HardLibAPI.oreData = dataHooks = new OreDataHooks();
 
 		oreFlowers1 = new BlockOreFlower1();
 		EasyRegistry.registerBlockWithCustomItemAndMapper(oreFlowers1, new ItemOreFlower1(oreFlowers1,8, EnumOreFlower1.class), new StateMapperFlowers(Props.FLOWER_TYPE), "oreflowers1");
@@ -98,7 +101,9 @@ public class OreFlowersBase {
 				3, 0, 1);
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
 		
-		MinecraftForge.ORE_GEN_BUS.register(new FlowerEventHandler());
+		FlowerEventHandler handler = new FlowerEventHandler();
+		MinecraftForge.ORE_GEN_BUS.register(handler);
+		MinecraftForge.EVENT_BUS.register(handler);
 	}
 	
 	@EventHandler

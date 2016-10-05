@@ -12,6 +12,8 @@ import com.draco18s.ores.OresBase;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Optional;
 
 public class FlowerIntegration {
 	public static void registerFlowerGen() {
@@ -42,5 +44,7 @@ public class FlowerIntegration {
 		data = new OreFlowerData(flower2State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._3CHANDELIER_TREE),
 				8, 3, 0);
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
+		
+		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(flower2State.getBlock(), 1, EnumOreFlowerDesert1._4AVELOZ.ordinal()), new ItemStack(OreFlowersBase.gooBlob));
 	}
 }
