@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import com.draco18s.flowers.block.BlockOreFlower1;
 import com.draco18s.flowers.block.BlockOreFlowerDesert;
 import com.draco18s.flowers.item.ItemOreFlower1;
+import com.draco18s.flowers.item.ItemOreManipulator;
 import com.draco18s.flowers.item.ItemStickyBlob;
 import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.flowers.util.ChunkOreCounter;
@@ -42,6 +43,10 @@ public class OreFlowersBase {
 	public static Block oreFlowers2;
 	
 	public static Item gooBlob;
+	public static Item ironWand;
+	public static Item goldWand;
+	public static Item diamondWand;
+	public static Item redstoneWand;
 	
 	//@SidedProxy(clientSide="com.draco18s.flowers.client.ClientProxy", serverSide="com.draco18s.flowers.CommonProxy")
 	//public static CommonProxy proxy;
@@ -72,6 +77,8 @@ public class OreFlowersBase {
 		OreFlowerData data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._1POORJOE),
 				8, 3, 0);
 		BlockWrapper wrap = new BlockWrapper(Blocks.IRON_ORE, 16);
+		ironWand = new ItemOreManipulator(wrap);
+		EasyRegistry.registerItem(ironWand, "ironwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
 		data = new OreFlowerData(flower2State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._1RED_SORREL),
 				8, 3, 0);
@@ -81,12 +88,16 @@ public class OreFlowersBase {
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._2HORSETAIL),
 				8, 3, 0);
 		wrap = new BlockWrapper(Blocks.GOLD_ORE, 16);
+		goldWand = new ItemOreManipulator(wrap);
+		EasyRegistry.registerItem(goldWand, "goldwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
 		
 		dictator = new OreFlowerDictator(5, 0);
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._3VALLOZIA),
 				8, 3, 0);
 		wrap = new BlockWrapper(Blocks.DIAMOND_ORE, 16);
+		diamondWand = new ItemOreManipulator(wrap);
+		EasyRegistry.registerItem(diamondWand, "diamondwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
 		data = new OreFlowerData(flower2State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._3CHANDELIER_TREE).withProperty(Props.FLOWER_STALK, true),
 				8, 3, 0, 1);
@@ -96,6 +107,8 @@ public class OreFlowersBase {
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._4FLAME_LILY).withProperty(Props.FLOWER_STALK, true),
 				8, 3, 0, 3);
 		wrap = new BlockWrapper(Blocks.REDSTONE_ORE, 16);
+		redstoneWand = new ItemOreManipulator(wrap);
+		EasyRegistry.registerItem(redstoneWand, "redstonewand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
 		data = new OreFlowerData(flower2State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._4AVELOZ).withProperty(Props.FLOWER_STALK, true), 8,
 				3, 0, 1);

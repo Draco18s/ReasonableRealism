@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ChunkOreConcentrationData implements IHardOres {
+public class OreBlockInfo implements IHardOres {
 	@Override
 	public boolean isHardOre(IBlockState b) {
 		return b.getBlock() instanceof IBlockMultiBreak && b.getBlock().getBlockState().getProperties().contains(Props.ORE_DENSITY);

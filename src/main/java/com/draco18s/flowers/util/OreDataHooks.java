@@ -57,10 +57,10 @@ public class OreDataHooks implements IOreData {
 			HashMap<BlockWrapper,Integer> map = graphs.get(key);
 			if(map == null || !map.containsKey(ore)) continue;
 			int mm = Math.min(map.get(ore), amount);
-			int n = Math.max(map.get(ore) - amount, 0);
+			int n = Math.max(map.get(ore) + amount, 0);
 			if(n == 0) n = -1;
 	    	map.put(ore, n);
-	    	amount -= mm;
+	    	amount += mm;
     	}while((y-8*(++k)) >= 0 && amount > 0);
 	}
 	
