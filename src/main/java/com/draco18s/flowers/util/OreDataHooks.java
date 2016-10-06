@@ -94,9 +94,9 @@ public class OreDataHooks implements IOreData {
     		}
     	}
     	else {
-    		ChunkCoords key = new ChunkCoords(world.provider.getDimension(), chunkx, 0, chunkz);
-			OreFlowersBase.logger.log(Level.INFO, "Chunk " + key + " is missing ore data, it will be rescanned.  Chunks way out on the edge of the world may not save and cause this message to repeat next launch; do not be alarmed.");
-    		OreFlowersBase.oreCounter.generate(chunkx, chunkz, world);
+    		//ChunkCoords key = new ChunkCoords(world.provider.getDimension(), chunkx, 0, chunkz);
+			//OreFlowersBase.logger.log(Level.INFO, "Chunk " + key + " is missing ore data, it will be rescanned.  Chunks way out on the edge of the world may not save and cause this message to repeat next launch; do not be alarmed.");
+    		//OreFlowersBase.oreCounter.generate(chunkx, chunkz, world);
     	}
 	}
 	

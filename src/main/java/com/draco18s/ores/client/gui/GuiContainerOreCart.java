@@ -43,10 +43,10 @@ public class GuiContainerOreCart extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		this.fontRendererObj.drawString(new TextComponentTranslation("harderores:ore_cart", new Object[0]).getUnformattedText(), 8, 6, 4210752);
-		this.fontRendererObj.drawString(new TextComponentTranslation("Inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores.ore_cart", new Object[0]).getUnformattedText(), 8, 6, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
 		
-		this.fontRendererObj.drawString(new TextComponentTranslation("harderores:drop_side", new Object[0]).getUnformattedText(), 117, 52, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores.drop_side", new Object[0]).getUnformattedText(), 117, 52, 4210752);
 		
 		Iterator<GuiButton> iterator = this.buttonList.iterator();
 

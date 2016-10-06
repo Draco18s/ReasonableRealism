@@ -7,6 +7,7 @@ import com.draco18s.hardlib.blockproperties.Props;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -29,6 +30,7 @@ public class BlockWindvane extends Block {
 		//setHarvestLevel("axe", 1);
 		setResistance(0.1f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		setSoundType(SoundType.CLOTH);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.NORTH));
 	}
 	

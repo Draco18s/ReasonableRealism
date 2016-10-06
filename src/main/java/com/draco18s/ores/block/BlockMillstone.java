@@ -9,6 +9,7 @@ import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.ores.entities.TileEntityMillstone;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -38,6 +39,7 @@ public class BlockMillstone extends Block {
 		setHarvestLevel("pickaxe", 1);
 		setResistance(2.0f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		setSoundType(SoundType.STONE);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.MILL_ORIENTATION, MillstoneOrientation.NONE));
 	}
 	

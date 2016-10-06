@@ -3,6 +3,7 @@ package com.draco18s.ores.block;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -33,6 +34,7 @@ public class BlockSifter extends Block {
 		setHardness(2.0f);
 		setHarvestLevel("axe", 1);
 		setResistance(2.0f);
+		setSoundType(SoundType.WOOD);
         setCreativeTab(CreativeTabs.DECORATIONS);
 	}
 	
