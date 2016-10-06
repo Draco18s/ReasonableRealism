@@ -16,6 +16,7 @@ public class ContainerWoodenHopper extends CommonContainer {
 	TileEntityWoodenHopper tileEntity;
 
 	public ContainerWoodenHopper(InventoryPlayer inventory, TileEntityWoodenHopper te) {
+		super(5);
 		tileEntity = te;
 		IItemHandler inven = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 

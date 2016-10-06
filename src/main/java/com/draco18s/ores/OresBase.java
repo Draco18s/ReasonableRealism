@@ -69,7 +69,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="harderores", name="HarderOres", version="{@version:ore}", dependencies = "required-after:hardlib;required-after:oreflowers")//@[{@version:lib},)  [{@version:flowers},)
 public class OresBase {
-	@Instance("HarderOres")
+	@Instance("harderores")
 	public static OresBase instance;
 	
 	@SidedProxy(clientSide="com.draco18s.ores.client.ClientProxy", serverSide="com.draco18s.ores.CommonProxy")
@@ -290,7 +290,7 @@ public class OresBase {
 		ItemStack bonemeal = new ItemStack(Items.DYE, 1, 15);
 		HardLibAPI.oreMachines.addSiftRecipe(bonemeal, bonemeal, false);
 		
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
 		config.save();
 	}

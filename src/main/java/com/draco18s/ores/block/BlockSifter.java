@@ -23,7 +23,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.ores.GuiHandler;
+import com.draco18s.ores.OreGuiHandler;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.TileEntitySifter;
 
@@ -63,7 +63,7 @@ public class BlockSifter extends Block {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(OresBase.instance, GuiHandler.SIFTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(OresBase.instance, OreGuiHandler.SIFTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	

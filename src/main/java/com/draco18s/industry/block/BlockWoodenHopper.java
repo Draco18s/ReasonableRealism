@@ -3,7 +3,7 @@ package com.draco18s.industry.block;
 import javax.annotation.Nullable;
 
 import com.draco18s.industry.ExpandedInsutryBase;
-import com.draco18s.industry.GuiHandler;
+import com.draco18s.industry.IndustryGuiHandler;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
 
 import net.minecraft.block.Block;
@@ -63,7 +63,7 @@ public class BlockWoodenHopper extends BlockHopper  {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(ExpandedInsutryBase.instance, GuiHandler.WOODEN_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(ExpandedInsutryBase.instance, IndustryGuiHandler.WOODEN_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	

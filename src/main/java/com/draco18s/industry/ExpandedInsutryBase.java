@@ -32,10 +32,10 @@ public class ExpandedInsutryBase {
 		logger = event.getModLog();
 		
 		//TODO: None of this works.
-		//blockWoodHopper = new BlockWoodenHopper();
-		//EasyRegistry.registerBlockWithItem(blockWoodHopper, "machine_wood_hopper");
+		blockWoodHopper = new BlockWoodenHopper();
+		EasyRegistry.registerBlockWithItem(blockWoodHopper, "machine_wood_hopper");
 		
-		//NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 	}
 	
 	@EventHandler

@@ -36,7 +36,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")//@[{@version:lib},)
 public class OreFlowersBase {
-	@Instance("OreFlowers")
+	@Instance("oreflowers")
 	public static OreFlowersBase instance;
 	
 	public static Block oreFlowers1;

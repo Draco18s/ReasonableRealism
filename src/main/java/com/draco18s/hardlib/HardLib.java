@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid="hardlib", name="HardLib", version="{@version:lib}"/*, dependencies = "required-after:HardLib"*/)
 public class HardLib {
-	@Instance("HardLib")
+	@Instance("hardlib")
 	public static HardLib instance;
 	
 	@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.ores.EasyRegistry")

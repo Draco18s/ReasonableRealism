@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import scala.reflect.internal.Trees.This;
 
-import com.draco18s.ores.GuiHandler;
+import com.draco18s.ores.OreGuiHandler;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.inventory.ContainerOreCart;
 
@@ -114,7 +114,7 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {
 		if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
 		if (!this.worldObj.isRemote) {
-			player.openGui(OresBase.instance, GuiHandler.ORE_CART, this.worldObj, (int)this.getEntityId(), -1, -1);
+			player.openGui(OresBase.instance, OreGuiHandler.ORE_CART, this.worldObj, (int)this.getEntityId(), -1, -1);
 		}
 
 		return true;
