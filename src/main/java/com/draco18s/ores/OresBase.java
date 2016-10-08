@@ -13,6 +13,7 @@ import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.block.BlockAxel;
 import com.draco18s.ores.block.BlockMillstone;
 import com.draco18s.ores.block.BlockSifter;
+import com.draco18s.ores.block.BlockSluice;
 import com.draco18s.ores.block.BlockWindvane;
 import com.draco18s.ores.block.ore.BlockHardDiamond;
 import com.draco18s.ores.block.ore.BlockHardGold;
@@ -24,6 +25,7 @@ import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntitySifter;
+import com.draco18s.ores.entities.TileEntitySluice;
 import com.draco18s.ores.flowers.FlowerIntegration;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
@@ -50,6 +52,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.client.model.ModelFluid;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Mod;
@@ -85,6 +88,7 @@ public class OresBase {
 	public static Block axel;
 	public static Block windvane;
 	public static Block sifter;
+	public static Block sluice;
 	
 	public static Item rawOre;
 	public static Item smallDust;
@@ -135,6 +139,9 @@ public class OresBase {
 		sifter = new BlockSifter();
 		EasyRegistry.registerBlockWithItem(sifter, "sifter");
 		GameRegistry.registerTileEntity(TileEntitySifter.class, "sifter");
+		sluice = new BlockSluice();
+		EasyRegistry.registerBlockWithItem(sluice, "basic_sluice");
+		GameRegistry.registerTileEntity(TileEntitySluice.class, "basic_sluice");
 		
 		rawOre = new ItemRawOre();
 		EasyRegistry.registerItemWithVariants(rawOre, "orechunks", EnumOreType.IRON);
