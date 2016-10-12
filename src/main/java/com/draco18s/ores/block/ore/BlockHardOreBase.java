@@ -49,6 +49,10 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 		metaChange = metaDecrement;
 	}
 
+	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+		System.out.println(state + " added at " + pos);
+	}
+
 	@Override
 	public int getDensityChangeOnBreak(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
 		return metaChange;
@@ -180,7 +184,7 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 			m -= metaChange;
 			if(m < 0)
 				return world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-	
+
 			world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
 			ItemStack itemstack1 = player.getHeldItemMainhand();
 			ItemStack itemstack2 = itemstack1 == null ? null : itemstack1.copy();

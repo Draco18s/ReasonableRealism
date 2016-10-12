@@ -8,9 +8,9 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
+import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
+import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 import com.draco18s.ores.inventory.ContainerSifter;
-import com.draco18s.ores.item.MillableItemsHandler;
-import com.draco18s.ores.item.SiftableItemsHandler;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -24,6 +24,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -60,10 +62,6 @@ public class TileEntitySifter extends TileEntity implements ITickable {
             	siftItem();
             }
 		}
-		//TODO: Magic numbers
-		/*else if (canSift(0) || canSift(1)) {
-			siftTime = 40;
-        }*/
         else {
         	for(int s = 0; s < inputSlot.getSlots(); s++) {
         		if(canSift(s))
@@ -154,7 +152,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 		super.writeToNBT(compound);
 		compound.setTag("harderores:inputSlot", inputSlot.serializeNBT());
 		compound.setTag("harderores:outputSlot", outputSlot.serializeNBT());
-		compound.setFloat("harderores:grindTime", siftTime);
+		compound.setFloat("harderores:siftTime", siftTime);
 		return compound;
 	}
 	
@@ -169,10 +167,14 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));
 			outputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:outputSlot"));
 		}
-		siftTime = compound.getFloat("harderores:grindTime");
+		siftTime = compound.getFloat("harderores:siftTime");
 	}
 
 	public float getTime() {
 		return siftTime;
+	}
+	
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+		return oldState.getBlock() != newState.getBlock();
 	}
 }

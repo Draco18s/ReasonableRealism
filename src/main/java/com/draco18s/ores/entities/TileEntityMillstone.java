@@ -12,7 +12,8 @@ import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.interfaces.IMechanicalPower;
 import com.draco18s.ores.OresBase;
-import com.draco18s.ores.item.MillableItemsHandler;
+import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
+import com.draco18s.ores.entities.capabilities.MillstoneMechanicalPowerHandler;
 
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
@@ -155,10 +156,6 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		return true;
 	}
 	
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return (oldState.getBlock() != newSate.getBlock());
-    }
-	
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
@@ -218,5 +215,9 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			outputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:outputSlot"));
 		}
 		grindTime = compound.getFloat("harderores:grindTime");
+	}
+	
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+		return oldState.getBlock() != newState.getBlock();
 	}
 }

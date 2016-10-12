@@ -31,10 +31,6 @@ public class FlowerEventHandler {
 		if(event.isCanceled()) return;
 		Block eventBlock = event.getBlock().getBlock();
 		if((eventBlock == Blocks.GRASS || eventBlock == Blocks.SAND) && (event.getEntityPlayer() != null || poopBonemealFlowers)) {
-			event.setResult(Result.ALLOW);
-			if(event.getWorld().isRemote) {
-				return;
-			}
 			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
 			List<OreFlowerData> entry;
 			for(BlockWrapper ore : list.keySet()) {
@@ -61,6 +57,7 @@ public class FlowerEventHandler {
 				}
 			}
 			if(eventBlock == Blocks.SAND) {
+				event.setResult(Result.ALLOW);
 				int count = rand.nextInt(4) + 3;
 				for(;--count >= 0;) {
 					if(rand.nextBoolean() && (event.getEntityPlayer() != null || rand.nextInt(128) == 0)) {

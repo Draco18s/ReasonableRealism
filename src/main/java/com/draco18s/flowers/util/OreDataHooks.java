@@ -55,7 +55,13 @@ public class OreDataHooks implements IOreData {
     	do {
 			ChunkCoords key = new ChunkCoords(world.provider.getDimension(), c.xPosition,y-8*k,c.zPosition);
 			HashMap<BlockWrapper,Integer> map = graphs.get(key);
-			if(map == null || !map.containsKey(ore)) continue;
+			if(map == null) {
+				map = new HashMap();
+				graphs.put(key, map);
+			}
+			if(!map.containsKey(ore) && amount > 0) {
+				map.put(ore, 0);
+			}
 			int mm = Math.min(map.get(ore), amount);
 			int n = Math.max(map.get(ore) + amount, 0);
 			if(n == 0) n = -1;

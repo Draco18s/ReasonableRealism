@@ -34,8 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockOreFlowerDesert extends BlockBush {
 
-	protected static final AxisAlignedBB FLOWER_AABB = new AxisAlignedBB(0.25D, 0.0D,
-			0.25D, 0.75D, 1.0D, 0.75D);
+	protected static final AxisAlignedBB FLOWER_AABB = new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 1.0D, 0.75D);
 
 	public BlockOreFlowerDesert() {
 		super(Material.PLANTS);

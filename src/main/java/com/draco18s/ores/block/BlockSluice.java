@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.ores.entities.TileEntitySluice;
+import com.draco18s.ores.entities.TileEntityBasicSluice;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
@@ -44,6 +44,7 @@ import net.minecraftforge.items.IItemHandler;
 public class BlockSluice extends Block {
 	//public static final IUnlistedProperty<Integer> LEVEL = Properties.toUnlisted(PropertyInteger.create("level", 0, 15));
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
+	private static final AxisAlignedBB PARTIAL_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 2f/16f, 1.0D);
 
 	public BlockSluice() {
 		super(Material.WOOD);
@@ -78,7 +79,7 @@ public class BlockSluice extends Block {
 	@Override
 	public IBlockState getExtendedState(IBlockState oldState, IBlockAccess worldIn, BlockPos pos) {
 		IExtendedBlockState state = (IExtendedBlockState) oldState;
-		TileEntitySluice te = (TileEntitySluice) worldIn.getTileEntity(pos);
+		TileEntityBasicSluice te = (TileEntityBasicSluice) worldIn.getTileEntity(pos);
 		boolean hasWater = te.getWaterAmount() > 0;
 
 		float dir = (float) getFlowDirection(oldState);
@@ -120,12 +121,12 @@ public class BlockSluice extends Block {
 
 	private float getCorner(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing NS, EnumFacing EW) {
 		EnumFacing dir = state.getValue(FACING);
-		TileEntitySluice teSelf = (TileEntitySluice) world.getTileEntity(pos);
+		TileEntityBasicSluice teSelf = (TileEntityBasicSluice) world.getTileEntity(pos);
 		if(teSelf.getWaterAmount() <= 0) return 0.001f;
 		if(dir != NS && dir != EW) {
 			IBlockState upstream = world.getBlockState(pos.offset(dir.getOpposite(), 1));
 			if(upstream.getBlock() == this) {
-				TileEntitySluice teUp = (TileEntitySluice) world.getTileEntity(pos.offset(dir.getOpposite(),1));
+				TileEntityBasicSluice teUp = (TileEntityBasicSluice) world.getTileEntity(pos.offset(dir.getOpposite(),1));
 				//if(teUp.getWaterAmount()-1 <= 0) return 0;
 				return ((teUp.getWaterAmount()-1) * 3f/32f);
 			}
@@ -139,9 +140,10 @@ public class BlockSluice extends Block {
 		else {
 			IBlockState downstream = world.getBlockState(pos.offset(dir, 1));
 			if(downstream.getBlock() == this) {
-				TileEntitySluice teDown = (TileEntitySluice) world.getTileEntity(pos);
-				//if(teDown.getWaterAmount() == 0) return 0;
-				return ((teDown.getWaterAmount()-1) * 3f/32f);
+				TileEntityBasicSluice teDown = (TileEntityBasicSluice) world.getTileEntity(pos.offset(dir, 1));
+				if(teDown.getWaterAmount() == 0) return 2f/16f;
+				
+				return ((teDown.getWaterAmount()+1) * 3f/32f);
 			}
 			else if(downstream.isSideSolid(world, pos, dir)) {
 				return 2f/16f;
@@ -153,10 +155,13 @@ public class BlockSluice extends Block {
 		return 0;
 	}
 
-	private float getFlowDirection(IBlockState oldState) {
-		EnumFacing dir = oldState.getValue(FACING);
-		Vec3d vec = new Vec3d(dir.getFrontOffsetX() * 2, 0, dir.getFrontOffsetZ() * 2);
-		
+	public static Vec3d getFlowVec(IBlockState blockState) {
+		EnumFacing dir = blockState.getValue(FACING);
+		return new Vec3d(dir.getFrontOffsetX() * 2, 0, dir.getFrontOffsetZ() * 2);
+	}
+
+	public static float getFlowDirection(IBlockState blockState) {
+		Vec3d vec = getFlowVec(blockState);
 		return (float)(Math.atan2(vec.zCoord, vec.xCoord) - Math.PI / 2D);
 	}
 
@@ -193,7 +198,7 @@ public class BlockSluice extends Block {
 
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new TileEntitySluice();
+		return new TileEntityBasicSluice();
 	}
 
 	@Override
@@ -205,12 +210,16 @@ public class BlockSluice extends Block {
 		for(EnumFacing face : EnumFacing.HORIZONTALS) {
 			IBlockState bl = world.getBlockState(pos.offset(face,1));
 			if(bl.getBlock() == Blocks.WATER) {
-				return thisState.withProperty(FACING, face.getOpposite());
+				if(bl.getValue(BlockLiquid.LEVEL) == 0)
+					return thisState.withProperty(FACING, face.getOpposite());
 			}
 		}
 		for(EnumFacing face : EnumFacing.HORIZONTALS) {
 			IBlockState bl = world.getBlockState(pos.offset(face,1));
 			if(bl.getBlock() == Blocks.FLOWING_WATER) {
+				return thisState.withProperty(FACING, face.getOpposite());
+			}
+			if(bl.getBlock() == Blocks.WATER) {
 				return thisState.withProperty(FACING, face.getOpposite());
 			}
 		}
@@ -230,10 +239,23 @@ public class BlockSluice extends Block {
 	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
 		return null;
 	}
+	
+	@Override
+	@Deprecated
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return PARTIAL_AABB;
+    }
 
 	@Override
 	@Deprecated
 	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn) {
+		if(!world.getBlockState(pos.down()).isSideSolid(world, pos, EnumFacing.UP)) {
+			if (!world.isRemote)  {
+				dropBlockAsItem(world, pos, state, 0);
+				world.setBlockToAir(pos);
+				return;
+			}
+		}
 		world.setBlockState(pos, getUpdatedState(world, pos, world.getBlockState(pos)), 3);
 	}
 
@@ -259,7 +281,7 @@ public class BlockSluice extends Block {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-		TileEntitySluice te = (TileEntitySluice) worldIn.getTileEntity(pos);
+		TileEntityBasicSluice te = (TileEntityBasicSluice) worldIn.getTileEntity(pos);
 		if (te.getWaterAmount() > 0 && te.getTime() <= 0) {
 			this.spawnParticles(worldIn, pos);
 		}
@@ -286,7 +308,10 @@ public class BlockSluice extends Block {
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
 		IBlockState stateAtPos = world.getBlockState(pos.offset(face,1));
 		Block bl = stateAtPos.getBlock();
-		if(bl == Blocks.WATER || bl == Blocks.FLOWING_WATER || bl == this) return true;
+		if(bl == Blocks.WATER || bl == Blocks.FLOWING_WATER || bl == this) {
+			if(((TileEntityBasicSluice)world.getTileEntity(pos)).getWaterAmount() == 0) return false;
+			return true;
+		}
 		if(face == EnumFacing.UP) return true;
         return state.isOpaqueCube();
     }

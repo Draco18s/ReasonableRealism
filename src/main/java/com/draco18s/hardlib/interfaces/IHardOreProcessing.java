@@ -1,9 +1,13 @@
 package com.draco18s.hardlib.interfaces;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,12 +18,30 @@ public interface IHardOreProcessing {
 	 * full grid (9 tiny dusts) and craft into 1 large dust and the sifter will sift 8 to 1.
 	 * @param input ItemStack including metadata and size
 	 * @param output ItemStack including metadata and size
-	 * @param registerOutput Pass true to register the output stack as a 1:1 sift (this prevents some items which
+	 * @param registerOutput (optional) Pass true to register the output stack as a 1:1 sift (this prevents some items which
 	 *  can be created normally from clogging the sifter, such as bonemeal).
 	 */
 	public void addSiftRecipe(ItemStack input, ItemStack output, boolean registerOutput);
+	
+	/**
+	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
+	 * @param input
+	 * @param output
+	 */
 	public void addSiftRecipe(ItemStack input, ItemStack output);
+	
+	/**
+	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
+	 * @param input
+	 * @param output
+	 */
 	public void addSiftRecipe(String input, int stackSize, ItemStack output, boolean registerOutput);
+	
+	/**
+	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
+	 * @param input
+	 * @param output
+	 */
 	public void addSiftRecipe(String input, int stackSize, ItemStack output);
 	
 	/**
@@ -33,7 +55,7 @@ public interface IHardOreProcessing {
 	 * @param itemStack
 	 * @return minimum stack size for input in order to sift.
 	 */
-	public int getSiftAmount(ItemStack itemStack);
+	public int getSiftAmount(ItemStack stack);
 	
 	/**
 	 * Gets the item stack output for a given item stack input.
@@ -41,34 +63,49 @@ public interface IHardOreProcessing {
 	 * @param checkStackSize - whether or not we care if we have enough input or we just need to know if the input stack is valid
 	 * @return an ItemStack sifting result. <b>Must</b> call {@link ItemSack#copy}.
 	 */
-	public ItemStack getSiftResult(ItemStack itemstack1, boolean checkStackSize);
+	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize);
 
 	/**
 	 * Returns the item stack result from milling.
 	 * @param itemStack
 	 * @return an ItemStack milling result. <b>Must</b> call {@link ItemSack#copy}.
 	 */
-	public ItemStack getMillResult(ItemStack itemStack);
+	@Nullable
+	public ItemStack getMillResult(ItemStack stack);
 	
 	/**
-	 * Mines the hard ore block at (x,y,z) and returns the resulting ArrayList<ItemStack> drops.<br/>
-	 * The replacement block and meta are placed into the world when the ore being mined is fully depleted.
-	 * @param world
-	 * @param pos
-	 * @param fortune - fortune enchantment level for miner
-	 * @param replacement (optional) - The BlockState to place if completely mined.  Default: air
-	 * @return drops
+	 * Get a random ore based on sluice input
+	 * @param rand
+	 * @param item - the processed block: Sand, Gravel, or Dirt
+	 * @return
 	 */
-	public ArrayList<ItemStack> mineHardOreOnce(World world, BlockPos pos, int fortune, IBlockState replacement);
+	public Block getRandomSluiceResult(Random rand, Item item);
 	
 	/**
-	 * Mines the hard ore block at (x,y,z) and returns the resulting ArrayList<ItemStack> drops.<br/>
-	 * The replacement block and meta are placed into the world when the ore being mined is fully depleted.
-	 * @param world
-	 * @param pos
-	 * @param fortune - fortune enchantment level for miner
-	 * @param replacement (optional) - The BlockState to place if completely mined.  Default: air
-	 * @return drops
+	 * Add an ore block to the sluice result list. Its drops will be what the sluice produces. 
+	 * @param output
 	 */
-	public ArrayList<ItemStack> mineHardOreOnce(World world, BlockPos pos, int fortune);
+	void addSluiceRecipe(Block output);
+	
+	/**
+	 * Add a recipe to the pressure packager
+	 * @param input
+	 * @param output
+	 */
+	public void addPressurePackRecipe(ItemStack input, ItemStack output);
+	
+	/**
+	 * Get pressure packager result
+	 * @param key
+	 * @param checkSize
+	 * @return
+	 */
+	public ItemStack getPressurePackResult(ItemStack stack, boolean checkStackSize);
+	
+	/**
+	 * Returns the number items needed for the pressure packing recipes (minimum input stack size).
+	 * @param itemStack
+	 * @return minimum stack size for input in order to sift.
+	 */
+	public int getPressurePackAmount(ItemStack stack);
 }

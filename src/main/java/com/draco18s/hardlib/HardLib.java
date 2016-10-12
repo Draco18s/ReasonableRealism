@@ -27,7 +27,7 @@ public class HardLib {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		
+		CogHelper.unpackConfigs();
 	}
 
 	@EventHandler

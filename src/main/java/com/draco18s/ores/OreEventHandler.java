@@ -1,19 +1,15 @@
 package com.draco18s.ores;
 
-import io.netty.buffer.Unpooled;
-
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
 import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.networking.Packets;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
 
-import CustomOreGen.Util.CogOreGenEvent;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
@@ -21,9 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -49,7 +43,7 @@ public class OreEventHandler {
 					if(state.getBlock() == world.getBlockState(pos.offset(dir, 1)).getBlock()) {
 						level--;
 						//ArrayList<ItemStack> drps = null;
-						ArrayList<ItemStack> drps = HardLibAPI.oreMachines.mineHardOreOnce(world, pos.offset(dir, 1), 0);
+						List<ItemStack> drps = HardLibAPI.hardOres.mineHardOreOnce(world, pos.offset(dir, 1), 0);
 						//System.out.println(dir + ":" + drps);
 						if(drps != null) {
 							rollover += 0.75f;
@@ -125,9 +119,9 @@ public class OreEventHandler {
 		}
 	}
 
-	public void postOreGen(CogOreGenEvent event) {
+	/*public void postOreGen(CogOreGenEvent event) {
 		
-	}
+	}*/
 	
 	private void dropStack(World worldIn, BlockPos pos, ItemStack stack) {
 		float f = 0.7F;

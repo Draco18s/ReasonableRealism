@@ -119,5 +119,4 @@ public class ClientEasyRegistry extends EasyRegistry {
 	private void _registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation) {
 		ModelLoader.setCustomModelResourceLocation(item, metadata, modelResourceLocation);
 	}
-
 }

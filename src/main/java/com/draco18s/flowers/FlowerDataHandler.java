@@ -60,7 +60,9 @@ public class FlowerDataHandler implements IFlowerData {
 
 	@Override
 	public void doSpawnFlowerCluster(World world, BlockPos pos, IBlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance) {
-		
+		if(world.isRemote) {
+			return;
+		}
 		int fails = 0;
 		BlockPos newPos;
 		boolean replaceLeaves = num > 1;

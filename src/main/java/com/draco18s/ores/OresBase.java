@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.RecipesUtil;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -18,6 +19,7 @@ import com.draco18s.ores.block.BlockWindvane;
 import com.draco18s.ores.block.ore.BlockHardDiamond;
 import com.draco18s.ores.block.ore.BlockHardGold;
 import com.draco18s.ores.block.ore.BlockHardIron;
+import com.draco18s.ores.block.ore.BlockLimonite;
 import com.draco18s.ores.enchantments.EnchantmentProspector;
 import com.draco18s.ores.enchantments.EnchantmentPulverize;
 import com.draco18s.ores.enchantments.EnchantmentVeinCracker;
@@ -25,7 +27,7 @@ import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntitySifter;
-import com.draco18s.ores.entities.TileEntitySluice;
+import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.draco18s.ores.flowers.FlowerIntegration;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
@@ -80,6 +82,7 @@ public class OresBase {
 	
 	public static Logger logger;
 	
+	public static Block oreLimonite;
 	public static Block oreIron;
 	public static Block oreGold;
 	public static Block oreDiamond;
@@ -113,12 +116,17 @@ public class OresBase {
 
 	public static SimpleNetworkWrapper networkWrapper;
 
+	public static boolean sluiceAllowDirt;
+
 
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
+		CogHelper.addCogModule("HarderVanillaOres.xml");
+		CogHelper.addCogModule("HarderExtraOres.xml");
+		CogHelper.addCogModule("HarderLimonite.xml");
 		CapabilityMechanicalPower.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		
@@ -141,7 +149,9 @@ public class OresBase {
 		GameRegistry.registerTileEntity(TileEntitySifter.class, "sifter");
 		sluice = new BlockSluice();
 		EasyRegistry.registerBlockWithItem(sluice, "basic_sluice");
-		GameRegistry.registerTileEntity(TileEntitySluice.class, "basic_sluice");
+		GameRegistry.registerTileEntity(TileEntityBasicSluice.class, "basic_sluice");
+		oreLimonite = new BlockLimonite();
+		EasyRegistry.registerBlockWithItem(oreLimonite, "hardlimonite");
 		
 		rawOre = new ItemRawOre();
 		EasyRegistry.registerItemWithVariants(rawOre, "orechunks", EnumOreType.IRON);
@@ -237,14 +247,36 @@ public class OresBase {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 		true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 	true, "SW", "SW", "SW", 'S', Items.STICK, 'W', Blocks.WOOL));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 	true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 		true, "WWW", 'W', "logWood"));
 		
 		ItemStack diamondNugget = new ItemStack(rawOre,1,EnumOreType.DIAMOND.meta);
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudPick), true, "dId", " s ", " s ", 's', Items.STICK, 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudAxe), true, "dI ", "Is ", " s ", 's', Items.STICK, 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudShovel), true, " d ", " I ", " s ", 's', Items.STICK, 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudHoe), true, "dI ", " s ", " s ", 's', Items.STICK, 'I', "ingotIron", 'd', diamondNugget));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudPick), true, "dId", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudAxe), true, "dI ", "Is ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudShovel), true, " d ", " I ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudHoe), true, "dI ", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sluice), true, "sss","ppp",'s',"stickWood",'p',"slabWood"));
+		
+		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		if(config.get("SLUICE", "canFindIron", true).getBoolean()) {
+			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
+			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
+			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
+		}
+		if(config.get("SLUICE", "canFindGold", true).getBoolean()) {
+			HardLibAPI.oreMachines.addSluiceRecipe(oreGold);
+			HardLibAPI.oreMachines.addSluiceRecipe(oreGold);
+			HardLibAPI.oreMachines.addSluiceRecipe(oreGold);
+		}
+		if(config.get("SLUICE", "canFindDiamond", false).getBoolean()) {
+			HardLibAPI.oreMachines.addSluiceRecipe(oreDiamond);
+		}
+		if(config.get("SLUICE", "canFindRedstone", true).getBoolean()) {
+			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.REDSTONE_ORE);
+			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.REDSTONE_ORE);
+		}
 		
 		List<ItemStack> list = new ArrayList<ItemStack>();
 		list.add(new ItemStack(Items.BUCKET));
@@ -299,11 +331,14 @@ public class OresBase {
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
+		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.  Dirt acts like sand.");
+		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");
+		//TileEntitySluice.cycleLength = cycle * 15;
+		TileEntityBasicSluice.cycleLength = cycle * 15;
 		config.save();
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		
 	}
 }
