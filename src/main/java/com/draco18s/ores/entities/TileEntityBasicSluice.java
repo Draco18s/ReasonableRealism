@@ -281,7 +281,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	}
 
 	public int getTime() {
-		return 0;
+		return timer;
 	}
 	
 	@Override

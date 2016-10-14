@@ -1,0 +1,27 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+        },
+        "model": "oreflowers:flower",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+            "model": "item/generated"
+        }],
+        "inventory": [{
+            "model": "item/generated"
+        }],
+         "flower_type": {
+            "poorjoe":    { "textures": { "cross": "oreflowers:items/poorjoe"} },
+            "horsetail":  { "textures": { "cross": "oreflowers:items/horsetail1"} },
+            "vallozia":   { "textures": { "cross": "oreflowers:items/vallozia"} },
+            "flame_lily": { "textures": { "cross": "oreflowers:items/flame_lily1"} },
+            "tansy":      { "textures": { "cross": "oreflowers:items/tansy1"} },
+            "hauman":     { "textures": { "cross": "oreflowers:items/hauman"} },
+            "leadplant":  { "textures": { "cross": "oreflowers:items/leadplant"} },
+            "red_amaranth":   { "textures": { "cross": "oreflowers:items/red_amaranth"} }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "side": "harderores:blocks/packager-side",
+            "top": "harderores:blocks/packager-top"
+        },
+        "model": "cube_top",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+
+        }]
+    }
+}

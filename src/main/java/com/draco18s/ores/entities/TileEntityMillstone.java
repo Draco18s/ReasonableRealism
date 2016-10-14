@@ -106,6 +106,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	}
 
 	private float calcAndGetPower() {
+		if(worldObj.isRemote) return powerUser.getScaledPower(powerUser.getRawPower());
 		int numBlocksOut = 0;
 		BlockPos p = pos;
 		EnumFacing searchDir = EnumFacing.UP;
@@ -145,6 +146,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			outputSlot.insertItem(0, result, false);
 			//System.out.println("#" + outputSlot.getStackInSlot(0).stackSize);
 			inputSlot.extractItem(0, 1, false);
+			this.markDirty();
         }
 	}
 
@@ -166,6 +168,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		IBlockState bs = worldObj.getBlockState(pos);
 		MillstoneOrientation millpos = bs.getValue(Props.MILL_ORIENTATION);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			this.markDirty();
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
@@ -197,6 +200,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
+		compound.setTag("harderores:power", powerUser.serializeNBT());
 		compound.setTag("harderores:inputSlot", inputSlot.serializeNBT());
 		compound.setTag("harderores:outputSlot", outputSlot.serializeNBT());
 		compound.setFloat("harderores:grindTime", grindTime);
@@ -212,7 +216,12 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));
+		}
+		if(compound.hasKey("harderores:outputSlot")) {
 			outputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:outputSlot"));
+		}
+		if(compound.hasKey("harderores:power")) {
+			powerUser.deserializeNBT((NBTTagCompound) compound.getTag("harderores:power"));
 		}
 		grindTime = compound.getFloat("harderores:grindTime");
 	}

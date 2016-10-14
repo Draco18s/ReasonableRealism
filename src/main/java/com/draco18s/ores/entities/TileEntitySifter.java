@@ -36,6 +36,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	protected ItemStackHandler outputSlot;
 	private float siftTime;
 	private AxisAlignedBB suckZone = null;
+	private int activeSlot = -1;
 	
 	public TileEntitySifter() {
 		inputSlot = new SiftableItemsHandler();
@@ -50,11 +51,17 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 		if(siftTime > 0) {
 			--siftTime;
 			boolean canAnySift = false;
+			int resetTime = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
         		if(canSift(s)) {
         			canAnySift = true;
+        			resetTime = s;
         		}
         	}
+			if(resetTime != activeSlot) {
+				activeSlot = resetTime;
+				siftTime = 100;
+			}
 			if(!canAnySift) {
 				siftTime = 0;
 			}
@@ -63,9 +70,12 @@ public class TileEntitySifter extends TileEntity implements ITickable {
             }
 		}
         else {
+        	activeSlot = -1;
         	for(int s = 0; s < inputSlot.getSlots(); s++) {
-        		if(canSift(s))
+        		if(canSift(s)) {
         			siftTime = 40;
+        			activeSlot = s;
+        		}
         	}
         }
 	}
@@ -106,6 +116,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 						ent.setEntityItemStack(stack);
 					else
 						ent.setDead();
+					this.markDirty();
 				}
 			}
 		}
@@ -120,6 +131,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			this.markDirty();
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}

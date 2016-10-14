@@ -1,0 +1,102 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "all": "harderores:blocks/ore/iron_ore",
+            "overlay": "harderores:blocks/ore/overlay_0",
+            "particle": "harderores:blocks/ore/iron_ore"
+        },
+        "model": "harderores:hardore",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+
+        }],
+        "ore_density": {
+            "0": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_0"
+                }
+            },
+            "1": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_1"
+                }
+            },
+            "2": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_2"
+                }
+            },
+            "3": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_3"
+                }
+            },
+            "4": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_4"
+                }
+            },
+            "5": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_5"
+                }
+            },
+            "6": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_6"
+                }
+            },
+            "7": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_7"
+                }
+            },
+            "8": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_8"
+                }
+            },
+            "9": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_9"
+                }
+            },
+            "10": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_10"
+                }
+            },
+            "11": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_11"
+                }
+            },
+            "12": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_12"
+                }
+            },
+            "13": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_13"
+                }
+            },
+            "14": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_14"
+                }
+            },
+            "15": {
+                "textures": {
+                    "overlay": "harderores:blocks/ore/overlay_15"
+                }
+            }
+        }
+    }
+}

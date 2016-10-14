@@ -13,6 +13,7 @@ import com.draco18s.hardlib.blockproperties.EnumOreType;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.block.BlockAxel;
 import com.draco18s.ores.block.BlockMillstone;
+import com.draco18s.ores.block.BlockPackager;
 import com.draco18s.ores.block.BlockSifter;
 import com.draco18s.ores.block.BlockSluice;
 import com.draco18s.ores.block.BlockWindvane;
@@ -26,6 +27,7 @@ import com.draco18s.ores.enchantments.EnchantmentVeinCracker;
 import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
 import com.draco18s.ores.entities.TileEntityMillstone;
+import com.draco18s.ores.entities.TileEntityPackager;
 import com.draco18s.ores.entities.TileEntitySifter;
 import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.draco18s.ores.flowers.FlowerIntegration;
@@ -45,11 +47,16 @@ import com.draco18s.ores.networking.ToServerMessageOreCart;
 import com.draco18s.ores.recipes.OreProcessingRecipes;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedSandstone;
+import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockSandStone;
+import net.minecraft.block.BlockStone;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemStack;
@@ -92,6 +99,7 @@ public class OresBase {
 	public static Block windvane;
 	public static Block sifter;
 	public static Block sluice;
+	public static Block pressurePackager;
 	
 	public static Item rawOre;
 	public static Item smallDust;
@@ -125,17 +133,19 @@ public class OresBase {
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		CogHelper.addCogModule("HarderVanillaOres.xml");
-		CogHelper.addCogModule("HarderExtraOres.xml");
-		CogHelper.addCogModule("HarderLimonite.xml");
+		//CogHelper.addCogModule("HarderExtraOres.xml");
+		//CogHelper.addCogModule("HarderLimonite.xml");
 		CapabilityMechanicalPower.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		
 		oreIron = new BlockHardIron();
-		EasyRegistry.registerBlockWithCustomItem(oreIron, new ItemOreBlock(oreIron), "hardiron");
+		EasyRegistry.registerBlockWithCustomItem(oreIron, new ItemOreBlock(oreIron), "ore_hardiron");
 		oreGold = new BlockHardGold();
-		EasyRegistry.registerBlockWithCustomItem(oreGold, new ItemOreBlock(oreGold), "hardgold");
+		EasyRegistry.registerBlockWithCustomItem(oreGold, new ItemOreBlock(oreGold), "ore_hardgold");
 		oreDiamond = new BlockHardDiamond();
-		EasyRegistry.registerBlockWithCustomItem(oreDiamond, new ItemOreBlock(oreDiamond), "harddiamond");
+		EasyRegistry.registerBlockWithCustomItem(oreDiamond, new ItemOreBlock(oreDiamond), "ore_harddiamond");
+		oreLimonite = new BlockLimonite();
+		EasyRegistry.registerBlockWithItem(oreLimonite, "ore_limonite");
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");
 		GameRegistry.registerTileEntity(TileEntityMillstone.class, "millstone");
@@ -150,8 +160,9 @@ public class OresBase {
 		sluice = new BlockSluice();
 		EasyRegistry.registerBlockWithItem(sluice, "basic_sluice");
 		GameRegistry.registerTileEntity(TileEntityBasicSluice.class, "basic_sluice");
-		oreLimonite = new BlockLimonite();
-		EasyRegistry.registerBlockWithItem(oreLimonite, "hardlimonite");
+		pressurePackager = new BlockPackager();
+		EasyRegistry.registerBlockWithItem(pressurePackager, "packager");
+		GameRegistry.registerTileEntity(TileEntityPackager.class, "packager");
 		
 		rawOre = new ItemRawOre();
 		EasyRegistry.registerItemWithVariants(rawOre, "orechunks", EnumOreType.IRON);
@@ -305,7 +316,7 @@ public class OresBase {
 			//easy: seeds are ground to "2/9ths flour"
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.WHEAT_SEEDS), new ItemStack(smallDust, 2, EnumOreType.FLOUR.meta));
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.COOKIE, 8), "wcw", 'w', oreIn, 'c', new ItemStack(Items.DYE, 1, 3)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.COOKIE, 8), "wcw", 'w', oreIn, 'c', new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage())));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.CAKE), "mmm", "ses", "www", 'w', oreIn, 's', Items.SUGAR, 'e', Items.EGG, 'm', Items.MILK_BUCKET));
 		
 		hardOption = config.getBoolean("RequireMillingSugar", "MILLING", false, "If enabled, sugarcane cannot be crafted into sugar");
@@ -319,15 +330,42 @@ public class OresBase {
 		}
 		hardOption = config.getBoolean("RequireMillingBonemeal", "MILLING", false, "");
 		if(hardOption) {
-			RecipesUtil.RemoveRecipe(Items.DYE, 3, 15, "Hard Ores");
-			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 2, 15));
+			RecipesUtil.RemoveRecipe(Items.DYE, 3, EnumDyeColor.WHITE.getDyeDamage(), "Hard Ores");
+			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 2, EnumDyeColor.WHITE.getDyeDamage()));
 		}
 		else {
-			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 4, 15));
+			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 4, EnumDyeColor.WHITE.getDyeDamage()));
 		}
 
-		ItemStack bonemeal = new ItemStack(Items.DYE, 1, 15);
+		ItemStack bonemeal = new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage());
 		HardLibAPI.oreMachines.addSiftRecipe(bonemeal, bonemeal, false);
+		
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.REDSTONE, 9), new ItemStack(Blocks.REDSTONE_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.WHEAT, 9), new ItemStack(Blocks.HAY_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.SNOWBALL, 9), new ItemStack(Blocks.SNOW));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.SLIME_BALL, 9), new ItemStack(Blocks.SLIME_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.IRON_INGOT, 9), new ItemStack(Blocks.IRON_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.GOLD_INGOT, 9), new ItemStack(Blocks.GOLD_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.DIAMOND, 9), new ItemStack(Blocks.DIAMOND_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.EMERALD, 9), new ItemStack(Blocks.EMERALD_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.CLAY_BALL, 9), new ItemStack(Blocks.CLAY));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.BRICK, 4), new ItemStack(Blocks.BRICK_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.STRING, 4), new ItemStack(Blocks.WOOL));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.QUARTZ, 9), new ItemStack(Blocks.QUARTZ_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.SAND, 9), new ItemStack(Blocks.SANDSTONE));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.SAND, 9, BlockSand.EnumType.RED_SAND.getMetadata()), new ItemStack(Blocks.RED_SANDSTONE, 1));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.COAL, 9), new ItemStack(Blocks.COAL_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.ICE, 9), new ItemStack(Blocks.PACKED_ICE));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.SNOW, 9), new ItemStack(Blocks.ICE));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.DYE, 9, 4), new ItemStack(Blocks.LAPIS_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.MELON, 9), new ItemStack(Blocks.MELON_BLOCK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.MAGMA_CREAM, 4), new ItemStack(Blocks.field_189877_df));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.NETHERBRICK, 4), new ItemStack(Blocks.NETHER_BRICK));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.PRISMARINE_SHARD, 4), new ItemStack(Blocks.PRISMARINE));
+		//Conflicts
+		//HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.PRISMARINE_SHARD, 9), new ItemStack(Blocks.PRISMARINE, 1, 1));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.NETHER_WART, 9), new ItemStack(Blocks.field_189878_dg));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.DYE, 9, EnumDyeColor.WHITE.getDyeDamage()), new ItemStack(Blocks.field_189880_di));
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		

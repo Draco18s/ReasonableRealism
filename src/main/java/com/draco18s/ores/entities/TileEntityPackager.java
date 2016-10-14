@@ -44,11 +44,14 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	private float packTime;
 	private float timeMod;
 	protected RawMechanicalPowerHandler powerUser;
+	private int activeSlot = -1;
 	
 	public TileEntityPackager() {
 		inputSlot = new PackableItemsHandler();
 		outputSlot = new ItemStackHandler();
 		powerUser = new PackagerMechanicalPowerHandler();
+		packTime = 0;
+		timeMod = 1;
 	}
 	
 	@Override
@@ -58,11 +61,17 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			float pow = calcAndGetPower()/timeMod;
 			packTime -= pow;
 			boolean canAnyPack = false;
+			int resetTime = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
         		if(canPackage(s)) {
         			canAnyPack = true;
+        			resetTime = s;
         		}
         	}
+			if(resetTime != activeSlot) {
+				activeSlot = resetTime;
+				packTime = 100;
+			}
 			if(!canAnyPack) {
 				packTime = 0;
 			}
@@ -71,31 +80,52 @@ public class TileEntityPackager extends TileEntity implements ITickable {
             }
 		}
         else {
+        	activeSlot = -1;
         	for(int s = 0; s < inputSlot.getSlots(); s++) {
         		if(canPackage(s)) {
+        			activeSlot = s;
         			packTime = 100;
         			ItemStack nextResult = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(s),true);
+        			float inMod = 1;
+        			float outMod = 1;
+        			if(inputSlot.getStackInSlot(s).getItem() instanceof ItemBlock) {
+        				try {
+        					Block block = Block.getBlockFromItem(inputSlot.getStackInSlot(s).getItem());
+        					
+        					IBlockState state;
+        					state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
+        					inMod = state.getBlockHardness(null, BlockPos.ORIGIN) * 2;
+        					if(block.getHarvestTool(state).equals("pickaxe") && block.getHarvestLevel(state) >= 0) {
+        						inMod *= (block.getHarvestLevel(state) + 2);
+        					}
+        				}
+        				catch(NullPointerException e) {
+        					inMod = 1;
+        				}
+        			}
         			if(nextResult != null && nextResult.getItem() instanceof ItemBlock) {
         				try {
         					Block block = Block.getBlockFromItem(nextResult.getItem());
         					
         					IBlockState state;
         					state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
-        					timeMod = state.getBlockHardness(null, BlockPos.ORIGIN);
+        					outMod = state.getBlockHardness(null, BlockPos.ORIGIN);
         					if(block.getHarvestTool(state).equals("shovel") && block.getHarvestLevel(state) >= 0) {
-        						timeMod *= 2;
+        						outMod *= 2;
         					}
         				}
         				catch(NullPointerException e) {
-        					
+        					outMod = 1;
         				}
         			}
+        			timeMod = Math.max(inMod, outMod);
         		}
         	}
         }
 	}
 
 	private float calcAndGetPower() {
+		if(worldObj.isRemote) return powerUser.getScaledPower(powerUser.getRawPower());
 		int numBlocksOut = 0;
 		BlockPos p = pos;
 		EnumFacing searchDir = EnumFacing.UP;
@@ -124,7 +154,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 				return powerUser.getScaledPower(powerUser.getRawPower());
 			}
 		}
-		
+		this.markDirty();
 		return 0;
 	}
 
@@ -146,6 +176,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			inputSlot.extractItem(s, HardLibAPI.oreMachines.getPressurePackAmount(stack), false);
 			outputSlot.insertItem(0, result.copy(), false);
 		}
+		this.markDirty();
 	}
 	
 	@Override
@@ -157,6 +188,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			this.markDirty();
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
@@ -187,9 +219,11 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
+		compound.setTag("harderores:power", powerUser.serializeNBT());
 		compound.setTag("harderores:inputSlot", inputSlot.serializeNBT());
 		compound.setTag("harderores:outputSlot", outputSlot.serializeNBT());
 		compound.setFloat("harderores:packTime", packTime);
+		compound.setFloat("harderores:timeMod", timeMod);
 		return compound;
 	}
 	
@@ -202,9 +236,15 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));
+		}
+		if(compound.hasKey("harderores:outputSlot")) {
 			outputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:outputSlot"));
 		}
+		if(compound.hasKey("harderores:power")) {
+			powerUser.deserializeNBT((NBTTagCompound) compound.getTag("harderores:power"));
+		}
 		packTime = compound.getFloat("harderores:packTime");
+		timeMod = compound.getFloat("harderores:timeMod");
 	}
 
 	public float getTime() {
