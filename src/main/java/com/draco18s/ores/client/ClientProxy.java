@@ -14,9 +14,9 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import com.draco18s.hardlib.client.ModelsCache;
 import com.draco18s.ores.CommonProxy;
 import com.draco18s.ores.OreEventHandler;
-import com.draco18s.ores.client.rendering.ModelsCache;
 import com.draco18s.ores.client.rendering.RenderOreCart;
 import com.draco18s.ores.entities.EntityOreMinecart;
 

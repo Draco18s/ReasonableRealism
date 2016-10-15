@@ -141,7 +141,13 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 						}
 					}
 					else {
-						//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
+						int r = rand.nextInt(20);
+						if(r == 0) {
+							toSpawn = basicDrop.copy();
+						}
+						else if(r == 1) {
+							toSpawn.stackSize = 2;
+						}
 					}
 				}
 				else {

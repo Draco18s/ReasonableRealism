@@ -1,8 +1,8 @@
 package com.draco18s.ores.client;
 
+import com.draco18s.hardlib.client.ModelsCache;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.client.rendering.BakedModelBasicSluice;
-import com.draco18s.ores.client.rendering.ModelsCache;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

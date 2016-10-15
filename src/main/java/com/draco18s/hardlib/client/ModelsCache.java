@@ -1,4 +1,4 @@
-package com.draco18s.ores.client.rendering;
+package com.draco18s.hardlib.client;
 
 import java.util.HashMap;
 import java.util.Map;

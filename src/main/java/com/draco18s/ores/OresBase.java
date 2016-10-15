@@ -12,6 +12,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.EnumOreType;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.block.BlockAxel;
+import com.draco18s.ores.block.BlockDummyOre;
 import com.draco18s.ores.block.BlockMillstone;
 import com.draco18s.ores.block.BlockPackager;
 import com.draco18s.ores.block.BlockSifter;
@@ -94,6 +95,10 @@ public class OresBase {
 	public static Block oreGold;
 	public static Block oreDiamond;
 	
+	public static Block dummyOreIron;
+	public static Block dummyOreGold;
+	public static Block dummyOreDiamond;
+	
 	public static Block millstone;
 	public static Block axel;
 	public static Block windvane;
@@ -133,8 +138,8 @@ public class OresBase {
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		CogHelper.addCogModule("HarderVanillaOres.xml");
-		//CogHelper.addCogModule("HarderExtraOres.xml");
-		//CogHelper.addCogModule("HarderLimonite.xml");
+		CogHelper.addCogModule("HarderExtraOres.xml");
+		CogHelper.addCogModule("HarderLimonite.xml");
 		CapabilityMechanicalPower.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		
@@ -146,6 +151,14 @@ public class OresBase {
 		EasyRegistry.registerBlockWithCustomItem(oreDiamond, new ItemOreBlock(oreDiamond), "ore_harddiamond");
 		oreLimonite = new BlockLimonite();
 		EasyRegistry.registerBlockWithItem(oreLimonite, "ore_limonite");
+		
+		dummyOreIron = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreIron, "dummy_ore_iron");
+		dummyOreGold = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreGold, "dummy_ore_gold");
+		dummyOreDiamond = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreDiamond, "dummy_ore_diamond");
+		
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");
 		GameRegistry.registerTileEntity(TileEntityMillstone.class, "millstone");
@@ -228,8 +241,16 @@ public class OresBase {
 		OreDictionary.registerOre("dustTinyGold", new ItemStack(smallDust, 1, EnumOreType.GOLD.meta));
 		OreDictionary.registerOre("dustTinyFlour", new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta));
 		OreDictionary.registerOre("dustTinySugar", new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta));
+		
+		OreDictionary.registerOre("dustIron", new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
+		OreDictionary.registerOre("dustGold", new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
+		OreDictionary.registerOre("dustFlour", new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
 
 		OreDictionary.registerOre("nuggetIron", new ItemStack(nuggets, 1, EnumOreType.IRON.meta));
+		
+		OreDictionary.registerOre("oreIron", dummyOreIron);
+		OreDictionary.registerOre("oreGold", dummyOreGold);
+		OreDictionary.registerOre("oreDiamond", dummyOreDiamond);
 		
 		/*Milling*/
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.IRON.meta), new ItemStack(smallDust,2,EnumOreType.IRON.meta));
@@ -340,6 +361,10 @@ public class OresBase {
 		ItemStack bonemeal = new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage());
 		HardLibAPI.oreMachines.addSiftRecipe(bonemeal, bonemeal, false);
 		
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
+		
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.REDSTONE, 9), new ItemStack(Blocks.REDSTONE_BLOCK));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.WHEAT, 9), new ItemStack(Blocks.HAY_BLOCK));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.SNOWBALL, 9), new ItemStack(Blocks.SNOW));
@@ -369,7 +394,7 @@ public class OresBase {
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
-		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.  Dirt acts like sand.");
+		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
 		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");
 		//TileEntitySluice.cycleLength = cycle * 15;
 		TileEntityBasicSluice.cycleLength = cycle * 15;

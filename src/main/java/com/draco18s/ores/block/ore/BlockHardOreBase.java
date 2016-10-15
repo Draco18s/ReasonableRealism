@@ -49,9 +49,10 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 		metaChange = metaDecrement;
 	}
 
+	/*@Override
 	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
 		System.out.println(state + " added at " + pos);
-	}
+	}*/
 
 	@Override
 	public int getDensityChangeOnBreak(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
