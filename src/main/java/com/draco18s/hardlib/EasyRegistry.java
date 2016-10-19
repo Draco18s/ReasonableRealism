@@ -1,8 +1,8 @@
 package com.draco18s.hardlib;
 
 import com.draco18s.flowers.states.StateMapperFlowers;
-import com.draco18s.hardlib.blockproperties.EnumOreType;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.block.Block;

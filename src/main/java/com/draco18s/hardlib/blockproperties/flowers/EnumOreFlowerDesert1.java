@@ -1,5 +1,6 @@
-package com.draco18s.hardlib.blockproperties;
+package com.draco18s.hardlib.blockproperties.flowers;
 
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.util.IStringSerializable;
@@ -10,7 +11,7 @@ public enum EnumOreFlowerDesert1 implements IStringSerializable,IMetaLookup<Enum
 	_3CHANDELIER_TREE(EnumOreType.DIAMOND),
 	_4AVELOZ(EnumOreType.REDSTONE),
 	_5TIN(EnumOreType.TIN),
-	_6ALPINE_CATCHFLY(EnumOreType.COPPER),
+	_6COPPER_FLOWER(EnumOreType.COPPER), //replace with Ocimum centraliafricanum
 	_7SHEEPS_FESCUE(EnumOreType.LEAD),
 	_8PRIMROSE(EnumOreType.URANIUM);
 

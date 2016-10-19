@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;

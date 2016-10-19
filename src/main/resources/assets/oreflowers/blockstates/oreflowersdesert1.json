@@ -1,0 +1,27 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+        },
+        "model": "oreflowers:flower",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+            "model": "item/generated"
+        }],
+        "inventory": [{
+            "model": "item/generated"
+        }],
+         "flower_type": {
+            "red_sorrel":      { "textures": { "cross": "oreflowers:items/red_sorrel"} },
+            "gold":            { "textures": { "cross": "oreflowers:items/horsetail"} },
+            "chandelier_tree": { "textures": { "cross": "oreflowers:items/chandelier_tree"} },
+            "aveloz":          { "textures": { "cross": "oreflowers:items/aveloz"} },
+            "tin":             { "textures": { "cross": "oreflowers:items/tansy"} },
+            "copper_flower":   { "textures": { "cross": "oreflowers:items/copper_flower"} },
+            "sheeps_fescue":   { "textures": { "cross": "oreflowers:items/sheeps_fescue"} },
+            "primrose":        { "textures": { "cross": "oreflowers:items/primrose"} }
+        }
+    }
+}

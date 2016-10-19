@@ -15,7 +15,6 @@ public class EnchantmentVeinCracker extends Enchantment {
 
 	public EnchantmentVeinCracker(EntityEquipmentSlot[] slots) {
 		super(Enchantment.Rarity.UNCOMMON, EnumEnchantmentType.DIGGER, slots);
-		this.setName("cracker");
 	}
 	
 	@Override

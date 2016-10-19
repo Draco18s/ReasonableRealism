@@ -37,4 +37,13 @@ public interface IHardOres {
 	 * @return drops
 	 */
 	public List<ItemStack> mineHardOreOnce(World world, BlockPos pos, int fortune);
+
+	/**
+	 * Gets the drops for the block as if it was mined once.
+	 * @param world
+	 * @param pos
+	 * @param fortune - fortune enchantment level for miner
+	 * @return
+	 */
+	public List<ItemStack> getHardOreDropsOnce(World world, BlockPos pos, int fortune);
 }

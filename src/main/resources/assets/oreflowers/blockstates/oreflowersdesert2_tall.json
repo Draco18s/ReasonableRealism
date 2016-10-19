@@ -1,0 +1,27 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+        },
+        "model": "oreflowers:flower",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+            "model": "item/generated"
+        }],
+        "inventory": [{
+            "model": "item/generated"
+        }],
+         "flower_type": {
+            "rapeseed": { "textures": { "cross": "oreflowers:items/na"} },
+            "milkwort": { "textures": { "cross": "oreflowers:items/na"} },
+            "aluminum": { "textures": { "cross": "oreflowers:items/na"} },
+            "madwort":  { "textures": { "cross": "oreflowers:items/na"} },
+            "zilla":    { "textures": { "cross": "oreflowers:items/na"} },
+            "fluorite": { "textures": { "cross": "oreflowers:items/na"} },
+            "marigold": { "textures": { "cross": "oreflowers:items/na"} },
+            "thorium":  { "textures": { "cross": "oreflowers:items/na"} }
+        }
+    }
+}

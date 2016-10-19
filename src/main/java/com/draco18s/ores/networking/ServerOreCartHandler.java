@@ -6,7 +6,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
-import com.draco18s.ores.client.ProspectorParticle;
+import com.draco18s.ores.client.ProspectorParticleDust;
 import com.draco18s.ores.entities.EntityOreMinecart;
 
 import net.minecraft.block.Block;

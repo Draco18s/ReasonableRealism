@@ -158,8 +158,8 @@ public class FlowerDataHandler implements IFlowerData {
 	public IBlockState getDefaultFlower(@Nonnull IProperty prop) {
 		if(OreFlowersBase.oreFlowers1.getBlockState().getProperties().contains(prop))
 			return OreFlowersBase.oreFlowers1.getDefaultState();
-		if(OreFlowersBase.oreFlowers2.getBlockState().getProperties().contains(prop))
-			return OreFlowersBase.oreFlowers2.getDefaultState();
+		if(OreFlowersBase.oreFlowersDesert1.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowersDesert1.getDefaultState();
 		return null;
 	}
 }

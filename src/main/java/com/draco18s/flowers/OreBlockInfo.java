@@ -42,4 +42,15 @@ public class OreBlockInfo implements IHardOres {
 		}
 		return null;
 	}
+
+	@Override
+	public List<ItemStack> getHardOreDropsOnce(World world, BlockPos pos, int fortune) {
+		IBlockState state = world.getBlockState(pos);
+		if(isHardOre(state)) {
+			List<ItemStack> allDrops = state.getBlock().getDrops(world, pos, state, fortune);
+			allDrops.subList(1, allDrops.size()).clear();
+			return allDrops;
+		}
+		return null;
+	}
 }

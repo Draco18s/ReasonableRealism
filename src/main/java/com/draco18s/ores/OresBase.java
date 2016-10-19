@@ -1,5 +1,6 @@
 package com.draco18s.ores;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.RecipesUtil;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.block.BlockAxel;
 import com.draco18s.ores.block.BlockDummyOre;
@@ -19,18 +20,17 @@ import com.draco18s.ores.block.BlockSifter;
 import com.draco18s.ores.block.BlockSluice;
 import com.draco18s.ores.block.BlockWindvane;
 import com.draco18s.ores.block.ore.BlockHardDiamond;
-import com.draco18s.ores.block.ore.BlockHardGold;
-import com.draco18s.ores.block.ore.BlockHardIron;
+import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.block.ore.BlockLimonite;
 import com.draco18s.ores.enchantments.EnchantmentProspector;
 import com.draco18s.ores.enchantments.EnchantmentPulverize;
 import com.draco18s.ores.enchantments.EnchantmentVeinCracker;
 import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
+import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntityPackager;
 import com.draco18s.ores.entities.TileEntitySifter;
-import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.draco18s.ores.flowers.FlowerIntegration;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
@@ -48,10 +48,7 @@ import com.draco18s.ores.networking.ToServerMessageOreCart;
 import com.draco18s.ores.recipes.OreProcessingRecipes;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedSandstone;
 import net.minecraft.block.BlockSand;
-import net.minecraft.block.BlockSandStone;
-import net.minecraft.block.BlockStone;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.init.Blocks;
@@ -62,7 +59,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraftforge.client.model.ModelFluid;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.Mod;
@@ -79,6 +75,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 @Mod(modid="harderores", name="HarderOres", version="{@version:ore}", dependencies = "required-after:hardlib;required-after:oreflowers")//@[{@version:lib},)  [{@version:flowers},)
 public class OresBase {
@@ -94,10 +91,18 @@ public class OresBase {
 	public static Block oreIron;
 	public static Block oreGold;
 	public static Block oreDiamond;
+	public static Block oreTin;
+	public static Block oreCopper;
+	public static Block oreLead;
+	public static Block oreUranium;
 	
 	public static Block dummyOreIron;
 	public static Block dummyOreGold;
 	public static Block dummyOreDiamond;
+	public static Block dummyOreTin;
+	public static Block dummyOreCopper;
+	public static Block dummyOreLead;
+	public static Block dummyOreUranium;
 	
 	public static Block millstone;
 	public static Block axel;
@@ -143,21 +148,43 @@ public class OresBase {
 		CapabilityMechanicalPower.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		
-		oreIron = new BlockHardIron();
+		oreIron = new BlockHardOreBase(EnumOreType.IRON, 1, new Color(0xd8af93));
+		oreIron.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
 		EasyRegistry.registerBlockWithCustomItem(oreIron, new ItemOreBlock(oreIron), "ore_hardiron");
-		oreGold = new BlockHardGold();
+		oreGold = new BlockHardOreBase(EnumOreType.GOLD, 1, new Color(0xfacf3b));
+		oreGold.setHardness(9.0f).setHarvestLevel("pickaxe", 2);
 		EasyRegistry.registerBlockWithCustomItem(oreGold, new ItemOreBlock(oreGold), "ore_hardgold");
 		oreDiamond = new BlockHardDiamond();
 		EasyRegistry.registerBlockWithCustomItem(oreDiamond, new ItemOreBlock(oreDiamond), "ore_harddiamond");
 		oreLimonite = new BlockLimonite();
 		EasyRegistry.registerBlockWithItem(oreLimonite, "ore_limonite");
-		
 		dummyOreIron = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreIron, "dummy_ore_iron");
 		dummyOreGold = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreGold, "dummy_ore_gold");
 		dummyOreDiamond = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreDiamond, "dummy_ore_diamond");
+		
+		oreTin = new BlockHardOreBase(EnumOreType.TIN, 1, new Color(0xc3c3c3));
+		oreTin.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreTin, new ItemOreBlock(oreTin), "ore_hardtin");
+		dummyOreTin = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreTin, "dummy_ore_tin");
+		oreCopper = new BlockHardOreBase(EnumOreType.COPPER, 1, new Color(0xa35c29));
+		oreCopper.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreCopper, new ItemOreBlock(oreCopper), "ore_hardcopper");
+		dummyOreCopper = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreCopper, "dummy_ore_copper");
+		oreLead = new BlockHardOreBase(EnumOreType.LEAD, 1, new Color(0xb9d6d9));
+		oreLead.setHardness(6.0f).setHarvestLevel("pickaxe", 2);
+		EasyRegistry.registerBlockWithCustomItem(oreLead, new ItemOreBlock(oreLead), "ore_hardlead");
+		dummyOreLead = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreLead, "dummy_ore_lead");
+		oreUranium = new BlockHardOreBase(EnumOreType.URANIUM, 1, new Color(0x74d513));
+		oreUranium.setHardness(6.0f).setHarvestLevel("pickaxe", 2);
+		EasyRegistry.registerBlockWithCustomItem(oreUranium, new ItemOreBlock(oreUranium), "ore_harduranium");
+		dummyOreUranium = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreUranium, "dummy_ore_uranium");
 		
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");
@@ -203,15 +230,18 @@ public class OresBase {
 		EntityEquipmentSlot[] slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND};
 		enchPulverize = new EnchantmentPulverize(slots);
 		enchPulverize.setRegistryName("pulverize");
+		enchPulverize.setName(enchPulverize.getRegistryName().toString());
 		GameRegistry.register(enchPulverize);
 		
 		enchCracker = new EnchantmentVeinCracker(slots);
 		enchCracker.setRegistryName("cracker");
+		enchCracker.setName(enchCracker.getRegistryName().toString());
 		GameRegistry.register(enchCracker);
 
 		slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.OFFHAND};
 		enchProspector = new EnchantmentProspector(slots);
 		enchProspector.setRegistryName("prospector");
+		enchProspector.setName(enchProspector.getRegistryName().toString());
 		GameRegistry.register(enchProspector);
 		
 		proxy.registerEventHandlers();
@@ -268,13 +298,19 @@ public class OresBase {
 		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_NUGGET, 1), 0.11f);
 		GameRegistry.addSmelting(new ItemStack(largeDust, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1), 0.7f);
 		GameRegistry.addSmelting(new ItemStack(largeDust, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_INGOT, 1), 1.0f);
-
+		GameRegistry.addSmelting(dummyOreIron, new ItemStack(Items.IRON_INGOT), 0.7f);
+		GameRegistry.addSmelting(dummyOreGold, new ItemStack(Items.GOLD_INGOT), 1.0f);
+		GameRegistry.addSmelting(dummyOreDiamond, new ItemStack(Items.DIAMOND), 1.0f);
 		/*Crafting*/
+		RecipesUtil.craftNineOf(new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
 		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
 		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
 		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
-		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
+		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
 		RecipesUtil.craftNineOf(new ItemStack(nuggets, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
 		GameRegistry.addRecipe(new ItemStack(nuggets, 9, EnumOreType.IRON.meta), "x",'x',new ItemStack(Items.IRON_INGOT, 1));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
@@ -364,6 +400,10 @@ public class OresBase {
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.TIN.meta), new ItemStack(dummyOreTin));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.COPPER.meta), new ItemStack(dummyOreCopper));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.LEAD.meta), new ItemStack(dummyOreLead));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.URANIUM.meta), new ItemStack(dummyOreUranium));
 		
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.REDSTONE, 9), new ItemStack(Blocks.REDSTONE_BLOCK));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.WHEAT, 9), new ItemStack(Blocks.HAY_BLOCK));
@@ -386,8 +426,8 @@ public class OresBase {
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.MELON, 9), new ItemStack(Blocks.MELON_BLOCK));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.MAGMA_CREAM, 4), new ItemStack(Blocks.field_189877_df));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.NETHERBRICK, 4), new ItemStack(Blocks.NETHER_BRICK));
-		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.PRISMARINE_SHARD, 4), new ItemStack(Blocks.PRISMARINE));
-		//Conflicts
+		//Conflicts, not "storage."  Cannot be uncrafted
+		//HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.PRISMARINE_SHARD, 4), new ItemStack(Blocks.PRISMARINE));
 		//HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.PRISMARINE_SHARD, 9), new ItemStack(Blocks.PRISMARINE, 1, 1));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.NETHER_WART, 9), new ItemStack(Blocks.field_189878_dg));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.DYE, 9, EnumDyeColor.WHITE.getDyeDamage()), new ItemStack(Blocks.field_189880_di));
@@ -403,5 +443,65 @@ public class OresBase {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		List<ItemStack> oreDictReq;
+		int addedOres = 0;
+		oreDictReq = OreDictionary.getOres("oreTin");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Tin", EnumOreType.TIN, oreTin, 3, true);
+			addedOres++;
+		}
+		oreDictReq = OreDictionary.getOres("oreCopper");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Copper", EnumOreType.COPPER, oreCopper, 3, true);
+			addedOres++;
+		}
+		oreDictReq = OreDictionary.getOres("oreLead");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Lead", EnumOreType.LEAD, oreLead, 2, true);
+			addedOres++;
+		}
+		oreDictReq = OreDictionary.getOres("oreUranium");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Uranium", EnumOreType.URANIUM, oreUranium, 1, false);
+			addedOres++;
+		}
+		for(;addedOres>0;addedOres -= 2) {
+			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		}
+		
+		OreDictionary.registerOre("oreTin", dummyOreTin);
+		OreDictionary.registerOre("oreCopper", oreCopper);
+		OreDictionary.registerOre("oreLead", oreLead);
+		OreDictionary.registerOre("oreUranium", oreUranium);
+	}
+	
+	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, int sluiceWeight, boolean canFindDefault) {
+		if(!oreType.set) {
+			if(config.get("SLUICE", "canFind"+oreName, canFindDefault).getBoolean()) {
+				for(int i = sluiceWeight; i > 0; i--) {
+					HardLibAPI.oreMachines.addSluiceRecipe(oreBlock);
+				}
+			}
+			String oreIn = "dustTiny"+oreName;
+			ItemStack rawOreIn = new ItemStack(rawOre, 1, oreType.meta);
+			List<ItemStack> dustStack = OreDictionary.getOres("dust"+oreName);
+			List<ItemStack> tinyDusktStack = OreDictionary.getOres(oreIn);
+			List<ItemStack> nuggetStack = OreDictionary.getOres("nugget"+oreName);
+			if(dustStack.size() > 0 && tinyDusktStack.size() > 0) {
+				GameRegistry.addRecipe(new ShapelessOreRecipe(dustStack.get(0),
+						oreIn, oreIn, oreIn,
+						oreIn, oreIn, oreIn,
+						oreIn, oreIn, oreIn));
+				ItemStack instk = tinyDusktStack.get(0).copy();
+				if(nuggetStack.size() > 0) {
+					GameRegistry.addSmelting(instk, nuggetStack.get(0), 0.1f);
+					GameRegistry.addSmelting(rawOreIn, nuggetStack.get(0), 0.1f);
+				}
+				instk.stackSize = 2;
+				HardLibAPI.oreMachines.addMillRecipe(rawOreIn, instk);
+				HardLibAPI.oreMachines.addSiftRecipe(oreIn, 8, dustStack.get(0));
+			}
+			oreType.set = true;
+		}
 	}
 }

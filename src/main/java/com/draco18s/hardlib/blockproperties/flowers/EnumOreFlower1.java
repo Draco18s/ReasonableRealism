@@ -1,5 +1,6 @@
-package com.draco18s.hardlib.blockproperties;
+package com.draco18s.hardlib.blockproperties.flowers;
 
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.util.IStringSerializable;

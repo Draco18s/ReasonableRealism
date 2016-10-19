@@ -5,9 +5,9 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.EnumOreFlower1;
-import com.draco18s.hardlib.blockproperties.EnumOreType;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;

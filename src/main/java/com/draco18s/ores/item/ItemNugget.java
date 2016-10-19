@@ -2,7 +2,7 @@ package com.draco18s.ores.item;
 
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -22,7 +22,7 @@ public class ItemNugget extends Item {
 		EnumOreType v = EnumOreType.values()[stack.getItemDamage()];
 		switch(v) {
 			case IRON:
-				return "item.harderores:s"+v.name+"_nugget";
+				return "item.harderores:"+v.name+"_nugget";
 			default:
 				return "item.harderores:unknown_nugget";
 		}

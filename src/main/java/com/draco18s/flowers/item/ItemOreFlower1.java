@@ -2,8 +2,8 @@ package com.draco18s.flowers.item;
 
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.EnumOreFlower1;
-import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.block.Block;
@@ -36,7 +36,7 @@ public class ItemOreFlower1 extends ItemBlock {
     public String getUnlocalizedName(ItemStack stack) {
 		//EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
         //return "item."+prop.getByOrdinal(stack.getMetadata()).name();
-		return "item."+((IMetaLookup)prop.getEnumConstants()[0].getByOrdinal(stack.getMetadata())).getVariantName();
+		return "item.oreflowers:"+((IMetaLookup)prop.getEnumConstants()[0].getByOrdinal(stack.getMetadata())).getVariantName();
     }
 	
 	@Override
@@ -44,6 +44,6 @@ public class ItemOreFlower1 extends ItemBlock {
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, player, tooltip, advanced);
 		EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
-		tooltip.add(I18n.format(type.getVariantName() + ".indicator"));
+		tooltip.add(I18n.format("indicator."+type.getVariantName()));
 	}
 }

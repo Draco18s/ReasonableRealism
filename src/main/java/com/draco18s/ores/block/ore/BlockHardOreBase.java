@@ -29,24 +29,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.draco18s.hardlib.blockproperties.EnumOreType;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
 import com.draco18s.ores.OresBase;
 
-public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak {
+public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 	public static final EnumFacing[] DROP_SEARCH_DIRECTIONS = {EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN};
 
 	public final int metaChange;
 	public final EnumOreType oreType;
+	Color color = Color.WHITE;
 
-	public BlockHardOreBase(EnumOreType type, int metaDecrement) {
+	public BlockHardOreBase(EnumOreType type, int metaDecrement, Color particleColor) {
 		super(Material.ROCK, MapColor.STONE);
 		setResistance(5.0f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.ORE_DENSITY, 0));
 		oreType = type;
 		metaChange = metaDecrement;
+		color = particleColor;
 	}
 
 	/*@Override
@@ -57,11 +59,6 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 	@Override
 	public int getDensityChangeOnBreak(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
 		return metaChange;
-	}
-
-	@Override
-	public Color getProspectorParticleColor(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
-		return Color.WHITE;
 	}
 
 	@Override
@@ -99,13 +96,14 @@ public abstract class BlockHardOreBase extends Block implements IBlockMultiBreak
 		return this.oreType.meta;
 	}
 
-	/*@Override
-	public int quantityDropped(IBlockState state, int fortune, Random random) {
-		return quantityDroppedWithBonus(fortune, random);
-	}*/
-
 	@Override
-	public abstract int quantityDropped(IBlockState state, int fortune, Random random);
+	public int quantityDropped(IBlockState state, int fortune, Random random) {
+		return 1 + fortune + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY))/6+1);
+	}
+
+	public Color getProspectorParticleColor(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
+		return color;
+	}
 
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {

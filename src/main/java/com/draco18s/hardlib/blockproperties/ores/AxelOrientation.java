@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.blockproperties;
+package com.draco18s.hardlib.blockproperties.ores;
 
 import com.draco18s.hardlib.internal.IMetaLookup;
 

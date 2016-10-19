@@ -14,14 +14,14 @@
             "model": "item/generated"
         }],
          "flower_type": {
-            "red_sorrel":      { "textures": { "cross": "oreflowers:items/red_sorrel"} },
-            "gold":            { "textures": { "cross": "oreflowers:items/horsetail"} },
-            "chandelier_tree": { "textures": { "cross": "oreflowers:items/chandelier_tree1"} },
-            "aveloz":          { "textures": { "cross": "oreflowers:items/aveloz1"} },
-            "tin":             { "textures": { "cross": "oreflowers:items/tansy"} },
-            "alpine_catchfly": { "textures": { "cross": "oreflowers:items/alpine_catchfly"} },
-            "sheeps_fescue":   { "textures": { "cross": "oreflowers:items/sheeps_fescue"} },
-            "primrose":        { "textures": { "cross": "oreflowers:items/primrose"} }
+            "mustard":      { "textures": { "cross": "oreflowers:items/na"} },
+            "shrub_violet": { "textures": { "cross": "oreflowers:items/na"} },
+            "affine":       { "textures": { "cross": "oreflowers:items/na"} },
+            "platinum":     { "textures": { "cross": "oreflowers:items/na"} },
+            "clover":       { "textures": { "cross": "oreflowers:items/na"} },
+            "camellia":     { "textures": { "cross": "oreflowers:items/na"} },
+            "malva":        { "textures": { "cross": "oreflowers:items/na"} },
+            "melastoma":    { "textures": { "cross": "oreflowers:items/na"} }
         }
     }
 }

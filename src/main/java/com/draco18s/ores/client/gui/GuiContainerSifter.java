@@ -21,7 +21,7 @@ public class GuiContainerSifter extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores.sifter", new Object[0]).getUnformattedText(), 8, 6, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores:sifter", new Object[0]).getUnformattedText(), 8, 6, 4210752);
 		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
 	}
 

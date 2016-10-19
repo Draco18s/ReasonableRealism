@@ -2,8 +2,8 @@ package com.draco18s.ores.block;
 
 import java.util.Random;
 
-import com.draco18s.hardlib.blockproperties.AxelOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.TileEntityAxel;

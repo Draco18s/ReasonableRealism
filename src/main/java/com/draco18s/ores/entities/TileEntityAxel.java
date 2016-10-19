@@ -4,8 +4,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.AxelOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.ores.entities.capabilities.PackableItemsHandler;

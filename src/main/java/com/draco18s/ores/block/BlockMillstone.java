@@ -4,8 +4,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.MillstoneOrientation;
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.ores.entities.TileEntityMillstone;
 
 import net.minecraft.block.Block;

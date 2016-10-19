@@ -17,7 +17,6 @@ public class EnchantmentProspector extends Enchantment {
 
 	public EnchantmentProspector(EntityEquipmentSlot[] slots) {
 		super(Enchantment.Rarity.RARE, EnumEnchantmentType.DIGGER, slots);
-		this.setName("prospector");
 	}
 	
 	@Override
@@ -32,7 +31,7 @@ public class EnchantmentProspector extends Enchantment {
 	
 	@Override
 	public int getMaxLevel() {
-	    return 2;
+	    return 3;
 	}
 	
 	public boolean canApplyTogether(Enchantment other) {

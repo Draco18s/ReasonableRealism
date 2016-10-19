@@ -2,7 +2,7 @@ package com.draco18s.ores.block.ore;
 
 import java.util.Random;
 
-import com.draco18s.hardlib.blockproperties.EnumOreType;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.ores.OresBase;
 
 import net.minecraft.block.Block;

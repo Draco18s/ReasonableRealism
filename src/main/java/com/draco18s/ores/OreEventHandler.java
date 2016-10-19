@@ -96,7 +96,7 @@ public class OreEventHandler {
 
 				//System.out.println("Level: " + level);
 				if(level > 0) {
-					level = level*2+1;
+					int llevel = level*2+1;
 					boolean anyOre = false;
 					for(EnumFacing dir : EnumFacing.VALUES) {
 						if(world.getBlockState(pos).getProperties().containsKey(Props.ORE_DENSITY)) {
@@ -105,12 +105,33 @@ public class OreEventHandler {
 					}
 					if(!anyOre) {
 						//System.out.println("No ore adjacent");
-						Iterable<BlockPos> cube = pos.getAllInBox(pos.add(-level, -level, -level), pos.add(level, level, level));
+						Iterable<BlockPos> cube = pos.getAllInBox(pos.add(-llevel, -llevel, -llevel), pos.add(llevel, llevel, llevel));
 						for(BlockPos p : cube) {
-							if(world.getBlockState(p).getProperties().containsKey(Props.ORE_DENSITY)) {
+							IBlockState st = world.getBlockState(p);
+							if(HardLibAPI.hardOres.isHardOre(st)) {
 								//System.out.println("Sending packet");
-								ToClientMessageOreParticles packet = new ToClientMessageOreParticles(Packets.PROSPECTING, p);
+								ToClientMessageOreParticles packet = new ToClientMessageOreParticles(Packets.PROSPECTING, pos, p);
 								OresBase.networkWrapper.sendTo(packet, (EntityPlayerMP) event.getHarvester());
+								if(level >= 3) {
+									if(world.rand.nextInt(20) <= (level-3)) {
+										List<ItemStack> list = HardLibAPI.hardOres.getHardOreDropsOnce(world, p, 0);
+										ArrayList<ItemStack> toDrop = new ArrayList();
+										for(ItemStack s:list) {
+											toDrop.add(HardLibAPI.oreMachines.getMillResult(s).copy());
+										}
+										for(ItemStack s:toDrop) {
+											s.stackSize = 1;
+											float rx = world.rand.nextFloat() * 0.6F + 0.2F;
+					    					float ry = world.rand.nextFloat() * 0.2F + 0.6F - 1;
+					    					float rz = world.rand.nextFloat() * 0.6F + 0.2F;
+					    					EntityItem ent = new EntityItem(world, pos.getX()+rx, pos.getY()+ry, pos.getZ()+rz, s);
+					    					world.spawnEntityInWorld(ent);
+					    					ent.motionX = 0;
+					    					ent.motionY = -0.2F;
+					    					ent.motionZ = 0;
+										}
+									}
+								}
 							}
 						}
 					}

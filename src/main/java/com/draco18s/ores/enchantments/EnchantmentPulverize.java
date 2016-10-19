@@ -15,7 +15,6 @@ public class EnchantmentPulverize extends Enchantment {
 	//new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND}
 	public EnchantmentPulverize(EntityEquipmentSlot[] slots) {
 		super(Enchantment.Rarity.UNCOMMON, EnumEnchantmentType.DIGGER, slots);
-		this.setName("pulverize");
 	}
 	
 	@Override
