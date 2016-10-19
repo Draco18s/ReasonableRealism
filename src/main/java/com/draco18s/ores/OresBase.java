@@ -266,11 +266,18 @@ public class OresBase {
 		OreDictionary.registerOre("rawOreChunkIron", new ItemStack(rawOre, 1, EnumOreType.IRON.meta));
 		OreDictionary.registerOre("rawOreChunkGold", new ItemStack(rawOre, 1, EnumOreType.GOLD.meta));
 		OreDictionary.registerOre("rawOreChunkDiamond", new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta));
+		OreDictionary.registerOre("rawOreChunkTin", new ItemStack(rawOre, 1, EnumOreType.TIN.meta));
+		OreDictionary.registerOre("rawOreChunkCopper", new ItemStack(rawOre, 1, EnumOreType.COPPER.meta));
+		OreDictionary.registerOre("rawOreChunkLead", new ItemStack(rawOre, 1, EnumOreType.LEAD.meta));
+		OreDictionary.registerOre("rawOreChunkUranium", new ItemStack(rawOre, 1, EnumOreType.URANIUM.meta));
 		
 		OreDictionary.registerOre("dustTinyIron", new ItemStack(smallDust, 1, EnumOreType.IRON.meta));
 		OreDictionary.registerOre("dustTinyGold", new ItemStack(smallDust, 1, EnumOreType.GOLD.meta));
 		OreDictionary.registerOre("dustTinyFlour", new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta));
 		OreDictionary.registerOre("dustTinySugar", new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta));
+		OreDictionary.registerOre("dustTinyTin", new ItemStack(smallDust, 1, EnumOreType.TIN.meta));
+		OreDictionary.registerOre("dustTinyCopper", new ItemStack(smallDust, 1, EnumOreType.COPPER.meta));
+		OreDictionary.registerOre("dustTinyLead", new ItemStack(smallDust, 1, EnumOreType.LEAD.meta));
 		
 		OreDictionary.registerOre("dustIron", new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
 		OreDictionary.registerOre("dustGold", new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
@@ -308,9 +315,9 @@ public class OresBase {
 		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
 		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
 		RecipesUtil.craftNineOf(new ItemStack(nuggets, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1));
-		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
-		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
-		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), "x", 'x', new ItemStack(dummyOreIron));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), "x", 'x', new ItemStack(dummyOreGold));
+		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), "x", 'x', new ItemStack(dummyOreDiamond));
 		GameRegistry.addRecipe(new ItemStack(nuggets, 9, EnumOreType.IRON.meta), "x",'x',new ItemStack(Items.IRON_INGOT, 1));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
@@ -470,9 +477,9 @@ public class OresBase {
 		}
 		
 		OreDictionary.registerOre("oreTin", dummyOreTin);
-		OreDictionary.registerOre("oreCopper", oreCopper);
-		OreDictionary.registerOre("oreLead", oreLead);
-		OreDictionary.registerOre("oreUranium", oreUranium);
+		OreDictionary.registerOre("oreCopper", dummyOreCopper);
+		OreDictionary.registerOre("oreLead", dummyOreLead);
+		OreDictionary.registerOre("oreUranium", dummyOreUranium);
 	}
 	
 	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, int sluiceWeight, boolean canFindDefault) {
