@@ -11,9 +11,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid="hardlib", name="HardLib", version="{@version:lib}"/*, dependencies = "required-after:HardLib"*/)
+@Mod(modid="hardfarming", name="HardFarming", version="{@version:farm}"/*, dependencies = "required-after:HardLib"*/)
 public class FamingBase {
-	@Instance("hardlib")
+	@Instance("hardfarming")
 	public static FamingBase instance;
 	
 	@SidedProxy(clientSide="com.draco18s.farming.client.ClientProxy", serverSide="com.draco18s.farming.CommonProxy")
