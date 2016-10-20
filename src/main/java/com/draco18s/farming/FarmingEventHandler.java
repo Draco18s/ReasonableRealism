@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class FarmingEventHandler {
 
 	@SubscribeEvent
-	public void onCropGrow(BlockEvent.CropGrowEvent event) {
+	public void onCropGrow(BlockEvent.CropGrowEvent.Pre event) {
 		World world = event.getWorld();
 		IBlockState state = event.getState();
 		BlockPos pos = event.getPos();
