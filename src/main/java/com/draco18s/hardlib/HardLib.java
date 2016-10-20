@@ -15,7 +15,7 @@ public class HardLib {
 	@Instance("hardlib")
 	public static HardLib instance;
 	
-	@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.ores.EasyRegistry")
+	@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.hardlib.EasyRegistry")
 	public static EasyRegistry proxy;
 	
 	public static Logger logger;
