@@ -15,7 +15,8 @@ public class SiftableItemsHandler extends ItemStackHandler {
 		if(HardLibAPI.oreMachines.getSiftResult(stack,false) == null) return stack;
 		return super.insertItem(slot, stack, simulate);
 	}
-
+	
+	@Override
 	protected void onContentsChanged(int slot) {
 		super.onContentsChanged(slot);
 		if(slot+1 >= stacks.length) return;

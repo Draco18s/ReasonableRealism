@@ -8,10 +8,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
-import com.draco18s.hardlib.RecipesUtil;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
+import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.ores.block.BlockAxel;
 import com.draco18s.ores.block.BlockDummyOre;
 import com.draco18s.ores.block.BlockMillstone;
@@ -309,12 +309,12 @@ public class OresBase {
 		GameRegistry.addSmelting(dummyOreGold, new ItemStack(Items.GOLD_INGOT), 1.0f);
 		GameRegistry.addSmelting(dummyOreDiamond, new ItemStack(Items.DIAMOND), 1.0f);
 		/*Crafting*/
-		RecipesUtil.craftNineOf(new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
-		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
-		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
-		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
-		RecipesUtil.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
-		RecipesUtil.craftNineOf(new ItemStack(nuggets, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1));
+		RecipesUtils.craftNineOf(new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
+		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
+		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
+		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
+		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
+		RecipesUtils.craftNineOf(new ItemStack(nuggets, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), "x", 'x', new ItemStack(dummyOreIron));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), "x", 'x', new ItemStack(dummyOreGold));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), "x", 'x', new ItemStack(dummyOreDiamond));
@@ -363,9 +363,9 @@ public class OresBase {
 
 		String oreIn = "dustFlour";
 		if(hardOption) {
-			RecipesUtil.RemoveRecipe(Items.BREAD, 1, 0, "Hard Ores");
-			RecipesUtil.RemoveRecipe(Items.COOKIE, 8, 0, "Hard Ores");
-			RecipesUtil.RemoveRecipe(Items.CAKE, 1, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.BREAD, 1, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.COOKIE, 8, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.CAKE, 1, 0, "Hard Ores");
 			
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.BREAD, 3), "www", 'w', oreIn)); //works out to 1:1 vanilla
 			//hard: wheat is ground to "4/9th flour"
@@ -394,7 +394,7 @@ public class OresBase {
 		}
 		hardOption = config.getBoolean("RequireMillingBonemeal", "MILLING", false, "");
 		if(hardOption) {
-			RecipesUtil.RemoveRecipe(Items.DYE, 3, EnumDyeColor.WHITE.getDyeDamage(), "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.DYE, 3, EnumDyeColor.WHITE.getDyeDamage(), "Hard Ores");
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 2, EnumDyeColor.WHITE.getDyeDamage()));
 		}
 		else {

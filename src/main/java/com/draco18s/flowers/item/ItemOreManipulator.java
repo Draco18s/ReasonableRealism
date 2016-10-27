@@ -22,7 +22,7 @@ public class ItemOreManipulator extends Item {
 		oreType = type;
         this.setHasSubtypes(false);
         this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabs.MATERIALS);
+        this.setCreativeTab(CreativeTabs.TOOLS);
 	}
 	
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {

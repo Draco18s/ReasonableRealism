@@ -1,0 +1,18 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+    "textures": {
+        "2": "harderfarming:items/leather"
+    },
+    "elements": [
+        {
+            "name": "Leather2",
+            "from": [ 14.5, 0.0, 0.0 ], 
+            "to": [ 14.5, 16.0, 16.0 ], 
+            "rotation": { "origin": [ 14.0, 0.0, 8.0 ], "axis": "z", "angle": 22.5 },
+            "faces": {
+                "east": { "texture": "#2", "uv": [ 0.0, 16.0, 16.0, 0.0 ] },
+                "west": { "texture": "#2", "uv": [ 0.0, 16.0, 16.0, 0.0 ] }
+            }
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "particle": "blocks/planks_oak"
+        },
+        "model": "harderfarming:tanning_rack",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+        
+        }],
+        "facing": {
+            "north": {"y": -90},
+            "south": {"y": -90},
+            "east": {},
+            "west": {}
+        },
+        "has_salt": {
+            "true": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt" }
+                }
+            },
+            "false": {}
+        },
+        "leather_left": {
+            "none": {},
+            "raw": {
+                "submodel": {
+                    "leather_left":  { "model": "harderfarming:leather" }
+                }
+            },
+            "cured": {
+                "submodel": {
+                    "leather_left":  {
+                         "textures": {
+                            "leather": "items/leather"
+                        },
+                        "model": "harderfarming:leather"
+                    }
+                }
+            }
+        },
+        "leather_right": {
+            "none": {},
+            "raw": {
+                "submodel": {
+                    "leather_right":  { "model": "harderfarming:leather2" }
+                }
+            },
+            "cured": {
+                "submodel": {
+                    "leather_right":  {
+                         "textures": {
+                            "leather": "items/leather"
+                        },
+                        "model": "harderfarming:leather2"
+                    }
+                }
+            }
+        }
+    }
+}
