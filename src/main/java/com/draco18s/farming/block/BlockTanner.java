@@ -20,6 +20,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -36,7 +37,7 @@ import net.minecraftforge.items.IItemHandler;
 public class BlockTanner extends Block {
 	private static IProperty LEATHER1 = Props.LEFT_LEATHER_STATE;
 	private static IProperty LEATHER2 = Props.RIGHT_LEATHER_STATE;
-	private static IProperty SALT = Props.HAS_SALT;
+	private static IProperty SALT = Props.SALT_LEVEL;
 
 	public BlockTanner() {
 		super(Material.WOOD);
@@ -45,7 +46,7 @@ public class BlockTanner extends Block {
 		setResistance(0.0f);
 		setSoundType(SoundType.WOOD);
 		setCreativeTab(CreativeTabs.DECORATIONS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockHorizontal.FACING,EnumFacing.NORTH).withProperty(LEATHER1, LeatherStatus.NONE).withProperty(LEATHER2, LeatherStatus.NONE).withProperty(SALT, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockHorizontal.FACING,EnumFacing.NORTH).withProperty(LEATHER1, LeatherStatus.NONE).withProperty(LEATHER2, LeatherStatus.NONE).withProperty(SALT, 0));
 	}
 	
 	@Override
@@ -99,7 +100,28 @@ public class BlockTanner extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+		TileEntityTanner te = (TileEntityTanner)world.getTileEntity(pos);
+		IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+		if(inven != null && inven.getStackInSlot(0) == null) {
+			if(heldItem != null) {
+				ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
+				if(remain == null) {
+					heldItem.splitStack(64);
+				}
+				else {
+					heldItem.stackSize = remain.stackSize;
+				}
+			}
+		}
+		else {
+			if((heldItem == null || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
+				player.inventory.addItemStackToInventory(inven.extractItem(0, 1, false));
+			}
+		}
+		te.markDirty();
+		world.markBlockRangeForRenderUpdate(pos, pos);
+		world.notifyBlockUpdate(pos, state, state, 3);
 		return true;
 	}
 

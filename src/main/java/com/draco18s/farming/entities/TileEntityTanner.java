@@ -34,6 +34,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	protected ItemSaltHandler saltSlot;
 	protected int[] tanningTime;
 	protected int saltTime;
+	private boolean shouldUpdate;
 
 	public TileEntityTanner() {
 		leftSlot = new ItemLeatherHandler(1);
@@ -48,7 +49,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 			if(leftSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) {
 				if(cureLeather(0)) {
 					leftSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
-					updateBlock();
+					setBlockToUpdate();
 				}
 			}
 		}
@@ -59,7 +60,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 			if(rightSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) {
 				if(cureLeather(1)) {
 					rightSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
-					updateBlock();
+					setBlockToUpdate();
 				}
 			}
 		}
@@ -69,17 +70,26 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		if(saltTime > 0) {
 			saltTime -= (canRainHere()?2:1);
 			if(saltTime <= 0)
-				updateBlock();
+				setBlockToUpdate();
 		}
-		if(!worldObj.isRemote)
-			FarmingBase.logger.log(Level.INFO, tanningTime[0] + "," + tanningTime[1] + "|" + saltTime);
+		//if(!worldObj.isRemote)
+			//FarmingBase.logger.log(Level.INFO, tanningTime[0] + "," + tanningTime[1] + "|" + saltTime);
 		int v = Math.max(Math.max(tanningTime[0], tanningTime[1]),saltTime);
 		if(v > 0 && v % 100 <= 1) {
-			updateBlock();
+			setBlockToUpdate();
+		}
+		if(shouldUpdate) {
+			sendUpdates();
+			shouldUpdate = false;
 		}
 	}
+
+	private void setBlockToUpdate() {
+		sendUpdates();
+		//shouldUpdate = true;
+	}
 	
-	private void updateBlock() {
+	private void sendUpdates() {
 		markDirty();
 		worldObj.markBlockRangeForRenderUpdate(pos, pos);
 		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
@@ -95,7 +105,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 
 	private boolean cureLeather(int i) {
 		if(tanningTime[i] < 3) {
-			updateBlock();
+			setBlockToUpdate();
 		}
 		tanningTime[i] += (getSaltTimer()?2:1);
 		return tanningTime[i] >= 2400;
@@ -108,7 +118,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		else if(saltSlot.getStackInSlot(0) != null) {
 			saltSlot.extractItem(0, 1, false);
 			saltTime = 4800 - 1;//time enough to cure 8 leather (optimal)
-			updateBlock();
+			setBlockToUpdate();
 			return true;
 		}
 		return false;
@@ -123,7 +133,10 @@ public class TileEntityTanner extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			this.markDirty();
+			FarmingBase.logger.log(Level.INFO, "" + saltSlot.getStackInSlot(0));
+			if(saltSlot.getStackInSlot(0) != null)
+				FarmingBase.logger.log(Level.INFO, "" + saltSlot.getStackInSlot(0).stackSize);
+			setBlockToUpdate();
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);
 			}
@@ -146,7 +159,6 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		}
         return super.getCapability(capability, facing);
     }
-
 
 	private CombinedInvWrapper getOuputSlots() {
 		ArrayList<ItemStackHandler> allSlots = new ArrayList();
@@ -197,7 +209,11 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		}
 		if(compound.hasKey("harderfarming:leftSlot")) {
 			leftSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderfarming:leftSlot"));
+		}
+		if(compound.hasKey("harderfarming:rightSlot")) {
 			rightSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderfarming:rightSlot"));
+		}
+		if(compound.hasKey("harderfarming:saltSlot")) {
 			saltSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderfarming:saltSlot"));
 		}
 		tanningTime = compound.getIntArray("harderfarming:tanningTime");
@@ -216,8 +232,16 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		return oldState.getBlock() != newState.getBlock();
 	}
 
-	public boolean getSalt() {
-		return saltTime > 0;
+	public int getSalt() {
+		if(saltSlot.getStackInSlot(0) == null) {
+			return (saltTime > 0)?1:0;
+		}
+		int size = saltSlot.getStackInSlot(0).stackSize;
+		if(size <= 2) return 2;
+		if(size <= 16) return 3;
+		if(size <= 32) return 4;
+		if(size <= 48) return 5;
+		return 6;
 	}
 
 	public int getLeather(int slot) {

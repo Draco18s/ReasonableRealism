@@ -23,7 +23,7 @@ public class Props {
 	public static final PropertyEnum<EnumOreFlower2> FLOWER_TYPE2 = PropertyEnum.<EnumOreFlower2>create("flower_type", EnumOreFlower2.class);
 	public static final PropertyEnum<EnumOreFlowerDesert1> DESERT_FLOWER_TYPE = PropertyEnum.<EnumOreFlowerDesert1>create("flower_type", EnumOreFlowerDesert1.class);
 	public static final PropertyEnum<EnumOreFlowerDesert2> DESERT_FLOWER_TYPE2 = PropertyEnum.<EnumOreFlowerDesert2>create("flower_type", EnumOreFlowerDesert2.class);
-	public static final PropertyBool HAS_SALT = PropertyBool.create("has_salt");
+	public static final PropertyInteger SALT_LEVEL = PropertyInteger.create("salt_level",0,6);
 	public static final PropertyEnum<LeatherStatus> LEFT_LEATHER_STATE = PropertyEnum.<LeatherStatus>create("leather_left", LeatherStatus.class);
 	public static final PropertyEnum<LeatherStatus> RIGHT_LEATHER_STATE = PropertyEnum.<LeatherStatus>create("leather_right", LeatherStatus.class);
 }

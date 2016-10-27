@@ -20,13 +20,38 @@
             "east": {},
             "west": {}
         },
-        "has_salt": {
-            "true": {
+        "salt_level": {
+            "6": {
                 "submodel": {
-                    "saltblock":  { "model": "harderfarming:salt" }
+                    "saltblock":  { "model": "harderfarming:salt6" }
                 }
             },
-            "false": {}
+            "5": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt5" }
+                }
+            },
+            "4": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt4" }
+                }
+            },
+            "3": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt3" }
+                }
+            },
+            "2": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt2" }
+                }
+            },
+            "1": {
+                "submodel": {
+                    "saltblock":  { "model": "harderfarming:salt1" }
+                }
+            },
+            "0": {}
         },
         "leather_left": {
             "none": {},
