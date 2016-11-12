@@ -13,6 +13,7 @@ import com.draco18s.flowers.item.ItemOreManipulator;
 import com.draco18s.flowers.item.ItemStickyBlob;
 import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.flowers.util.ChunkOreCounter;
+import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.flowers.util.OreDataHooks;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -142,7 +143,7 @@ public class OreFlowersBase {
 		BlockWrapper wrap;
 		IBlockState flower2State = oreFlowers2.getDefaultState();
 		IBlockState flowerDesert2State = oreFlowersDesert2.getDefaultState();
-		
+		FlowerAchievements.addCoreAchievements();
 		/*oreDictReq = OreDictionary.getOres("oreTin");
 		if(oreDictReq.size() > 0) {
 			for(ItemStack stack : oreDictReq) {

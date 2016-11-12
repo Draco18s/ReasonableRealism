@@ -4,23 +4,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
 
-import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockTallGrass;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 public class FlowerEventHandler {
 	private boolean poopBonemealFlowers = false;
@@ -52,7 +52,7 @@ public class FlowerEventHandler {
 					}
 
 					if(event.getEntityPlayer() != null) {
-						//event.getEntityPlayer().addStat(StatsAchievements.prospecting, 1);
+						event.getEntityPlayer().addStat(FlowerAchievements.prospecting, 1);
 					}
 				}
 			}
@@ -67,14 +67,13 @@ public class FlowerEventHandler {
 			}
 		}
 	}
-
+	
 	@SubscribeEvent
-	public void onChunkGen(CogOreGenEvent event) {
-		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() == Integer.MIN_VALUE) return;
-		Chunk c = event.getWorld().getChunkFromBlockCoords(event.getPos());
-		int cx = c.xPosition;
-		int cz = c.zPosition;
-		OreFlowersBase.oreCounter.generate(cx, cz, event.getWorld());
+	public void onPickup(PlayerEvent.ItemPickupEvent event) {
+		Item item = event.pickedUp.getEntityItem().getItem();
+		if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2)) {
+			event.player.addStat(FlowerAchievements.oreFlowers, 1);
+		}
 	}
 	
 	@SubscribeEvent

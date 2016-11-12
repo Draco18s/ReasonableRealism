@@ -65,3 +65,27 @@ container.harderores:sifter=Sifter
 container.harderores:packager=Packager
 container.harderores:ore_cart=Ore Minecart
 container.harderores:drop_side=Drop Side
+
+achievement.mineDiorite=Stone Replacement
+achievement.mineLimonite=Bogged Down
+achievement.craftMill=Milling Time
+achievement.constructMill=Time to Grind
+achievement.grindOre=Powdered Gold
+achievement.craftSifter=Sift Away
+achievement.acquireIronChunk=Ore Refinement
+achievement.acquireNuggets=Just a Nugget
+achievement.craftSluice=Sluicy
+achievement.craftDiamondStud=Making Due
+achievement.fakeIronBar=Acquire Hardware
+
+achievement.mineDiorite.desc=Mine Diorite
+achievement.mineLimonite.desc=Harvest Limonite
+achievement.craftMill.desc=Craft 9 Millstones
+achievement.constructMill.desc=Build a Windmill out of 9 Millstones, 4 Axels, and 8 Wind vanes
+achievement.grindOre.desc=Grind some ore into dust
+achievement.craftSifter.desc=Craft a Sifter
+achievement.acquireIronChunk.desc=Smelt Limonite or Mine Iron Ore
+achievement.acquireNuggets.desc=Get your first Iron Nugget
+achievement.craftSluice.desc=Craft a Sluice
+achievement.craftDiamondStud.desc=Craft a Diamond Studded tool
+achievement.fakeIronBar.desc=Smelt an iron ingot

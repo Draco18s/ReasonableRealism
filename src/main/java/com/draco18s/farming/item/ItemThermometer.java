@@ -117,4 +117,16 @@ public class ItemThermometer extends Item {
 			tooltip.add(I18n.format("tooltip.link.text"));
 		}
 	}
+	
+	/*public boolean hasItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack) {
+        return true;
+    }
+    
+    public int getItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack, int rotation) {
+		Biome bio = worldIn.getBiomeGenForCoords(pos);
+		float f = bio.getTemperature();
+		f = Math.round((f+1.35f) * 4);
+		f = Math.max(Math.min(f, 15),1);
+        return Math.round(f);
+    }*/
 }

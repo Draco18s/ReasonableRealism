@@ -74,3 +74,9 @@ indicator.zinc=Zinc Indicator
 indicator.fluorite=Fluorite Indicator
 indicator.cadmium=Cadmium Indicator
 indicator.thorium=Thorium Indicator
+
+achievement.oreFlowers=An Indication
+achievement.prospecting=A Growing Search
+
+achievement.oreFlowers.desc=Find an ore indicator plant
+achievement.prospecting.desc=Grow an ore indicator plant

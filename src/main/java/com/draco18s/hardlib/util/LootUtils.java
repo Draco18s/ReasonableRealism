@@ -48,22 +48,42 @@ public class LootUtils {
 		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name);
 	}
 	
-	public static void addItemToTable(LootTable table, Item item, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, IMethod LootCallbacks) {
-		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name, LootCallbacks);
+	public static void addItemToTable(LootTable table, Item item, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, IMethod LootCallbacks, ICondition LootConditions) {
+		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name, LootCallbacks, LootConditions);
 	}
 	
-	public static void addItemToTable(LootTable table, Item item, int minMeta, int maxMeta, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name) {
-		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name, new IMethod() {
+	public static void addItemToTable(LootTable table, Item item, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, IMethod LootCallbacks) {
+		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name, LootCallbacks, new ICondition() {
 			@Override
-			public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {}
+			public void FunctionsCallback(ArrayList<LootCondition> lootconds) {}
 		});
 	}
 	
-	public static void addItemToTable(LootTable table, Item item, int minMeta, int maxMeta, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, IMethod LootCallbacks) {
-		/*ArrayList<LootCondition> _conditions = new ArrayList<LootCondition>();
+	public static void addItemToTable(LootTable table, Item item, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, ICondition LootConditions) {
+		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name, new IMethod() {
+			@Override
+			public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {}
+		}, LootConditions);
+	}
+	
+	public static void addItemToTable(LootTable table, Item item, int minMeta, int maxMeta, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name) {
+		addItemToTable(table, item, 0, 0, weight, numRolls, probability, minQuantity, maxQuantity, minLootBonus, maxLootBonus, name,
+		new IMethod() {
+			@Override
+			public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {}
+		},
+		new ICondition() {
+			@Override
+			public void FunctionsCallback(ArrayList<LootCondition> lootconds) {}
+		});
+	}
+	
+	public static void addItemToTable(LootTable table, Item item, int minMeta, int maxMeta, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name, IMethod LootCallbacks, ICondition LootConditions) {
+		ArrayList<LootCondition> _conditions = new ArrayList<LootCondition>();
 		_conditions.add(new RandomChance(probability));
-		LootCondition[] lchance = _conditions.toArray(new LootCondition[0]);*/
-		LootCondition[] lchance = {new RandomChance(probability)};
+		LootConditions.FunctionsCallback(_conditions);
+		LootCondition[] lchance = _conditions.toArray(new LootCondition[0]);
+		/*LootCondition[] lchance = {new RandomChance(probability)};*/
 		
 		ArrayList<LootFunction> _functions = new ArrayList<LootFunction>();
 		_functions.add(new SetCount(lchance, new RandomValueRange(minQuantity, maxQuantity)));
@@ -92,5 +112,9 @@ public class LootUtils {
 	
 	public static interface IMethod {
 		public void FunctionsCallback(ArrayList<LootFunction> lootfuncs);
+	}
+	
+	public static interface ICondition {
+		public void FunctionsCallback(ArrayList<LootCondition> lootconds);
 	}
 }

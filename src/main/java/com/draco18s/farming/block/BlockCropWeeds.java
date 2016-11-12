@@ -54,16 +54,16 @@ public class BlockCropWeeds extends BlockCrops {
 		world.setBlockState(pos, this.getDefaultState());
 		int placed = 0;
 		for (BlockPos p : list) {
-			if (world.getBlockState(p.down()).getBlock() == Blocks.FARMLAND) {
+			if (world.getBlockState(p.down(2)).getBlock() == Blocks.FARMLAND) {
 				if (tryPlantWeeds(world, p.down(), rand)) {
 					placed++;
 				}
-			} else if (world.getBlockState(p).getBlock() == Blocks.FARMLAND) {
+			} else if (world.getBlockState(p.down()).getBlock() == Blocks.FARMLAND) {
 				if (tryPlantWeeds(world, p, rand)) {
 					placed++;
 				}
 			} else if (world.getBlockState(p.up()).getBlock() == Blocks.FARMLAND) {
-				if (tryPlantWeeds(world, p.up(), rand)) {
+				if (tryPlantWeeds(world, p.up(2), rand)) {
 					placed++;
 				}
 			}
@@ -79,7 +79,7 @@ public class BlockCropWeeds extends BlockCrops {
 	}
 
 	protected boolean tryPlantWeeds(World world, BlockPos pos, Random rand) {
-		IBlockState growing = world.getBlockState(pos.up());
+		IBlockState growing = world.getBlockState(pos);
 		if (growing.getMaterial() == Material.AIR) {
 			world.setBlockState(pos, this.getDefaultState());
 			return true;
@@ -126,9 +126,7 @@ public class BlockCropWeeds extends BlockCrops {
             {
             	hardness += f1;
             }
-            return hardness / this.blockHardness / 30;
         }
-		
-		return 0;
+        return hardness / this.blockHardness / 30;
     }
 }

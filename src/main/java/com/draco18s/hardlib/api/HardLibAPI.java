@@ -3,6 +3,7 @@ package com.draco18s.hardlib.api;
 import net.minecraft.item.ItemStack;
 
 import com.draco18s.hardlib.interfaces.IFlowerData;
+import com.draco18s.hardlib.interfaces.IHardAnimals;
 import com.draco18s.hardlib.interfaces.IHardCrops;
 import com.draco18s.hardlib.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.interfaces.IHardOres;
@@ -14,4 +15,5 @@ public class HardLibAPI {
 	public static IOreData oreData;
 	public static IHardOres hardOres;
 	public static IHardCrops hardCrops;
+	public static IHardAnimals animalManager;
 }

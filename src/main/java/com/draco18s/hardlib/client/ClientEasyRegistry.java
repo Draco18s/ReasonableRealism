@@ -60,7 +60,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 
 	private void _registerBlockResources(Block block) {
 		Item item = Item.getItemFromBlock(block);
-		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(block.getRegistryName().toString()));
+		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(block.getRegistryName(),"normal"));
 	}
 
 	private void _registerBlockItemModelForMeta(Block block, int metadata, String variant) {

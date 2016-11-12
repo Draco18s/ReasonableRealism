@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 public class OreBlockInfo implements IHardOres {
 	@Override
 	public boolean isHardOre(IBlockState b) {
-		return b.getBlock() instanceof IBlockMultiBreak && b.getBlock().getBlockState().getProperties().contains(Props.ORE_DENSITY);
+		return b.getBlock() instanceof IBlockMultiBreak && b.getProperties().containsKey(Props.ORE_DENSITY);
 	}
 
 	@Override

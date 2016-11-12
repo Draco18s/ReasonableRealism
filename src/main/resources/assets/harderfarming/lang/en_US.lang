@@ -1,0 +1,15 @@
+description.harderfarming:damagebonus=Damage vs. Animals
+description.harderfarming:growsColdWeather=Thrives in cold temperatures
+
+item.harderfarming:seeds_winter_wheat.name=Winter Wheat Seeds
+item.harderfarming:thermometer.name=Thermometer
+item.harderfarming:hydrometer.name=Hydrometer
+item.harderfarming:rawleather.name=Rawhide
+item.harderfarming:rawsalt.name=Salt Chunk
+item.harderfarming:saltpile.name=Salt
+item.harderfarming:butcherknife.name=Butcher Knife
+
+tile.harderfarming:crop_winter_wheat.name=Winter Wheat
+tile.harderfarming:weeds.name=Weeds
+tile.harderfarming:tanner.name=Tanning Rack
+tile.harderfarming:saltore.name=Salt Ore

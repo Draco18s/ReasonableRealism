@@ -46,6 +46,7 @@ import com.draco18s.ores.networking.ServerOreCartHandler;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
 import com.draco18s.ores.networking.ToServerMessageOreCart;
 import com.draco18s.ores.recipes.OreProcessingRecipes;
+import com.draco18s.ores.util.OresAchievements;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
@@ -450,6 +451,7 @@ public class OresBase {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		OresAchievements.addCoreAchievements();
 		List<ItemStack> oreDictReq;
 		int addedOres = 0;
 		oreDictReq = OreDictionary.getOres("oreTin");
