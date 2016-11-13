@@ -104,6 +104,10 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			}
 		}
 	}
+	
+	public float getPower() {
+		return calcAndGetPower();
+	}
 
 	private float calcAndGetPower() {
 		if(worldObj.isRemote) return powerUser.getScaledPower(powerUser.getRawPower());

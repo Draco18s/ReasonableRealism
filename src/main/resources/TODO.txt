@@ -1,0 +1,10 @@
+[ ] Animals eating grass (set to dirt)
+[ ] JEI integration
+[ ] build.gradle automation
+[x] Stone tool replacement recipes
+[x] Wooden hopper
+[ ] Distributor
+[ ] Loader
+[ ] Filter
+ - Oh god the ui
+[ ] Detector rail

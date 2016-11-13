@@ -31,11 +31,11 @@ public class ExpandedInsutryBase {
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		
-		/*TODO: Will not function until Forge PR #3294 is merged
+		/*TODO: Will not function until Forge PR #3294 is merged*/
 		blockWoodHopper = new BlockWoodenHopper();
 		EasyRegistry.registerBlockWithItem(blockWoodHopper, "machine_wood_hopper");
 		
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());*/
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 	}
 	
 	@EventHandler

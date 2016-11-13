@@ -50,6 +50,7 @@ import com.draco18s.ores.util.OresAchievements;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockStone;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.init.Blocks;
@@ -137,6 +138,8 @@ public class OresBase {
 
 	public static boolean sluiceAllowDirt;
 
+	private boolean stoneTools;
+
 
 	
 	@EventHandler
@@ -215,7 +218,7 @@ public class OresBase {
 		EasyRegistry.registerItemWithVariants(nuggets, "nuggets", EnumOreType.IRON);
 		
 		toolMaterialDiamondStud = EnumHelper.addToolMaterial("DIAMOND_STUD", 3, 750, 7.0F, 2.0F, 5);
-		toolMaterialDiamondStud.customCraftingMaterial = rawOre;
+		toolMaterialDiamondStud.setRepairItem(new ItemStack(OresBase.rawOre, 1, EnumOreType.DIAMOND.meta));
 
 		EntityRegistry.registerModEntity(EntityOreMinecart.class, "oreMinecart", 0, this, 80, 3, true);
 		
@@ -225,6 +228,8 @@ public class OresBase {
 		EasyRegistry.registerItem(diaStudShovel, "diamondstud_shovel");
 		diaStudHoe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudHoe, "diamondstud_hoe");
+		diaStudAxe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
+		EasyRegistry.registerItem(diaStudAxe, "diamondstud_axe");
 		oreMinecart = new ItemEntityOreCart(oreCartEnum);
 		EasyRegistry.registerItem(oreMinecart, "orecart");
 
@@ -290,14 +295,6 @@ public class OresBase {
 		OreDictionary.registerOre("oreGold", dummyOreGold);
 		OreDictionary.registerOre("oreDiamond", dummyOreDiamond);
 		
-		/*Milling*/
-		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.IRON.meta), new ItemStack(smallDust,2,EnumOreType.IRON.meta));
-		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.GOLD.meta), new ItemStack(smallDust,2,EnumOreType.GOLD.meta));
-		
-		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
-		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
-		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
-		
 		/*Smelting*/
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.LIMONITE.meta), new ItemStack(rawOre, 1, EnumOreType.IRON.meta), 0.05f);
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.IRON.meta), new ItemStack(nuggets, 1, EnumOreType.IRON.meta), 0.08f);
@@ -309,6 +306,7 @@ public class OresBase {
 		GameRegistry.addSmelting(dummyOreIron, new ItemStack(Items.IRON_INGOT), 0.7f);
 		GameRegistry.addSmelting(dummyOreGold, new ItemStack(Items.GOLD_INGOT), 1.0f);
 		GameRegistry.addSmelting(dummyOreDiamond, new ItemStack(Items.DIAMOND), 1.0f);
+		
 		/*Crafting*/
 		RecipesUtils.craftNineOf(new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
@@ -333,6 +331,29 @@ public class OresBase {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudHoe), true, "dI ", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sluice), true, "sss","ppp",'s',"stickWood",'p',"slabWood"));
 		
+		List<ItemStack> list = new ArrayList<ItemStack>();
+		list.add(new ItemStack(Items.BUCKET));
+		list.add(new ItemStack(Items.MINECART));
+		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(oreMinecart), list));
+		stoneTools = config.getBoolean("useDioriteStoneTools", "GENERAL", true, "If true, cobblestone cannot be used to create stone tools,\ninstead diorite is used. This prolongs the life of wood tools so it isn't \"make a wood pickaxe to\nmine 3 stone and upgrade.\"");
+		if(stoneTools) {
+			RecipesUtils.RemoveRecipe(Items.STONE_AXE, 1, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.STONE_PICKAXE, 1, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.STONE_SHOVEL, 1, 0, "Hard Ores");
+			RecipesUtils.RemoveRecipe(Items.STONE_HOE, 1, 0, "Hard Ores");
+			
+			ItemStack toolmat = new ItemStack(Blocks.STONE, 1, BlockStone.EnumType.DIORITE.getMetadata());
+			GameRegistry.addRecipe(new ItemStack(Items.STONE_PICKAXE), new Object[] {"III", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+	        GameRegistry.addRecipe(new ItemStack(Items.STONE_AXE), new Object[] {"II ", "Is ", " s ", 's', Items.STICK, 'I', toolmat});
+	        GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+	        GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+	    }
+		/*Sluicing*/
+		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
+		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");
+		//TileEntitySluice.cycleLength = cycle * 15;
+		TileEntityBasicSluice.cycleLength = cycle * 15;
+		
 		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
@@ -354,10 +375,9 @@ public class OresBase {
 			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.REDSTONE_ORE);
 		}
 		
-		List<ItemStack> list = new ArrayList<ItemStack>();
-		list.add(new ItemStack(Items.BUCKET));
-		list.add(new ItemStack(Items.MINECART));
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(oreMinecart), list));
+		/*Milling*/
+		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.IRON.meta), new ItemStack(smallDust,2,EnumOreType.IRON.meta));
+		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.GOLD.meta), new ItemStack(smallDust,2,EnumOreType.GOLD.meta));
 		
 		config.addCustomCategoryComment("MILLING", "Enable (hard mode) these to remove vanilla recipes for items and instead require the millstone. In general,\neasy means the millstone doubles resources, while hard is near-vanilla.");
 		boolean hardOption = config.getBoolean("RequireMillingFlour", "MILLING", false, "");
@@ -402,9 +422,15 @@ public class OresBase {
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.BONE), new ItemStack(Items.DYE, 4, EnumDyeColor.WHITE.getDyeDamage()));
 		}
 
+		/*Sifting*/
 		ItemStack bonemeal = new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage());
 		HardLibAPI.oreMachines.addSiftRecipe(bonemeal, bonemeal, false);
+		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
+		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
+		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
+		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR, 1, 1));
 		
+		/*Packing*/
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
@@ -442,16 +468,15 @@ public class OresBase {
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
-		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
-		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");
-		//TileEntitySluice.cycleLength = cycle * 15;
-		TileEntityBasicSluice.cycleLength = cycle * 15;
 		config.save();
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		OresAchievements.addCoreAchievements();
+		if(stoneTools) {
+			OresAchievements.addStoneTools();
+		}
 		List<ItemStack> oreDictReq;
 		int addedOres = 0;
 		oreDictReq = OreDictionary.getOres("oreTin");

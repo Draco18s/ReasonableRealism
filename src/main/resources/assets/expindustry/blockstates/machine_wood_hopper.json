@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "particle": "blocks/planks_oak",
+            "top": "expindustry:blocks/hopper_top",
+            "side": "blocks/planks_oak",
+            "inside": "expindustry:blocks/hopper_inside"
+        },
+        "uvlock": true,
+        "model": "expindustry:hopper_down"
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+        
+        }],
+        "enabled": {
+            "true": {},
+            "false": {}
+        },
+         "facing": {
+            "down": {},
+            "north": {},
+            "south": {},
+            "east": {},
+            "west": {}
+        }
+    }
+}

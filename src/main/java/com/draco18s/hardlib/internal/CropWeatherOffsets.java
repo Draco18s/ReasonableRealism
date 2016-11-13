@@ -3,16 +3,16 @@ package com.draco18s.hardlib.internal;
 public class CropWeatherOffsets {
 	public final float temperatureFlat;
 	public final float rainfallFlat;
-	public final int temperatureTimeOffset;
-	public final int rainfallTimeOffset;
+	public final float temperatureTimeOffset;
+	public final float rainfallTimeOffset;
 	
 	/**
 	 * @param tf - Temperature offset.  Positive is "cold native" negative is "warm native."
 	 * @param rf - Rain offset.  Positive is "dry native" negative is "wet native."
-	 * @param to - Temp season offset in ticks.  Typically fractions of a year-length.
-	 * @param ro - Rain sesaon offset in ticks.  Typically fractions of a year-length.
+	 * @param to - Temp season offset in fractions of a year.
+	 * @param ro - Rain sesaon offset in fractions of a year.
 	 */
-	public CropWeatherOffsets(float tf, float rf, int to, int ro) {
+	public CropWeatherOffsets(float tf, float rf, float to, float ro) {
 		temperatureFlat = tf;
 		rainfallFlat = rf;
 		temperatureTimeOffset = to;

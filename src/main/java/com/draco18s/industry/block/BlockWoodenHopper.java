@@ -11,6 +11,8 @@ import net.minecraft.block.BlockHopper;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
@@ -22,6 +24,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -70,7 +75,7 @@ public class BlockWoodenHopper extends BlockHopper  {
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 	    TileEntity tileentity = worldIn.getTileEntity(pos);
-
+	    
         IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         for(int i=0; i < inventory.getSlots(); i++) {
         	ItemStack stack = inventory.getStackInSlot(i);
@@ -83,5 +88,4 @@ public class BlockWoodenHopper extends BlockHopper  {
         }
         return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
     }
-	
 }

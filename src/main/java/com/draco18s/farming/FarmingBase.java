@@ -9,6 +9,7 @@ import com.draco18s.farming.block.BlockTanner;
 import com.draco18s.farming.entities.TileEntityTanner;
 import com.draco18s.farming.entities.capabilities.IMilking;
 import com.draco18s.farming.entities.capabilities.MilkStorage;
+import com.draco18s.farming.integration.IntegrationHarvestcraft;
 import com.draco18s.farming.item.ItemAchieves;
 import com.draco18s.farming.item.ItemButcherKnife;
 import com.draco18s.farming.item.ItemHydrometer;
@@ -29,11 +30,13 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -50,6 +53,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib")
 public class FarmingBase {
@@ -130,6 +134,7 @@ public class FarmingBase {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new FarmingEventHandler());
 		FarmingEventHandler.doRawLeather = config.getBoolean("doRawLeather", "ANIMALS", true, "Raw leather (rawhide) requires curing on a tanning rack before it can be used.\n");
     	config.save();
     	
@@ -140,13 +145,16 @@ public class FarmingBase {
     	
     	GameRegistry.registerWorldGenerator(new WorldGenerator(), 2);
     	OreDictionary.registerOre("dustSalt", saltPile);
-    	
-    	CropWeatherOffsets off = new CropWeatherOffsets(0,0,(int) 0.5f,0);
+    	OreDictionary.registerOre("foodSalt", saltPile);
+    	OreDictionary.registerOre("itemSalt", rawSalt);
+    	OreDictionary.registerOre("foodSalt", rawSalt);
+
+    	CropWeatherOffsets off = new CropWeatherOffsets(0.2f,0,0.5f,0);
     	HardLibAPI.hardCrops.putCropWeather(Blocks.PUMPKIN_STEM, off);//primarily october growth
 		off = new CropWeatherOffsets(0,0,0,0);
 		HardLibAPI.hardCrops.putCropWeather(Blocks.WHEAT, off);//no offsets!
-		//off = new CropWeatherOffsets(0.8f,0.2f,0,0);
-		//HardLibAPI.hardCrops.putCropWeather(winterWheat, off);//grows best when cold
+		off = new CropWeatherOffsets(0.8f,0.2f,0,0);
+		HardLibAPI.hardCrops.putCropWeather(winterWheat, off);//grows best when cold
 		off = new CropWeatherOffsets(-0.4f,0,0,0);
 		HardLibAPI.hardCrops.putCropWeather(Blocks.MELON_STEM, off);//cold sensitive
 		off = new CropWeatherOffsets(0.7f,0,0,0);
@@ -157,11 +165,37 @@ public class FarmingBase {
 		HardLibAPI.hardCrops.putCropWeather(Blocks.REEDS, off);//reeds grow warm and wet
 		off = new CropWeatherOffsets(0.25f,0.1f,0,0);
 		HardLibAPI.hardCrops.putCropWeather(Blocks.BEETROOTS, off);//beets grow cool and slightly dry
+		off = new CropWeatherOffsets(-0.2f,-0.6f,0,0);
+		HardLibAPI.hardCrops.putCropWeather(Blocks.COCOA, off);//warm and VERY wet
+		off = new CropWeatherOffsets(-1.2f,1.2f,0,0);
+		HardLibAPI.hardCrops.putCropWeather(Blocks.NETHER_WART, off);//HOT HOT HOT
+		if(Loader.isModLoaded("harvestcraft")) {
+    		IntegrationHarvestcraft.registerCrops();
+    	}
+		
+		ItemStack glass = new ItemStack(Blocks.GLASS_PANE);
+
+		if(OreDictionary.getOres("nuggetIron").size() > 0) {
+	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"nuggetGold"));
+	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"nuggetIron"));
+    	}
+    	else {
+	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"ingotGold"));
+	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"ingotIron"));
+    	}
+		if(FarmingEventHandler.doRawLeather) {
+    		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(tanningRack), "sss","sts","s s",'s',"stickWood",'t',Items.STRING));
+    	}
+		if(config.getBoolean("altKnifeRecipe", "GENERAL", false, "if the butcher's knife recipe conflicts with another repcie, toggle this.")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(butcherKnife), " s","i ",'s',"stickWood",'i',Items.IRON_INGOT));
+		}
+		else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(butcherKnife), "s "," i",'s',"stickWood",'i',Items.IRON_INGOT));
+		}
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new FarmingEventHandler());
 		CapabilityManager.INSTANCE.register(IMilking.class, new MilkStorage(), new MilkStorage.Factory());
 		FarmingAchievements.addCoreAchievements();
 	}

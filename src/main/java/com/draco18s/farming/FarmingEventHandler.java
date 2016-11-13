@@ -33,6 +33,7 @@ import net.minecraft.block.BlockReed;
 import net.minecraft.block.BlockStem;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -46,6 +47,7 @@ import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -110,7 +112,16 @@ public class FarmingEventHandler {
 			BlockPos pos = event.getPos();
 			Biome bio = world.getBiomeForCoordsBody(pos);
 			Result value = Result.DEFAULT;
-			if(state.getProperties().containsKey(BlockCrops.AGE)) {
+			
+			Iterator<IProperty<?>> props = state.getProperties().keySet().iterator();
+			while(props.hasNext()) {
+				IProperty<?> p = props.next();
+				if(p instanceof PropertyInteger && p.getName().toLowerCase().equals("age")) {
+					value = handleCrops(world, pos, state, bio, (PropertyInteger)p);
+				}
+			}
+			
+			/*if(state.getProperties().containsKey(BlockCrops.AGE)) {
 				value = handleCrops(world, pos, state, bio, BlockCrops.AGE);
 			}
 			if(state.getProperties().containsKey(BlockStem.AGE)) {
@@ -121,7 +132,7 @@ public class FarmingEventHandler {
 			}
 			if(state.getProperties().containsKey(BlockCocoa.AGE)) {
 				value = handleCrops(world, pos, state, bio, BlockCocoa.AGE);
-			}
+			}*/
 			event.setResult(value);
 		}
 	}
@@ -202,6 +213,10 @@ public class FarmingEventHandler {
 						r = r - getSeasonRain(getLastWorldTime(world.provider.dimensionId)) + getSeasonRain(getLastWorldTime(world.provider.dimensionId) + o.rainfallTimeOffset);
 				}*/
 				r += o.rainfallFlat;
+				if(block == Blocks.NETHER_WART) {
+					//handle alterations to the nether's temperature
+					t -= biomeTemps.get(Biomes.HELL) - 2;
+				}
 			}
 			//simplifies the following equation
 			t -= 0.4f;
@@ -215,6 +230,7 @@ public class FarmingEventHandler {
 		}
 		rr += 2*inc;
 		if(block == FarmingBase.weeds) {
+			//reeds always grow well
 			if(rr >= 0) rr /= 2;
 			else rr -= 4;
 			if(rr < -9) rr = -9;

@@ -12,6 +12,7 @@ import com.draco18s.ores.networking.Packets;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
 import com.draco18s.ores.util.OresAchievements;
 
+import net.minecraft.block.BlockStone;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
@@ -153,16 +154,20 @@ public class OreEventHandler {
 	@SubscribeEvent
 	public void onPickup(PlayerEvent.ItemPickupEvent event) {
 		Item item = event.pickedUp.getEntityItem().getItem();
-		if(item == OresBase.rawOre && event.pickedUp.getEntityItem().getItemDamage() == EnumOreType.LIMONITE.meta) {
+		int meta = event.pickedUp.getEntityItem().getItemDamage();
+		if(item == OresBase.rawOre && meta == EnumOreType.LIMONITE.meta) {
 			event.player.addStat(OresAchievements.mineLimonite, 1);
 		}
-		if(item == OresBase.rawOre && event.pickedUp.getEntityItem().getItemDamage() == EnumOreType.IRON.meta) {
+		if(item == OresBase.rawOre && meta == EnumOreType.IRON.meta) {
 			event.player.addStat(OresAchievements.acquireIronChunk, 1);
 		}
 		if(item == Item.getItemFromBlock(OresBase.millstone)) {
 			event.player.addStat(OresAchievements.craftMill, 1);
 		}
-		if(item == OresBase.rawOre && event.pickedUp.getEntityItem().getItemDamage() == EnumOreType.DIAMOND.meta){
+		if(item == Item.getItemFromBlock(Blocks.STONE) && meta == BlockStone.EnumType.DIORITE.getMetadata()) {
+			event.player.addStat(OresAchievements.mineDiorite, 1);
+		}
+		if(item == OresBase.rawOre && meta == EnumOreType.DIAMOND.meta){
 			event.player.addStat(AchievementList.DIAMONDS, 1);
 		}
 		ItemStack s = HardLibAPI.oreMachines.getSiftResult(event.pickedUp.getEntityItem(), false);

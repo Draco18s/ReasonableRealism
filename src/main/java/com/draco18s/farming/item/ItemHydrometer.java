@@ -83,8 +83,8 @@ public class ItemHydrometer extends Item {
 			tag.setBoolean("HasOffsets", true);
 			tag.setFloat("rainflat", offsets.rainfallFlat);
 			tag.setFloat("tempflat", offsets.temperatureFlat);
-			tag.setInteger("raintime", offsets.rainfallTimeOffset);
-			tag.setInteger("temptime", offsets.temperatureTimeOffset);
+			tag.setFloat("raintime", offsets.rainfallTimeOffset);
+			tag.setFloat("temptime", offsets.temperatureTimeOffset);
 			
 			Item item = Item.getItemFromBlock(block);
 			if (block == Blocks.WHEAT){

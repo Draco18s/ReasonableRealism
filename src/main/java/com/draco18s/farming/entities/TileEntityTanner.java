@@ -133,9 +133,6 @@ public class TileEntityTanner extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			FarmingBase.logger.log(Level.INFO, "" + saltSlot.getStackInSlot(0));
-			if(saltSlot.getStackInSlot(0) != null)
-				FarmingBase.logger.log(Level.INFO, "" + saltSlot.getStackInSlot(0).stackSize);
 			setBlockToUpdate();
 			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);

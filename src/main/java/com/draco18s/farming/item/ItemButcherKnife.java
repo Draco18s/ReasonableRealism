@@ -27,11 +27,13 @@ public class ItemButcherKnife extends ItemTool {
 	public ItemButcherKnife(ToolMaterial material) {
 		super((material.getDamageVsEntity()/2f)-1, -1f, material, EFFECTIVE_ON);
 		this.setCreativeTab(CreativeTabs.TOOLS);
+		//125 uses. Using half as much iron than a sword, this is still 2x as efficient
+		this.setMaxDamage(material.getMaxUses() / 2);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-		tooltip.add("+10 "+I18n.format("description.harderfarming:damagebonus"));
+		tooltip.add(I18n.format("tooltip.harderfarming:damagebonus", 10));
     }
 }

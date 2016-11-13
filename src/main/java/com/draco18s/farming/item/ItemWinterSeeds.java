@@ -19,6 +19,6 @@ public class ItemWinterSeeds extends ItemSeeds {
 	@Override
 	@SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flag) {
-		list.add(I18n.format("description.harderfarming:growsColdWeather"));
+		list.add(I18n.format("tooltip.harderfarming:growsColdWeather"));
 	}
 }

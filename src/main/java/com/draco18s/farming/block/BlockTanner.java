@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 
 import com.draco18s.farming.FarmingBase;
 import com.draco18s.farming.entities.TileEntityTanner;
+import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.farming.LeatherStatus;
 
@@ -22,6 +23,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.AchievementList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -106,6 +108,10 @@ public class BlockTanner extends Block {
 		if(inven != null && inven.getStackInSlot(0) == null) {
 			if(heldItem != null) {
 				ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
+				if(side == EnumFacing.UP && (remain == null || remain.stackSize < heldItem.stackSize)) {
+					player.addStat(FarmingAchievements.saltedHide, 1);
+				}
+				
 				if(remain == null) {
 					heldItem.splitStack(64);
 				}
@@ -116,7 +122,13 @@ public class BlockTanner extends Block {
 		}
 		else {
 			if((heldItem == null || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
-				player.inventory.addItemStackToInventory(inven.extractItem(0, 1, false));
+				ItemStack item = inven.extractItem(0, 1, false);
+				player.inventory.addItemStackToInventory(item);
+				
+				if(item != null && item.getItem() == Items.LEATHER) {
+					player.addStat(FarmingAchievements.getLeather, 1);
+					player.addStat(AchievementList.KILL_COW, 1);
+				}
 			}
 		}
 		te.markDirty();

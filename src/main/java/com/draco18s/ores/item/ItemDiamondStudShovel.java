@@ -13,11 +13,12 @@ public class ItemDiamondStudShovel extends ItemSpade {
 		super(material);
 	}
 
-	@Override
+	//no longer needeed
+	/*@Override
 	public boolean getIsRepairable(ItemStack stack, ItemStack repairItem) {
 		if(repairItem.getItem() == OresBase.rawOre && repairItem.getMetadata() == EnumOreType.DIAMOND.meta) {
 			return true;
 		}
 		return false;
-	}
+	}*/
 }

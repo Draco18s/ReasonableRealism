@@ -13,12 +13,13 @@ import net.minecraft.stats.AchievementList;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class FarmingAchievements {
-	public static Achievement killWeeds;
 	public static Achievement collectWinterWheat;
 	public static Achievement craftThermometer;
 	public static Achievement collectRawhide;
 	public static Achievement craftTanner;
 	public static Achievement getLeather;
+	public static Achievement saltedHide;
+	public static Achievement killWeeds;
 	public static Achievement cropRotation;
 	public static Achievement weedSuppressor;
 	
@@ -49,13 +50,15 @@ public class FarmingAchievements {
 		initAvhievements();
 		
 		if(FarmingEventHandler.doRawLeather) {
-			collectRawhide = new Achievement("collectRawhide", "collectRawhide", 6, -3, FarmingBase.rawLeather, AchievementList.BUILD_SWORD).registerStat();
+			collectRawhide = new Achievement("collectRawhide", "collectRawhide", 5, -3, FarmingBase.rawLeather, AchievementList.BUILD_SWORD).registerStat();
 			craftTanner = new Achievement("craftTanner", "craftTanner", 7, -4, FarmingBase.tanningRack, collectRawhide).registerStat();
 			getLeather = new Achievement("getLeather", "getLeather", 9, -4, Items.LEATHER, craftTanner).registerStat();
-
+			saltedHide = new Achievement("saltedHide", "saltedHide", 6, -6, FarmingBase.rawSalt, craftTanner).registerStat();
+			
 			try {
 				parentAch.set(AchievementList.FLY_PIG, getLeather);
 				parentAch.set(AchievementList.BREED_COW, getLeather);
+				parentAch.set(AchievementList.KILL_COW, craftTanner);
 			}
 			catch (Exception e) {
 				

@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.ores.entities.TileEntityMillstone;
+import com.draco18s.ores.util.OresAchievements;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -69,15 +70,23 @@ public class BlockMillstone extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if(heldItem != null) {
-			IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
+			TileEntityMillstone te = (TileEntityMillstone)world.getTileEntity(pos);
+			IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 			if(inventory == null) return false;
 			ItemStack stack = heldItem.copy();
 			stack.stackSize = 1;
 			stack = inventory.insertItem(0, stack, true);
 			if(stack == null) {
 				stack = inventory.insertItem(0, heldItem.splitStack(1), false);
+
+				MillstoneOrientation millpos = world.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
+				TileEntityMillstone center = (TileEntityMillstone)world.getTileEntity(te.getPos().add(millpos.offset.getX(), 0, millpos.offset.getZ()));
+				
+				if(center != null && center.getPower() > 0) {
+					player.addStat(OresAchievements.constructMill, 1);
+				}
 				return true;
 			}
 		}

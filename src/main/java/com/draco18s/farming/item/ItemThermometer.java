@@ -83,8 +83,8 @@ public class ItemThermometer extends Item {
 			tag.setBoolean("HasOffsets", true);
 			tag.setFloat("rainflat", offsets.rainfallFlat);
 			tag.setFloat("tempflat", offsets.temperatureFlat);
-			tag.setInteger("raintime", offsets.rainfallTimeOffset);
-			tag.setInteger("temptime", offsets.temperatureTimeOffset);
+			tag.setFloat("raintime", offsets.rainfallTimeOffset);
+			tag.setFloat("temptime", offsets.temperatureTimeOffset);
 			
 			Item item = Item.getItemFromBlock(block);
 			if (block == Blocks.WHEAT){
@@ -111,10 +111,10 @@ public class ItemThermometer extends Item {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.linkedcrop.text") + " " + tag.getString("linkedCropName"));
-			tooltip.add(I18n.format("tooltip.unlink.text"));
+			tooltip.add(I18n.format("tooltip.harderfarming:unlink.text"));
 		}
 		else {
-			tooltip.add(I18n.format("tooltip.link.text"));
+			tooltip.add(I18n.format("tooltip.harderfarming:link.text"));
 		}
 	}
 	
