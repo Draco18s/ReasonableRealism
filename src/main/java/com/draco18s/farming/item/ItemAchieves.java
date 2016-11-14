@@ -22,7 +22,6 @@ public class ItemAchieves extends Item {
 	public ItemAchieves() {
 		this.setHasSubtypes(true);
 		this.setMaxDamage(0);
-		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
 
 	@SideOnly(Side.CLIENT)

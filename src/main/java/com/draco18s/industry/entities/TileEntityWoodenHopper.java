@@ -10,7 +10,7 @@ public class TileEntityWoodenHopper extends TileEntityHopper {
 
 	public TileEntityWoodenHopper() {
 		super();
-		setCustomName("Wooden Hopper");
+		setCustomName("container.expindustry:wood_hopper");
 	}
 	
 	@Override

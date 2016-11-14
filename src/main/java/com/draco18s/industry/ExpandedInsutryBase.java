@@ -3,6 +3,9 @@ package com.draco18s.industry;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.industry.block.BlockDistributor;
+import com.draco18s.industry.block.BlockRailBridge;
+import com.draco18s.industry.block.BlockTypeRail;
 import com.draco18s.industry.block.BlockWoodenHopper;
 
 import net.minecraft.block.Block;
@@ -14,6 +17,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:industry}"/*, dependencies = "required-after:HardLib"*/)
 public class ExpandedInsutryBase {
@@ -21,6 +26,9 @@ public class ExpandedInsutryBase {
 	public static ExpandedInsutryBase instance;
 	
 	public static Block blockWoodHopper;
+	public static Block blockDistributor;
+	public static Block blockRailBridge;
+	public static Block blockTypeRail;
 	
 	/*@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.ores.EasyRegistry")
 	public static EasyRegistry proxy;*/
@@ -31,16 +39,21 @@ public class ExpandedInsutryBase {
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		
-		/*TODO: Will not function until Forge PR #3294 is merged*/
 		blockWoodHopper = new BlockWoodenHopper();
 		EasyRegistry.registerBlockWithItem(blockWoodHopper, "machine_wood_hopper");
+		blockDistributor = new BlockDistributor();
+		EasyRegistry.registerBlockWithItem(blockDistributor, "machine_distributor");
+		blockRailBridge = new BlockRailBridge();
+		EasyRegistry.registerBlockWithItem(blockRailBridge, "rail_bridge");
+		blockTypeRail = new BlockTypeRail();
+		EasyRegistry.registerBlockWithItem(blockTypeRail, "type_rail");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 	}
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		
+		GameRegistry.addRecipe(new ShapedOreRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood"));
 	}
 
 	@EventHandler

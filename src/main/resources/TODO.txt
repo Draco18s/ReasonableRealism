@@ -8,3 +8,4 @@
 [ ] Filter
  - Oh god the ui
 [ ] Detector rail
+[ ] Ore Flowers: non vanilla ores

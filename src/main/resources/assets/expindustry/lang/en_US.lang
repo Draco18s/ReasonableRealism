@@ -1,0 +1,7 @@
+tile.expindustry:machine_wood_hopper.name=Wooden Hopper
+tile.expindustry:machine_distributor.name=Distributor
+tile.expindustry:rail_bridge.name=Rail Bridge
+tile.expindustry:type_rail.name=Minecart Type Detector Rail
+
+container.expindustry:woodenhopper=Wooden Hopper
+container.expindustry:distributor=Distributor

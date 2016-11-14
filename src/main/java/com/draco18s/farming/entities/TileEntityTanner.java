@@ -90,9 +90,10 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	}
 	
 	private void sendUpdates() {
-		markDirty();
 		worldObj.markBlockRangeForRenderUpdate(pos, pos);
 		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
+		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		markDirty();
 	}
 
 	private boolean canRainHere() {

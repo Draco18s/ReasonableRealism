@@ -1,0 +1,41 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "particle": "expindustry:blocks/typerail",
+            "rail":"expindustry:blocks/typerail"
+        },
+        "uvlock": true,
+        "model": "expindustry:detector_rail_flat_ns"
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+
+        }],
+        "powered": {
+            "true": {
+                "textures": {
+                    "particle": "expindustry:blocks/typerail_powered",
+                    "rail":"expindustry:blocks/typerail_powered"
+                }
+            },
+            "false": {
+                "textures": {
+                    "particle": "expindustry:blocks/typerail",
+                    "rail":"expindustry:blocks/typerail"
+                }
+            }
+        },
+        "shape": {
+            "north_south":      { "model": "expindustry:detector_rail_flat_ns" },
+            "east_west":        { "model": "expindustry:detector_rail_flat_ew" },
+            "ascending_east":   { "model": "expindustry:detector_rail_raised_ew", "y": 270 },
+            "ascending_west":   { "model": "expindustry:detector_rail_raised_ew", "y": 90 },
+            "ascending_north":  { "model": "expindustry:detector_rail_raised_ns" },
+            "ascending_south":  { "model": "expindustry:detector_rail_raised_ns", "y": 180 }
+        }
+    }
+}

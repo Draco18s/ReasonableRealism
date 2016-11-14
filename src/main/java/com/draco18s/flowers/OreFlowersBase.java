@@ -2,6 +2,9 @@ package com.draco18s.flowers;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.flowers.block.BlockOreFlower1;
@@ -23,14 +26,18 @@ import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower2;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert1;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert2;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -138,20 +145,60 @@ public class OreFlowersBase {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		List<ItemStack> oreDictReq;
-		OreFlowerData data;
-		BlockWrapper wrap;
+		IBlockState flower1State = oreFlowers1.getDefaultState();
+		IBlockState flowerDesert1State = oreFlowersDesert1.getDefaultState();
 		IBlockState flower2State = oreFlowers2.getDefaultState();
 		IBlockState flowerDesert2State = oreFlowersDesert2.getDefaultState();
 		FlowerAchievements.addCoreAchievements();
-		/*oreDictReq = OreDictionary.getOres("oreTin");
+		addArbitraryOre("oreIron",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._1POORJOE,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._1RED_SORREL);
+		addArbitraryOre("oreGold",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._2HORSETAIL,	Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._2GOLD*/);
+		addArbitraryOre("oreDiamond",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._3VALLOZIA,	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._3CHANDELIER_TREE);
+		addArbitraryOre("oreRedstone",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._4FLAME_LILY,	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._4AVELOZ);
+		addArbitraryOre("oreTin",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._5TANSY, 		Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._5TIN*/);
+		addArbitraryOre("oreCopper",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._6HAUMAN, 		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._6COPPER_FLOWER);
+		addArbitraryOre("oreLead", 		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._7LEADPLANT, 	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._7SHEEPS_FESCUE);
+		addArbitraryOre("oreUranium", 	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._8RED_AMARANTH,Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._8PRIMROSE);
+
+		addArbitraryOre("oreSilver",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._1RAPESEED);
+		addArbitraryOre("oreNickel",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._2SHRUB_VIOLET,Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._2MILKWORT);
+		addArbitraryOre("oreAluminum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._3AFFINE, 		Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._3ALUMINUM*/);
+		addArbitraryOre("orePlatinum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._4PLATINUM, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._4MADWORT);
+		addArbitraryOre("oreZinc",		flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._5CLOVER, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._5ZILLA);
+		addArbitraryOre("oreFluorite",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._6CAMELLIA, 	Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._6FLUORITE*/);
+		addArbitraryOre("oreCasmium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._7MALVA, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._7MARIGOLD);
+		addArbitraryOre("oreThorium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._8MELASTOMA, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._8THORIUM);
+	}
+	
+	private <T extends Comparable<T>, V extends T,U extends Comparable<U>, W extends U>
+	void addArbitraryOre(String orename, IBlockState flower, IBlockState desertFlower, @Nullable IProperty<T> flowerProp, @Nullable V flowerValue, @Nullable IProperty<U> desertProp, @Nullable W desertValue) {
+		List<ItemStack> oreDictReq = OreDictionary.getOres(orename);
+		OreFlowerData data;
+		BlockWrapper wrap;
 		if(oreDictReq.size() > 0) {
 			for(ItemStack stack : oreDictReq) {
-				data = new OreFlowerData(flower2State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._1POORJOE),
-						8, 3, 0);
-				wrap = new BlockWrapper(Blocks.IRON_ORE, 16);
-				HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
+				if(stack.getItem() instanceof ItemBlock) {
+					Block block = Block.getBlockFromItem(stack.getItem());
+					if(block instanceof IBlockMultiBreak) {
+						wrap = new BlockWrapper(block, Props.ORE_DENSITY);
+					}
+					else {
+						wrap = new BlockWrapper(block, 16);
+					}
+					
+					if(HardLibAPI.oreFlowers.getDataForOre(wrap) == null) {
+						if(flowerProp != null && flowerValue != null) {
+							data = new OreFlowerData(flower.withProperty(flowerProp, flowerValue),
+									8, 3, 0);
+							HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
+						}
+						if(desertProp != null && desertValue != null) {
+							data = new OreFlowerData(desertFlower.withProperty(desertProp, desertValue),
+									8, 3, 0);
+							HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
+						}
+					}
+				}
 			}
-		}*/
+		}
 	}
 }
