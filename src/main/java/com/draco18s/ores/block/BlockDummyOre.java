@@ -23,21 +23,21 @@ public class BlockDummyOre extends Block {
 	}
 	
 	public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
+		return false;
+	}
 
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
-    
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return true;
-    }
+	
+	@SideOnly(Side.CLIENT)
+	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+		return true;
+	}
 }

@@ -1,56 +1,31 @@
-package com.draco18s.ores.block;
+package com.draco18s.industry.block;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
+import com.draco18s.industry.ExpandedInsutryBase;
+import com.draco18s.industry.IndustryGuiHandler;
+import com.draco18s.industry.entities.TileEntityCartLoader;
+
+import net.minecraft.block.BlockHopper;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.ores.OreGuiHandler;
-import com.draco18s.ores.OresBase;
-import com.draco18s.ores.entities.TileEntityPackager;
-import com.draco18s.ores.entities.TileEntitySifter;
+public class BlockCartLoader extends BlockHopper {
 
-public class BlockPackager extends Block {
-
-	public BlockPackager() {
-		super(Material.IRON);
-		setHardness(1.0f);
-		setHarvestLevel("pickaxe", 1);
-		setResistance(1.0f);
-		setSoundType(SoundType.METAL);
-		setCreativeTab(CreativeTabs.DECORATIONS);
+	public BlockCartLoader() {
+		super();
+		setHardness(3.0F);
+		setResistance(8.0F);
 	}
-	
-	/*public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}*/
 	
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
@@ -59,20 +34,19 @@ public class BlockPackager extends Block {
 	
 	@Override
 	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new TileEntityPackager();
+		return new TileEntityCartLoader();
 	}
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(OresBase.instance, OreGuiHandler.PACKAGER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(ExpandedInsutryBase.instance, IndustryGuiHandler.EXT_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-	//public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		TileEntity tileentity = worldIn.getTileEntity(pos);
-
+		
 		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		for(int i=0; i < inventory.getSlots(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
@@ -83,9 +57,6 @@ public class BlockPackager extends Block {
 				worldIn.spawnEntityInWorld(entityIn);
 			}
 		}
-		/*Props.MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
-		BlockPos p = pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
-		worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority*/
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
 }

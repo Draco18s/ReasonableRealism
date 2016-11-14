@@ -26,27 +26,27 @@ public class ClientOreParticleHandler implements IMessageHandler<ToClientMessage
 	private static int RADAR = 0;
 	private static int DUST = 1;
 	
-    public IMessage onMessage(final ToClientMessageOreParticles message, final MessageContext ctx) {
-        IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-            	EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-                //System.out.println(String.format("Received %s from %s", message.oreAt, p.getDisplayName()));
-            	drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, RADAR, 0));
-            	drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, DUST, 0));
-            	drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, DUST, -4));
-            }
-        });
-        return null;
-    }
-    
-    private static void drawParticle(World worldObj, Particle particle) {
-    	if(particle != null)
+	public IMessage onMessage(final ToClientMessageOreParticles message, final MessageContext ctx) {
+		IThreadListener mainThread = Minecraft.getMinecraft();
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+				//System.out.println(String.format("Received %s from %s", message.oreAt, p.getDisplayName()));
+				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, RADAR, 0));
+				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, DUST, 0));
+				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, DUST, -4));
+			}
+		});
+		return null;
+	}
+	
+	private static void drawParticle(World worldObj, Particle particle) {
+		if(particle != null)
 			Minecraft.getMinecraft().effectRenderer.addEffect(particle);
-    }
-    
-    private static Particle getParticle(World worldObj, BlockPos oreAt, BlockPos eventAt, int id, int startingAge) {
+	}
+	
+	private static Particle getParticle(World worldObj, BlockPos oreAt, BlockPos eventAt, int id, int startingAge) {
 		Particle particle = null;
 		if(id == RADAR) {
 			float x, y, z;
@@ -75,5 +75,5 @@ public class ClientOreParticleHandler implements IMessageHandler<ToClientMessage
 			}
 		}
 		return particle;
-    }
+	}
 }

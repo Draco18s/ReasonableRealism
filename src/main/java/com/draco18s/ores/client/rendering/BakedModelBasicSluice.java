@@ -49,7 +49,7 @@ public class BakedModelBasicSluice implements IBakedModel {
 	}
 
 	@Override
-    @Deprecated
+	@Deprecated
 	public ItemCameraTransforms getItemCameraTransforms() {
 		return waterFlow.getItemCameraTransforms();
 	}

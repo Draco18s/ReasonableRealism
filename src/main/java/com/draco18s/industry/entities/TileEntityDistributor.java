@@ -45,21 +45,22 @@ public class TileEntityDistributor extends TileEntityHopper {
 			}
 		}
 	}
-	
+
+	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock();
 	}
 
 	@Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {

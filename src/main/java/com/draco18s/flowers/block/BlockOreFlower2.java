@@ -43,13 +43,13 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 		super(Material.PLANTS);
 		setHardness(0.0F);
 		setSoundType(SoundType.PLANT);
-        setCreativeTab(CreativeTabs.DECORATIONS);
+		setCreativeTab(CreativeTabs.DECORATIONS);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD).withProperty(Props.FLOWER_STALK, false));
 	}
 	
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return FLOWER_AABB;
-    }
+		return FLOWER_AABB;
+	}
 	
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
@@ -65,48 +65,48 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 		return new ItemStack(item, 1, i);
 	}
 	
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
-        list.add(new ItemStack(item, 1, 0));
-        list.add(new ItemStack(item, 1, 1));
-        list.add(new ItemStack(item, 1, 2));
-        //list.add(new ItemStack(item, 1, 3));
-        list.add(new ItemStack(item, 1, 4));
-        list.add(new ItemStack(item, 1, 5));
-        list.add(new ItemStack(item, 1, 6));
-        list.add(new ItemStack(item, 1, 7));
-    }
-    
-    public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
-    	boolean f = world.getBlockState(pos.down()).getBlock() != this;
-    	/*if(plantable.getPlant(world, pos).getBlock() == this) {
-    		if(state.getValue(Props.FLOWER_TYPE2) == EnumOreFlower2._5TANSY) {
-    			return true&f;
-    		}
-    		if(state.getValue(Props.FLOWER_TYPE2) == EnumOreFlower2._4FLAME_LILY) {
-    			return true&f;
-    		}
-    	}*/
-    	return super.canSustainPlant(state, world, pos, direction, plantable);
-    }
-    
-    @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        IBlockState state = this.getStateFromMeta(meta);
-        state = state.withProperty(Props.FLOWER_STALK, false);
-        EnumOreFlower2 thisType = state.getValue(Props.FLOWER_TYPE2);
-        /*if(thisType == EnumOreFlower2._5TANSY || thisType == EnumOreFlower2._4FLAME_LILY) {
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
+		list.add(new ItemStack(item, 1, 0));
+		list.add(new ItemStack(item, 1, 1));
+		list.add(new ItemStack(item, 1, 2));
+		//list.add(new ItemStack(item, 1, 3));
+		list.add(new ItemStack(item, 1, 4));
+		list.add(new ItemStack(item, 1, 5));
+		list.add(new ItemStack(item, 1, 6));
+		list.add(new ItemStack(item, 1, 7));
+	}
+	
+	public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
+		boolean f = world.getBlockState(pos.down()).getBlock() != this;
+		/*if(plantable.getPlant(world, pos).getBlock() == this) {
+			if(state.getValue(Props.FLOWER_TYPE2) == EnumOreFlower2._5TANSY) {
+				return true&f;
+			}
+			if(state.getValue(Props.FLOWER_TYPE2) == EnumOreFlower2._4FLAME_LILY) {
+				return true&f;
+			}
+		}*/
+		return super.canSustainPlant(state, world, pos, direction, plantable);
+	}
+	
+	@Override
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		IBlockState state = this.getStateFromMeta(meta);
+		state = state.withProperty(Props.FLOWER_STALK, false);
+		EnumOreFlower2 thisType = state.getValue(Props.FLOWER_TYPE2);
+		/*if(thisType == EnumOreFlower2._5TANSY || thisType == EnumOreFlower2._4FLAME_LILY) {
 			IBlockState stateBelow = worldIn.getBlockState(pos.down());
 			if(stateBelow.getBlock() == this && stateBelow.getValue(Props.FLOWER_TYPE2) == thisType) {
 				stateBelow = stateBelow.withProperty(Props.FLOWER_STALK, true);
 				worldIn.setBlockState(pos.down(), stateBelow, 3);
 			}
 		}*/
-        return state;
-    }
-    
-    @Override
+		return state;
+	}
+	
+	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, new IProperty[] {Props.FLOWER_TYPE2,Props.FLOWER_STALK});
 	}
@@ -127,16 +127,16 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	
 	@Override
 	public int damageDropped(IBlockState state) {
-        return state.getValue(Props.FLOWER_TYPE2).getOrdinal();
-    }
+		return state.getValue(Props.FLOWER_TYPE2).getOrdinal();
+	}
 	
 	@Override
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
 		super.updateTick(world, pos, state, rand);
 		/*if(state.getValue(Props.FLOWER_TYPE2) == EnumOreFlower2._2HORSETAIL && rand.nextInt(100) == 0) {
-    		world.setBlockState(pos, state.withProperty(Props.FLOWER_STALK, !state.getValue(Props.FLOWER_STALK)), 3);
-    	}*/
-    }
+			world.setBlockState(pos, state.withProperty(Props.FLOWER_STALK, !state.getValue(Props.FLOWER_STALK)), 3);
+		}*/
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)

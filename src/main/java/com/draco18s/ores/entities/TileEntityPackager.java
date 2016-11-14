@@ -64,11 +64,11 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			boolean canAnyPack = false;
 			int resetTime = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
-        		if(canPackage(s)) {
-        			canAnyPack = true;
-        			resetTime = s;
-        		}
-        	}
+				if(canPackage(s)) {
+					canAnyPack = true;
+					resetTime = s;
+				}
+			}
 			if(resetTime != activeSlot) {
 				activeSlot = resetTime;
 				packTime = 100;
@@ -76,53 +76,53 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			if(!canAnyPack) {
 				packTime = 0;
 			}
-            else if (packTime <= 0) {
-            	packItem();
-            }
+			else if (packTime <= 0) {
+				packItem();
+			}
 		}
-        else {
-        	activeSlot = -1;
-        	for(int s = 0; s < inputSlot.getSlots(); s++) {
-        		if(canPackage(s)) {
-        			activeSlot = s;
-        			packTime = 100;
-        			ItemStack nextResult = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(s),true);
-        			float inMod = 1;
-        			float outMod = 1;
-        			if(inputSlot.getStackInSlot(s).getItem() instanceof ItemBlock) {
-        				try {
-        					Block block = Block.getBlockFromItem(inputSlot.getStackInSlot(s).getItem());
-        					
-        					IBlockState state;
-        					state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
-        					inMod = state.getBlockHardness(null, BlockPos.ORIGIN) * 2;
-        					if(block.getHarvestTool(state).equals("pickaxe") && block.getHarvestLevel(state) >= 0) {
-        						inMod *= (block.getHarvestLevel(state) + 2);
-        					}
-        				}
-        				catch(NullPointerException e) {
-        					inMod = 1;
-        				}
-        			}
-        			if(nextResult != null && nextResult.getItem() instanceof ItemBlock) {
-        				try {
-        					Block block = Block.getBlockFromItem(nextResult.getItem());
-        					
-        					IBlockState state;
-        					state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
-        					outMod = state.getBlockHardness(null, BlockPos.ORIGIN);
-        					if(block.getHarvestTool(state).equals("shovel") && block.getHarvestLevel(state) >= 0) {
-        						outMod *= 2;
-        					}
-        				}
-        				catch(NullPointerException e) {
-        					outMod = 1;
-        				}
-        			}
-        			timeMod = Math.max(inMod, outMod);
-        		}
-        	}
-        }
+		else {
+			activeSlot = -1;
+			for(int s = 0; s < inputSlot.getSlots(); s++) {
+				if(canPackage(s)) {
+					activeSlot = s;
+					packTime = 100;
+					ItemStack nextResult = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(s),true);
+					float inMod = 1;
+					float outMod = 1;
+					if(inputSlot.getStackInSlot(s).getItem() instanceof ItemBlock) {
+						try {
+							Block block = Block.getBlockFromItem(inputSlot.getStackInSlot(s).getItem());
+							
+							IBlockState state;
+							state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
+							inMod = state.getBlockHardness(null, BlockPos.ORIGIN) * 2;
+							if(block.getHarvestTool(state).equals("pickaxe") && block.getHarvestLevel(state) >= 0) {
+								inMod *= (block.getHarvestLevel(state) + 2);
+							}
+						}
+						catch(NullPointerException e) {
+							inMod = 1;
+						}
+					}
+					if(nextResult != null && nextResult.getItem() instanceof ItemBlock) {
+						try {
+							Block block = Block.getBlockFromItem(nextResult.getItem());
+							
+							IBlockState state;
+							state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
+							outMod = state.getBlockHardness(null, BlockPos.ORIGIN);
+							if(block.getHarvestTool(state).equals("shovel") && block.getHarvestLevel(state) >= 0) {
+								outMod *= 2;
+							}
+						}
+						catch(NullPointerException e) {
+							outMod = 1;
+						}
+					}
+					timeMod = Math.max(inMod, outMod);
+				}
+			}
+		}
 	}
 
 	private float calcAndGetPower() {
@@ -183,10 +183,10 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
@@ -203,19 +203,19 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 				return (T) outputSlot;
 			}
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 
 	@Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {

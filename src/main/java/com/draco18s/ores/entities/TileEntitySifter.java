@@ -54,11 +54,11 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 			boolean canAnySift = false;
 			int resetTime = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
-        		if(canSift(s)) {
-        			canAnySift = true;
-        			resetTime = s;
-        		}
-        	}
+				if(canSift(s)) {
+					canAnySift = true;
+					resetTime = s;
+				}
+			}
 			if(resetTime != activeSlot) {
 				activeSlot = resetTime;
 				siftTime = 100;
@@ -66,19 +66,19 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 			if(!canAnySift) {
 				siftTime = 0;
 			}
-            else if (siftTime <= 0) {
-            	siftItem();
-            }
+			else if (siftTime <= 0) {
+				siftItem();
+			}
 		}
-        else {
-        	activeSlot = -1;
-        	for(int s = 0; s < inputSlot.getSlots(); s++) {
-        		if(canSift(s)) {
-        			siftTime = 40;
-        			activeSlot = s;
-        		}
-        	}
-        }
+		else {
+			activeSlot = -1;
+			for(int s = 0; s < inputSlot.getSlots(); s++) {
+				if(canSift(s)) {
+					siftTime = 40;
+					activeSlot = s;
+				}
+			}
+		}
 	}
 
 	private boolean canSift(int slot) {
@@ -126,10 +126,10 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
@@ -146,19 +146,19 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 				return (T) outputSlot;
 			}
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 
 	@Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {

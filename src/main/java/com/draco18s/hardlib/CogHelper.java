@@ -33,9 +33,9 @@ public class CogHelper {
 		File defaultModulesDir = new File(modulesDir, "mods");
 		if (defaultModulesDir.exists()) {
 			File[] defaultModules = defaultModulesDir.listFiles();
-        	for (File defaultModule : defaultModules) {
-        		defaultModule.delete();
-        	}
+			for (File defaultModule : defaultModules) {
+				defaultModule.delete();
+			}
 		} else {
 			configPath.mkdir();
 			modulesDir.mkdir();

@@ -19,7 +19,7 @@ public class BlockLimonite extends Block {
 		setHardness(3.0f);
 		setHarvestLevel("shovel", 0);
 		setResistance(1.0f);
-        setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 	}
 	
 	@Override
@@ -28,15 +28,15 @@ public class BlockLimonite extends Block {
 		if(fortune > 0) r += random.nextInt(1);
 		r += random.nextInt(1);
 		return r;
-    }
+	}
 	
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return OresBase.rawOre;
-    }
+		return OresBase.rawOre;
+	}
 
 	@Override
 	public int damageDropped(IBlockState state) {
-        return EnumOreType.LIMONITE.meta;
-    }
+		return EnumOreType.LIMONITE.meta;
+	}
 }

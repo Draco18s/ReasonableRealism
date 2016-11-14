@@ -20,9 +20,9 @@ public class ItemOreManipulator extends Item {
 
 	public ItemOreManipulator(BlockWrapper type) {
 		oreType = type;
-        this.setHasSubtypes(false);
-        this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabs.TOOLS);
+		this.setHasSubtypes(false);
+		this.setMaxDamage(0);
+		this.setCreativeTab(CreativeTabs.TOOLS);
 	}
 	
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -38,5 +38,5 @@ public class ItemOreManipulator extends Item {
 			player.addChatMessage(new TextComponentString(oreType.block.getRegistryName() + " now " + HardLibAPI.oreData.getOreData(world, pos, oreType)));
 		}
 		return EnumActionResult.SUCCESS;
-    }
+	}
 }

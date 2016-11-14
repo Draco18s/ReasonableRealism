@@ -5,15 +5,16 @@ import com.draco18s.industry.entities.TileEntityWoodenHopper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class GuiContainerWoodenHopper extends GuiContainer {
-	TileEntityWoodenHopper tileEntity;
+public class GuiContainerExtHopper extends GuiContainer {
+	TileEntityHopper tileEntity;
 	Container container;
 	private static ResourceLocation WOODEN_HOPPER_GUI_TEXTURE;
 
-	public GuiContainerWoodenHopper(Container inventorySlotsIn, TileEntityWoodenHopper te) {
+	public GuiContainerExtHopper(Container inventorySlotsIn, TileEntityHopper te) {
 		super(inventorySlotsIn);
 		tileEntity = te;
 		WOODEN_HOPPER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/hopper.png");
@@ -22,8 +23,8 @@ public class GuiContainerWoodenHopper extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.expindustry:woodenhopper", new Object[0]).getUnformattedText(), 8, 6, 4210752);
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation(tileEntity.getName()).getUnformattedText(), 8, 6, 4210752);
+		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory").getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
 	}
 
 	@Override

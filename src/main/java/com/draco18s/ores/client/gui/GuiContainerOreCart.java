@@ -95,19 +95,19 @@ public class GuiContainerOreCart extends GuiContainer {
 			int short1 = 0;
 			
 			boolean flag = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            //mc.getTextureManager().bindTexture();
-            
-            if(this.id == 1) {
-            	k += 22;
-            }
-            //DumpDir curState = GuiContainerOreCart.entity.getDumpDir();
-            if(curState != null && this.id == curState.ordinal()) {
-            	short1 += 22;
-            }
-            if(flag) {
-            	short1 += 44;
-            }
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			//mc.getTextureManager().bindTexture();
+			
+			if(this.id == 1) {
+				k += 22;
+			}
+			//DumpDir curState = GuiContainerOreCart.entity.getDumpDir();
+			if(curState != null && this.id == curState.ordinal()) {
+				short1 += 22;
+			}
+			if(flag) {
+				short1 += 44;
+			}
 			
 			this.drawTexturedModalRect(this.xPosition, this.yPosition, k, short1, this.width, this.height);
 		}

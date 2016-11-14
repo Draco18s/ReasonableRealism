@@ -128,10 +128,10 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			setBlockToUpdate();
@@ -155,8 +155,8 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 				return (T) rightSlot;
 			}
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 
 	private CombinedInvWrapper getOuputSlots() {
 		ArrayList<ItemStackHandler> allSlots = new ArrayList();
@@ -170,15 +170,15 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	}
 
 	@Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
@@ -245,14 +245,14 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	public int getLeather(int slot) {
 		//FarmingBase.logger.log(Level.INFO, "Slot " + slot);
 		if(slot == 0) {
-			//FarmingBase.logger.log(Level.INFO, "      " + leftSlot.getStackInSlot(0));
+			//FarmingBase.logger.log(Level.INFO, "	  " + leftSlot.getStackInSlot(0));
 			//return leftSlot.getStackInSlot(0) != null;
 			if(leftSlot.getStackInSlot(0) == null) return 0;
 			if(leftSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) return 1;
 			if(leftSlot.getStackInSlot(0).getItem() == Items.LEATHER) return 2;
 		}
 		if(slot == 1) {
-			//FarmingBase.logger.log(Level.INFO, "      " + rightSlot.getStackInSlot(0));
+			//FarmingBase.logger.log(Level.INFO, "	  " + rightSlot.getStackInSlot(0));
 			if(rightSlot.getStackInSlot(0) == null) return 0;
 			if(rightSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) return 1;
 			if(rightSlot.getStackInSlot(0).getItem() == Items.LEATHER) return 2;

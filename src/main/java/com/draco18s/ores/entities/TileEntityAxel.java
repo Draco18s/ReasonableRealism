@@ -72,10 +72,10 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
 		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
@@ -83,19 +83,19 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 				return (T) powerSupply;
 			}
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 	
 	@Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {

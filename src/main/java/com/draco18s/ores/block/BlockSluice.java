@@ -229,8 +229,8 @@ public class BlockSluice extends Block {
 				return thisState.withProperty(FACING, face.getOpposite());
 			}
 		}
-        
-        return thisState.withProperty(FACING, EnumFacing.NORTH);
+		
+		return thisState.withProperty(FACING, EnumFacing.NORTH);
 	}
 
 	@Override
@@ -242,9 +242,9 @@ public class BlockSluice extends Block {
 	
 	@Override
 	@Deprecated
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return PARTIAL_AABB;
-    }
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		return PARTIAL_AABB;
+	}
 
 	@Override
 	@Deprecated
@@ -305,7 +305,7 @@ public class BlockSluice extends Block {
 	}
 	
 	@Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+	public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
 		IBlockState stateAtPos = world.getBlockState(pos.offset(face,1));
 		Block bl = stateAtPos.getBlock();
 		if(bl == Blocks.WATER || bl == Blocks.FLOWING_WATER || bl == this) {
@@ -313,6 +313,6 @@ public class BlockSluice extends Block {
 			return true;
 		}
 		if(face == EnumFacing.UP) return true;
-        return state.isOpaqueCube();
-    }
+		return state.isOpaqueCube();
+	}
 }

@@ -29,19 +29,19 @@ public class ItemOreFlower1 extends ItemBlock {
 
 	@Override
 	public int getMetadata(int damage) {
-        return damage;
-    }
+		return damage;
+	}
 	
 	@Override
-    public String getUnlocalizedName(ItemStack stack) {
+	public String getUnlocalizedName(ItemStack stack) {
 		//EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
-        //return "item."+prop.getByOrdinal(stack.getMetadata()).name();
+		//return "item."+prop.getByOrdinal(stack.getMetadata()).name();
 		return "item.oreflowers:"+((IMetaLookup)prop.getEnumConstants()[0].getByOrdinal(stack.getMetadata())).getVariantName();
-    }
+	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
 		super.addInformation(stack, player, tooltip, advanced);
 		EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
 		tooltip.add(I18n.format("indicator."+type.getVariantName()));

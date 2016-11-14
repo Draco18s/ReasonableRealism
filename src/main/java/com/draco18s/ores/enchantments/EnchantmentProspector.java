@@ -31,13 +31,13 @@ public class EnchantmentProspector extends Enchantment {
 	
 	@Override
 	public int getMaxLevel() {
-	    return 3;
+		return 3;
 	}
 	
 	public boolean canApplyTogether(Enchantment other) {
 		boolean ret = super.canApplyTogether(other);
 		ret |= other != Enchantments.FORTUNE;
-	    return ret;
+		return ret;
 	}
 	
 	@Override

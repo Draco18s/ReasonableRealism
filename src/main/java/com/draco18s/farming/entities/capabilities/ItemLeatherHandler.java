@@ -38,7 +38,7 @@ public class ItemLeatherHandler extends ItemStackHandler {
 	}
 
 	@Override
-    protected int getStackLimit(int slot, ItemStack stack) {
-        return 1;
-    }
+	protected int getStackLimit(int slot, ItemStack stack) {
+		return 1;
+	}
 }

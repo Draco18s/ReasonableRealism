@@ -42,32 +42,32 @@ public class ItemThermometer extends Item {
 		this.setMaxDamage(0);
 		
 		this.addPropertyOverride(new ResourceLocation("time"), new IItemPropertyGetter()
-        {
-            public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-            	if (world == null && entity != null) {
-            		world = entity.worldObj;
-                }
-            	if(world == null || entity == null) {
-            		return 6;
-            	}
-            	NBTTagCompound tag = stack.getTagCompound();
-            	
-            	Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
-    			float t = bio.getTemperature();
+		{
+			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+				if (world == null && entity != null) {
+					world = entity.worldObj;
+				}
+				if(world == null || entity == null) {
+					return 6;
+				}
+				NBTTagCompound tag = stack.getTagCompound();
+				
+				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
+				float t = bio.getTemperature();
 
-            	int flat = 0;
-            	int time = 0;
-            	if(tag != null) {
-                	flat = tag.getInteger("tempflat");
-                	time = tag.getInteger("temptime");
-    			}
-            	//TODO: time offset?
-    			t += flat;
-    			float n = Math.round((t+0.35f) * 4);
-    			n = Math.max(Math.min(n, 11),0);
-                return n;
-            }
-        });
+				int flat = 0;
+				int time = 0;
+				if(tag != null) {
+					flat = tag.getInteger("tempflat");
+					time = tag.getInteger("temptime");
+				}
+				//TODO: time offset?
+				t += flat;
+				float n = Math.round((t+0.35f) * 4);
+				n = Math.max(Math.min(n, 11),0);
+				return n;
+			}
+		});
 	}
 	
 	@Override
@@ -107,7 +107,7 @@ public class ItemThermometer extends Item {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.linkedcrop.text") + " " + tag.getString("linkedCropName"));
@@ -119,14 +119,14 @@ public class ItemThermometer extends Item {
 	}
 	
 	/*public boolean hasItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack) {
-        return true;
-    }
-    
-    public int getItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack, int rotation) {
+		return true;
+	}
+	
+	public int getItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack, int rotation) {
 		Biome bio = worldIn.getBiomeGenForCoords(pos);
 		float f = bio.getTemperature();
 		f = Math.round((f+1.35f) * 4);
 		f = Math.max(Math.min(f, 15),1);
-        return Math.round(f);
-    }*/
+		return Math.round(f);
+	}*/
 }

@@ -58,36 +58,36 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		if(millpos == MillstoneOrientation.CENTER) {
 			if(grindTime > 0) {
 				float pow = calcAndGetPower();
-	            grindTime -= pow;
-	            if(inputSlot.getStackInSlot(0) == null) {
-	            	grindTime = 0;
-	            }
-	            else if (grindTime <= 0) {
-	            	grindItem(millpos);
-	            	
-	            	if(outputSlot.getStackInSlot(0) != null && outputSlot.getStackInSlot(0).stackSize >= 8) {
-	            		if(!worldObj.isRemote) {	
-	    					Random rand = worldObj.rand;
-	    					float rx = rand.nextFloat() * 0.6F + 0.2F;
-	    					float ry = rand.nextFloat() * 0.2F + 0.6F - 1;
-	    					float rz = rand.nextFloat() * 0.6F + 0.2F;
-	    					EntityItem entityItem = new EntityItem(worldObj,
-	    							pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
-	    							outputSlot.extractItem(0, 64, false));
-	    					worldObj.spawnEntityInWorld(entityItem);
-	    					entityItem.motionX = 0;
-	    					entityItem.motionY = -0.2F;
-	    					entityItem.motionZ = 0;
-	    				}
-	            	}
-	            }
+				grindTime -= pow;
+				if(inputSlot.getStackInSlot(0) == null) {
+					grindTime = 0;
+				}
+				else if (grindTime <= 0) {
+					grindItem(millpos);
+					
+					if(outputSlot.getStackInSlot(0) != null && outputSlot.getStackInSlot(0).stackSize >= 8) {
+						if(!worldObj.isRemote) {	
+							Random rand = worldObj.rand;
+							float rx = rand.nextFloat() * 0.6F + 0.2F;
+							float ry = rand.nextFloat() * 0.2F + 0.6F - 1;
+							float rz = rand.nextFloat() * 0.6F + 0.2F;
+							EntityItem entityItem = new EntityItem(worldObj,
+									pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
+									outputSlot.extractItem(0, 64, false));
+							worldObj.spawnEntityInWorld(entityItem);
+							entityItem.motionX = 0;
+							entityItem.motionY = -0.2F;
+							entityItem.motionZ = 0;
+						}
+					}
+				}
 				this.markDirty();
 			}
 			else if (canGrind(millpos)) {
-	            grindTime = 400;
-	            //TODO: sounds
-	            //OresBase.proxy.startMillSound(this);
-	        }
+				grindTime = 400;
+				//TODO: sounds
+				//OresBase.proxy.startMillSound(this);
+			}
 		}
 		else {
 			if(worldObj.getBlockState(this.pos.add(millpos.offset.getX(), 0, millpos.offset.getZ())).getBlock() != blockType) {
@@ -146,12 +146,12 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	private void grindItem(MillstoneOrientation millpos) {
 		if (canGrind(millpos)) {
 			ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlot.getStackInSlot(0)).copy();
-            
+			
 			outputSlot.insertItem(0, result, false);
 			//System.out.println("#" + outputSlot.getStackInSlot(0).stackSize);
 			inputSlot.extractItem(0, 1, false);
 			this.markDirty();
-        }
+		}
 	}
 
 	private boolean canGrind(MillstoneOrientation millpos) {
@@ -165,10 +165,10 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		MillstoneOrientation millpos = bs.getValue(Props.MILL_ORIENTATION);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -180,10 +180,10 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(millpos.canAcceptInput && facing == EnumFacing.UP) {
-	            return (T) inputSlot;
+				return (T) inputSlot;
 			}
 			if(millpos.canAcceptOutput && facing == EnumFacing.DOWN) {
-	            return (T) outputSlot;
+				return (T) outputSlot;
 			}
 			if(millpos == MillstoneOrientation.CENTER && facing == EnumFacing.EAST) {
 				return (T) inputSlot;
@@ -194,12 +194,12 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				return (T) new RawMechanicalPowerHandler();
 			}
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 	
 	public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
+		return this.writeToNBT(new NBTTagCompound());
+	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {

@@ -55,7 +55,7 @@ public class OreGuiHandler implements IGuiHandler {
 			if(tileEntity instanceof TileEntitySifter){
 				return new GuiContainerSifter(new ContainerSifter(player.inventory, (TileEntitySifter) tileEntity), (TileEntitySifter)tileEntity);
 			}
-    	}
+		}
 		if(ID == ORE_CART) {
 			Entity ent = world.getEntityByID(x);
 			if(ent instanceof EntityOreMinecart){
@@ -68,7 +68,7 @@ public class OreGuiHandler implements IGuiHandler {
 			if(tileEntity instanceof TileEntityPackager){
 				return new GuiContainerPackager(new ContainerPackager(player.inventory, (TileEntityPackager) tileEntity), (TileEntityPackager)tileEntity);
 			}
-    	}
+		}
 		return null;
 	}
 }

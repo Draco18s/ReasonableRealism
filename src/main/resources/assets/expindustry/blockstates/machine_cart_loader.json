@@ -2,12 +2,12 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "particle": "blocks/planks_oak",
-            "top": "expindustry:blocks/hopper_top",
-            "side": "blocks/planks_oak",
-            "side2": "blocks/planks_oak",
-            "inside": "expindustry:blocks/hopper_inside",
-            "bottom": "blocks/planks_oak"
+            "particle": "expindustry:blocks/loader_topoutside_gold",
+            "top": "blocks/hopper_top",
+            "side": "expindustry:blocks/loader_topoutside_gold",
+            "side2": "blocks/redstone_block",
+            "inside": "blocks/hopper_inside",
+            "bottom": "blocks/hopper_outside"
         },
         "uvlock": true,
         "model": "expindustry:hopper_down"

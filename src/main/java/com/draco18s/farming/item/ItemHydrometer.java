@@ -42,32 +42,32 @@ public class ItemHydrometer extends Item {
 		this.setMaxDamage(0);
 		
 		this.addPropertyOverride(new ResourceLocation("time"), new IItemPropertyGetter()
-        {
-            public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-            	if (world == null && entity != null) {
-            		world = entity.worldObj;
-                }
-            	if(world == null || entity == null) {
-            		return 6;
-            	}
-            	NBTTagCompound tag = stack.getTagCompound();
-            	
-            	Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
-    			float t = bio.getRainfall();
+		{
+			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+				if (world == null && entity != null) {
+					world = entity.worldObj;
+				}
+				if(world == null || entity == null) {
+					return 6;
+				}
+				NBTTagCompound tag = stack.getTagCompound();
+				
+				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
+				float t = bio.getRainfall();
 
-            	int flat = 0;
-            	int time = 0;
-            	if(tag != null) {
-                	flat = tag.getInteger("rainflat");
-                	time = tag.getInteger("raintime");
-    			}
-            	//TODO: time offset?
-    			t += flat;
-    			float n = Math.round((t-0.575f) * 8);
-    			n = 7 - Math.max(Math.min(n, 7),0);
-                return n;
-            }
-        });
+				int flat = 0;
+				int time = 0;
+				if(tag != null) {
+					flat = tag.getInteger("rainflat");
+					time = tag.getInteger("raintime");
+				}
+				//TODO: time offset?
+				t += flat;
+				float n = Math.round((t-0.575f) * 8);
+				n = 7 - Math.max(Math.min(n, 7),0);
+				return n;
+			}
+		});
 	}
 	
 	@Override
@@ -107,7 +107,7 @@ public class ItemHydrometer extends Item {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.linkedcrop.text") + " " + tag.getString("linkedCropName"));

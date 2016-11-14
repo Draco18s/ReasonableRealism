@@ -9,10 +9,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemStickyBlob extends Item implements IFuelHandler {
 	public ItemStickyBlob() {
-        this.setHasSubtypes(false);
-        this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabs.MATERIALS);
-        GameRegistry.registerFuelHandler(this);
+		this.setHasSubtypes(false);
+		this.setMaxDamage(0);
+		this.setCreativeTab(CreativeTabs.MATERIALS);
+		GameRegistry.registerFuelHandler(this);
 	}
 
 	@Override

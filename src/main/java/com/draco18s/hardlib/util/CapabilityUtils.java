@@ -12,8 +12,8 @@ public class CapabilityUtils {
 	 *
 	 * @param provider   The provider
 	 * @param capability The capability
-	 * @param facing     The facing
-	 * @param <T>        The handler type
+	 * @param facing	 The facing
+	 * @param <T>		The handler type
 	 * @return The handler, if any.
 	 */
 	@Nullable

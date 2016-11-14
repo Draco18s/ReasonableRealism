@@ -270,17 +270,17 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return this.getCapability(capability, facing) != null;
-    }
+	}
 
 	@Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			if(inputSlot.getStackInSlot(0).stackSize > (downstremrequests>0?1:0)+1) return null;
 			return (T) inputSlot;
 		}
-        return super.getCapability(capability, facing);
-    }
+		return super.getCapability(capability, facing);
+	}
 
 	public int getWaterAmount() {
 		return waterAmount > 0 ? waterAmount : 0;

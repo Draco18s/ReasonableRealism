@@ -29,14 +29,14 @@ public class EnchantmentVeinCracker extends Enchantment {
 	
 	@Override
 	public int getMaxLevel() {
-	    return 3;
+		return 3;
 	}
 	
 	public boolean canApplyTogether(Enchantment other) {
 		boolean ret = super.canApplyTogether(other);
 		ret |= other != Enchantments.EFFICIENCY;
 		ret |= other != Enchantments.SILK_TOUCH;
-	    return ret;
+		return ret;
 	}
 	
 	@Override

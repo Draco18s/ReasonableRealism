@@ -14,8 +14,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy {
-    protected byte serverMessageID = 1;
-    protected byte clientMessageID = 2;
+	protected byte serverMessageID = 1;
+	protected byte clientMessageID = 2;
 	public void registerRenderers() {
 		
 	}

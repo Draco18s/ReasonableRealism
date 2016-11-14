@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemButcherKnife extends ItemTool {
 	private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.SLIME_BLOCK, Blocks.SPONGE, Blocks.PUMPKIN, Blocks.LIT_PUMPKIN, Blocks.MELON_BLOCK});
-    
+	
 	public ItemButcherKnife(ToolMaterial material) {
 		super((material.getDamageVsEntity()/2f)-1, -1f, material, EFFECTIVE_ON);
 		this.setCreativeTab(CreativeTabs.TOOLS);
@@ -33,7 +33,7 @@ public class ItemButcherKnife extends ItemTool {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
 		tooltip.add(I18n.format("tooltip.harderfarming:damagebonus", 10));
-    }
+	}
 }

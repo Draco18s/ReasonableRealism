@@ -253,12 +253,12 @@ public class OresBase {
 		proxy.registerEventHandlers();
 		proxy.registerRenderers();
 		
-        //These have to be unique
+		//These have to be unique
 		
-        networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("harderores");
+		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("harderores");
 		//networkWrapper.registerMessage(PacketHandlerServer.class, ToServerMessage.class, serverMessageID, Side.SERVER);
 		proxy.registerNetwork();
-        
+		
 		FlowerIntegration.registerFlowerGen();
 	}
 	
@@ -341,10 +341,10 @@ public class OresBase {
 			
 			ItemStack toolmat = new ItemStack(Blocks.STONE, 1, BlockStone.EnumType.DIORITE.getMetadata());
 			GameRegistry.addRecipe(new ItemStack(Items.STONE_PICKAXE), new Object[] {"III", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-	        GameRegistry.addRecipe(new ItemStack(Items.STONE_AXE), new Object[] {"II ", "Is ", " s ", 's', Items.STICK, 'I', toolmat});
-	        GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-	        GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-	    }
+			GameRegistry.addRecipe(new ItemStack(Items.STONE_AXE), new Object[] {"II ", "Is ", " s ", 's', Items.STICK, 'I', toolmat});
+			GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+			GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+		}
 		/*Sluicing*/
 		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
 		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");

@@ -35,17 +35,17 @@ public class BlockWindvane extends Block {
 	}
 	
 	public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
+		return false;
+	}
 
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return true;
-    }
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+		return true;
+	}
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -71,7 +71,7 @@ public class BlockWindvane extends Block {
 		}
 		
 		return getDefaultState().withProperty(BlockDirectional.FACING, EnumFacing.UP);
-    }
+	}
 	
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		for(EnumFacing face : EnumFacing.VALUES) {

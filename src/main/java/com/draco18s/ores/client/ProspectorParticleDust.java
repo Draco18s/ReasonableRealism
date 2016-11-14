@@ -33,14 +33,14 @@ public class ProspectorParticleDust extends Particle {
 		this.particleGreen = 0.25f;//((float)(Math.random() * 0.20000000298023224D) + 1F) * f4;
 		this.particleBlue = 1;//((float)(Math.random() * 0.20000000298023224D) + 0.8F) * f4;
 
-        this.particleMaxAge = (int)(32.0D / (Math.random() * 0.8D + 0.2D));
-        this.particleMaxAge = (int)((float)this.particleMaxAge * 0.9F);
+		this.particleMaxAge = (int)(32.0D / (Math.random() * 0.8D + 0.2D));
+		this.particleMaxAge = (int)((float)this.particleMaxAge * 0.9F);
 		this.particleAge = 0;
-        this.motionX = 0.0D;
-        this.motionY = -0.01D;
-        this.motionZ = 0.0D;
-        this.initialScale = this.particleScale;
-        //this.posY += particleAge * -0.009000000078231096d * 10;
+		this.motionX = 0.0D;
+		this.motionY = -0.01D;
+		this.motionZ = 0.0D;
+		this.initialScale = this.particleScale;
+		//this.posY += particleAge * -0.009000000078231096d * 10;
 	}
 
 	public ProspectorParticleDust(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int ageOffset) {
@@ -52,14 +52,14 @@ public class ProspectorParticleDust extends Particle {
 		this.particleGreen = 0.25f;//((float)(Math.random() * 0.20000000298023224D) + 1F) * f4;
 		this.particleBlue = 1;//((float)(Math.random() * 0.20000000298023224D) + 0.8F) * f4;
 
-        this.particleMaxAge = (int)(32.0D / (Math.random() * 0.8D + 0.2D));
-        this.particleMaxAge = (int)((float)this.particleMaxAge * 0.9F);
+		this.particleMaxAge = (int)(32.0D / (Math.random() * 0.8D + 0.2D));
+		this.particleMaxAge = (int)((float)this.particleMaxAge * 0.9F);
 		this.particleAge = 0 + ageOffset;
-        this.motionX = 0.0D;
-        this.motionY = -0.01D;
-        this.motionZ = 0.0D;
-        this.initialScale = this.particleScale;
-        //this.posY += particleAge * -0.009000000078231096d * 10;
+		this.motionX = 0.0D;
+		this.motionY = -0.01D;
+		this.motionZ = 0.0D;
+		this.initialScale = this.particleScale;
+		//this.posY += particleAge * -0.009000000078231096d * 10;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ProspectorParticleDust extends Particle {
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(PARTICLES_TEXTURE);
 		int i = MathHelper.clamp_int((int)(((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F), 0, 15);
-        
+		
 		float f = (float)(i % 15) / 32.0F;
 		float f1 = f + 0.03125f;
 		float f2 = (float)(i / 15) / 32.0F + 0.15625f;
@@ -116,9 +116,9 @@ public class ProspectorParticleDust extends Particle {
 			this.setExpired();
 		}
 		if(this.particleAge < 0) return;
-        this.moveEntity(0, this.motionY, 0);
-        this.motionY -= 0.003000000026077032D;
-        this.motionY = Math.max(this.motionY, -0.14000000059604645D);
+		this.moveEntity(0, this.motionY, 0);
+		this.motionY -= 0.003000000026077032D;
+		this.motionY = Math.max(this.motionY, -0.14000000059604645D);
 	}
 
 	public int getFXLayer()

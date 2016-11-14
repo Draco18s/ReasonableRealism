@@ -16,7 +16,7 @@ public class WorldGenerator implements IWorldGenerator {
 	private WorldGenMinable minable;
 	
 	public WorldGenerator() {
-        //The 10 as the second parameter sets the maximum vein size
+		//The 10 as the second parameter sets the maximum vein size
 		minable = new WorldGenMinableSalt(FarmingBase.saltOre.getDefaultState(), 20);
 	}
 
@@ -28,12 +28,12 @@ public class WorldGenerator implements IWorldGenerator {
 	private void generateSurface(World world, Random rand, int cx, int cz) {
 		if(world.provider.getDimensionType() == DimensionType.NETHER || world.provider.getDimensionType() == DimensionType.THE_END) return;
 		for (int k = 0; k < 24; k++) {
-            int x = cx + rand.nextInt(16);
-            int z = cz + rand.nextInt(16);
-            //Will be found between y = 0 and y = 20
-            int y = rand.nextInt(30) + 40;
-            BlockPos quisquePos = new BlockPos(x, y, z);
-            minable.generate(world, rand, quisquePos);
-        }
+			int x = cx + rand.nextInt(16);
+			int z = cz + rand.nextInt(16);
+			//Will be found between y = 0 and y = 20
+			int y = rand.nextInt(30) + 40;
+			BlockPos quisquePos = new BlockPos(x, y, z);
+			minable.generate(world, rand, quisquePos);
+		}
 	}
 }

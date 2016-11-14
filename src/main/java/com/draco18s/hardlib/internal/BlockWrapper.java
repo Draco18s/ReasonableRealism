@@ -68,7 +68,7 @@ public class BlockWrapper {
 	@Override
 	public int hashCode() {
 		return block.hashCode();
-    }
+	}
 	
 	@Override
 	public boolean equals(Object aThat) {

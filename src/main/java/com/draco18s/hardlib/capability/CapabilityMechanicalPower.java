@@ -15,34 +15,34 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 
 public class CapabilityMechanicalPower {
 	
-    @CapabilityInject(IMechanicalPower.class)
+	@CapabilityInject(IMechanicalPower.class)
 	public static Capability<IMechanicalPower> MECHANICAL_POWER_CAPABILITY = null;
 	
 	public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IMechanicalPower.class, new Capability.IStorage<IMechanicalPower>()
-        {
-            @Override
-            public NBTBase writeNBT(Capability<IMechanicalPower> capability, IMechanicalPower instance, EnumFacing side)
-            {
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setInteger("mechpower", instance.getRawPower());
-                return tag;
-            }
+	{
+		CapabilityManager.INSTANCE.register(IMechanicalPower.class, new Capability.IStorage<IMechanicalPower>()
+		{
+			@Override
+			public NBTBase writeNBT(Capability<IMechanicalPower> capability, IMechanicalPower instance, EnumFacing side)
+			{
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setInteger("mechpower", instance.getRawPower());
+				return tag;
+			}
 
-            @Override
-            public void readNBT(Capability<IMechanicalPower> capability, IMechanicalPower instance, EnumFacing side, NBTBase base)
-            {
-            	NBTTagCompound tag = (NBTTagCompound) base;
-                instance.setRawPower(tag.getInteger("mechpower"));
-            }
-        }, new Callable<RawMechanicalPowerHandler>()
-        {
+			@Override
+			public void readNBT(Capability<IMechanicalPower> capability, IMechanicalPower instance, EnumFacing side, NBTBase base)
+			{
+				NBTTagCompound tag = (NBTTagCompound) base;
+				instance.setRawPower(tag.getInteger("mechpower"));
+			}
+		}, new Callable<RawMechanicalPowerHandler>()
+		{
 
 			@Override
 			public RawMechanicalPowerHandler call() throws Exception {
 				return new RawMechanicalPowerHandler();
 			}
-        });
-    }
+		});
+	}
 }

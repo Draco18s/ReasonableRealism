@@ -1,14 +1,11 @@
 package com.draco18s.industry.block;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRail;
 import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRailPowered;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,10 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockRailBridge extends BlockRail {
+public class BlockPoweredRailBridge extends BlockRailPowered {
 	protected static final AxisAlignedBB THICK_FLAT_AABB = new AxisAlignedBB(0.0D, -0.125D, 0.0D, 1.0D, 0.125D, 1.0D);
-
-	public BlockRailBridge() {
+	
+	public BlockPoweredRailBridge() {
 		super();
 	}
 	
@@ -27,7 +24,7 @@ public class BlockRailBridge extends BlockRail {
 	public boolean isFlexibleRail(IBlockAccess world, BlockPos pos) {
 		return false;
 	}
-
+	
 	@Override
 	public boolean canMakeSlopes(IBlockAccess world, BlockPos pos) {
 		return false;
@@ -50,8 +47,9 @@ public class BlockRailBridge extends BlockRail {
 				world.setBlockToAir(pos);
 			}
 		}
+		this.updateState(state, world, pos, block);
 	}
-
+	
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return THICK_FLAT_AABB;
@@ -70,5 +68,48 @@ public class BlockRailBridge extends BlockRail {
 			return THICK_FLAT_AABB;
 		}
 		return NULL_AABB;
+	}
+	
+	public void onMinecartPass(World world, net.minecraft.entity.item.EntityMinecart cart, BlockPos pos) {
+		IBlockState state = world.getBlockState(pos);
+		BlockRailBase.EnumRailDirection railDir = this.getRailDirection(world, pos, state, cart);
+		boolean isPowered = state.getValue(POWERED);
+		double d15 = Math.sqrt(cart.motionX * cart.motionX + cart.motionZ * cart.motionZ);
+
+		if(isPowered) {
+			if (d15 > 0.01D)
+			{
+				double d16 = 0.06D;
+				cart.motionX += cart.motionX / d15 * 0.06D;
+				cart.motionZ += cart.motionZ / d15 * 0.06D;
+			}
+			else if (railDir == BlockRailBase.EnumRailDirection.EAST_WEST)
+			{
+				if (cart.worldObj.getBlockState(pos.west()).isNormalCube())
+				{
+					cart.motionX = 0.02D;
+				}
+				else if (world.getBlockState(pos.east()).isNormalCube())
+				{
+					cart.motionX = -0.02D;
+				}
+			}
+			else if (railDir == BlockRailBase.EnumRailDirection.NORTH_SOUTH)
+			{
+				if (world.getBlockState(pos.north()).isNormalCube())
+				{
+					cart.motionZ = 0.02D;
+				}
+				else if (world.getBlockState(pos.south()).isNormalCube())
+				{
+					cart.motionZ = -0.02D;
+				}
+			}
+		}
+		else {
+			cart.motionX = 0;
+			cart.motionY = 0;
+			cart.motionZ = 0;
+		}
 	}
 }

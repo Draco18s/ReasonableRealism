@@ -9,7 +9,7 @@ import net.minecraft.entity.passive.EntityCow;
 
 public class CowStats implements IMilking {
 	private int milkLevel;
-    public WeakReference<EntityCow> theCow;
+	public WeakReference<EntityCow> theCow;
 
 	public CowStats(EntityCow anim) {
 		theCow = new WeakReference<EntityCow>(anim);

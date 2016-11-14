@@ -106,12 +106,12 @@ public class ClientEasyRegistry extends EasyRegistry {
 		ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
 		//registerItemModel(item, MeshDefinitionFix.create(stack -> fullModelLocation));
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition()
-	    {
-	        public ModelResourceLocation getModelLocation(ItemStack stack)
-	        {
-	            return fullModelLocation;
-	        }
-	    });
+		{
+			public ModelResourceLocation getModelLocation(ItemStack stack)
+			{
+				return fullModelLocation;
+			}
+		});
 	}/**/
 
 	private void _registerItemModel(Item item, ItemMeshDefinition meshDefinition) {

@@ -76,12 +76,12 @@ public class ChunkOreCounter {
 		@Override
 		public int hashCode() {
 			/*if (fHashCode == 0) {
-			      int result = HashUtils.SEED;
-			      result = HashUtils.hash(result, b.hashCode());
-			      fHashCode = result;
+				  int result = HashUtils.SEED;
+				  result = HashUtils.hash(result, b.hashCode());
+				  fHashCode = result;
 			}*/
 			return b.hashCode();
-	    }
+		}
 		
 		@Override
 		public boolean equals(Object aThat) {

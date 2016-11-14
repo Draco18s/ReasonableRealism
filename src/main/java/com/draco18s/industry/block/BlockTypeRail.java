@@ -23,27 +23,27 @@ public class BlockTypeRail extends BlockRailDetector {
 		int best = 0;
 		if (((Boolean)blockState.getValue(POWERED)).booleanValue()) {
 			List<EntityMinecart> carts = this.findMinecarts(world, pos, EntityMinecart.class);
-            if (!carts.isEmpty()) {
-            	int curr = 0;
-            	Iterator<EntityMinecart> it = carts.iterator();
-            	while(it.hasNext()) {
-            		EntityMinecart cart = it.next();
-            		String n = cart.getCartItem().getDisplayName().toLowerCase();
-            		System.out.println("Cart: " + n);
-            		TileEntitySign te = (TileEntitySign)world.getTileEntity(pos.up());
-            		if(te != null) {
-            			curr = parseSign(te.signText, n);
-            			if(curr > best)
-            				best = curr;
-            		}
-            		te = (TileEntitySign)world.getTileEntity(pos.down(2));
-            		if(te != null) {
-            			curr = parseSign(te.signText, n);
-            			if(curr > best)
-            				best = curr;
-            		}
-            	}
-            }
+			if (!carts.isEmpty()) {
+				int curr = 0;
+				Iterator<EntityMinecart> it = carts.iterator();
+				while(it.hasNext()) {
+					EntityMinecart cart = it.next();
+					String n = cart.getCartItem().getDisplayName().toLowerCase();
+					System.out.println("Cart: " + n);
+					TileEntitySign te = (TileEntitySign)world.getTileEntity(pos.up());
+					if(te != null) {
+						curr = parseSign(te.signText, n);
+						if(curr > best)
+							best = curr;
+					}
+					te = (TileEntitySign)world.getTileEntity(pos.down(2));
+					if(te != null) {
+						curr = parseSign(te.signText, n);
+						if(curr > best)
+							best = curr;
+					}
+				}
+			}
 		}
 		return best;
 	}
@@ -71,8 +71,8 @@ public class BlockTypeRail extends BlockRailDetector {
 		
 		if(s2[0].equals("empty")) { s2[0] = "minecart"; }
 		if(s2[0].equals("command")) { s2[0] = "minecart with command block"; }
-		System.out.println("    name:  " + name);
-		System.out.println("    s2[0]: " + s2[0]);
+		System.out.println("	name:  " + name);
+		System.out.println("	s2[0]: " + s2[0]);
 		if(name.endsWith(s2[0])) {
 			return Integer.parseInt(s2[1]);
 		}

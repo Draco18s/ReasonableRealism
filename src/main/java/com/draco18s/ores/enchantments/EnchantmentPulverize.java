@@ -29,8 +29,8 @@ public class EnchantmentPulverize extends Enchantment {
 	
 	@Override
 	public int getMaxLevel() {
-        return 5;
-    }
+		return 5;
+	}
 
 	@Override
 	public boolean canApplyTogether(Enchantment other) {
@@ -44,8 +44,8 @@ public class EnchantmentPulverize extends Enchantment {
 			ret &= !name.contains("inferno");
 			ret &= !name.contains("fiery");
 		}
-        return ret;
-    }
+		return ret;
+	}
 	
 	@Override
 	public boolean canApply(ItemStack stack) {

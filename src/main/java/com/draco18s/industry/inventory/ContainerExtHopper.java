@@ -8,14 +8,15 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class ContainerWoodenHopper extends CommonContainer {
-	TileEntityWoodenHopper tileEntity;
+public class ContainerExtHopper extends CommonContainer {
+	TileEntityHopper tileEntity;
 
-	public ContainerWoodenHopper(InventoryPlayer inventory, TileEntityWoodenHopper te) {
+	public ContainerExtHopper(InventoryPlayer inventory, TileEntityHopper te) {
 		super(5);
 		tileEntity = te;
 		IItemHandler inven = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);

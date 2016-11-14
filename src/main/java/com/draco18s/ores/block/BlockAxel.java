@@ -51,7 +51,7 @@ public class BlockAxel extends Block{
 		worldIn.scheduleBlockUpdate(pos, this, 1, 10);
 		state = state.withProperty(BlockHorizontal.FACING, dir);
 		return state;
-    }
+	}
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
@@ -73,17 +73,17 @@ public class BlockAxel extends Block{
 	}
 	
 	public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
+		return false;
+	}
 
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return true;
-    }
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+		return true;
+	}
 	
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
@@ -99,20 +99,20 @@ public class BlockAxel extends Block{
 	}
 	
 	public static EnumFacing getFacingFromEntity(BlockPos pos, EntityLivingBase p_185647_1_) {
-        if (MathHelper.abs((float)p_185647_1_.posX - (float)pos.getX()) < 2.0F && MathHelper.abs((float)p_185647_1_.posZ - (float)pos.getZ()) < 2.0F) {
-            double d0 = p_185647_1_.posY + (double)p_185647_1_.getEyeHeight();
+		if (MathHelper.abs((float)p_185647_1_.posX - (float)pos.getX()) < 2.0F && MathHelper.abs((float)p_185647_1_.posZ - (float)pos.getZ()) < 2.0F) {
+			double d0 = p_185647_1_.posY + (double)p_185647_1_.getEyeHeight();
 
-            /*if (d0 - (double)pos.getY() > 2.0D) {
-                return EnumFacing.DOWN;
-            }
+			/*if (d0 - (double)pos.getY() > 2.0D) {
+				return EnumFacing.DOWN;
+			}
 
-            if ((double)pos.getY() - d0 > 0.0D) {
-                return EnumFacing.UP;
-            }*/
-        }
+			if ((double)pos.getY() - d0 > 0.0D) {
+				return EnumFacing.UP;
+			}*/
+		}
 
-        return p_185647_1_.getHorizontalFacing().getOpposite();
-    }
+		return p_185647_1_.getHorizontalFacing().getOpposite();
+	}
 	
 	@Override
 	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
@@ -176,11 +176,11 @@ public class BlockAxel extends Block{
 					}
 				}
 				if(numMatching == 2) {
-					System.out.println("    Yes");
+					System.out.println("	Yes");
 					state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.HUB);
 				}
 				else {
-					System.out.println("    No");
+					System.out.println("	No");
 					state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.NONE);
 				}
 			}
@@ -232,10 +232,10 @@ public class BlockAxel extends Block{
 	}
 	
 	@Deprecated
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
 		if(blockIn != this)
 			worldIn.scheduleBlockUpdate(pos, this, 1, 10);
 		else if(state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.GEARS)
 			worldIn.scheduleBlockUpdate(pos, this, 1, 10);
-    }
+	}
 }

@@ -81,13 +81,13 @@ public class ForgeInterface
     	ServerState.chunkForced(event.getTicket().world, event.getLocation());
     }
     
-    /*@SubscribeEvent
+    @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.getGui() instanceof GuiCreateWorld)
         {
             ServerState.addOptionsButtonToGui((GuiCreateWorld)event.getGui(), event.getButtonList());
         }
-    }*/
+    }
     
     public static String getWorldDimensionFolder(World world)
     {

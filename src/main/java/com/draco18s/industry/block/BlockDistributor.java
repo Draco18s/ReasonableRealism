@@ -32,20 +32,6 @@ public class BlockDistributor extends BlockHopper {
 		super();
 		setHardness(3.0F);
 		setResistance(8.0F);
-		setSoundType(SoundType.WOOD);
-	}
-	
-	public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
-
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
 	}
 	
 	@Override
@@ -58,26 +44,26 @@ public class BlockDistributor extends BlockHopper {
 		return new TileEntityDistributor();
 	}
 	
-	/*@Override
+	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(ExpandedInsutryBase.instance, IndustryGuiHandler.WOODEN_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(ExpandedInsutryBase.instance, IndustryGuiHandler.EXT_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
-	}*/
+	}
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-	    TileEntity tileentity = worldIn.getTileEntity(pos);
-	    
-        IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        for(int i=0; i < inventory.getSlots(); i++) {
-        	ItemStack stack = inventory.getStackInSlot(i);
-    		EntityItem entityIn;
-    		if(stack != null) {
-    			entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-    			entityIn.setDefaultPickupDelay();
-    			worldIn.spawnEntityInWorld(entityIn);
-    		}
-        }
-        return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
-    }
+		TileEntity tileentity = worldIn.getTileEntity(pos);
+		
+		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		for(int i=0; i < inventory.getSlots(); i++) {
+			ItemStack stack = inventory.getStackInSlot(i);
+			EntityItem entityIn;
+			if(stack != null) {
+				entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+				entityIn.setDefaultPickupDelay();
+				worldIn.spawnEntityInWorld(entityIn);
+			}
+		}
+		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
+	}
 }

@@ -27,22 +27,22 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class ServerOreCartHandler implements IMessageHandler<ToServerMessageOreCart, IMessage> {
 
-    public IMessage onMessage(final ToServerMessageOreCart message, final MessageContext ctx) {
+	public IMessage onMessage(final ToServerMessageOreCart message, final MessageContext ctx) {
 		//System.out.println("===###Packet Recieved###===");
-    	final WorldServer mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
-    	mainThread.addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-    			//System.out.println("===###Running###===");
-            	Entity ent = mainThread.getEntityByID(message.entityID);
-            	if(ent instanceof EntityOreMinecart) {
-            		EntityOreMinecart cart = (EntityOreMinecart)ent;
-        			//System.out.println("===###"+message.dumpDir+"###===");
-            		cart.setDumpDir(message.dumpDir);
-        			//System.out.println("===###"+cart.getDumpDir()+"###===");
-            	}
-            }
-        });
-        return null;
-    }
+		final WorldServer mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				//System.out.println("===###Running###===");
+				Entity ent = mainThread.getEntityByID(message.entityID);
+				if(ent instanceof EntityOreMinecart) {
+					EntityOreMinecart cart = (EntityOreMinecart)ent;
+					//System.out.println("===###"+message.dumpDir+"###===");
+					cart.setDumpDir(message.dumpDir);
+					//System.out.println("===###"+cart.getDumpDir()+"###===");
+				}
+			}
+		});
+		return null;
+	}
 }

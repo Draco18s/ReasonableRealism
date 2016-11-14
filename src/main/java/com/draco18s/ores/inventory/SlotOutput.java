@@ -16,6 +16,6 @@ public class SlotOutput extends SlotItemHandler {
 
 	@Override
 	public boolean isItemValid(@Nullable ItemStack stack) {
-        return false;
-    }
+		return false;
+	}
 }

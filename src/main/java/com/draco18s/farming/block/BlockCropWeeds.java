@@ -99,53 +99,53 @@ public class BlockCropWeeds extends BlockCrops {
 
 	@Override
 	@Deprecated
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos)
-    {
+	public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos)
+	{
 		float hardness = net.minecraftforge.common.ForgeHooks.blockStrength(state, player, worldIn, pos);
 		ItemStack s = player.getHeldItemMainhand();
 		
 		ToolMaterial mat;
-    	if(s != null && s.getItem() instanceof ItemHoe) {
+		if(s != null && s.getItem() instanceof ItemHoe) {
 			mat = ToolMaterial.valueOf(((ItemHoe)s.getItem()).getMaterialName());
-    	}
-    	else if(s != null && s.getItem().getToolClasses(s).contains("hoe")) {
-    		mat = ((ItemTool)s.getItem()).getToolMaterial();
-    	}
-    	else {
-    		return hardness;
-    	}
+		}
+		else if(s != null && s.getItem().getToolClasses(s).contains("hoe")) {
+			mat = ((ItemTool)s.getItem()).getToolMaterial();
+		}
+		else {
+			return hardness;
+		}
 		hardness += mat.getEfficiencyOnProperMaterial();
 		int i = EnchantmentHelper.getEfficiencyModifier(player);
 		
 		if (i > 0 && s != null)
-        {
-            float f1 = (float)(i * i + 1);
+		{
+			float f1 = (float)(i * i + 1);
 
-            boolean canHarvest = ForgeHooks.canToolHarvestBlock(worldIn, pos, s);
+			boolean canHarvest = ForgeHooks.canToolHarvestBlock(worldIn, pos, s);
 
-            if (!canHarvest && hardness <= 1.0F)
-            {
-            	hardness += f1 * 0.08F;
-            }
-            else
-            {
-            	hardness += f1;
-            }
-        }
-        return hardness / this.blockHardness / 30;
-    }
+			if (!canHarvest && hardness <= 1.0F)
+			{
+				hardness += f1 * 0.08F;
+			}
+			else
+			{
+				hardness += f1;
+			}
+		}
+		return hardness / this.blockHardness / 30;
+	}
 	
 	@Override
 	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack) {
-    	if(stack != null) {
-    		Item i = stack.getItem();
-    		if(i instanceof ItemTool) {
-    			stack.damageItem(2, player);
-    		}
-    		else if(i instanceof ItemHoe) {
-    			stack.damageItem(1, player);
-    		}
-    	}
-    	player.addStat(FarmingAchievements.killWeeds, 1);
-    }
+		if(stack != null) {
+			Item i = stack.getItem();
+			if(i instanceof ItemTool) {
+				stack.damageItem(2, player);
+			}
+			else if(i instanceof ItemHoe) {
+				stack.damageItem(1, player);
+			}
+		}
+		player.addStat(FarmingAchievements.killWeeds, 1);
+	}
 }

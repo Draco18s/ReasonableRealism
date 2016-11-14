@@ -133,13 +133,13 @@ public class OreEventHandler {
 										for(ItemStack s:toDrop) {
 											s.stackSize = 1;
 											float rx = world.rand.nextFloat() * 0.6F + 0.2F;
-					    					float ry = world.rand.nextFloat() * 0.2F + 0.6F - 1;
-					    					float rz = world.rand.nextFloat() * 0.6F + 0.2F;
-					    					EntityItem ent = new EntityItem(world, pos.getX()+rx, pos.getY()+ry, pos.getZ()+rz, s);
-					    					world.spawnEntityInWorld(ent);
-					    					ent.motionX = 0;
-					    					ent.motionY = -0.2F;
-					    					ent.motionZ = 0;
+											float ry = world.rand.nextFloat() * 0.2F + 0.6F - 1;
+											float rz = world.rand.nextFloat() * 0.6F + 0.2F;
+											EntityItem ent = new EntityItem(world, pos.getX()+rx, pos.getY()+ry, pos.getZ()+rz, s);
+											world.spawnEntityInWorld(ent);
+											ent.motionX = 0;
+											ent.motionY = -0.2F;
+											ent.motionZ = 0;
 										}
 									}
 								}

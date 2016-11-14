@@ -35,7 +35,7 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilitySerializabl
 	 * Create a provider for the default handler instance.
 	 *
 	 * @param capability The Capability instance to provide the handler for
-	 * @param facing     The EnumFacing to provide the handler for
+	 * @param facing	 The EnumFacing to provide the handler for
 	 */
 	public SimpleCapabilityProvider(Capability<HANDLER> capability, @Nullable EnumFacing facing) {
 		this(capability, facing, capability.getDefaultInstance());
@@ -45,7 +45,7 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilitySerializabl
 	 * Create a provider for the specified handler instance.
 	 *
 	 * @param capability The Capability instance to provide the handler for
-	 * @param facing     The EnumFacing to provide the handler for
+	 * @param facing	 The EnumFacing to provide the handler for
 	 * @param instance   The handler instance to provide
 	 */
 	public SimpleCapabilityProvider(Capability<HANDLER> capability, @Nullable EnumFacing facing, HANDLER instance) {
@@ -65,8 +65,8 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilitySerializabl
 	 * This is a light weight version of getCapability, intended for metadata uses.
 	 *
 	 * @param capability The capability to check
-	 * @param facing     The Side to check from:
-	 *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
+	 * @param facing	 The Side to check from:
+	 *				   CAN BE NULL. Null is defined to represent 'internal' or 'self'
 	 * @return True if this object supports the capability.
 	 */
 	@Override
@@ -80,8 +80,8 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilitySerializabl
 	 * The return value CAN be the same for multiple faces.
 	 *
 	 * @param capability The capability to check
-	 * @param facing     The Side to check from:
-	 *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
+	 * @param facing	 The Side to check from:
+	 *				   CAN BE NULL. Null is defined to represent 'internal' or 'self'
 	 * @return The handler if this object supports the capability.
 	 */
 	@Override

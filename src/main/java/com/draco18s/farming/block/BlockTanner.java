@@ -68,12 +68,12 @@ public class BlockTanner extends Block {
 
 	@Override
 	@Deprecated
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntityTanner te = (TileEntityTanner)world.getTileEntity(pos);
 		int slot1 = te.getLeather(0);
 		int slot2 = te.getLeather(1);
-        return state.withProperty(SALT, te.getSalt()).withProperty(LEATHER1, LeatherStatus.values()[slot1]).withProperty(LEATHER2, LeatherStatus.values()[slot2]);
-    }
+		return state.withProperty(SALT, te.getSalt()).withProperty(LEATHER1, LeatherStatus.values()[slot1]).withProperty(LEATHER2, LeatherStatus.values()[slot2]);
+	}
 
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
@@ -141,8 +141,8 @@ public class BlockTanner extends Block {
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		EnumFacing face = placer.getHorizontalFacing();
 		if(face == EnumFacing.NORTH || face == EnumFacing.EAST) face = face.getOpposite();
-        return this.getDefaultState().withProperty(BlockHorizontal.FACING, face);
-    }
+		return this.getDefaultState().withProperty(BlockHorizontal.FACING, face);
+	}
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {

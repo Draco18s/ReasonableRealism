@@ -72,7 +72,7 @@ public class AnimalUtil implements IHardAnimals {
 	
 	public void parseConfig(Configuration config) {
 		animalMaxAge = config.getInt("animalMaxAge", "ANIMALS", 24000, 5000, 2000000, "Maximum age of animals, in seconds.\nNote: Animals may have an accelerated aging rate, this value is the general-case value.\n") * 40;
-    	animalGlobalAgeRate = config.getInt("GlobalAgeRate", "ANIMALS", 1, 0, 10, "This is a global aging rate.  It causes animals to age more quickly or not at all.\n");
+		animalGlobalAgeRate = config.getInt("GlobalAgeRate", "ANIMALS", 1, 0, 10, "This is a global aging rate.  It causes animals to age more quickly or not at all.\n");
 		Property listOfAnimals = config.get("ANIMALS", "AcceleratedAging", new String[]{"Chicken"}, "List of animals with special age scaling.\nAnimal is looked up by class name, capitalize first letter.\nYou must pass a fully qualified class name for mod animals (JD Gui can help locate that).\nDefault age for all unspecified animals is 2.\n");
 		String[] list = listOfAnimals.getStringList();
 		config.getInt("AgeFactorChicken", "ANIMALS", 3, 0, 100, "Lower's Chickens maximum age by this factor (maxAge = defaultMaxAge / ageFactor).\n");
@@ -153,7 +153,7 @@ public class AnimalUtil implements IHardAnimals {
 				}
 			}
 		}
-		config.addCustomCategoryComment("ANIMALS", "Fully qualified class names include the full package declaration; e.g. com.draco18s.wildlife.entity.EntityGoat\nString lists have 1 entry per line with no commas. Eg:\n    S:AcceleratedAging <\n        Chicken\n        com.draco18s.wildlife.entity.EntityGoat\n     >");
+		config.addCustomCategoryComment("ANIMALS", "Fully qualified class names include the full package declaration; e.g. com.draco18s.wildlife.entity.EntityGoat\nString lists have 1 entry per line with no commas. Eg:\n	S:AcceleratedAging <\n		Chicken\n		com.draco18s.wildlife.entity.EntityGoat\n	 >");
 		config.save();
 	}
 	
@@ -165,14 +165,14 @@ public class AnimalUtil implements IHardAnimals {
 	 
 	  /* test if last characters of the strings match */
 	  if (s.charAt(len_s-1) == t.charAt(len_t-1))
-	      cost = 0;
+		  cost = 0;
 	  else
-	      cost = 1;
+		  cost = 1;
 	 
 	  /* return minimum of delete char from s, delete char from t, and delete char from both */
-	  return minimum(LevenshteinDistance(s, len_s - 1, t, len_t    ) + 1,
-	                 LevenshteinDistance(s, len_s    , t, len_t - 1) + 1,
-	                 LevenshteinDistance(s, len_s - 1, t, len_t - 1) + cost);
+	  return minimum(LevenshteinDistance(s, len_s - 1, t, len_t	) + 1,
+					 LevenshteinDistance(s, len_s	, t, len_t - 1) + 1,
+					 LevenshteinDistance(s, len_s - 1, t, len_t - 1) + cost);
 	}
 
 	private static int minimum(int i, int j, int k) {

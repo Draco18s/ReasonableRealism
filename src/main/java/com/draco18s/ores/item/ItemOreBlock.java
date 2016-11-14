@@ -14,6 +14,6 @@ public class ItemOreBlock extends ItemBlock {
 
 	@Override
 	public int getMetadata(int damage) {
-        return damage;
-    }
+		return damage;
+	}
 }

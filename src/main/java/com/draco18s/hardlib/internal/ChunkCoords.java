@@ -20,20 +20,20 @@ public class ChunkCoords {
 	@Override
 	public int hashCode() {
 		if (fHashCode == 0) {
-		      int result = HashUtils.SEED;
-		      result = HashUtils.hash(result, dimID);
-		      result = HashUtils.hash(result, posX);
-		      result = HashUtils.hash(result, posY);
-		      result = HashUtils.hash(result, posZ);
-		      fHashCode = result;
+			  int result = HashUtils.SEED;
+			  result = HashUtils.hash(result, dimID);
+			  result = HashUtils.hash(result, posX);
+			  result = HashUtils.hash(result, posY);
+			  result = HashUtils.hash(result, posZ);
+			  fHashCode = result;
 		}
 		return fHashCode;
-    }
+	}
 	
 	@Override
 	public boolean equals(Object aThat) {
 		ChunkCoords that = (ChunkCoords) aThat;
-		return that.dimID == dimID && that.posX == posX && that.posY == posY && that.posZ == posZ;    
+		return that.dimID == dimID && that.posX == posX && that.posY == posY && that.posZ == posZ;	
 	}
 	
 	@Override

@@ -37,35 +37,35 @@ public class StateMapperFlowers extends StateMapperBase {
 	}
 	
 	public String getPropertyString(Map < IProperty<?>, Comparable<? >> values) {
-        StringBuilder stringbuilder = new StringBuilder();
+		StringBuilder stringbuilder = new StringBuilder();
 
-        for (Entry < IProperty<?>, Comparable<? >> entry : values.entrySet())
-        {
-            if (stringbuilder.length() != 0)
-            {
-                stringbuilder.append(",");
-            }
+		for (Entry < IProperty<?>, Comparable<? >> entry : values.entrySet())
+		{
+			if (stringbuilder.length() != 0)
+			{
+				stringbuilder.append(",");
+			}
 
-            IProperty<?> iproperty = (IProperty)entry.getKey();
-            
-            if(iproperty.equals(Props.FLOWER_STALK)) {
-            	continue;
-            }
-            
-            stringbuilder.append(iproperty.getName());
-            stringbuilder.append("=");
-            stringbuilder.append(this.getPropertyName(iproperty, (Comparable)entry.getValue()));
-        }
+			IProperty<?> iproperty = (IProperty)entry.getKey();
+			
+			if(iproperty.equals(Props.FLOWER_STALK)) {
+				continue;
+			}
+			
+			stringbuilder.append(iproperty.getName());
+			stringbuilder.append("=");
+			stringbuilder.append(this.getPropertyName(iproperty, (Comparable)entry.getValue()));
+		}
 
-        if (stringbuilder.length() == 0)
-        {
-            stringbuilder.append("normal");
-        }
+		if (stringbuilder.length() == 0)
+		{
+			stringbuilder.append("normal");
+		}
 
-        return stringbuilder.toString();
-    }
+		return stringbuilder.toString();
+	}
 	
 	private <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> value) {
-        return property.getName((T)value);
-    }
+		return property.getName((T)value);
+	}
 }

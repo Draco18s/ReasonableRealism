@@ -13,7 +13,7 @@ public class SlotPackaged extends SlotItemHandler {
 	}
 	
 	@Override
-    public boolean isItemValid(ItemStack stack) {
-        return super.isItemValid(stack) && HardLibAPI.oreMachines.getPressurePackResult(stack, false) != null;
-    }
+	public boolean isItemValid(ItemStack stack) {
+		return super.isItemValid(stack) && HardLibAPI.oreMachines.getPressurePackResult(stack, false) != null;
+	}
 }

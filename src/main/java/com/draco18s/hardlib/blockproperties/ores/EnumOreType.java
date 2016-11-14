@@ -6,23 +6,23 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	LIMONITE, /*0*/
-	FLOUR,    /*1*/
-	SUGAR,    /*2*/
+	FLOUR,	/*1*/
+	SUGAR,	/*2*/
 	//placeholders entries
 	BONEMEAL, /*3*/
-	SEED,     /*4*/
-	PULP,     /*5*/
-	PLANT,    /*6*/
-	OIL,      /*7*/
+	SEED,	 /*4*/
+	PULP,	 /*5*/
+	PLANT,	/*6*/
+	OIL,	  /*7*/
 	
 	/*Flower1*/
-	IRON,     /*8*/
-	GOLD,     /*9*/
+	IRON,	 /*8*/
+	GOLD,	 /*9*/
 	DIAMOND,  /*10*/
 	REDSTONE, /*11*/
-	TIN,      /*12*/
+	TIN,	  /*12*/
 	COPPER,   /*13*/
-	LEAD,     /*14*/
+	LEAD,	 /*14*/
 	URANIUM,  /*15*/
 	
 	/*Flower 2*/
@@ -30,7 +30,7 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	NICKEL,   /*17*/
 	ALUMINUM, /*18*/
 	PLATINUM, /*19*/
-	ZINC,     /*20*/
+	ZINC,	 /*20*/
 	FLUORITE, /*21*/
 	CADMIUM,  /*22*/
 	THORIUM,  /*23*/

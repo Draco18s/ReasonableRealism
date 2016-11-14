@@ -92,11 +92,11 @@ public class FarmingBase {
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		logger = event.getModLog();
 		HardLibAPI.hardCrops = new CropManager();
-    	HardLibAPI.animalManager = new AnimalUtil();
-    	FarmingEventHandler.doSlowCrops = config.getBoolean("EnableCropSlowing", "CROPS", true, "Enables or disables the slowdown of crop growth.\nIf enabled, base probability is 10% as frequent as vanilla (ten times slower).\nNote: please disable Gany's Surface's snow accumulation, if it is\ninstalled (mine results in a smoother variation between blocks).\n");
-    	FarmingEventHandler.doBiomeCrops = config.getBoolean("EnableCropSlowingByBiome", "CROPS", true, "Enables or disables the crop growth based on biome information (which is effected by seasons,\nif enabled and ignored if slow crops is disabled). Most (vanilla) biomes have some semblance of a\ngrowing season, though it will be harder to grow food in the cold and dry biomes. Growing plants\ninside uses an effective temperature halfway closer to the ideal value.  For extreme biomes\nthis might be required!\nIf disabled, base slowdown probability is used instead.\n");
-    	FarmingEventHandler.cropsWorst = config.getInt("SlowByBiomeLowerBound", "CROPS", 16, 8, 96, "Configures the worst possible growth rate for biome based crop growth.\nIn the worst possible conditions, the chance that crops will grow will not drop\nbelow 100/(value + 10) %\nGenerally speaking this occurs in the frozen biomes during the winter, most notably Cold Taiga.\nThere should be no need for this value to exceed 16 for any biome other than Cold Taiga (50+)\nand Cold Beach (20+).\n");
-    	
+		HardLibAPI.animalManager = new AnimalUtil();
+		FarmingEventHandler.doSlowCrops = config.getBoolean("EnableCropSlowing", "CROPS", true, "Enables or disables the slowdown of crop growth.\nIf enabled, base probability is 10% as frequent as vanilla (ten times slower).\nNote: please disable Gany's Surface's snow accumulation, if it is\ninstalled (mine results in a smoother variation between blocks).\n");
+		FarmingEventHandler.doBiomeCrops = config.getBoolean("EnableCropSlowingByBiome", "CROPS", true, "Enables or disables the crop growth based on biome information (which is effected by seasons,\nif enabled and ignored if slow crops is disabled). Most (vanilla) biomes have some semblance of a\ngrowing season, though it will be harder to grow food in the cold and dry biomes. Growing plants\ninside uses an effective temperature halfway closer to the ideal value.  For extreme biomes\nthis might be required!\nIf disabled, base slowdown probability is used instead.\n");
+		FarmingEventHandler.cropsWorst = config.getInt("SlowByBiomeLowerBound", "CROPS", 16, 8, 96, "Configures the worst possible growth rate for biome based crop growth.\nIn the worst possible conditions, the chance that crops will grow will not drop\nbelow 100/(value + 10) %\nGenerally speaking this occurs in the frozen biomes during the winter, most notably Cold Taiga.\nThere should be no need for this value to exceed 16 for any biome other than Cold Taiga (50+)\nand Cold Beach (20+).\n");
+		
 		
 		weeds = new BlockCropWeeds();
 		EasyRegistry.registerBlock(weeds, "crop_weeds");
@@ -106,51 +106,51 @@ public class FarmingBase {
 		winterWheatSeeds = new ItemWinterSeeds(winterWheat, Blocks.FARMLAND);
 		EasyRegistry.registerItem(winterWheatSeeds, "seeds_winter_wheat");
 		
-    	saltOre = new BlockSaltOre();
-    	EasyRegistry.registerBlockWithItem(saltOre, "saltore");
-    	tanningRack = new BlockTanner();
-    	EasyRegistry.registerBlockWithItem(tanningRack, "tanner");
-    	GameRegistry.registerTileEntity(TileEntityTanner.class, "tanning_rack");
+		saltOre = new BlockSaltOre();
+		EasyRegistry.registerBlockWithItem(saltOre, "saltore");
+		tanningRack = new BlockTanner();
+		EasyRegistry.registerBlockWithItem(tanningRack, "tanner");
+		GameRegistry.registerTileEntity(TileEntityTanner.class, "tanning_rack");
 
-    	thermometer = new ItemThermometer();
-    	EasyRegistry.registerItem(thermometer, "thermometer");
-    	rainmeter = new ItemHydrometer();
-    	EasyRegistry.registerItem(rainmeter, "hydrometer");
-    	rawLeather = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
-    	EasyRegistry.registerItem(rawLeather, "rawleather");
-    	rawSalt = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
-    	EasyRegistry.registerItem(rawSalt, "rawsalt");
-    	saltPile = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
-    	EasyRegistry.registerItem(saltPile, "saltpile");
-    	
-    	butcherKnife = new ItemButcherKnife(ToolMaterial.IRON);
-    	EasyRegistry.registerItem(butcherKnife, "butcherknife");
-    	
-    	itemAchievementIcons = new ItemAchieves();
-    	EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);
-    	
-    	((AnimalUtil) HardLibAPI.animalManager).parseConfig(config);
+		thermometer = new ItemThermometer();
+		EasyRegistry.registerItem(thermometer, "thermometer");
+		rainmeter = new ItemHydrometer();
+		EasyRegistry.registerItem(rainmeter, "hydrometer");
+		rawLeather = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
+		EasyRegistry.registerItem(rawLeather, "rawleather");
+		rawSalt = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
+		EasyRegistry.registerItem(rawSalt, "rawsalt");
+		saltPile = (new Item()).setCreativeTab(CreativeTabs.MATERIALS);
+		EasyRegistry.registerItem(saltPile, "saltpile");
+		
+		butcherKnife = new ItemButcherKnife(ToolMaterial.IRON);
+		EasyRegistry.registerItem(butcherKnife, "butcherknife");
+		
+		itemAchievementIcons = new ItemAchieves();
+		EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);
+		
+		((AnimalUtil) HardLibAPI.animalManager).parseConfig(config);
 	}
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new FarmingEventHandler());
 		FarmingEventHandler.doRawLeather = config.getBoolean("doRawLeather", "ANIMALS", true, "Raw leather (rawhide) requires curing on a tanning rack before it can be used.\n");
-    	config.save();
-    	
-    	if(Loader.isModLoaded("harderores")) {
-    		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawSalt), new ItemStack(saltPile, 2));
-    		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(saltPile), new ItemStack(saltPile));
-    	}
-    	
-    	GameRegistry.registerWorldGenerator(new WorldGenerator(), 2);
-    	OreDictionary.registerOre("dustSalt", saltPile);
-    	OreDictionary.registerOre("foodSalt", saltPile);
-    	OreDictionary.registerOre("itemSalt", rawSalt);
-    	OreDictionary.registerOre("foodSalt", rawSalt);
+		config.save();
+		
+		if(Loader.isModLoaded("harderores")) {
+			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawSalt), new ItemStack(saltPile, 2));
+			HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(saltPile), new ItemStack(saltPile));
+		}
+		
+		GameRegistry.registerWorldGenerator(new WorldGenerator(), 2);
+		OreDictionary.registerOre("dustSalt", saltPile);
+		OreDictionary.registerOre("foodSalt", saltPile);
+		OreDictionary.registerOre("itemSalt", rawSalt);
+		OreDictionary.registerOre("foodSalt", rawSalt);
 
-    	CropWeatherOffsets off = new CropWeatherOffsets(0.2f,0,0.5f,0);
-    	HardLibAPI.hardCrops.putCropWeather(Blocks.PUMPKIN_STEM, off);//primarily october growth
+		CropWeatherOffsets off = new CropWeatherOffsets(0.2f,0,0.5f,0);
+		HardLibAPI.hardCrops.putCropWeather(Blocks.PUMPKIN_STEM, off);//primarily october growth
 		off = new CropWeatherOffsets(0,0,0,0);
 		HardLibAPI.hardCrops.putCropWeather(Blocks.WHEAT, off);//no offsets!
 		off = new CropWeatherOffsets(0.8f,0.2f,0,0);
@@ -170,22 +170,22 @@ public class FarmingBase {
 		off = new CropWeatherOffsets(-1.2f,1.2f,0,0);
 		HardLibAPI.hardCrops.putCropWeather(Blocks.NETHER_WART, off);//HOT HOT HOT
 		if(Loader.isModLoaded("harvestcraft")) {
-    		IntegrationHarvestcraft.registerCrops();
-    	}
+			IntegrationHarvestcraft.registerCrops();
+		}
 		
 		ItemStack glass = new ItemStack(Blocks.GLASS_PANE);
 
 		if(OreDictionary.getOres("nuggetIron").size() > 0) {
-	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"nuggetGold"));
-	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"nuggetIron"));
-    	}
-    	else {
-	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"ingotGold"));
-	    	GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"ingotIron"));
-    	}
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"nuggetGold"));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"nuggetIron"));
+		}
+		else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"ingotGold"));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"ingotIron"));
+		}
 		if(FarmingEventHandler.doRawLeather) {
-    		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(tanningRack), "sss","sts","s s",'s',"stickWood",'t',Items.STRING));
-    	}
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(tanningRack), "sss","sts","s s",'s',"stickWood",'t',Items.STRING));
+		}
 		if(config.getBoolean("altKnifeRecipe", "GENERAL", false, "if the butcher's knife recipe conflicts with another repcie, toggle this.")) {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(butcherKnife), " s","i ",'s',"stickWood",'i',Items.IRON_INGOT));
 		}
