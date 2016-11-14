@@ -83,13 +83,13 @@ public class OreFlowersBase {
 		HardLibAPI.hardOres = new OreBlockInfo();
 
 		oreFlowers1 = new BlockOreFlower1();
-		EasyRegistry.registerBlockWithCustomItemAndMapper(oreFlowers1, new ItemOreFlower1(oreFlowers1,8, EnumOreFlower1.class), new StateMapperFlowers(Props.FLOWER_TYPE), "oreflowers1");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower1)oreFlowers1, new ItemOreFlower1(oreFlowers1,8, EnumOreFlower1.class), "oreflowers1");
 		oreFlowersDesert1 = new BlockOreFlowerDesert1();
-		EasyRegistry.registerBlockWithCustomItemAndMapper(oreFlowersDesert1, new ItemOreFlower1(oreFlowersDesert1,8, EnumOreFlowerDesert1.class), new StateMapperFlowers(Props.DESERT_FLOWER_TYPE), "oreflowersdesert1");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert1)oreFlowersDesert1, new ItemOreFlower1(oreFlowersDesert1,8, EnumOreFlowerDesert1.class), "oreflowersdesert1");
 		oreFlowers2 = new BlockOreFlower2();
-		EasyRegistry.registerBlockWithCustomItemAndMapper(oreFlowers2, new ItemOreFlower1(oreFlowers2,16, EnumOreFlower2.class), new StateMapperFlowers(Props.FLOWER_TYPE2), "oreflowers2");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower2)oreFlowers2, new ItemOreFlower1(oreFlowers2,16, EnumOreFlower2.class), "oreflowers2");
 		oreFlowersDesert2 = new BlockOreFlowerDesert2();
-		EasyRegistry.registerBlockWithCustomItemAndMapper(oreFlowersDesert2, new ItemOreFlower1(oreFlowersDesert2,16, EnumOreFlowerDesert2.class), new StateMapperFlowers(Props.DESERT_FLOWER_TYPE2), "oreflowersdesert2");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert2)oreFlowersDesert2, new ItemOreFlower1(oreFlowersDesert2,16, EnumOreFlowerDesert2.class), "oreflowersdesert2");
 		
 		gooBlob = new ItemStickyBlob();
 		EasyRegistry.registerItem(gooBlob, "sticky_goo");

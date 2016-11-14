@@ -3,7 +3,10 @@ package com.draco18s.hardlib.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.interfaces.IBlockWithMapper;
 import com.draco18s.hardlib.internal.IMetaLookup;
 import com.google.common.collect.ImmutableList;
 
@@ -48,10 +51,13 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 
 	@Override
-	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
-		super._registerBlockWithCustomItemAndMapper(block, iBlock, mapper, registryname);
+	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, String registryname) {
+		super._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
 		BlockStateContainer bsc = block.getBlockState();
 		ImmutableList<IBlockState> values = bsc.getValidStates();
+		//new StateMapperFlowers(Props.FLOWER_TYPE)
+		StateMapperBase mapper = ((IBlockWithMapper)block).getStateMapper();
+		ModelLoader.setCustomStateMapper(block, mapper);
 		for(IBlockState state : values) {
 			String str = mapper.getPropertyString(state.getProperties());
 			_registerBlockItemModelForMeta(block, block.getMetaFromState(state), str);

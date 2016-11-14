@@ -3,6 +3,7 @@ package com.draco18s.hardlib;
 import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.interfaces.IBlockWithMapper;
 import com.draco18s.hardlib.internal.IMetaLookup;
 
 import net.minecraft.block.Block;
@@ -26,8 +27,8 @@ public class EasyRegistry {
 		HardLib.proxy._registerBlockWithCustomItem(block, iBlock, registryname);
 	}
 	
-	public static void registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
-		HardLib.proxy._registerBlockWithCustomItemAndMapper(block, iBlock, mapper, registryname);
+	public static <T extends Block & IBlockWithMapper> void registerBlockWithCustomItemAndMapper(T block, ItemBlock iBlock, String registryname) {
+		HardLib.proxy._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
 	}
 
 	public static void registerItem(Item item, String registryname) {
@@ -61,8 +62,7 @@ public class EasyRegistry {
 		GameRegistry.register(iBlock);
 	}
 
-	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, StateMapperBase mapper, String registryname) {
-		ModelLoader.setCustomStateMapper(block, mapper);
+	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, String registryname) {
 		block.setRegistryName(registryname);
 		block.setUnlocalizedName(block.getRegistryName().toString());
 		iBlock.setRegistryName(registryname);

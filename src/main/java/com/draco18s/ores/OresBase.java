@@ -254,14 +254,11 @@ public class OresBase {
 		proxy.registerRenderers();
 		
         //These have to be unique
-        byte serverMessageID = 1;
-        byte clientMessageID = 2;
 		
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("harderores");
 		//networkWrapper.registerMessage(PacketHandlerServer.class, ToServerMessage.class, serverMessageID, Side.SERVER);
-		networkWrapper.registerMessage(ClientOreParticleHandler.class, ToClientMessageOreParticles.class, clientMessageID, Side.CLIENT);
-		networkWrapper.registerMessage(ServerOreCartHandler.class, ToServerMessageOreCart.class, serverMessageID, Side.SERVER);
-		
+		proxy.registerNetwork();
+        
 		FlowerIntegration.registerFlowerGen();
 	}
 	

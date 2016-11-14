@@ -5,9 +5,11 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.interfaces.IBlockWithMapper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -17,6 +19,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,7 +35,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockOreFlower1 extends BlockBush {
+public class BlockOreFlower1 extends BlockBush implements IBlockWithMapper {
 
 	protected static final AxisAlignedBB FLOWER_AABB = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 1.0D, 0.699999988079071D);
 
@@ -134,4 +137,10 @@ public class BlockOreFlower1 extends BlockBush {
     		world.setBlockState(pos, state.withProperty(Props.FLOWER_STALK, !state.getValue(Props.FLOWER_STALK)), 3);
     	}
     }
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public StateMapperBase getStateMapper() {
+		return new StateMapperFlowers(Props.FLOWER_TYPE);
+	}
 }

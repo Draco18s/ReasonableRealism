@@ -7,6 +7,7 @@ import com.draco18s.hardlib.blockproperties.Props;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
@@ -14,9 +15,9 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.util.ResourceLocation;
 
 public class StateMapperFlowers extends StateMapperBase {
-	private final IProperty type_prop;
+	private final Object type_prop;
 	
-	public StateMapperFlowers(IProperty prop) {
+	public StateMapperFlowers(Object prop) {
 		type_prop = prop;
 	}
 
@@ -30,7 +31,7 @@ public class StateMapperFlowers extends StateMapperBase {
 			loc = (ResourceLocation)Block.REGISTRY.getNameForObject(state.getBlock());
 		}
 		
-		String str = type_prop.getName() + "=" + type_prop.getName(state.getValue(type_prop));
+		String str = ((IProperty)type_prop).getName() + "=" + ((IProperty)type_prop).getName(state.getValue(((IProperty)type_prop)));
 		ModelResourceLocation p = new ModelResourceLocation(loc, str);
 		return p;
 	}
