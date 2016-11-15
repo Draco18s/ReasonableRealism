@@ -104,28 +104,27 @@ public class TileEntityCartLoader extends TileEntityHopper {
 						if(carts.containsKey(cart)) {
 							Vec3d v = carts.get(cart);
 							if(!hasItems) {
-								cart.motionX = ((getXPos()+0.5)-v.xCoord)*0.2;
-								cart.motionZ = ((getZPos()+0.5)-v.zCoord)*0.2;
-								if(cart.motionX != 0) {
-									cart.motionX = 0.5;
-								}
-								if(cart.motionZ != 0) {
-									cart.motionZ = 0.5;
+								cart.motionX = v.xCoord;
+								cart.motionY = v.yCoord;
+								cart.motionZ = v.zCoord;
+								if(cart.motionX == 0 && cart.motionZ == 0) {
+									cart.motionX = ((getXPos()+0.5)-v.xCoord)*0.2;
+									cart.motionZ = ((getZPos()+0.5)-v.zCoord)*0.2;
+									if(cart.motionX != 0) {
+										cart.motionX = 0.5;
+									}
+									if(cart.motionZ != 0) {
+										cart.motionZ = 0.5;
+									}
 								}
 								cart.moveMinecartOnRail(pos);
 								carts.remove(cart);
 							}
-							else if((dx*dx+dz*dz) < 0.7) {
-								carts.put(cart, new Vec3d(cart.posX, cart.posY, cart.posZ));
-								cart.motionX = 0;
-								cart.motionZ = 0;
-								cart.moveMinecartOnRail(pos);
-								cart.setPosition(cart.posX, cart.posY, cart.posZ);
-							}
 						}
 						else if(hasItems && (dx*dx+dz*dz) < 0.7) {
-							carts.put(cart, new Vec3d(cart.posX, cart.posY, cart.posZ));
+							carts.put(cart, new Vec3d(cart.motionX, cart.motionY, cart.motionZ));
 							cart.motionX = 0;
+							cart.motionY = 0;
 							cart.motionZ = 0;
 							cart.moveMinecartOnRail(pos);
 							cart.setPosition(cart.posX, cart.posY, cart.posZ);

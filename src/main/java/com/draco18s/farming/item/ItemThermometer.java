@@ -102,6 +102,9 @@ public class ItemThermometer extends Item {
 			tag.setString("linkedCropName", I18n.format(item.getUnlocalizedName()+".name"));
 			stack.setTagCompound(tag);
 		}
+		else {
+			stack.setTagCompound(null);
+		}
 		return EnumActionResult.PASS;
 	}
 	
@@ -110,7 +113,7 @@ public class ItemThermometer extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag != null) {
-			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.linkedcrop.text") + " " + tag.getString("linkedCropName"));
+			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.harderfarming:linkedcrop.text") + " " + tag.getString("linkedCropName"));
 			tooltip.add(I18n.format("tooltip.harderfarming:unlink.text"));
 		}
 		else {

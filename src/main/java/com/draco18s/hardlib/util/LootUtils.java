@@ -24,6 +24,13 @@ import net.minecraft.world.storage.loot.functions.SetCount;
 import net.minecraft.world.storage.loot.functions.SetMetadata;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+/**
+ * LootUtils supplies several methods for easing the process of modifying loot
+ * tables during the LootTableLoadEvent.
+ * 
+ * @author Draco18s
+ *
+ */
 public class LootUtils {
 	public static void removeLootFromTable(LootTable table, Item toRemove) {
 		List<LootPool> pools = ReflectionHelper.getPrivateValue(LootTable.class, table, "pools", "field_186466_c");

@@ -21,6 +21,13 @@ import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+/**
+ * RecipesUtils supplies several methods for easing the process of removing existing recipes,
+ * as well as a helper method for making a 9x9 grid of the same item (nuggets to ingots, etc)
+ * 
+ * @author Draco18s
+ *
+ */
 public class RecipesUtils {
 
 	public static void RemoveRecipe(Item resultItem, int stacksize, int meta, String modID) {
