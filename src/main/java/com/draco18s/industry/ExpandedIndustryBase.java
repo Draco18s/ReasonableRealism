@@ -5,13 +5,17 @@ import org.apache.logging.log4j.Logger;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.industry.block.BlockCartLoader;
 import com.draco18s.industry.block.BlockDistributor;
+import com.draco18s.industry.block.BlockFilter;
 import com.draco18s.industry.block.BlockPoweredRailBridge;
 import com.draco18s.industry.block.BlockRailBridge;
 import com.draco18s.industry.block.BlockTypeRail;
 import com.draco18s.industry.block.BlockWoodenHopper;
 import com.draco18s.industry.entities.TileEntityCartLoader;
 import com.draco18s.industry.entities.TileEntityDistributor;
+import com.draco18s.industry.entities.TileEntityFilter;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
+import com.draco18s.industry.network.CtoSMessage;
+import com.draco18s.industry.network.PacketHandlerServer;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -25,17 +29,20 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:industry}"/*, dependencies = "required-after:HardLib"*/)
-public class ExpandedInsutryBase {
+public class ExpandedIndustryBase {
 	@Instance("expindustry")
-	public static ExpandedInsutryBase instance;
+	public static ExpandedIndustryBase instance;
 	
 	public static Block blockWoodHopper;
 	public static Block blockDistributor;
 	public static Block blockCartLoader;
+	public static Block blockFilter;
 	public static Block blockRailBridge;
 	public static Block blockTypeRail;
 	public static Block blockRailBridgePowered;
@@ -44,6 +51,8 @@ public class ExpandedInsutryBase {
 	public static EasyRegistry proxy;*/
 	
 	public static Logger logger;
+	
+	public static SimpleNetworkWrapper networkWrapper;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -55,6 +64,8 @@ public class ExpandedInsutryBase {
 		EasyRegistry.registerBlockWithItem(blockDistributor, "machine_distributor");
 		blockCartLoader = new BlockCartLoader();
 		EasyRegistry.registerBlockWithItem(blockCartLoader, "machine_cart_loader");
+		blockFilter = new BlockFilter();
+		EasyRegistry.registerBlockWithItem(blockFilter, "machine_filter");
 		blockRailBridge = new BlockRailBridge();
 		EasyRegistry.registerBlockWithItem(blockRailBridge, "rail_bridge");
 		blockTypeRail = new BlockTypeRail();
@@ -65,6 +76,7 @@ public class ExpandedInsutryBase {
 		GameRegistry.registerTileEntity(TileEntityWoodenHopper.class, "machine_wood_hopper");
 		GameRegistry.registerTileEntity(TileEntityDistributor.class, "machine_distributor");
 		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "machine_cart_loader");
+		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 	}
@@ -81,6 +93,8 @@ public class ExpandedInsutryBase {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		
+		byte serverMessageID = 2;
+		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("ExpandedIndustry");
+		networkWrapper.registerMessage(PacketHandlerServer.class, CtoSMessage.class, serverMessageID, Side.SERVER);
 	}
 }

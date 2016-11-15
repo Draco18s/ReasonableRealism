@@ -6,7 +6,7 @@
         "side": "blocks/hopper_outside",
         "side2": "blocks/hopper_outside",
         "inside": "blocks/hopper_inside",
-        "bottom": "blocks/hopper_inside"
+        "bottom": "blocks/hopper_outside"
     },
     "elements": [
         {   "from": [ 0, 10, 0 ],

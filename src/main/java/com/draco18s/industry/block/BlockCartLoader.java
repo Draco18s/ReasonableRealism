@@ -2,7 +2,7 @@ package com.draco18s.industry.block;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.industry.ExpandedInsutryBase;
+import com.draco18s.industry.ExpandedIndustryBase;
 import com.draco18s.industry.IndustryGuiHandler;
 import com.draco18s.industry.entities.TileEntityCartLoader;
 
@@ -39,7 +39,7 @@ public class BlockCartLoader extends BlockHopper {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(ExpandedInsutryBase.instance, IndustryGuiHandler.EXT_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		playerIn.openGui(ExpandedIndustryBase.instance, IndustryGuiHandler.EXT_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	

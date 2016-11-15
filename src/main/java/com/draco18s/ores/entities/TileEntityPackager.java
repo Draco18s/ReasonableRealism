@@ -10,6 +10,7 @@ import com.draco18s.hardlib.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.interfaces.IMechanicalPower;
+import com.draco18s.hardlib.internal.inventory.OutputItemStackHandler;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
 import com.draco18s.ores.entities.capabilities.MillstoneMechanicalPowerHandler;
@@ -49,7 +50,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	
 	public TileEntityPackager() {
 		inputSlot = new PackableItemsHandler();
-		outputSlot = new ItemStackHandler();
+		outputSlot = new OutputItemStackHandler();
 		powerUser = new PackagerMechanicalPowerHandler();
 		packTime = 0;
 		timeMod = 1;
@@ -187,10 +188,9 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(facing == null) {

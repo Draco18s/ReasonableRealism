@@ -11,6 +11,7 @@ import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.interfaces.IMechanicalPower;
+import com.draco18s.hardlib.internal.inventory.OutputItemStackHandler;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
 import com.draco18s.ores.entities.capabilities.MillstoneMechanicalPowerHandler;
@@ -46,7 +47,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	
 	public TileEntityMillstone() {
 		inputSlot = new MillableItemsHandler(1);
-		outputSlot = new ItemStackHandler();
+		outputSlot = new OutputItemStackHandler();
 		powerUser = new MillstoneMechanicalPowerHandler();
 	}
 
@@ -169,16 +170,24 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
-		MillstoneOrientation millpos = bs.getValue(Props.MILL_ORIENTATION);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(facing == null) {
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
+			if(worldObj == null) {
+				if(facing == EnumFacing.UP) {
+					return (T) inputSlot;
+				}
+				if(facing == EnumFacing.DOWN) {
+					return (T) outputSlot;
+				}
+				return super.getCapability(capability, facing);
+			}
+			MillstoneOrientation millpos = worldObj.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
 			if(millpos.canAcceptInput && facing == EnumFacing.UP) {
 				return (T) inputSlot;
 			}
@@ -190,6 +199,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			}
 		}
 		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
+			MillstoneOrientation millpos = worldObj.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
 			if(millpos == MillstoneOrientation.CENTER) {
 				return (T) new RawMechanicalPowerHandler();
 			}

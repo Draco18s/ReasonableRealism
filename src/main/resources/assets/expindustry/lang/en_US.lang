@@ -8,3 +8,19 @@ tile.expindustry:rail_bridge_powered.name=Powered Rail Bridge
 container.expindustry:woodenhopper=Wooden Hopper
 container.expindustry:distributor=Distributor
 container.expindustry:cart_loader=Cart Loader
+container.expindustry:filter=Filtering Hopper
+
+gui.expindustry:rules_header=Item Acceptance Rules
+gui.expindustry:no_accept1=No Container
+gui.expindustry:no_accept2=in Rules
+gui.expindustry:logic_type=Logic Operator
+
+gui.expindustry:or=Can be inserted into any rule block
+gui.expindustry:and=Can be inserted into all rule blocks
+gui.expindustry:some=Can be inserted into some, but not all rule blocks
+gui.expindustry:none=Cannot be inserted into any rule block
+
+gui.expindustry:filter_explain1=The only items accepted by the Filter Hopper
+gui.expindustry:filter_explain2=are those that can be inserted into the rule
+gui.expindustry:filter_explain3=blocks from the indicated direction with the
+gui.expindustry:filter_explain4=indicated logic modifier.

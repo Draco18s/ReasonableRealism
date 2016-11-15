@@ -7,6 +7,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.block.BlockSluice;
+import com.draco18s.ores.entities.capabilities.ItemStackHandlerDirt;
 import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 
 import net.minecraft.block.Block;
@@ -52,7 +53,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 			itemSand = Item.getItemFromBlock(Blocks.SAND);
 			itemDirt = Item.getItemFromBlock(Blocks.DIRT);
 		}
-		inputSlot = new ItemStackHandler();
+		inputSlot = new ItemStackHandlerDirt();
 		rand = new Random();
 	}
 
@@ -274,7 +275,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
+		//IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			if(inputSlot.getStackInSlot(0).stackSize > (downstremrequests>0?1:0)+1) return null;
 			return (T) inputSlot;

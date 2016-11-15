@@ -76,11 +76,13 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
-		AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
-		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
-			if(millpos == AxelOrientation.HUB) {
-				return (T) powerSupply;
+		if(worldObj != null) {
+			IBlockState bs = worldObj.getBlockState(pos);
+			AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
+			if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
+				if(millpos == AxelOrientation.HUB) {
+					return (T) powerSupply;
+				}
 			}
 		}
 		return super.getCapability(capability, facing);

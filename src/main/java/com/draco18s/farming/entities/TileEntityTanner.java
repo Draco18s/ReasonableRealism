@@ -132,10 +132,9 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			setBlockToUpdate();
-			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);
 			}
 			if(facing == null) {
@@ -147,6 +146,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 			if(facing == EnumFacing.DOWN) {
 				return (T) getOuputSlots();
 			}
+			IBlockState bs = worldObj.getBlockState(pos);
 			EnumFacing bface = bs.getValue(BlockHorizontal.FACING);
 			if(bface == facing) {
 				return (T) leftSlot;

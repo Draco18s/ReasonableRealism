@@ -8,6 +8,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
+import com.draco18s.hardlib.internal.inventory.OutputItemStackHandler;
 import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
 import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 import com.draco18s.ores.inventory.ContainerSifter;
@@ -41,7 +42,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	
 	public TileEntitySifter() {
 		inputSlot = new SiftableItemsHandler();
-		outputSlot = new ItemStackHandler();
+		outputSlot = new OutputItemStackHandler();
 		suckZone = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX()+1, pos.getY()+1.25f, pos.getZ()+1);
 	}
 	
@@ -130,10 +131,9 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(bs.getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(facing == null) {
