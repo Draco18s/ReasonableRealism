@@ -11,10 +11,12 @@ import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
 
+import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -66,6 +68,15 @@ public class FlowerEventHandler {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onChunkGen(CogOreGenEvent event) {
+		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() <= Integer.MIN_VALUE+5) return;
+		Chunk c = event.getWorld().getChunkFromBlockCoords(event.getPos());
+		int cx = c.xPosition;
+		int cz = c.zPosition;
+		OreFlowersBase.oreCounter.generate(cx, cz, event.getWorld());
 	}
 	
 	@SubscribeEvent

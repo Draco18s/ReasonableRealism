@@ -1,5 +1,7 @@
 package com.draco18s.farming.item;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -8,17 +10,21 @@ import org.apache.logging.log4j.Level;
 
 import com.draco18s.farming.FarmingBase;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.interfaces.IItemFrameOutput;
 import com.draco18s.hardlib.internal.CropWeatherOffsets;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,10 +38,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemThermometer extends Item {
+public class ItemThermometer extends Item implements IItemFrameOutput {
 	public ItemThermometer() {
 		super();
 		this.setCreativeTab(CreativeTabs.MISC);
@@ -43,7 +50,9 @@ public class ItemThermometer extends Item {
 		
 		this.addPropertyOverride(new ResourceLocation("time"), new IItemPropertyGetter()
 		{
-			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entityIn) {
+				boolean flag = entityIn != null;
+                Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
 				if (world == null && entity != null) {
 					world = entity.worldObj;
 				}
@@ -55,11 +64,11 @@ public class ItemThermometer extends Item {
 				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
 				float t = bio.getTemperature();
 
-				int flat = 0;
-				int time = 0;
+				float flat = 0;
+				float time = 0;
 				if(tag != null) {
-					flat = tag.getInteger("tempflat");
-					time = tag.getInteger("temptime");
+					flat = tag.getFloat("tempflat");
+					time = tag.getFloat("temptime");
 				}
 				//TODO: time offset?
 				t += flat;
@@ -79,16 +88,17 @@ public class ItemThermometer extends Item {
 				tag = new NBTTagCompound();
 			}
 			CropWeatherOffsets offsets = HardLibAPI.hardCrops.getCropOffsets(block);
-
-			tag.setBoolean("HasOffsets", true);
-			tag.setFloat("rainflat", offsets.rainfallFlat);
-			tag.setFloat("tempflat", offsets.temperatureFlat);
-			tag.setFloat("raintime", offsets.rainfallTimeOffset);
-			tag.setFloat("temptime", offsets.temperatureTimeOffset);
 			
 			Item item = Item.getItemFromBlock(block);
+			ItemStack cropStack = null;
+			if (block == FarmingBase.winterWheat){
+				item = FarmingBase.winterWheatSeeds;
+			}
 			if (block == Blocks.WHEAT){
-				item = (Items.WHEAT);
+				item = Items.WHEAT;
+			}
+			if (block == Blocks.PUMPKIN_STEM){
+				item = Item.getItemFromBlock(Blocks.PUMPKIN);
 			}
 			if (block == Blocks.PUMPKIN_STEM){
 				item = Item.getItemFromBlock(Blocks.PUMPKIN);
@@ -99,7 +109,38 @@ public class ItemThermometer extends Item {
 			if(block == Blocks.REEDS) {
 				item = Items.REEDS;
 			}
-			tag.setString("linkedCropName", I18n.format(item.getUnlocalizedName()+".name"));
+			if(block == Blocks.COCOA) {
+				item = Items.DYE;
+				cropStack = new ItemStack(item, 1, EnumDyeColor.BROWN.getDyeDamage());
+			}
+			if(item == null) {
+				if (block instanceof BlockCrops){
+					String[] names = new String[]{ "func_149865_P", "getCrop" };
+					Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, names);
+					try {
+						item = (Item)method.invoke(block, new Object[]{});
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				}
+				if(item == null) {
+					return EnumActionResult.PASS;
+				}
+			}
+			if(cropStack == null) {
+				cropStack = new ItemStack(item, 1);
+			}
+
+			tag.setBoolean("HasOffsets", true);
+			tag.setFloat("rainflat", offsets.rainfallFlat);
+			tag.setFloat("tempflat", offsets.temperatureFlat);
+			tag.setFloat("raintime", offsets.rainfallTimeOffset);
+			tag.setFloat("temptime", offsets.temperatureTimeOffset);
+			tag.setString("linkedCropName", I18n.format(cropStack.getUnlocalizedName()+".name"));
 			stack.setTagCompound(tag);
 		}
 		else {
@@ -112,13 +153,35 @@ public class ItemThermometer extends Item {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
 		NBTTagCompound tag = stack.getTagCompound();
+		Biome bio = player.getEntityWorld().getBiomeGenForCoords(new BlockPos(player.posX, 0, player.posZ));
+		float t = bio.getTemperature();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.harderfarming:linkedcrop.text") + " " + tag.getString("linkedCropName"));
+			//tooltip.add(tag.getFloat("tempflat") + "(" + t +")");
 			tooltip.add(I18n.format("tooltip.harderfarming:unlink.text"));
 		}
 		else {
 			tooltip.add(I18n.format("tooltip.harderfarming:link.text"));
 		}
+	}
+
+	@Override
+	public int getRedstoneOutput(EntityItemFrame entity, int rotation) {
+		ItemStack stack = entity.getDisplayedItem();
+		NBTTagCompound tag = stack.getTagCompound();
+
+		float flat = 0;
+		float time = 0;
+		if(tag != null) {
+			flat = tag.getFloat("tempflat");
+			time = tag.getFloat("temptime");
+		}
+		Biome bio = entity.getEntityWorld().getBiomeGenForCoords(entity.getPosition());
+		float f = bio.getTemperature();
+		f += flat;
+		f = Math.round((f+1.35f) * 4);
+		f = Math.max(Math.min(f, 15),1);
+		return Math.round(f);
 	}
 	
 	/*public boolean hasItemFrameOutput(World worldIn, BlockPos pos, ItemStack stack) {

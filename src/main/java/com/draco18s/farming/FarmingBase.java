@@ -6,6 +6,7 @@ import com.draco18s.farming.block.BlockCropWeeds;
 import com.draco18s.farming.block.BlockCropWinterWheat;
 import com.draco18s.farming.block.BlockSaltOre;
 import com.draco18s.farming.block.BlockTanner;
+import com.draco18s.farming.entities.EntityItemFrameReplacement;
 import com.draco18s.farming.entities.TileEntityTanner;
 import com.draco18s.farming.entities.capabilities.IMilking;
 import com.draco18s.farming.entities.capabilities.MilkStorage;
@@ -13,6 +14,7 @@ import com.draco18s.farming.integration.IntegrationHarvestcraft;
 import com.draco18s.farming.item.ItemAchieves;
 import com.draco18s.farming.item.ItemButcherKnife;
 import com.draco18s.farming.item.ItemHydrometer;
+import com.draco18s.farming.item.ItemNewFrame;
 import com.draco18s.farming.item.ItemThermometer;
 import com.draco18s.farming.item.ItemWinterSeeds;
 import com.draco18s.farming.util.AnimalUtil;
@@ -29,6 +31,7 @@ import com.draco18s.hardlib.util.CapabilityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -51,7 +54,10 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ExistingSubstitutionException;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.Type;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -77,6 +83,7 @@ public class FarmingBase {
 	public static Item rawSalt;
 	public static Item saltPile;
 	public static Item butcherKnife;
+	public static Item itemFrameReplacement;
 	public static Item itemAchievementIcons;
 
 	public static Configuration config;
@@ -125,6 +132,16 @@ public class FarmingBase {
 		
 		butcherKnife = new ItemButcherKnife(ToolMaterial.IRON);
 		EasyRegistry.registerItem(butcherKnife, "butcherknife");
+		
+		itemFrameReplacement = new ItemNewFrame(EntityItemFrameReplacement.class);
+		itemFrameReplacement.setRegistryName(new ResourceLocation("minecraft","item_frame"));
+		itemFrameReplacement.setUnlocalizedName("frame");
+		try {
+			GameRegistry.addSubstitutionAlias("minecraft:item_frame", Type.ITEM, itemFrameReplacement);
+		} catch (ExistingSubstitutionException e) {
+			e.printStackTrace();
+		}
+		EntityRegistry.registerModEntity(EntityItemFrameReplacement.class, "item_frame_rep", 0, this, 48, 10, false);
 		
 		itemAchievementIcons = new ItemAchieves();
 		EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);

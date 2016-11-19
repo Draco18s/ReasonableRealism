@@ -12,5 +12,5 @@ public class SlotValidInsert extends Slot {
 	@Override
 	public boolean isItemValid(ItemStack stack) {
 		return inventory.isItemValidForSlot(slotNumber, stack);
-    }
+	}
 }

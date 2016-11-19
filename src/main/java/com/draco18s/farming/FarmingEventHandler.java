@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Level;
 
+import com.draco18s.farming.entities.EntityItemFrameReplacement;
 import com.draco18s.farming.entities.ai.EntityAIAging;
 import com.draco18s.farming.entities.ai.EntityAIMilking;
 import com.draco18s.farming.entities.ai.EntityAgeTracker;
@@ -38,6 +39,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
@@ -77,6 +79,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -470,15 +473,6 @@ public class FarmingEventHandler {
 		if(item == FarmingBase.thermometer || item == FarmingBase.rainmeter) {
 			event.player.addStat(FarmingAchievements.craftThermometer, 1);
 		}
-	}
-
-	@SubscribeEvent
-	public void onChunkGen(CogOreGenEvent event) {
-		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() == Integer.MIN_VALUE) return;
-		Chunk c = event.getWorld().getChunkFromBlockCoords(event.getPos());
-		int cx = c.xPosition;
-		int cz = c.zPosition;
-		OreFlowersBase.oreCounter.generate(cx, cz, event.getWorld());
 	}
 	
 	@SubscribeEvent

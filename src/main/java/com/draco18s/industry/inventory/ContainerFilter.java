@@ -15,8 +15,8 @@ public class ContainerFilter extends CommonContainer {
 		super(11);
 		tileEntity = te;
 		for (int i = 0; i < tileEntity.getSizeInventory(); ++i) {
-            this.addSlotToContainer(new SlotValidInsert(tileEntity, i, 8 + i * 18, 17));
-        }
+			this.addSlotToContainer(new SlotValidInsert(tileEntity, i, 8 + i * 18, 17));
+		}
 		this.addSlotToContainer(new SlotIInventory(tileEntity, 5, 8, 48));
 		this.addSlotToContainer(new SlotIInventory(tileEntity, 6, 26, 48));
 		this.addSlotToContainer(new SlotIInventory(tileEntity, 7, 53, 48));

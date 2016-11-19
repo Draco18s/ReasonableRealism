@@ -176,7 +176,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(facing == null) {
-				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
+				return (T) null;//new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(worldObj == null) {
 				if(facing == EnumFacing.UP) {

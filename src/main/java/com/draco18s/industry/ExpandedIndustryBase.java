@@ -1,5 +1,7 @@
 package com.draco18s.industry;
 
+import java.util.List;
+
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
@@ -16,11 +18,16 @@ import com.draco18s.industry.entities.TileEntityFilter;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
 import com.draco18s.industry.network.CtoSMessage;
 import com.draco18s.industry.network.PacketHandlerServer;
+import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -79,6 +86,7 @@ public class ExpandedIndustryBase {
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
+		FilterDimension.mainRegistry();
 	}
 	
 	@EventHandler
@@ -96,5 +104,12 @@ public class ExpandedIndustryBase {
 		byte serverMessageID = 2;
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("ExpandedIndustry");
 		networkWrapper.registerMessage(PacketHandlerServer.class, CtoSMessage.class, serverMessageID, Side.SERVER);
+		
+		ForgeChunkManager.setForcedChunkLoadingCallback(this, new LoadingCallback() {
+			@Override
+			public void ticketsLoaded(List<Ticket> tickets, World world) {
+				
+			}
+		});
 	}
 }

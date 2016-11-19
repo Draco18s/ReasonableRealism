@@ -19,7 +19,7 @@ public class SlotIInventory extends Slot {
 		}
 		//return inventory.isItemValidForSlot(slotNumber, stack);
 		return false;
-    }
+	}
 
 	@Override
 	public boolean canTakeStack(EntityPlayer par1EntityPlayer) {

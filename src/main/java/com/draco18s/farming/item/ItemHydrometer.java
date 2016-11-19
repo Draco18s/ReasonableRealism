@@ -1,5 +1,7 @@
 package com.draco18s.farming.item;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -8,19 +10,25 @@ import org.apache.logging.log4j.Level;
 
 import com.draco18s.farming.FarmingBase;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.interfaces.IItemFrameOutput;
 import com.draco18s.hardlib.internal.CropWeatherOffsets;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockStem;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
@@ -32,10 +40,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemHydrometer extends Item {
+public class ItemHydrometer extends Item implements IItemFrameOutput {
 	public ItemHydrometer() {
 		super();
 		this.setCreativeTab(CreativeTabs.MISC);
@@ -43,7 +52,9 @@ public class ItemHydrometer extends Item {
 		
 		this.addPropertyOverride(new ResourceLocation("time"), new IItemPropertyGetter()
 		{
-			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entityIn) {
+				boolean flag = entityIn != null;
+                Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
 				if (world == null && entity != null) {
 					world = entity.worldObj;
 				}
@@ -55,11 +66,11 @@ public class ItemHydrometer extends Item {
 				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
 				float t = bio.getRainfall();
 
-				int flat = 0;
-				int time = 0;
+				float flat = 0;
+				float time = 0;
 				if(tag != null) {
-					flat = tag.getInteger("rainflat");
-					time = tag.getInteger("raintime");
+					flat = tag.getFloat("rainflat");
+					time = tag.getFloat("raintime");
 				}
 				//TODO: time offset?
 				t += flat;
@@ -79,15 +90,13 @@ public class ItemHydrometer extends Item {
 				tag = new NBTTagCompound();
 			}
 			CropWeatherOffsets offsets = HardLibAPI.hardCrops.getCropOffsets(block);
-
-			tag.setBoolean("HasOffsets", true);
-			tag.setFloat("rainflat", offsets.rainfallFlat);
-			tag.setFloat("tempflat", offsets.temperatureFlat);
-			tag.setFloat("raintime", offsets.rainfallTimeOffset);
-			tag.setFloat("temptime", offsets.temperatureTimeOffset);
 			
 			Item item = Item.getItemFromBlock(block);
-			if (block == Blocks.WHEAT){
+			ItemStack cropStack = null;
+			/*if (block == FarmingBase.winterWheat){
+				item = FarmingBase.winterWheatSeeds;
+			}*/
+			/*if (block == Blocks.WHEAT){
 				item = (Items.WHEAT);
 			}
 			if (block == Blocks.PUMPKIN_STEM){
@@ -95,11 +104,45 @@ public class ItemHydrometer extends Item {
 			}
 			if (block == Blocks.MELON_STEM){
 				item = Item.getItemFromBlock(Blocks.MELON_BLOCK);
-			}
+			}*/
 			if(block == Blocks.REEDS) {
 				item = Items.REEDS;
 			}
-			tag.setString("linkedCropName", I18n.format(item.getUnlocalizedName()+".name"));
+			if(block == Blocks.COCOA) {
+				item = Items.DYE;
+				cropStack = new ItemStack(item, 1, EnumDyeColor.BROWN.getDyeDamage());
+			}
+			if(item == null) {
+				if (block instanceof BlockCrops){
+					Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, new String[]{ "func_149865_P", "getCrop" });
+					try {
+						item = (Item)method.invoke(block, new Object[]{});
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				}
+				if (block instanceof BlockStem){
+					Block b = (Block)ReflectionHelper.getPrivateValue(BlockStem.class, (BlockStem)block, new String[]{"field_149877_a","crop"});
+					item = Item.getItemFromBlock(block);
+				}
+				if(item == null) {
+					return EnumActionResult.PASS;
+				}
+			}
+			if(cropStack == null) {
+				cropStack = new ItemStack(item, 1);
+			}
+
+			tag.setBoolean("HasOffsets", true);
+			tag.setFloat("rainflat", offsets.rainfallFlat);
+			tag.setFloat("tempflat", offsets.temperatureFlat);
+			tag.setFloat("raintime", offsets.rainfallTimeOffset);
+			tag.setFloat("temptime", offsets.temperatureTimeOffset);
+			tag.setString("linkedCropName", I18n.format(cropStack.getUnlocalizedName()+".name"));
 			stack.setTagCompound(tag);
 		}
 		else {
@@ -119,5 +162,24 @@ public class ItemHydrometer extends Item {
 		else {
 			tooltip.add(I18n.format("tooltip.link.text"));
 		}
+	}
+	
+	@Override
+	public int getRedstoneOutput(EntityItemFrame entity, int rotation) {
+		ItemStack stack = entity.getDisplayedItem();
+		NBTTagCompound tag = stack.getTagCompound();
+
+		float flat = 0;
+		float time = 0;
+		if(tag != null) {
+			flat = tag.getFloat("tempflat");
+			time = tag.getFloat("temptime");
+		}
+		Biome bio = entity.getEntityWorld().getBiomeGenForCoords(entity.getPosition());
+		float f = bio.getRainfall();
+		f += flat;
+		f = Math.round((f+1.15f) * 4);
+		f = Math.max(Math.min(f, 15),1);
+		return Math.round(f);
 	}
 }
