@@ -20,15 +20,15 @@
         
         }],
         "enabled": {
-            "true": {},
+            "true":  {},
             "false": {}
         },
          "facing": {
-            "down": {},
-            "north": {},
-            "south": {},
-            "east": {},
-            "west": {}
+            "down":  {},
+            "north": {"model": "expindustry:hopper_side"},
+            "east":  {"model": "expindustry:hopper_side","y": 90},
+            "south": {"model": "expindustry:hopper_side", "y":180},
+            "west":  {"model": "expindustry:hopper_side","y": 270}
         }
     }
 }

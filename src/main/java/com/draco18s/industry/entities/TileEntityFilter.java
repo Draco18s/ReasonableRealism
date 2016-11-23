@@ -3,20 +3,22 @@ package com.draco18s.industry.entities;
 import javax.annotation.Nullable;
 
 import com.draco18s.industry.ExpandedIndustryBase;
-import com.draco18s.industry.entities.TileEntityFilter.EnumAcceptType;
 import com.draco18s.industry.world.FilterDimension;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.block.BlockHopper;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.IHopper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.tileentity.TileEntityHopper;
@@ -25,18 +27,25 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileEntityFilter extends TileEntityHopper {
 	private ItemStack[] filters = new ItemStack[6];
+	private IBlockState[] filterStates = new IBlockState[6];
 	private EnumAcceptType acceptRule = EnumAcceptType.OR;
-	
+
+	// can I get away with using the origin for ALL instances of the filter?
+	// would need to save the exact blockstate being placed though...
+	// that would just be the metadata, which could be displayed in the item...
+
+	// use the TE's local position as the location in the void dim to set all of
+	// its filters
+	// it would overwrite itself if it has more than one filter rule
+	// but the odds of a collision between Filters reduces dramatically
+
 	public TileEntityFilter() {
 		super();
 		setCustomName("container.expindustry:filter");
@@ -46,23 +55,53 @@ public class TileEntityFilter extends TileEntityHopper {
 	public void update() {
 		super.update();
 	}
-	
+
+	@Override
+	public boolean updateHopper() {
+		if (worldObj != null && !worldObj.isRemote) {
+			if (!isOnTransferCooldown() && BlockHopper.isEnabled(getBlockMetadata())) {
+				boolean flag = false;
+
+				if (!isEmpty()) {
+					flag = transferItemsOut();
+				}
+
+				if (!isFull()) {
+					flag = captureDroppedItems(this) || flag;
+				}
+
+				if (flag) {
+					setTransferCooldown(8);
+					markDirty();
+					return true;
+				}
+			}
+
+			return false;
+		}
+		else {
+			return false;
+		}
+	}
+
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		if(slot < 5) {
+		if (slot < 5) {
 			return super.getStackInSlot(slot);
 		}
 		else {
-			return filters[slot-5];
+			return filters[slot - 5];
 		}
 	}
-	
+
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		if(stack == null) { return true; }
-		if(slot < 5) {
-			if(doIHaveFilters()) {
-				switch(acceptRule) {
+		if (stack == null) {
+			return true;
+		}
+		if (slot < 5) {
+			if (doIHaveFilters()) {
+				switch (acceptRule) {
 					case OR:
 						return acceptOr(slot, stack);
 					case AND:
@@ -74,110 +113,41 @@ public class TileEntityFilter extends TileEntityHopper {
 				}
 			}
 		}
-		else if(stack.getItem() instanceof ItemBlock) {
-			ItemBlock ib = (ItemBlock)stack.getItem();
-			IBlockState state = ib.block.getStateFromMeta(ib.getMetadata(stack));
-			World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-			
-			if(ib.block.hasTileEntity(state)) {
-				w.setBlockState(BlockPos.ORIGIN, state, 2);
-				TileEntity te = w.getTileEntity(BlockPos.ORIGIN);
-				if(te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-					return true;
-				}
-				else {
-					BlockStateContainer bsc = ib.block.getBlockState();
-					ImmutableList<IBlockState> values = bsc.getValidStates();
-					EnumFacing side = EnumFacing.DOWN;
-					switch(slot-5) {
-						case 0:
-						case 1:
-							side = EnumFacing.UP;
-							break;
-						case 2:
-						case 3:
-							side = EnumFacing.EAST;
-							break;
-						case 4:
-						case 5:
-							side = EnumFacing.DOWN;
-							break;
-					}
-					for(IBlockState s : values) {
-						w.setBlockState(BlockPos.ORIGIN, s, 2);
-						System.out.println(w.getBlockState(BlockPos.ORIGIN));
-						te = w.getTileEntity(BlockPos.ORIGIN);
-						if(te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
-							return true;
-						}
-					}
-				}
-			}
-			else {
-				BlockStateContainer bsc = ib.block.getBlockState();
-				ImmutableList<IBlockState> values = bsc.getValidStates();
-				EnumFacing side = EnumFacing.DOWN;
-				switch(slot-5) {
-					case 0:
-					case 1:
-						side = EnumFacing.UP;
-						break;
-					case 2:
-					case 3:
-						side = EnumFacing.EAST;
-						break;
-					case 4:
-					case 5:
-						side = EnumFacing.DOWN;
-						break;
-				}
-				for(IBlockState s : values) {
-					w.setBlockState(BlockPos.ORIGIN, state, 2);
-					System.out.println(w.getBlockState(BlockPos.ORIGIN));
-					TileEntity te = w.getTileEntity(BlockPos.ORIGIN);
-					if(te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
-						return true;
-					}
-				}
+		else if (stack.getItem() instanceof ItemBlock) {
+			World w = getFilterWorld();
+			return createAndCheckTE(w, pos, stack, slot - 5);
+		}
+		return false;
+	}
+
+	private WorldServer getFilterWorld() {
+		return FMLCommonHandler.instance().getMinecraftServerInstance()
+				.worldServerForDimension(FilterDimension.DIMENSION_ID);
+	}
+
+	public boolean doIHaveFilters() {
+		for (ItemStack ii : filters) {
+			if (ii != null) {
+				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean doIHaveFilters() {
-		for(ItemStack ii : filters) {
-			if(ii != null) return true;
-		}
-		return false;
-	}
-	
 	private boolean acceptOr(int slot, ItemStack stack) {
 		boolean ret = false;
-		for(int i = filters.length-1;i>=0;i--) {
-			if(filters[i] != null) {
-				World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-				TileEntity te = w.getTileEntity(BlockPos.ORIGIN);
-				EnumFacing side = EnumFacing.DOWN;
-				switch(i) {
-					case 0:
-					case 1:
-						side = EnumFacing.UP;
-						break;
-					case 2:
-					case 3:
-						side = EnumFacing.EAST;
-						break;
-					case 4:
-					case 5:
-						side = EnumFacing.DOWN;
-						break;
-				}
-				IItemHandler inven;
-				inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-				for(int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
+		for (int i = filters.length - 1; i >= 0; i--) {
+			if (filters[i] != null) {
+				World w = getFilterWorld();
+				createAndCheckTE(w, pos, filters[i], i);
+				TileEntity te = w.getTileEntity(pos.up(i));
+				EnumFacing side = getFacingForSlot(i);
+				IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+				for (int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
 					ItemStack input = stack.copy();
 					input.stackSize = 1;
-					ret |= doesAccept(te, inven, fakeSlot, input);
+					int numSlots = inven.getSlots();
+					ret |= doesAccept(te, inven, fakeSlot, input, i);
 				}
 			}
 		}
@@ -186,46 +156,36 @@ public class TileEntityFilter extends TileEntityHopper {
 
 	private boolean acceptAnd(int slot, ItemStack stack) {
 		boolean ret = true;
-		for(int i = filters.length-1;i>=0;i--) {
-			if(filters[i] != null) {
+		for (int i = filters.length - 1; i >= 0; i--) {
+			if (filters[i] != null) {
 				boolean anySlot = false;
-				World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-				TileEntity te = w.getTileEntity(BlockPos.ORIGIN);
-				EnumFacing side = EnumFacing.DOWN;
-				switch(i) {
-					case 0:
-					case 1:
-						side = EnumFacing.UP;
-						break;
-					case 2:
-					case 3:
-						side = EnumFacing.EAST;
-						break;
-					case 4:
-					case 5:
-						side = EnumFacing.DOWN;
-						break;
-				}
-				IItemHandler inven;
-				inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-				for(int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
+				World w = getFilterWorld();
+				createAndCheckTE(w, pos, filters[i], slot);
+				TileEntity te = w.getTileEntity(pos.up(i));
+				EnumFacing side = getFacingForSlot(i);
+				IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+				for (int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
 					ItemStack input = stack.copy();
 					input.stackSize = 1;
-					anySlot = anySlot || doesAccept(te, inven, fakeSlot, input);
+					anySlot = anySlot || doesAccept(te, inven, fakeSlot, input, i);
 				}
 				ret &= anySlot;
 			}
 		}
 		return ret;
 	}
-	
-	private boolean doesAccept(TileEntity te, IItemHandler inven, int slot, ItemStack stack) {
-		if(te instanceof TileEntityFurnace) {
-			if(slot == 1) {
-				return TileEntityFurnace.getItemBurnTime(stack) > 0;
+
+	private boolean doesAccept(TileEntity te, IItemHandler inven, int slot, ItemStack stack, int filterSlot) {
+		if (te instanceof TileEntityFurnace) {
+			// have to check filterSlot because the Furnace slots aren't
+			// restricted
+			if (/* slot == 1 && */(filterSlot == 2 || filterSlot == 3)) {
+				int t = TileEntityFurnace.getItemBurnTime(stack);
+				return t > 0;
 			}
-			else if(slot == 0) {
-				return FurnaceRecipes.instance().getSmeltingResult(stack) != null;
+			else if (/* slot == 0 && */(filterSlot == 0 || filterSlot == 1)) {
+				ItemStack s = FurnaceRecipes.instance().getSmeltingResult(stack);
+				return s != null;
 			}
 		}
 		else {
@@ -234,44 +194,49 @@ public class TileEntityFilter extends TileEntityHopper {
 		}
 		return false;
 	}
-	
+
+	@Override
 	public void setInventorySlotContents(int slot, @Nullable ItemStack stack) {
-		if(slot < 5) {
+		if (slot < 5) {
 			super.setInventorySlotContents(slot, stack);
 		}
-		else if(stack == null) {
+		else if (stack == null) {
 			filters[slot - 5] = null;
-			World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-			w.setBlockToAir(BlockPos.ORIGIN);
+			World w = getFilterWorld();
+			filterStates[slot - 5] = null;
+			w.setBlockToAir(pos);
 		}
-		else if(stack.getItem() instanceof ItemBlock) {
+		else if (stack.getItem() instanceof ItemBlock) {
 			filters[slot - 5] = stack;
 		}
-		if (worldObj != null) { 
+		if (worldObj != null) {
 			worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
 		}
 		markDirty();
 	}
-	
+
+	@Override
 	public ItemStack decrStackSize(int slot, int num) {
-		if(slot < 5) {
+		if (slot < 5) {
 			return super.decrStackSize(slot, num);
 		}
-		if (filters[slot-5] != null) {
+		if (filters[slot - 5] != null) {
 			ItemStack itemstack;
-			if (filters[slot-5].stackSize <= num) {
-				itemstack = filters[slot-5];
-				filters[slot-5] = null;
-				World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-				w.setBlockToAir(BlockPos.ORIGIN);
+			if (filters[slot - 5].stackSize <= num) {
+				itemstack = filters[slot - 5];
+				filters[slot - 5] = null;
+				World w = getFilterWorld();
+				filterStates[slot - 5] = null;
+				w.setBlockToAir(pos);
 				return itemstack;
 			}
 			else {
-				itemstack = filters[slot-5].splitStack(num);
-				if (filters[slot-5].stackSize == 0) {
-					filters[slot-5] = null;
-					World w = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
-					w.setBlockToAir(BlockPos.ORIGIN);
+				itemstack = filters[slot - 5].splitStack(num);
+				if (filters[slot - 5].stackSize == 0) {
+					filters[slot - 5] = null;
+					World w = getFilterWorld();
+					filterStates[slot - 5] = null;
+					w.setBlockToAir(pos);
 				}
 				return itemstack;
 			}
@@ -285,7 +250,7 @@ public class TileEntityFilter extends TileEntityHopper {
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock();
 	}
-	
+
 	private IBlockState getState() {
 		return worldObj.getBlockState(pos);
 	}
@@ -297,16 +262,16 @@ public class TileEntityFilter extends TileEntityHopper {
 	public void setEnumType(EnumAcceptType enumAcceptType) {
 		acceptRule = enumAcceptType;
 	}
-	
+
 	@Override
 	@Nullable
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+		return new SPacketUpdateTileEntity(pos, 3, getUpdateTag());
 	}
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
-		return this.writeToNBT(new NBTTagCompound());
+		return writeToNBT(new NBTTagCompound());
 	}
 
 	@Override
@@ -331,7 +296,7 @@ public class TileEntityFilter extends TileEntityHopper {
 		for (int i = 0; i < filters.length; ++i) {
 			if (filters[i] != null) {
 				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-				nbttagcompound1.setByte("expindustry:fslot", (byte)i);
+				nbttagcompound1.setByte("expindustry:fslot", (byte) i);
 				filters[i].writeToNBT(nbttagcompound1);
 				nbttaglist.appendTag(nbttagcompound1);
 			}
@@ -341,30 +306,333 @@ public class TileEntityFilter extends TileEntityHopper {
 		return tag;
 	}
 
-	public void validate()
-	{
-		/*if(this.worldObj != null && !this.worldObj.isRemote) {
-			World w = DimensionManager.getWorld(Integer.MIN_VALUE+1);
-			Ticket ticket = ForgeChunkManager.requestTicket(ExpandedIndustryBase.instance, w, Type.NORMAL);
-			ForgeChunkManager.forceChunk(ticket, new ChunkPos(0,0));
-		}*/
-		this.tileEntityInvalid = false;
+	@Override
+	public void validate() {
+		ExpandedIndustryBase.forceChunkLoad(getFilterWorld(), new ChunkPos(pos));
+		super.validate();
 	}
-	
-	public void invalidate()
-	{
-		/*if(this.worldObj != null && !this.worldObj.isRemote) {
-			World w = DimensionManager.getWorld(Integer.MIN_VALUE+1);
-			Ticket ticket = ForgeChunkManager.requestTicket(ExpandedIndustryBase.instance, w, Type.NORMAL);
-			ForgeChunkManager.unforceChunk(ticket, new ChunkPos(0,0));
-		}*/
-		this.tileEntityInvalid = true;
+
+	@Override
+	public void invalidate() {
+		ExpandedIndustryBase.releaseChunkLoad(getFilterWorld(), new ChunkPos(pos));
+		super.invalidate();
 	}
-	
+
+	private boolean createAndCheckTE(World world, BlockPos pos, ItemStack stack, int slot) {
+		if (pos.getY() + slot < 255) {
+			pos = pos.up(slot);
+		}
+		ItemBlock ib = (ItemBlock) stack.getItem();
+		IBlockState state = ib.block.getStateFromMeta(ib.getMetadata(stack));
+		// World w =
+		// FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
+		if (world.getBlockState(pos) == filterStates[slot]) {
+			return true;
+		}
+		if (filterStates[slot] != null) {
+			world.setBlockState(pos, filterStates[slot], 2);
+			TileEntity te = world.getTileEntity(pos);
+			if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+				filterStates[slot] = state;
+				return true;
+			}
+		}
+		if (ib.block.hasTileEntity(state)) {
+			world.setBlockState(pos, state, 2);
+			TileEntity te = world.getTileEntity(pos);
+			if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+				filterStates[slot] = state;
+				return true;
+			}
+			else if (ib.getMetadata(stack) == 0) {
+				BlockStateContainer bsc = ib.block.getBlockState();
+				ImmutableList<IBlockState> values = bsc.getValidStates();
+				EnumFacing side = getFacingForSlot(slot);
+				for (IBlockState s : values) {
+					world.setBlockState(pos, s, 2);
+					System.out.println(world.getBlockState(pos));
+					te = world.getTileEntity(pos);
+					if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
+						filterStates[slot] = s;
+						return true;
+					}
+				}
+			}
+		}
+		else {
+			BlockStateContainer bsc = ib.block.getBlockState();
+			ImmutableList<IBlockState> values = bsc.getValidStates();
+			EnumFacing side = getFacingForSlot(slot - 5);
+			for (IBlockState s : values) {
+				world.setBlockState(pos, s, 2);
+				// System.out.println("Checking..." + world.getBlockState(pos));
+				TileEntity te = world.getTileEntity(pos);
+				if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
+					filterStates[slot] = s;
+					return true;
+				}
+			}
+		}
+		filterStates[slot] = null;
+		world.setBlockToAir(pos);
+		return false;
+	}
+
+	private EnumFacing getFacingForSlot(int slot) {
+		EnumFacing side = EnumFacing.DOWN;
+		switch (slot) {
+			case 0:
+			case 1:
+				side = EnumFacing.UP;
+				break;
+			case 2:
+			case 3:
+				side = EnumFacing.EAST;
+				break;
+			case 4:
+			case 5:
+				side = EnumFacing.DOWN;
+				break;
+		}
+		return side;
+	}
+
 	public static enum EnumAcceptType {
-		OR,
-		AND,
-		NONE,
-		SOME;
+		OR, AND, NONE, SOME;
+	}
+
+	/*============================================ Hopper Stuff ===========================================*/
+	/*====================================== Overrides for Filtering ======================================*/
+
+	private boolean isEmpty() {
+		for (int i = 0; i < getSizeInventory(); i++) {
+			ItemStack itemstack = getStackInSlot(i);
+			if (itemstack != null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isFull() {
+		for (int i = 0; i < getSizeInventory(); i++) {
+			ItemStack itemstack = getStackInSlot(i);
+			if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean transferItemsOut() {
+		if (net.minecraftforge.items.VanillaInventoryCodeHooks.insertHook(this)) {
+			return true;
+		}
+		IInventory iinventory = getInventoryForHopperTransfer();
+
+		if (iinventory == null) {
+			return false;
+		}
+		else {
+			EnumFacing enumfacing = BlockHopper.getFacing(getBlockMetadata()).getOpposite();
+
+			if (isInventoryFull(iinventory, enumfacing)) {
+				return false;
+			}
+			else {
+				for (int i = 0; i < getSizeInventory(); ++i) {
+					if (getStackInSlot(i) != null) {
+						ItemStack itemstack = getStackInSlot(i).copy();
+						ItemStack itemstack1 = putStackInInventoryAllSlots(iinventory, decrStackSize(i, 1), enumfacing);
+
+						if (itemstack1 == null || itemstack1.stackSize == 0) {
+							iinventory.markDirty();
+							return true;
+						}
+
+						setInventorySlotContents(i, itemstack);
+					}
+				}
+
+				return false;
+			}
+		}
+	}
+
+	public static boolean captureDroppedItems(TileEntityFilter hopper) {
+		Boolean ret = extractHook(hopper);
+		if (ret != null) {
+			return ret;
+		}
+		IInventory iinventory = getHopperInventory(hopper);
+
+		if (iinventory != null) {
+			EnumFacing enumfacing = EnumFacing.DOWN;
+
+			if (isInventoryEmpty(iinventory, enumfacing)) {
+				return false;
+			}
+
+			if (iinventory instanceof ISidedInventory) {
+				ISidedInventory isidedinventory = (ISidedInventory) iinventory;
+				int[] aint = isidedinventory.getSlotsForFace(enumfacing);
+
+				for (int i : aint) {
+					if (pullItemFromSlot(hopper, iinventory, i, enumfacing)) {
+						return true;
+					}
+				}
+			}
+			else {
+				int j = iinventory.getSizeInventory();
+
+				for (int k = 0; k < j; ++k) {
+					if (pullItemFromSlot(hopper, iinventory, k, enumfacing)) {
+						return true;
+					}
+				}
+			}
+		}
+		else {
+			for (EntityItem entityitem : getCaptureItems(hopper.getWorld(), hopper.getXPos(), hopper.getYPos(),
+					hopper.getZPos())) {
+				if (putDropInInventoryAllSlots(hopper, entityitem)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isInventoryFull(IInventory inventoryIn, EnumFacing side) {
+		if (inventoryIn instanceof ISidedInventory) {
+			ISidedInventory isidedinventory = (ISidedInventory) inventoryIn;
+			int[] aint = isidedinventory.getSlotsForFace(side);
+
+			for (int k : aint) {
+				ItemStack itemstack1 = isidedinventory.getStackInSlot(k);
+
+				if (itemstack1 == null || itemstack1.stackSize != itemstack1.getMaxStackSize()) {
+					return false;
+				}
+			}
+		}
+		else {
+			int i = inventoryIn.getSizeInventory();
+
+			for (int j = 0; j < i; ++j) {
+				ItemStack itemstack = inventoryIn.getStackInSlot(j);
+
+				if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize()) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns false if the specified IInventory contains any items
+	 */
+	private static boolean isInventoryEmpty(IInventory inventoryIn, EnumFacing side) {
+		if (inventoryIn instanceof ISidedInventory) {
+			ISidedInventory isidedinventory = (ISidedInventory) inventoryIn;
+			int[] aint = isidedinventory.getSlotsForFace(side);
+
+			for (int i : aint) {
+				if (isidedinventory.getStackInSlot(i) != null) {
+					return false;
+				}
+			}
+		}
+		else {
+			int j = inventoryIn.getSizeInventory();
+
+			for (int k = 0; k < j; ++k) {
+				if (inventoryIn.getStackInSlot(k) != null) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private IInventory getInventoryForHopperTransfer() {
+		EnumFacing enumfacing = BlockHopper.getFacing(getBlockMetadata());
+		/**
+		 * Returns the IInventory (if applicable) of the TileEntity at the
+		 * specified position
+		 */
+		return getInventoryAtPosition(getWorld(), getXPos() + enumfacing.getFrontOffsetX(),
+				getYPos() + enumfacing.getFrontOffsetY(), getZPos() + enumfacing.getFrontOffsetZ());
+	}
+
+	private static boolean pullItemFromSlot(IHopper hopper, IInventory inventoryIn, int index, EnumFacing direction) {
+		ItemStack itemstack = inventoryIn.getStackInSlot(index);
+
+		if (itemstack != null && canExtractItemFromSlot(inventoryIn, itemstack, index, direction)) {
+			ItemStack itemstack1 = itemstack.copy();
+			ItemStack itemstack2 = putStackInInventoryAllSlots(hopper, inventoryIn.decrStackSize(index, 1),
+					(EnumFacing) null);
+
+			if (itemstack2 == null || itemstack2.stackSize == 0) {
+				inventoryIn.markDirty();
+				return true;
+			}
+
+			inventoryIn.setInventorySlotContents(index, itemstack1);
+		}
+
+		return false;
+	}
+
+	private static boolean canExtractItemFromSlot(IInventory inventoryIn, ItemStack stack, int index, EnumFacing side) {
+		return !(inventoryIn instanceof ISidedInventory)
+				|| ((ISidedInventory) inventoryIn).canExtractItem(index, stack, side);
+	}
+
+	/*======================================= Vanilla Hooks Override ======================================*/
+	private static Boolean extractHook(TileEntityFilter dest) {
+		TileEntity tileEntity = dest.getWorld()
+				.getTileEntity(new BlockPos(dest.getXPos(), dest.getYPos() + 1, dest.getZPos()));
+
+		if (tileEntity == null
+				|| !tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN)) {
+			return null;
+		}
+
+		IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.DOWN);
+
+		for (int i = 0; i < handler.getSlots(); i++) {
+			ItemStack extractItem = handler.extractItem(i, 1, true);
+			if (extractItem != null) {
+				for (int j = 0; j < dest.getSizeInventory(); j++) {
+					ItemStack destStack = dest.getStackInSlot(j);
+					if (destStack == null || destStack.stackSize < destStack.getMaxStackSize()
+							&& destStack.stackSize < dest.getInventoryStackLimit()
+							&& ItemHandlerHelper.canItemStacksStack(extractItem, destStack)) {
+						// override! we need to check that the insert is valid!
+						ItemStack testExt = handler.extractItem(i, 1, true);
+						if (dest.isItemValidForSlot(j, testExt)) {
+							extractItem = handler.extractItem(i, 1, false);
+							if (destStack == null) {
+								dest.setInventorySlotContents(j, extractItem);
+							}
+							else {
+								destStack.stackSize++;
+								dest.setInventorySlotContents(j, destStack);
+							}
+							dest.markDirty();
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 }

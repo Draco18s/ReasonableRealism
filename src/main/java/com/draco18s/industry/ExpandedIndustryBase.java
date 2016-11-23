@@ -1,5 +1,6 @@
 package com.draco18s.industry;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -24,10 +25,12 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -60,6 +63,8 @@ public class ExpandedIndustryBase {
 	public static Logger logger;
 	
 	public static SimpleNetworkWrapper networkWrapper;
+	public static HashMap<ChunkPos, Integer> ticketList;
+	private static Ticket chunkLoaderTicket;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -104,12 +109,38 @@ public class ExpandedIndustryBase {
 		byte serverMessageID = 2;
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("ExpandedIndustry");
 		networkWrapper.registerMessage(PacketHandlerServer.class, CtoSMessage.class, serverMessageID, Side.SERVER);
-		
+		ticketList = new HashMap<ChunkPos, Integer>();
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, new LoadingCallback() {
 			@Override
 			public void ticketsLoaded(List<Ticket> tickets, World world) {
 				
 			}
 		});
+	}
+	
+	public static void forceChunkLoad(World w, ChunkPos pos) {
+		if(!ticketList.containsKey(pos)) {
+			if(chunkLoaderTicket == null) {
+				chunkLoaderTicket = ForgeChunkManager.requestTicket(instance, w, Type.NORMAL);
+			}
+			ticketList.put(pos, 1);
+			ForgeChunkManager.forceChunk(chunkLoaderTicket, pos);
+		}
+		else {
+			ticketList.put(pos, ticketList.get(pos)+1);
+		}
+	}
+	
+	public static void releaseChunkLoad(World w, ChunkPos pos) {
+		if(!ticketList.containsKey(pos) || chunkLoaderTicket == null) {
+			return;
+		}
+		else {
+			int num = ticketList.get(pos)-1;
+			if(num > 0)
+				ticketList.put(pos, num);
+			else
+				ForgeChunkManager.unforceChunk(chunkLoaderTicket, pos);
+		}
 	}
 }

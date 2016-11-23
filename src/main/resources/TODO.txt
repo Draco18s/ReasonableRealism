@@ -6,7 +6,7 @@
 [x] Wooden hopper
 [x] Distributor
 [x] Loader
-  [ ] Make cart move off in the same direction (saved values instead of computed?)
-[x] Filter
-[ ] Detector rail
-[ ] Ore Flowers: non vanilla ores
+  [x] Make cart move off in the same direction (saved values instead of computed?)
+[/] Filter
+[x] Detector rail
+[x] Ore Flowers: non vanilla ores
