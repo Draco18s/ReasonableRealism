@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
@@ -164,8 +165,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		if(inputSlot.getStackInSlot(slot) == null) return false;
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(slot), true);
 		if(result == null) return false;
-		if(outputSlot.insertItem(0, result, true) != null) return false;
-		return true;
+		return outputSlot.getStackInSlot(0) == null || (ItemHandlerHelper.canItemStacksStack(outputSlot.getStackInSlot(0), result) && (result.stackSize + outputSlot.getStackInSlot(0).stackSize <= result.getMaxStackSize()));
 	}
 
 	private void packItem() {
@@ -174,9 +174,15 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			if(stack == null) continue;
 			ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(stack, true);
 			if(result == null) continue;
-			if(outputSlot.insertItem(0, result, true) != null) continue;
+			if(!(outputSlot.getStackInSlot(0) == null || (ItemHandlerHelper.canItemStacksStack(outputSlot.getStackInSlot(0), result) && (result.stackSize + outputSlot.getStackInSlot(0).stackSize <= result.getMaxStackSize())))) continue;
 			inputSlot.extractItem(s, HardLibAPI.oreMachines.getPressurePackAmount(stack), false);
-			outputSlot.insertItem(0, result.copy(), false);
+			//outputSlot.insertItem(0, result.copy(), false);
+			if(outputSlot.getStackInSlot(0) == null) {
+				outputSlot.setStackInSlot(0, result.copy());
+			}
+			else {
+				outputSlot.setStackInSlot(0,ItemHandlerHelper.copyStackWithSize(outputSlot.getStackInSlot(0), result.stackSize + outputSlot.getStackInSlot(0).stackSize));
+			}
 		}
 		this.markDirty();
 	}
@@ -239,7 +245,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		if(inputSlot == null) {
 			inputSlot = new PackableItemsHandler();
-			outputSlot = new ItemStackHandler();
+			outputSlot = new OutputItemStackHandler();
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));

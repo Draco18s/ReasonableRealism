@@ -401,8 +401,8 @@ public class TileEntityFilter extends TileEntityHopper {
 		OR, AND, NONE, SOME;
 	}
 
-	/*============================================ Hopper Stuff ===========================================*/
 	/*====================================== Overrides for Filtering ======================================*/
+	/*============================================ Hopper Stuff ===========================================*/
 
 	private boolean isEmpty() {
 		for (int i = 0; i < getSizeInventory(); i++) {
@@ -595,7 +595,9 @@ public class TileEntityFilter extends TileEntityHopper {
 	}
 
 	/*======================================= Vanilla Hooks Override ======================================*/
-	private static Boolean extractHook(TileEntityFilter dest) {
+	
+	private static Boolean extractHook(IHopper dest) {
+		//IHopper l;
 		TileEntity tileEntity = dest.getWorld()
 				.getTileEntity(new BlockPos(dest.getXPos(), dest.getYPos() + 1, dest.getZPos()));
 
@@ -615,8 +617,7 @@ public class TileEntityFilter extends TileEntityHopper {
 							&& destStack.stackSize < dest.getInventoryStackLimit()
 							&& ItemHandlerHelper.canItemStacksStack(extractItem, destStack)) {
 						// override! we need to check that the insert is valid!
-						ItemStack testExt = handler.extractItem(i, 1, true);
-						if (dest.isItemValidForSlot(j, testExt)) {
+						if (dest.isItemValidForSlot(j, extractItem)) {
 							extractItem = handler.extractItem(i, 1, false);
 							if (destStack == null) {
 								dest.setInventorySlotContents(j, extractItem);

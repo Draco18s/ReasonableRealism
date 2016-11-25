@@ -71,8 +71,6 @@ public class BlockSifter extends Block {
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		// public void breakBlock(World worldIn, BlockPos pos, IBlockState
-		// state) {
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 
 		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
@@ -86,12 +84,6 @@ public class BlockSifter extends Block {
 				worldIn.spawnEntityInWorld(entityIn);
 			}
 		}
-		/*
-		Props.MillstoneOrientation millpos =
-		state.getValue(Props.MILL_ORIENTATION); BlockPos p =
-		pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
-		worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority
-		 */
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
 }

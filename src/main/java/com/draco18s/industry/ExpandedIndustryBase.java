@@ -1,5 +1,6 @@
 package com.draco18s.industry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.industry.block.BlockCartLoader;
+import com.draco18s.industry.block.BlockCaster;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
 import com.draco18s.industry.block.BlockPoweredRailBridge;
@@ -14,17 +16,24 @@ import com.draco18s.industry.block.BlockRailBridge;
 import com.draco18s.industry.block.BlockTypeRail;
 import com.draco18s.industry.block.BlockWoodenHopper;
 import com.draco18s.industry.entities.TileEntityCartLoader;
+import com.draco18s.industry.entities.TileEntityCaster;
 import com.draco18s.industry.entities.TileEntityDistributor;
 import com.draco18s.industry.entities.TileEntityFilter;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
+import com.draco18s.industry.entities.capabilities.CastingItemStackHandler;
+import com.draco18s.industry.item.ItemCastingMold;
 import com.draco18s.industry.network.CtoSMessage;
 import com.draco18s.industry.network.PacketHandlerServer;
+import com.draco18s.industry.recipes.RecipeToolMold;
 import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSand;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -34,7 +43,6 @@ import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -56,6 +64,10 @@ public class ExpandedIndustryBase {
 	public static Block blockRailBridge;
 	public static Block blockTypeRail;
 	public static Block blockRailBridgePowered;
+
+	public static Block blockCaster;
+	
+	public static Item itemMold;
 	
 	/*@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.ores.EasyRegistry")
 	public static EasyRegistry proxy;*/
@@ -84,11 +96,18 @@ public class ExpandedIndustryBase {
 		EasyRegistry.registerBlockWithItem(blockTypeRail, "type_rail");
 		blockRailBridgePowered = new BlockPoweredRailBridge();
 		EasyRegistry.registerBlockWithItem(blockRailBridgePowered, "rail_bridge_powered");
+		
+		blockCaster = new BlockCaster();
+		EasyRegistry.registerBlockWithItem(blockCaster, "machine_caster");
 
 		GameRegistry.registerTileEntity(TileEntityWoodenHopper.class, "machine_wood_hopper");
 		GameRegistry.registerTileEntity(TileEntityDistributor.class, "machine_distributor");
 		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "machine_cart_loader");
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
+		GameRegistry.registerTileEntity(TileEntityCaster.class, "machine_caster");
+		
+		itemMold = new ItemCastingMold();
+		EasyRegistry.registerItem(itemMold, "casting_mold");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 		FilterDimension.mainRegistry();
@@ -102,6 +121,30 @@ public class ExpandedIndustryBase {
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ));
+		
+		List<ItemStack> list = new ArrayList<ItemStack>();
+		list.add(new ItemStack(Blocks.CLAY));
+		list.add(new ItemStack(Blocks.SAND));
+		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(itemMold, 2), list));
+		list = new ArrayList<ItemStack>();
+		list.add(new ItemStack(Blocks.CLAY));
+		list.add(new ItemStack(Blocks.SAND, 1, BlockSand.EnumType.RED_SAND.getMetadata()));
+		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(itemMold, 2), list));
+		
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_AXE, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_SHOVEL, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_PICKAXE, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_HOE, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_SWORD, itemMold));
+		
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_HELMET, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_CHESTPLATE, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_LEGGINGS, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_BOOTS, itemMold));
+
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.SHEARS, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.BUCKET, itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, new ItemStack(Blocks.RAIL, 16), itemMold));
 	}
 
 	@EventHandler
@@ -116,6 +159,7 @@ public class ExpandedIndustryBase {
 				
 			}
 		});
+		CastingItemStackHandler.initLists();
 	}
 	
 	public static void forceChunkLoad(World w, ChunkPos pos) {

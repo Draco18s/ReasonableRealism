@@ -1,0 +1,10 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "expindustry:items/mold_clean"
+    },
+    "overrides": [
+        { "predicate": { "state": 0 }, "model": "expindustry:item/mold_clean" },
+        { "predicate": { "state": 1 }, "model": "expindustry:item/mold_pickaxe" }
+    ]
+}

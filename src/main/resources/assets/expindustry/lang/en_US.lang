@@ -6,6 +6,10 @@ tile.expindustry:type_rail.name=Minecart Type Detector Rail
 tile.expindustry:rail_bridge.name=Rail Bridge
 tile.expindustry:rail_bridge_powered.name=Powered Rail Bridge
 
+item.expindustry:casting_mold.name=Casting Mold
+
+tooltip.expindustry:imprint.text=Imprint
+
 container.expindustry:woodenhopper=Wooden Hopper
 container.expindustry:distributor=Distributor
 container.expindustry:cart_loader=Cart Loader

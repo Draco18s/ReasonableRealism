@@ -300,7 +300,6 @@ public class BlockSluice extends Block {
 			double d2 = (double) ((float) pos.getY() + random.nextFloat());
 			double d3 = (double) ((float) pos.getZ() + random.nextFloat() / 2 + 0.25);
 			worldIn.spawnParticle(EnumParticleTypes.WATER_SPLASH, d1, d2, d3, 0.0D, 0.0D, 0.0D, new int[0]);
-
 		}
 	}
 	

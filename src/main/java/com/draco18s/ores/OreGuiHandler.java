@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 public class OreGuiHandler implements IGuiHandler {
-	public static int SIFTER = 0;
-	public static int ORE_CART = 1;
-	public static int PACKAGER = 2;
+	public static final int SIFTER = 0;
+	public static final int ORE_CART = 1;
+	public static final int PACKAGER = 2;
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {

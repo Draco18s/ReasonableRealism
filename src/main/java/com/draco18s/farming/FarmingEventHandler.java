@@ -115,8 +115,7 @@ public class FarmingEventHandler {
 			BlockPos pos = event.getPos();
 			Biome bio = world.getBiomeForCoordsBody(pos);
 			Result value = Result.DEFAULT;
-			
-			Iterator<IProperty<?>> props = state.getProperties().keySet().iterator();
+			Iterator<IProperty<?>> props = state.getPropertyNames().iterator();
 			while(props.hasNext()) {
 				IProperty<?> p = props.next();
 				if(p instanceof PropertyInteger && p.getName().toLowerCase().equals("age")) {

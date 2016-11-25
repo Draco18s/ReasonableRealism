@@ -33,6 +33,7 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -148,8 +149,13 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		if (canGrind(millpos)) {
 			ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlot.getStackInSlot(0)).copy();
 			
-			outputSlot.insertItem(0, result, false);
-			//System.out.println("#" + outputSlot.getStackInSlot(0).stackSize);
+			//outputSlot.insertItem(0, result, false);
+			if(outputSlot.getStackInSlot(0) == null) {
+				outputSlot.setStackInSlot(0, result.copy());
+			}
+			else {
+				outputSlot.setStackInSlot(0,ItemHandlerHelper.copyStackWithSize(outputSlot.getStackInSlot(0), result.stackSize + outputSlot.getStackInSlot(0).stackSize));
+			}
 			inputSlot.extractItem(0, 1, false);
 			this.markDirty();
 		}
@@ -226,7 +232,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		if(inputSlot == null) {
 			inputSlot = new MillableItemsHandler(1);
-			outputSlot = new ItemStackHandler();
+			outputSlot = new OutputItemStackHandler();
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));
