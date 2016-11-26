@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.industry.block.BlockCartLoader;
-import com.draco18s.industry.block.BlockCaster;
+import com.draco18s.industry.block.BlockFoundry;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
 import com.draco18s.industry.block.BlockPoweredRailBridge;
@@ -16,7 +16,7 @@ import com.draco18s.industry.block.BlockRailBridge;
 import com.draco18s.industry.block.BlockTypeRail;
 import com.draco18s.industry.block.BlockWoodenHopper;
 import com.draco18s.industry.entities.TileEntityCartLoader;
-import com.draco18s.industry.entities.TileEntityCaster;
+import com.draco18s.industry.entities.TileEntityFoundry;
 import com.draco18s.industry.entities.TileEntityDistributor;
 import com.draco18s.industry.entities.TileEntityFilter;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
@@ -50,6 +50,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:industry}"/*, dependencies = "required-after:HardLib"*/)
@@ -65,7 +68,7 @@ public class ExpandedIndustryBase {
 	public static Block blockTypeRail;
 	public static Block blockRailBridgePowered;
 
-	public static Block blockCaster;
+	public static Block blockFoundry;
 	
 	public static Item itemMold;
 	
@@ -97,14 +100,14 @@ public class ExpandedIndustryBase {
 		blockRailBridgePowered = new BlockPoweredRailBridge();
 		EasyRegistry.registerBlockWithItem(blockRailBridgePowered, "rail_bridge_powered");
 		
-		blockCaster = new BlockCaster();
-		EasyRegistry.registerBlockWithItem(blockCaster, "machine_caster");
+		blockFoundry = new BlockFoundry();
+		EasyRegistry.registerBlockWithItem(blockFoundry, "machine_foundry");
 
 		GameRegistry.registerTileEntity(TileEntityWoodenHopper.class, "machine_wood_hopper");
 		GameRegistry.registerTileEntity(TileEntityDistributor.class, "machine_distributor");
 		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "machine_cart_loader");
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
-		GameRegistry.registerTileEntity(TileEntityCaster.class, "machine_caster");
+		GameRegistry.registerTileEntity(TileEntityFoundry.class, "machine_foundry");
 		
 		itemMold = new ItemCastingMold();
 		EasyRegistry.registerItem(itemMold, "casting_mold");
@@ -115,12 +118,16 @@ public class ExpandedIndustryBase {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		OreDictionary.registerOre("bucket", Items.BUCKET);
+		RecipeSorter.register("sand_mold", RecipeToolMold.class, Category.SHAPELESS, "");
+		
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockDistributor, " h ", " i ", "ppp", 'p', "plankWood", 'i', "ingotIron", 'h', Blocks.HOPPER));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.REPEATER));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ));
+		GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
 		
 		List<ItemStack> list = new ArrayList<ItemStack>();
 		list.add(new ItemStack(Blocks.CLAY));

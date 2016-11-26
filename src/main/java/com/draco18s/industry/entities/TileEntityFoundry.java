@@ -26,16 +26,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class TileEntityCaster extends TileEntity implements ITickable {
+public class TileEntityFoundry extends TileEntity implements ITickable {
 	protected ItemStackHandler templateSlot;
 	protected ItemStackHandler inputSlot;
 	protected ItemStackHandler outputSlot;
+	private ItemStackHandler outputSlotWrapper;
 	private float castingTime;
 	private int lastCheckNumSticks;
 	private int lastCheckNumIngots;
@@ -44,10 +46,11 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 	private ItemStack lastCheckIngots;
 	private Random rand;
 	
-	public TileEntityCaster() {
+	public TileEntityFoundry() {
 		inputSlot = new CastingItemStackHandler(2);
-		outputSlot = new OutputItemStackHandler();
+		outputSlot = new ItemStackHandler();
 		templateSlot = new MoldTemplateItemStackHandler();
+		outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 		rand = new Random();
 	}
 	
@@ -64,25 +67,31 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 			}
 			else if (castingTime <= 0) {
 				castItem();
-				markDirty();
 			}
 		}
 		else if(canCast) {
 			castingTime = 1599;
-			markDirty();
 		}
+		worldObj.markBlockRangeForRenderUpdate(pos, pos);
+		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
+		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		markDirty();
+	}
+
+	private IBlockState getState() {
+		return worldObj.getBlockState(pos);
 	}
 
 	private boolean canCast() {
 		//if any stack is null, return false: we can't craft
-		if(inputSlot.getStackInSlot(0) == null || inputSlot.getStackInSlot(1) == null || templateSlot.getStackInSlot(0) == null)
+		if(inputSlot.getStackInSlot(1) == null || templateSlot.getStackInSlot(0) == null)
 			return false;
 
 		//get the recipe
 		IRecipe recipe = getRecipeForTemplate(templateSlot.getStackInSlot(0));
 		if(recipe == null) return false;
 		ItemStack output = recipe.getRecipeOutput();
-		boolean canFitOutput = outputSlot.getStackInSlot(0) == null || (ItemHandlerHelper.canItemStacksStack(outputSlot.getStackInSlot(0), output) && (output.stackSize + outputSlot.getStackInSlot(0).stackSize <= output.getMaxStackSize()));
+		boolean canFitOutput = outputSlot.insertItem(0, output, true) == null;
 		//if they're the same as stored, check quantity
 		//also check that the output slot is empty
 		//if(lastCheckRecipe == recipe && compareItemStacks(lastCheckSticks,inputSlot.getStackInSlot(0)) && compareItemStacks(lastCheckIngots,inputSlot.getStackInSlot(1))) {
@@ -170,12 +179,15 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 			}
 		}
 		if(cannotCraft) return false;
-		lastCheckSticks = inputSlot.getStackInSlot(0).copy();
+		if(inputSlot.getStackInSlot(0) == null)
+			lastCheckSticks = null;
+		else
+			lastCheckSticks = inputSlot.getStackInSlot(0).copy();
 		lastCheckIngots = inputSlot.getStackInSlot(1).copy();
 		lastCheckNumSticks = numSticks;
 		lastCheckNumIngots = numIngots;
 		lastCheckRecipe = recipe;
-		return inputSlot.getStackInSlot(0).stackSize >= numSticks && inputSlot.getStackInSlot(1).stackSize >= numIngots && canFitOutput;
+		return ((inputSlot.getStackInSlot(0) == null && numSticks == 0) || inputSlot.getStackInSlot(0).stackSize >= numSticks) && inputSlot.getStackInSlot(1).stackSize >= numIngots && canFitOutput;
 	}
 	
 	private IRecipe getRecipeForTemplate(ItemStack stackInSlot) {
@@ -205,22 +217,13 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 		NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
 		ItemStack result = matching.getRecipeOutput(); //ItemStack.loadItemStackFromNBT(itemTags);
 		
-		
-		
-		if(outputSlot.getStackInSlot(0) == null) {
-			outputSlot.setStackInSlot(0, result.copy());
-		}
-		else {
-			outputSlot.setStackInSlot(0,ItemHandlerHelper.copyStackWithSize(outputSlot.getStackInSlot(0), result.stackSize + outputSlot.getStackInSlot(0).stackSize));
-		}
-		//outputSlot.setStackInSlot(0, stack);
-		//outputSlot.insertItem(0, result.copy(), false);
+		outputSlot.insertItem(0, result.copy(), false);
 	}
 	
 	private boolean hasNearbyFurnace() {
 		for(EnumFacing dir : EnumFacing.values()) {
 			IBlockState state = worldObj.getBlockState(pos.offset(dir));
-			if(state.getBlock() == Blocks.LIT_FURNACE) {
+			if(state.getBlock() == Blocks.LIT_FURNACE || state.getBlock() == Blocks.FLOWING_LAVA) {
 				return true;
 			}
 		}
@@ -237,16 +240,16 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
 			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
-				return (T) new CombinedInvWrapper(inputSlot, templateSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, templateSlot, outputSlotWrapper);
 			}
 			if(facing == null) {
-				return (T) new CombinedInvWrapper(inputSlot, templateSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, templateSlot, outputSlotWrapper);
 			}
 			else if(facing == EnumFacing.UP) {
 				return (T) inputSlot;
 			}
 			else if(facing == EnumFacing.DOWN) {
-				return (T) outputSlot;
+				return (T) outputSlotWrapper;
 			}
 			else {
 				//any side
@@ -288,8 +291,9 @@ public class TileEntityCaster extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		if(inputSlot == null) {
 			inputSlot = new CastingItemStackHandler(2);
-			outputSlot = new OutputItemStackHandler();
+			outputSlot = new ItemStackHandler();
 			templateSlot = new MoldTemplateItemStackHandler();
+			outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 		}
 		if(compound.hasKey("expindustry:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("expindustry:inputSlot"));

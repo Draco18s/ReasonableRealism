@@ -72,7 +72,19 @@ public class ItemCastingMold extends Item {
 		if(nbt != null) {
 			NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
 			ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
-			tooltip.add(I18n.format("tooltip.expindustry:imprint.text") + ": " + result.getDisplayName());
+			Object[] list = result.getDisplayName().split("[ -]");
+			if(list.length == 1) {
+				tooltip.add(I18n.format("tooltip.expindustry:imprint1.text", list));
+			}
+			else if(list.length == 2) {
+				tooltip.add(I18n.format("tooltip.expindustry:imprint2.text", list));
+			}
+			else if(list.length == 3) {
+				tooltip.add(I18n.format("tooltip.expindustry:imprint3.text", list));
+			}
+			else if(list.length == 4) {
+				tooltip.add(I18n.format("tooltip.expindustry:imprint4.text", list));
+			}
 		}
 	}
 }

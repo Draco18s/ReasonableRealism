@@ -5,15 +5,24 @@ tile.expindustry:machine_filter.name=Cart Loader
 tile.expindustry:type_rail.name=Minecart Type Detector Rail
 tile.expindustry:rail_bridge.name=Rail Bridge
 tile.expindustry:rail_bridge_powered.name=Powered Rail Bridge
+tile.expindustry:machine_foundry.name=Foundry
 
 item.expindustry:casting_mold.name=Casting Mold
 
-tooltip.expindustry:imprint.text=Imprint
+Modify the %2$s value for other languages.=The number refers to which fragment of a split string.
+In English the mold tooltip displays its imprint of "Iron Pickaxe" as "Pickaxe".=The 2 in %2$s is what makes it display the second word.
+Note that "imprint1" is for localized names with 1 word in them.=e.g. "Shears". This is to avoid format errors.
+"imprint2" etc. are likewise used for 2, 3, or 4 word localized names.=Likely won't ever be 100% perfect.
+tooltip.expindustry:imprint1.text=Imprint: %1$s
+tooltip.expindustry:imprint2.text=Imprint: %2$s
+tooltip.expindustry:imprint3.text=Imprint: %2$s
+tooltip.expindustry:imprint4.text=Imprint: %2$s
 
 container.expindustry:woodenhopper=Wooden Hopper
 container.expindustry:distributor=Distributor
 container.expindustry:cart_loader=Cart Loader
 container.expindustry:filter=Filtering Hopper
+container.expindustry:foundry=Foundry
 
 gui.expindustry:rules_header=Item Acceptance Rules
 gui.expindustry:no_accept1=No Container

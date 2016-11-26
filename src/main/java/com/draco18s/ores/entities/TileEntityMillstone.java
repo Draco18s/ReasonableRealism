@@ -41,6 +41,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 public class TileEntityMillstone extends TileEntity implements ITickable {
 	protected ItemStackHandler inputSlot;
 	protected ItemStackHandler outputSlot;
+	private ItemStackHandler outputSlotWrapper;
 	protected RawMechanicalPowerHandler powerUser;
 	
 	private float grindTime;
@@ -48,8 +49,9 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	
 	public TileEntityMillstone() {
 		inputSlot = new MillableItemsHandler(1);
-		outputSlot = new OutputItemStackHandler();
+		outputSlot = new ItemStackHandler();
 		powerUser = new MillstoneMechanicalPowerHandler();
+		outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 	}
 
 	@Override
@@ -149,13 +151,8 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		if (canGrind(millpos)) {
 			ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlot.getStackInSlot(0)).copy();
 			
-			//outputSlot.insertItem(0, result, false);
-			if(outputSlot.getStackInSlot(0) == null) {
-				outputSlot.setStackInSlot(0, result.copy());
-			}
-			else {
-				outputSlot.setStackInSlot(0,ItemHandlerHelper.copyStackWithSize(outputSlot.getStackInSlot(0), result.stackSize + outputSlot.getStackInSlot(0).stackSize));
-			}
+			outputSlot.insertItem(0, result, false);
+			
 			inputSlot.extractItem(0, 1, false);
 			this.markDirty();
 		}
@@ -179,7 +176,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
 			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
-				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == null) {
 				return (T) null;//new CombinedInvWrapper(inputSlot, outputSlot);
@@ -189,7 +186,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 					return (T) inputSlot;
 				}
 				if(facing == EnumFacing.DOWN) {
-					return (T) outputSlot;
+					return (T) outputSlotWrapper;
 				}
 				return super.getCapability(capability, facing);
 			}
@@ -198,7 +195,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				return (T) inputSlot;
 			}
 			if(millpos.canAcceptOutput && facing == EnumFacing.DOWN) {
-				return (T) outputSlot;
+				return (T) outputSlotWrapper;
 			}
 			if(millpos == MillstoneOrientation.CENTER && facing == EnumFacing.EAST) {
 				return (T) inputSlot;
@@ -232,7 +229,8 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		if(inputSlot == null) {
 			inputSlot = new MillableItemsHandler(1);
-			outputSlot = new OutputItemStackHandler();
+			outputSlot = new ItemStackHandler();
+			outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));

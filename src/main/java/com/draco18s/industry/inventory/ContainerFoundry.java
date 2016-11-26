@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.internal.CommonContainer;
 import com.draco18s.hardlib.internal.inventory.SlotOutput;
-import com.draco18s.industry.entities.TileEntityCaster;
+import com.draco18s.industry.entities.TileEntityFoundry;
 import com.draco18s.ores.entities.TileEntitySifter;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,10 +17,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class ContainerCaster extends CommonContainer {
-	TileEntityCaster tileEntity;
+public class ContainerFoundry extends CommonContainer {
+	TileEntityFoundry tileEntity;
 
-	public ContainerCaster(InventoryPlayer inventory, TileEntityCaster tileEntity2) {
+	public ContainerFoundry(InventoryPlayer inventory, TileEntityFoundry tileEntity2) {
 		super(3);
 		tileEntity = tileEntity2;
 		IItemHandler inven = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);

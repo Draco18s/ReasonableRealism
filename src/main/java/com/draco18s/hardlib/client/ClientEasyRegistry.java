@@ -119,7 +119,9 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 
 	private void _registerItemModelForMeta(Item item, int metadata, String variant) {
-		_registerItemModelForMeta(item, metadata, new ModelResourceLocation(item.getRegistryName(), variant));
+		ModelResourceLocation res = new ModelResourceLocation(item.getRegistryName(), variant);
+		System.out.println(item.getRegistryName() + " " + variant + " => " + res.toString());
+		_registerItemModelForMeta(item, metadata, res);
 	}
 
 	private void _registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation) {

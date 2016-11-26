@@ -1,0 +1,35 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "particle":"blocks/furnace_side",
+            "inside": "expindustry:blocks/foundry_inside"
+        },
+        "uvlock": false,
+        "model": "expindustry:foundry"
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+            "y": 180
+        }],
+        "facing": {
+            "north": { },
+            "east":  { "y": 90 },
+            "south": { "y": 180 },
+            "west":  { "y": 270 }
+        },
+        "lit": {
+            "true":{
+                "submodel": {
+                    "lava": {
+                        "model": "expindustry:foundry_lit", "y": 180
+                    }
+                }
+            },
+            "false":{}
+        }
+    }
+}

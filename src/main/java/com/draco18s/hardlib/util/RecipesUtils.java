@@ -129,11 +129,65 @@ public class RecipesUtils {
 	public static IRecipe getSimilarRecipeWithGivenInput(IRecipe toMatch, ItemStack material) {
 		material.stackSize = 1;
 		ItemStack recipeResult = null;
+		
+		//check toMatch against material first
+		//e.g. toMatch is an iron pick and we're looking for a pick shape in material iron
+		if(toMatch instanceof ShapedRecipes) {
+			ShapedRecipes template = (ShapedRecipes)toMatch;
+			boolean anySingleMatch = false;
+			for(int i = 0; i < template.recipeItems.length; i++) {
+				if(template.recipeItems[i] != null) {
+					if(template.recipeItems[i].isItemEqual(material)) {
+						//we only need one match because we already know that the metal is the important part 
+						//there won't be other discontinuities
+						anySingleMatch = true;
+						break;
+					}
+				}
+			}
+			if(anySingleMatch)
+				return toMatch;
+		}
+		else if(toMatch instanceof ShapedOreRecipe) {
+			ShapedOreRecipe template = (ShapedOreRecipe)toMatch;
+			Object[] templateIn = template.getInput();
+			boolean anySingleMatch = false;
+			for(int i = 0; i < templateIn.length; i++) {
+				if(templateIn[i] instanceof ItemStack) {
+					ItemStack testItem = (ItemStack)templateIn[i];
+					if(testItem.isItemEqual(material)) {
+						anySingleMatch = true;
+						break;
+					}
+				}
+				else if(templateIn[i] instanceof List) {
+					List<ItemStack> templateList = (List<ItemStack>)templateIn[i];
+					boolean didAnyMatch = false;
+					for(ItemStack templateItem : templateList) {
+						if(templateItem.isItemEqual(material)) {
+							didAnyMatch = true;
+							break;
+						}
+					}
+					if(didAnyMatch) {
+						anySingleMatch = true;
+						break;
+					}
+				}
+			}
+			if(anySingleMatch)
+				return toMatch;
+		}
+		
 		ArrayList<IRecipe> recipes = (ArrayList) CraftingManager.getInstance().getRecipeList();
 		Iterator<IRecipe> iterator = recipes.iterator();
 		while(iterator.hasNext()) {
 			IRecipe tmpRecipe = iterator.next();
-			if(tmpRecipe == toMatch) continue;
+			if(tmpRecipe == toMatch) {
+				//we already know the material doesn't match toMatch
+				//not skipping would inadvertently return a bad recipe
+				continue;
+			}
 			if(tmpRecipe instanceof ShapedRecipes && toMatch instanceof ShapedRecipes) {
 				ShapedRecipes test = (ShapedRecipes)tmpRecipe;
 				ShapedRecipes template = (ShapedRecipes)toMatch;

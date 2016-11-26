@@ -44,6 +44,7 @@ import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 public class TileEntityPackager extends TileEntity implements ITickable {
 	protected ItemStackHandler inputSlot;
 	protected ItemStackHandler outputSlot;
+	private ItemStackHandler outputSlotWrapper;
 	private float packTime;
 	private float timeMod;
 	protected RawMechanicalPowerHandler powerUser;
@@ -51,8 +52,9 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	
 	public TileEntityPackager() {
 		inputSlot = new PackableItemsHandler();
-		outputSlot = new OutputItemStackHandler();
+		outputSlot = new ItemStackHandler();
 		powerUser = new PackagerMechanicalPowerHandler();
+		outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 		packTime = 0;
 		timeMod = 1;
 	}
@@ -165,7 +167,8 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		if(inputSlot.getStackInSlot(slot) == null) return false;
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(slot), true);
 		if(result == null) return false;
-		return outputSlot.getStackInSlot(0) == null || (ItemHandlerHelper.canItemStacksStack(outputSlot.getStackInSlot(0), result) && (result.stackSize + outputSlot.getStackInSlot(0).stackSize <= result.getMaxStackSize()));
+		if(outputSlot.insertItem(0, result, true) != null) return false;
+		return true;
 	}
 
 	private void packItem() {
@@ -174,15 +177,9 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			if(stack == null) continue;
 			ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(stack, true);
 			if(result == null) continue;
-			if(!(outputSlot.getStackInSlot(0) == null || (ItemHandlerHelper.canItemStacksStack(outputSlot.getStackInSlot(0), result) && (result.stackSize + outputSlot.getStackInSlot(0).stackSize <= result.getMaxStackSize())))) continue;
+			if(outputSlot.insertItem(0, result, true) != null) continue;
 			inputSlot.extractItem(s, HardLibAPI.oreMachines.getPressurePackAmount(stack), false);
-			//outputSlot.insertItem(0, result.copy(), false);
-			if(outputSlot.getStackInSlot(0) == null) {
-				outputSlot.setStackInSlot(0, result.copy());
-			}
-			else {
-				outputSlot.setStackInSlot(0,ItemHandlerHelper.copyStackWithSize(outputSlot.getStackInSlot(0), result.stackSize + outputSlot.getStackInSlot(0).stackSize));
-			}
+			outputSlot.insertItem(0, result.copy(), false);
 		}
 		this.markDirty();
 	}
@@ -197,16 +194,16 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
 			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
-				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == null) {
-				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == EnumFacing.UP) {
 				return (T) inputSlot;
 			}
 			if(facing == EnumFacing.DOWN) {
-				return (T) outputSlot;
+				return (T) outputSlotWrapper;
 			}
 		}
 		return super.getCapability(capability, facing);
@@ -245,7 +242,8 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 		super.readFromNBT(compound);
 		if(inputSlot == null) {
 			inputSlot = new PackableItemsHandler();
-			outputSlot = new OutputItemStackHandler();
+			outputSlot = new ItemStackHandler();
+			outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 		}
 		if(compound.hasKey("harderores:inputSlot")) {
 			inputSlot.deserializeNBT((NBTTagCompound) compound.getTag("harderores:inputSlot"));

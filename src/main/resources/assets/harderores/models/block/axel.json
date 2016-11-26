@@ -16,7 +16,7 @@
     "textures": {
         "0": "harderores:blocks/axel-face",
         "1": "blocks/log_oak",
-        "2": "blocks/stone"
+        "2": "harderores:blocks/axel-face"
     },
     "elements": [
         {
