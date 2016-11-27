@@ -37,7 +37,7 @@ public class ItemCastingMold extends Item {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
 		ItemStack base = new ItemStack(itemIn);
 		subItems.add(base);
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_AXE)));
@@ -54,7 +54,7 @@ public class ItemCastingMold extends Item {
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.SHEARS)));
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.BUCKET)));
 		subItems.add(addImprint(base.copy(), new ItemStack(Blocks.RAIL, 16)));
-    }
+	}
 	
 	private static ItemStack addImprint(ItemStack out, ItemStack imprint) {
 		NBTTagCompound nbt = new NBTTagCompound();
@@ -67,7 +67,7 @@ public class ItemCastingMold extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
 			NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");

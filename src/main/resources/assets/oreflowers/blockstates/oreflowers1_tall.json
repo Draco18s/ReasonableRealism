@@ -22,6 +22,12 @@
             "hauman":     { "textures": { "cross": "oreflowers:items/na"} },
             "leadplant":  { "textures": { "cross": "oreflowers:items/na"} },
             "red_amaranth":   { "textures": { "cross": "oreflowers:items/na"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower"
+            },
+            "false":{}
         }
     }
 }

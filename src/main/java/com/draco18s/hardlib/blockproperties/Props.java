@@ -29,4 +29,5 @@ public class Props {
 	public static final PropertyEnum<LeatherStatus> LEFT_LEATHER_STATE = PropertyEnum.<LeatherStatus>create("leather_left", LeatherStatus.class);
 	public static final PropertyEnum<LeatherStatus> RIGHT_LEATHER_STATE = PropertyEnum.<LeatherStatus>create("leather_right", LeatherStatus.class);
 	public static final PropertyBool FOUNDRY_LIT = PropertyBool.create("lit");
+	public static final PropertyBool HAS_2D_ITEM = PropertyBool.create("item");
 }

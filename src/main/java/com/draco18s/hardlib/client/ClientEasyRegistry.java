@@ -1,6 +1,7 @@
 package com.draco18s.hardlib.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.draco18s.flowers.states.StateMapperFlowers;
@@ -11,6 +12,7 @@ import com.draco18s.hardlib.internal.IMetaLookup;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
@@ -55,10 +57,20 @@ public class ClientEasyRegistry extends EasyRegistry {
 		super._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
 		BlockStateContainer bsc = block.getBlockState();
 		ImmutableList<IBlockState> values = bsc.getValidStates();
-		//new StateMapperFlowers(Props.FLOWER_TYPE)
 		StateMapperBase mapper = ((IBlockWithMapper)block).getStateMapper();
 		ModelLoader.setCustomStateMapper(block, mapper);
+		Collection<IProperty<?>> list = bsc.getProperties();
+		boolean hasItemState = false;
+		for(IProperty<?> prop : list) {
+			if(prop == Props.HAS_2D_ITEM) {
+				hasItemState = true;
+				break;
+			}
+		}
 		for(IBlockState state : values) {
+			if(hasItemState) {
+				state = state.withProperty(Props.HAS_2D_ITEM, true);
+			}
 			String str = mapper.getPropertyString(state.getProperties());
 			_registerBlockItemModelForMeta(block, block.getMetaFromState(state), str);
 		}

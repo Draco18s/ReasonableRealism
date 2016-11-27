@@ -30,8 +30,7 @@ public class StateMapperFlowers extends StateMapperBase {
 		else {
 			loc = (ResourceLocation)Block.REGISTRY.getNameForObject(state.getBlock());
 		}
-		
-		String str = ((IProperty)type_prop).getName() + "=" + ((IProperty)type_prop).getName(state.getValue(((IProperty)type_prop)));
+		String str = getPropertyString(state.getProperties());
 		ModelResourceLocation p = new ModelResourceLocation(loc, str);
 		return p;
 	}

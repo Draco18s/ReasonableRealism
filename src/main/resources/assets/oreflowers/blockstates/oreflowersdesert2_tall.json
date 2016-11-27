@@ -22,6 +22,12 @@
             "fluorite": { "textures": { "cross": "oreflowers:items/na"} },
             "marigold": { "textures": { "cross": "oreflowers:items/na"} },
             "thorium":  { "textures": { "cross": "oreflowers:items/na"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower"
+            },
+            "false":{}
         }
     }
 }

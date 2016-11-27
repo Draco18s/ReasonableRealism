@@ -44,7 +44,7 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 		setHardness(0.0F);
 		setSoundType(SoundType.PLANT);
 		setCreativeTab(CreativeTabs.DECORATIONS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD).withProperty(Props.FLOWER_STALK, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD).withProperty(Props.FLOWER_STALK, false).withProperty(Props.HAS_2D_ITEM, false));
 	}
 	
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
@@ -108,7 +108,7 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] {Props.FLOWER_TYPE2,Props.FLOWER_STALK});
+		return new BlockStateContainer(this, new IProperty[] {Props.FLOWER_TYPE2,Props.FLOWER_STALK, Props.HAS_2D_ITEM});
 	}
 
 	@Override

@@ -22,6 +22,12 @@
             "camellia":     { "textures": { "cross": "oreflowers:items/na"} },
             "malva":        { "textures": { "cross": "oreflowers:items/na"} },
             "melastoma":    { "textures": { "cross": "oreflowers:items/na"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower"
+            },
+            "false":{}
         }
     }
 }

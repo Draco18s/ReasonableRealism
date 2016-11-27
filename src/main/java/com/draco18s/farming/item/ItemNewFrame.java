@@ -21,42 +21,42 @@ import net.minecraft.world.World;
 public class ItemNewFrame extends ItemHangingEntity
 {
 
-    public ItemNewFrame(Class <? extends EntityHanging > entityClass)
-    {
-        super(entityClass);
-    }
+	public ItemNewFrame(Class <? extends EntityHanging > entityClass)
+	{
+		super(entityClass);
+	}
 
-    @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        BlockPos blockpos = pos.offset(facing);
+	@Override
+	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	{
+		BlockPos blockpos = pos.offset(facing);
 
-        if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && playerIn.canPlayerEdit(blockpos, facing, stack))
-        {
-            EntityHanging entityhanging = this.createEntity(worldIn, blockpos, facing);
+		if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && playerIn.canPlayerEdit(blockpos, facing, stack))
+		{
+			EntityHanging entityhanging = this.createEntity(worldIn, blockpos, facing);
 
-            if (entityhanging != null && entityhanging.onValidSurface())
-            {
-                if (!worldIn.isRemote)
-                {
-                    entityhanging.playPlaceSound();
-                    worldIn.spawnEntityInWorld(entityhanging);
-                }
+			if (entityhanging != null && entityhanging.onValidSurface())
+			{
+				if (!worldIn.isRemote)
+				{
+					entityhanging.playPlaceSound();
+					worldIn.spawnEntityInWorld(entityhanging);
+				}
 
-                --stack.stackSize;
-            }
+				--stack.stackSize;
+			}
 
-            return EnumActionResult.SUCCESS;
-        }
-        else
-        {
-            return EnumActionResult.FAIL;
-        }
-    }
+			return EnumActionResult.SUCCESS;
+		}
+		else
+		{
+			return EnumActionResult.FAIL;
+		}
+	}
 
-    @Nullable
-    private EntityHanging createEntity(World worldIn, BlockPos pos, EnumFacing clickedSide)
-    {
-        return new EntityItemFrameReplacement(worldIn, pos, clickedSide);
-    }
+	@Nullable
+	private EntityHanging createEntity(World worldIn, BlockPos pos, EnumFacing clickedSide)
+	{
+		return new EntityItemFrameReplacement(worldIn, pos, clickedSide);
+	}
 }

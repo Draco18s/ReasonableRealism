@@ -313,37 +313,37 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 	
 	private static boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
 		return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
-    }
+	}
 	
 	/*private ItemStack combineStacks(ItemStack existing, ItemStack stack)
-    {
-        if (stack == null || stack.stackSize == 0)
-            return null;
+	{
+		if (stack == null || stack.stackSize == 0)
+			return null;
 
-        int limit = stack.getMaxStackSize();
+		int limit = stack.getMaxStackSize();
 
-        if (existing != null)
-        {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
-                return stack;
+		if (existing != null)
+		{
+			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+				return stack;
 
-            limit -= existing.stackSize;
-        }
+			limit -= existing.stackSize;
+		}
 
-        if (limit <= 0)
-            return stack;
+		if (limit <= 0)
+			return stack;
 
-        boolean reachedLimit = stack.stackSize > limit;
+		boolean reachedLimit = stack.stackSize > limit;
 
-        if (existing == null)
-        {
-        	existing = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
-        }
-        else
-        {
-            existing.stackSize += reachedLimit ? limit : stack.stackSize;
-        }
+		if (existing == null)
+		{
+			existing = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
+		}
+		else
+		{
+			existing.stackSize += reachedLimit ? limit : stack.stackSize;
+		}
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.stackSize - limit) : null;
-    }*/
+		return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.stackSize - limit) : null;
+	}*/
 }

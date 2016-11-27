@@ -8,10 +8,10 @@
     },
     "variants": {
         "normal": [{
-            "model": "item/generated"
+
         }],
         "inventory": [{
-            "model": "item/generated"
+
         }],
          "flower_type": {
             "poorjoe":      { "textures": { "cross": "oreflowers:items/poorjoe"} },
@@ -22,6 +22,14 @@
             "hauman":       { "textures": { "cross": "oreflowers:items/hauman"} },
             "leadplant":    { "textures": { "cross": "oreflowers:items/leadplant"} },
             "red_amaranth": { "textures": { "cross": "oreflowers:items/red_amaranth"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower"
+            },
+            "false":{
+                "model": "oreflowers:flower"
+            }
         }
     }
 }

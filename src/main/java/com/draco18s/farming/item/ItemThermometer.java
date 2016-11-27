@@ -52,7 +52,7 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 		{
 			public float apply(ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entityIn) {
 				boolean flag = entityIn != null;
-                Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
+				Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
 				if (world == null && entity != null) {
 					world = entity.worldObj;
 				}

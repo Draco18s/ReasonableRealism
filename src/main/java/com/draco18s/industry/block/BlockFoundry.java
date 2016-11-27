@@ -49,8 +49,8 @@ public class BlockFoundry extends Block {
 	}
 	
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return BOUNDS;
-    }
+		return BOUNDS;
+	}
 	
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
@@ -84,7 +84,7 @@ public class BlockFoundry extends Block {
 	}
 
 	@Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		TileEntityFoundry foundry = (TileEntityFoundry)world.getTileEntity(pos);
 		if(foundry.getTime() != 0) {
 			state = state.withProperty(Props.FOUNDRY_LIT, true);
@@ -92,8 +92,8 @@ public class BlockFoundry extends Block {
 		else {
 			state = state.withProperty(Props.FOUNDRY_LIT, false);
 		}
-        return state;
-    }
+		return state;
+	}
 	
 	@Override
 	public boolean hasTileEntity(IBlockState state) {
@@ -113,8 +113,8 @@ public class BlockFoundry extends Block {
 				return this.getDefaultState().withProperty(BlockHorizontal.FACING, dir.getOpposite());
 			}
 		}
-        return this.getDefaultState().withProperty(BlockHorizontal.FACING, placer.getHorizontalFacing().getOpposite());
-    }
+		return this.getDefaultState().withProperty(BlockHorizontal.FACING, placer.getHorizontalFacing().getOpposite());
+	}
 
 	@Override
 	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {

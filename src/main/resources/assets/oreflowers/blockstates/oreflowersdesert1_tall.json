@@ -22,6 +22,12 @@
             "copper_flower":   { "textures": { "cross": "oreflowers:items/na"} },
             "sheeps_fescue":   { "textures": { "cross": "oreflowers:items/na"} },
             "primrose":        { "textures": { "cross": "oreflowers:items/na"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower"
+            },
+            "false":{}
         }
     }
 }
