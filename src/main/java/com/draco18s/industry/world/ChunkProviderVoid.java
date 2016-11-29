@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -30,12 +31,12 @@ public class ChunkProviderVoid implements IChunkGenerator {
 		
 		
 		Chunk chunk = new Chunk(this.worldObj, chunkprimer, x, z);
-		Biome[] abiome = this.worldObj.getBiomeProvider().loadBlockGeneratorData((Biome[])null, x * 16, z * 16, 16, 16);
+		//Biome[] abiome = this.worldObj.getBiomeProvider().loadBlockGeneratorData((Biome[])null, x * 16, z * 16, 16, 16);
 		byte[] abyte = chunk.getBiomeArray();
 
 		for (int l = 0; l < abyte.length; ++l)
 		{
-			abyte[l] = (byte)Biome.getIdForBiome(abiome[l]);
+			abyte[l] = (byte)Biome.getIdForBiome(Biomes.PLAINS);
 		}
 
 		chunk.generateSkylightMap();

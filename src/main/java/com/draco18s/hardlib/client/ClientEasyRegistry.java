@@ -124,7 +124,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 				return fullModelLocation;
 			}
 		});
-	}/**/
+	}
 
 	private void _registerItemModel(Item item, ItemMeshDefinition meshDefinition) {
 		ModelLoader.setCustomMeshDefinition(item, meshDefinition);
@@ -132,7 +132,6 @@ public class ClientEasyRegistry extends EasyRegistry {
 
 	private void _registerItemModelForMeta(Item item, int metadata, String variant) {
 		ModelResourceLocation res = new ModelResourceLocation(item.getRegistryName(), variant);
-		System.out.println(item.getRegistryName() + " " + variant + " => " + res.toString());
 		_registerItemModelForMeta(item, metadata, res);
 	}
 

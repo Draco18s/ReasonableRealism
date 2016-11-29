@@ -25,7 +25,10 @@
         },
         "item":{
             "true":{
-                "model": "oreflowers:item/flower"
+                "model": "oreflowers:item/flower",
+                "textures": {
+                   "layer0": "#cross"
+               }
             },
             "false":{}
         }

@@ -17,6 +17,9 @@ public class ItemStickyBlob extends Item implements IFuelHandler {
 
 	@Override
 	public int getBurnTime(ItemStack fuel) {
-		return 150;
+		if(fuel.getItem() == this) {
+			return 150;
+		}
+		return 0;
 	}
 }

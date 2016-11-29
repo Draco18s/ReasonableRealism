@@ -29,7 +29,7 @@ public class BlockWindvane extends Block {
 		setHardness(1.0f);
 		//setHarvestLevel("axe", 1);
 		setResistance(0.1f);
-		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		setCreativeTab(CreativeTabs.DECORATIONS);
 		setSoundType(SoundType.CLOTH);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.NORTH));
 	}

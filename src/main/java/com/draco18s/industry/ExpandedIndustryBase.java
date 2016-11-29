@@ -8,17 +8,17 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.industry.block.BlockCartLoader;
-import com.draco18s.industry.block.BlockFoundry;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
+import com.draco18s.industry.block.BlockFoundry;
 import com.draco18s.industry.block.BlockPoweredRailBridge;
 import com.draco18s.industry.block.BlockRailBridge;
 import com.draco18s.industry.block.BlockTypeRail;
 import com.draco18s.industry.block.BlockWoodenHopper;
 import com.draco18s.industry.entities.TileEntityCartLoader;
-import com.draco18s.industry.entities.TileEntityFoundry;
 import com.draco18s.industry.entities.TileEntityDistributor;
 import com.draco18s.industry.entities.TileEntityFilter;
+import com.draco18s.industry.entities.TileEntityFoundry;
 import com.draco18s.industry.entities.TileEntityWoodenHopper;
 import com.draco18s.industry.entities.capabilities.CastingItemStackHandler;
 import com.draco18s.industry.item.ItemCastingMold;
@@ -43,6 +43,7 @@ import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -72,8 +73,8 @@ public class ExpandedIndustryBase {
 	
 	public static Item itemMold;
 	
-	/*@SidedProxy(clientSide="com.draco18s.hardlib.client.ClientEasyRegistry", serverSide="com.draco18s.ores.EasyRegistry")
-	public static EasyRegistry proxy;*/
+	@SidedProxy(clientSide="com.draco18s.industry.client.ClientProxy", serverSide="com.draco18s.industry.CommonProxy")
+	public static CommonProxy proxy;
 	
 	public static Logger logger;
 	

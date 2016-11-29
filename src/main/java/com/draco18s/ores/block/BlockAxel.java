@@ -41,7 +41,7 @@ public class BlockAxel extends Block{
 		setHardness(2.0f);
 		setHarvestLevel("axe", 1);
 		setResistance(2.0f);
-		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+		setCreativeTab(CreativeTabs.DECORATIONS);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.AXEL_ORIENTATION, AxelOrientation.NONE).withProperty(BlockHorizontal.FACING, EnumFacing.NORTH));
 	}
 	

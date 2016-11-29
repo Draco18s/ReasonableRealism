@@ -37,7 +37,17 @@ public class BlockFilter extends BlockHopper {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+		//if(!worldIn.isRemote)
+			//prevalidateInventory(playerIn);
 		playerIn.openGui(ExpandedIndustryBase.instance, IndustryGuiHandler.FILTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
+
+	/*private void prevalidateInventory(EntityPlayer player) {
+		for(ItemStack stack :player.inventory.mainInventory) {
+			if(stack != null) {
+				
+			}
+		}
+	}*/
 }

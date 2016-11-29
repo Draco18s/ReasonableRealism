@@ -2,6 +2,6 @@
     "__comment": "Allows blockstates files to use basic item models",
     "parent": "minecraft:item/generated",
     "textures": {
-        "layer0": "expindustry:items/filter"
+        "layer0": "expindustry:items/loader"
     }
 }

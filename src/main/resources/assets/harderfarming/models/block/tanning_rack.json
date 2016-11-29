@@ -4,6 +4,7 @@
         "0": "blocks/planks_oak",
         "1": "blocks/planks_oak"
     },
+    "parent": "block/block",
     "elements": [
         {
             "name": "Leg1",

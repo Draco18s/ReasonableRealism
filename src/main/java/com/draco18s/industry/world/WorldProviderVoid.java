@@ -129,4 +129,8 @@ public class WorldProviderVoid extends WorldProvider {
 	{
 		return 256;
 	}
+	
+    public long getSeed() {
+    	return 0;
+    }
 }
