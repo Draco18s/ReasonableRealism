@@ -4,17 +4,17 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.flowers.block.BlockOreFlower1;
 import com.draco18s.flowers.block.BlockOreFlower2;
+import com.draco18s.flowers.block.BlockOreFlower3;
 import com.draco18s.flowers.block.BlockOreFlowerDesert1;
 import com.draco18s.flowers.block.BlockOreFlowerDesert2;
+import com.draco18s.flowers.block.BlockOreFlowerDesert3;
 import com.draco18s.flowers.item.ItemOreFlower1;
 import com.draco18s.flowers.item.ItemOreManipulator;
 import com.draco18s.flowers.item.ItemStickyBlob;
-import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.flowers.util.ChunkOreCounter;
 import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.flowers.util.OreDataHooks;
@@ -23,9 +23,10 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower2;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower3;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert1;
 import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert2;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert3;
 import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
@@ -33,13 +34,11 @@ import com.draco18s.hardlib.internal.OreFlowerDictator;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -59,6 +58,8 @@ public class OreFlowersBase {
 	public static Block oreFlowersDesert1;
 	public static Block oreFlowers2;
 	public static Block oreFlowersDesert2;
+	public static Block oreFlowers3;
+	public static Block oreFlowersDesert3;
 	
 	public static Item gooBlob;
 	public static Item ironWand;
@@ -84,13 +85,17 @@ public class OreFlowersBase {
 		HardLibAPI.hardOres = new OreBlockInfo();
 
 		oreFlowers1 = new BlockOreFlower1();
-		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower1)oreFlowers1, new ItemOreFlower1(oreFlowers1,8, EnumOreFlower1.class), "oreflowers1");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower1)oreFlowers1, new ItemOreFlower1(oreFlowers1, 8, EnumOreFlower1.class), "oreflowers1");
 		oreFlowersDesert1 = new BlockOreFlowerDesert1();
-		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert1)oreFlowersDesert1, new ItemOreFlower1(oreFlowersDesert1,8, EnumOreFlowerDesert1.class), "oreflowersdesert1");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert1)oreFlowersDesert1, new ItemOreFlower1(oreFlowersDesert1, 8, EnumOreFlowerDesert1.class), "oreflowersdesert1");
 		oreFlowers2 = new BlockOreFlower2();
-		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower2)oreFlowers2, new ItemOreFlower1(oreFlowers2,16, EnumOreFlower2.class), "oreflowers2");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower2)oreFlowers2, new ItemOreFlower1(oreFlowers2, 16, EnumOreFlower2.class), "oreflowers2");
 		oreFlowersDesert2 = new BlockOreFlowerDesert2();
-		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert2)oreFlowersDesert2, new ItemOreFlower1(oreFlowersDesert2,16, EnumOreFlowerDesert2.class), "oreflowersdesert2");
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert2)oreFlowersDesert2, new ItemOreFlower1(oreFlowersDesert2, 16, EnumOreFlowerDesert2.class), "oreflowersdesert2");
+		oreFlowers3 = new BlockOreFlower3();
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlower3)oreFlowers3, new ItemOreFlower1(oreFlowers3, 24, EnumOreFlower3.class), "oreflowers3");
+		oreFlowersDesert3 = new BlockOreFlowerDesert3();
+		EasyRegistry.registerBlockWithCustomItemAndMapper((BlockOreFlowerDesert3)oreFlowersDesert3, new ItemOreFlower1(oreFlowersDesert3, 24, EnumOreFlowerDesert3.class), "oreflowersdesert3");
 		
 		gooBlob = new ItemStickyBlob();
 		EasyRegistry.registerItem(gooBlob, "sticky_goo");
@@ -153,6 +158,8 @@ public class OreFlowersBase {
 		IBlockState flowerDesert1State = oreFlowersDesert1.getDefaultState();
 		IBlockState flower2State = oreFlowers2.getDefaultState();
 		IBlockState flowerDesert2State = oreFlowersDesert2.getDefaultState();
+		IBlockState flower3State = oreFlowers3.getDefaultState();
+		IBlockState flowerDesert3State = oreFlowersDesert3.getDefaultState();
 		FlowerAchievements.addCoreAchievements();
 		addArbitraryOre("oreIron",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._1POORJOE,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._1RED_SORREL);
 		addArbitraryOre("oreGold",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._2HORSETAIL,	Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._2GOLD*/);
@@ -171,6 +178,8 @@ public class OreFlowersBase {
 		addArbitraryOre("oreFluorite",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._6CAMELLIA, 	Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._6FLUORITE*/);
 		addArbitraryOre("oreCasmium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._7MALVA, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._7MARIGOLD);
 		addArbitraryOre("oreThorium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._8MELASTOMA, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._8THORIUM);
+
+		addArbitraryOre("oreOsmium",	flower3State, flowerDesert3State, Props.FLOWER_TYPE3, EnumOreFlower3._1ARROWHEAD, 	Props.DESERT_FLOWER_TYPE3, EnumOreFlowerDesert3._1PAINTBRUSH);
 	}
 	
 	private <T extends Comparable<T>, V extends T,U extends Comparable<U>, W extends U>

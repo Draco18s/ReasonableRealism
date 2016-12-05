@@ -97,6 +97,17 @@ public class OresBase {
 	public static Block oreCopper;
 	public static Block oreLead;
 	public static Block oreUranium;
+
+	public static Block oreSilver;
+	public static Block oreNickel;
+	public static Block oreAluminum;
+	public static Block orePlatinum;
+	//public static Block oreZinc;
+	//public static Block oreFluorite;
+	//public static Block oreCadmium;
+	//public static Block oreThorium;
+	
+	public static Block oreOsmium;
 	
 	public static Block dummyOreIron;
 	public static Block dummyOreGold;
@@ -105,6 +116,17 @@ public class OresBase {
 	public static Block dummyOreCopper;
 	public static Block dummyOreLead;
 	public static Block dummyOreUranium;
+	
+	public static Block dummyOreSilver;
+	public static Block dummyOreNickel;
+	public static Block dummyOreAluminum;
+	public static Block dummyOrePlatinum;
+	//public static Block dummyOreZinc;
+	//public static Block dummyOreFluorite;
+	//public static Block dummyOreCadmium;
+	//public static Block dummyOreThorium;
+	
+	public static Block dummyOreOsmium;
 	
 	public static Block millstone;
 	public static Block axel;
@@ -189,6 +211,23 @@ public class OresBase {
 		EasyRegistry.registerBlockWithCustomItem(oreUranium, new ItemOreBlock(oreUranium), "ore_harduranium");
 		dummyOreUranium = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreUranium, "dummy_ore_uranium");
+		
+		oreSilver = new BlockHardOreBase(EnumOreType.SILVER, 1, new Color(0xaccdf1));
+		oreSilver.setHardness(4.0f).setHarvestLevel("pickaxe", 2);
+		EasyRegistry.registerBlockWithCustomItem(oreSilver, new ItemOreBlock(oreSilver), "ore_hardsilver");
+		dummyOreSilver = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreSilver, "dummy_ore_silver");
+		oreNickel = new BlockHardOreBase(EnumOreType.NICKEL, 1, new Color(0xe6e4b6));
+		oreNickel.setHardness(4.0f).setHarvestLevel("pickaxe", 2);
+		EasyRegistry.registerBlockWithCustomItem(oreNickel, new ItemOreBlock(oreNickel), "ore_hardnickel");
+		dummyOreNickel = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreNickel, "dummy_ore_nickel");
+		oreAluminum = new BlockHardOreBase(EnumOreType.ALUMINUM, 1, new Color(0x524032));
+		oreAluminum.setHardness(3.0f).setHarvestLevel("shovel", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreAluminum, new ItemOreBlock(oreAluminum), "ore_hardaluminum");
+		dummyOreAluminum = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreAluminum, "dummy_ore_aluminum");
+		//platinum 0x0ecaf0
 		
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");

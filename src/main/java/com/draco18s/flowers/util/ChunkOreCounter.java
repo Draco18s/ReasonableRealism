@@ -37,12 +37,19 @@ public class ChunkOreCounter {
 				BlockWrapper key = new BlockWrapper(state);
 				OreCounter count = blockList.get(key);
 				if(count != null) {
+					/*if(cx == -19 && cz == -14 && count.b.block == OresBase.oreIron) {
+						OresBase.logger.log(Level.INFO, "Doing flowers for " + (i*8) + ": " + count.countA);
+					}*/
 					count.increment(state);
 					HardLibAPI.oreFlowers.trySpawnFlowerCluster(world, pos, key);
 				}
 			}
 			for(BlockWrapper ore : blockList.keySet()) {
 				OreCounter c = blockList.get(ore);
+				/*if(cx == -19 && cz == -14 && c.b.block == OresBase.oreIron) {
+					OresBase.logger.log(Level.INFO, "Iron @" + (i*8) + ": " + c.countA);
+					OresBase.logger.log(Level.INFO, "    " + Math.round(c.countA*(2f/3f) + c.countB*(1f/3f)));
+				}*/
 				HardLibAPI.oreData.putOreData(world, new BlockPos(cx,i*8,cz), ore, Math.round(c.countA*(2f/3f) + c.countB*(1f/3f)));
 				c.cycleCounts();
 			}

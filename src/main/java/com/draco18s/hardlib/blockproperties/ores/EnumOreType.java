@@ -38,6 +38,8 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	/*Flower 3*/
 	OSMIUM;   /*24*/
 	
+	//cobalt, Thlaspi caerulescens
+	
 	
 	public final int meta;
 	public final String name;

@@ -12,19 +12,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert1;
 import com.draco18s.hardlib.interfaces.IFlowerData;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
 import com.draco18s.hardlib.math.MathUtils;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
@@ -167,6 +164,16 @@ public class FlowerDataHandler implements IFlowerData {
 			return OreFlowersBase.oreFlowers1.getDefaultState();
 		if(OreFlowersBase.oreFlowersDesert1.getBlockState().getProperties().contains(prop))
 			return OreFlowersBase.oreFlowersDesert1.getDefaultState();
+		
+		if(OreFlowersBase.oreFlowers2.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowers2.getDefaultState();
+		if(OreFlowersBase.oreFlowersDesert2.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowersDesert2.getDefaultState();
+		
+		if(OreFlowersBase.oreFlowers3.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowers3.getDefaultState();
+		if(OreFlowersBase.oreFlowersDesert3.getBlockState().getProperties().contains(prop))
+			return OreFlowersBase.oreFlowersDesert3.getDefaultState();
 		return null;
 	}
 }

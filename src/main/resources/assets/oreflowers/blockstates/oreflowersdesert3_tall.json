@@ -1,0 +1,29 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+        },
+        "model": "oreflowers:flower",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+            "model": "item/generated"
+        }],
+        "inventory": [{
+            "model": "item/generated"
+        }],
+         "flower_type": {
+            "paintbrush":      { "textures": { "cross": "oreflowers:items/na"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower",
+                "textures": {
+                   "layer0": "#cross"
+               }
+            },
+            "false":{}
+        }
+    }
+}

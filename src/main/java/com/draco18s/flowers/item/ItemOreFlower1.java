@@ -2,7 +2,7 @@ package com.draco18s.flowers.item;
 
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower3;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.IMetaLookup;
 

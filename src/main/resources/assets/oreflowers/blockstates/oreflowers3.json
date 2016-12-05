@@ -1,0 +1,29 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+        },
+        "model": "oreflowers:flower",
+        "uvlock": true
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+
+        }],
+         "flower_type": {
+            "arrowhead":      { "textures": { "cross": "oreflowers:items/broadleaf-arrowhead"} }
+        },
+        "item":{
+            "true":{
+                "model": "oreflowers:item/flower",
+                "textures": {
+                   "layer0": "#cross"
+               }
+            },
+            "false":{ }
+        }
+    }
+}

@@ -42,6 +42,9 @@ tile.harderores:ore_hardtin.name=Hard Tin Ore
 tile.harderores:ore_hardcopper.name=Hard Copper Ore
 tile.harderores:ore_hardlead.name=Hard Lead Ore
 tile.harderores:ore_harduranium.name=Hard Uranium Ore
+tile.harderores:ore_hardtin.name=Hard Silver Ore
+tile.harderores:ore_hardtin.name=Hard Nickel Ore
+tile.harderores:ore_hardtin.name=Hard Aluminum Ore
 
 tile.harderores:dummy_ore_iron.name=Packaged Iron Ore
 tile.harderores:dummy_ore_gold.name=Packaged Gold Ore
@@ -50,6 +53,9 @@ tile.harderores:dummy_ore_tin.name=Packaged Tin Ore
 tile.harderores:dummy_ore_copper.name=Packaged Copper Ore
 tile.harderores:dummy_ore_lead.name=Packaged Lead Ore
 tile.harderores:dummy_ore_uranium.name=Packaged Uranium Ore
+tile.harderores:dummy_ore_tin.name=Packaged Silver Ore
+tile.harderores:dummy_ore_tin.name=Packaged Nickel Ore
+tile.harderores:dummy_ore_tin.name=Packaged Aluminum Ore
 
 tile.harderores:millstone.name=Millstone
 tile.harderores:axel.name=Axel

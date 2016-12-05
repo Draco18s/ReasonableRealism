@@ -1,5 +1,7 @@
 package com.draco18s.hardlib.internal;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
@@ -17,7 +19,7 @@ public class OreFlowerData {
 	 * @param clusterRadius - radius of the cluster
 	 * @param threshold - high concentration threshold, for bonemeal (spawns an extra, guaranteed plant)
 	 */
-	public OreFlowerData(IBlockState plant, int clusterQuantity, int clusterRadius, int threshold) {
+	public OreFlowerData(@Nonnull IBlockState plant, int clusterQuantity, int clusterRadius, int threshold) {
 		flower = plant;
 		highConcentrationThreshold = threshold;
 		clusterNum = clusterQuantity;
@@ -25,7 +27,7 @@ public class OreFlowerData {
 		twoBlockChance = 0;
 	}
 
-	public OreFlowerData(IBlockState plant, int clusterQuantity, int clusterRadius, int threshold, int twoTallWeight) {
+	public OreFlowerData(@Nonnull IBlockState plant, int clusterQuantity, int clusterRadius, int threshold, int twoTallWeight) {
 		flower = plant;
 		highConcentrationThreshold = threshold;
 		clusterNum = clusterQuantity;
