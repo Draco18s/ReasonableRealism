@@ -18,7 +18,7 @@ tooltip.expindustry:imprint2.text=Imprint: %2$s
 tooltip.expindustry:imprint3.text=Imprint: %2$s
 tooltip.expindustry:imprint4.text=Imprint: %2$s
 
-container.expindustry:woodenhopper=Wooden Hopper
+container.expindustry:wooden_hopper=Wooden Hopper
 container.expindustry:distributor=Distributor
 container.expindustry:cart_loader=Cart Loader
 container.expindustry:filter=Filtering Hopper

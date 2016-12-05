@@ -17,6 +17,7 @@ import com.draco18s.farming.item.ItemHydrometer;
 import com.draco18s.farming.item.ItemNewFrame;
 import com.draco18s.farming.item.ItemThermometer;
 import com.draco18s.farming.item.ItemWinterSeeds;
+import com.draco18s.farming.loot.KilledByWither;
 import com.draco18s.farming.util.AnimalUtil;
 import com.draco18s.farming.util.CropManager;
 import com.draco18s.farming.util.EnumFarmAchieves;
@@ -40,6 +41,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -215,6 +217,7 @@ public class FarmingBase {
 	public void postInit(FMLPostInitializationEvent event) {
 		CapabilityManager.INSTANCE.register(IMilking.class, new MilkStorage(), new MilkStorage.Factory());
 		FarmingAchievements.addCoreAchievements();
+		LootConditionManager.registerCondition(new KilledByWither.Serializer());
 	}
 	
 	public static IMilking getMilkData(EntityLivingBase entity) {

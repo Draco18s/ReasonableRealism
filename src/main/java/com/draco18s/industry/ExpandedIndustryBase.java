@@ -56,7 +56,7 @@ import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:industry}"/*, dependencies = "required-after:HardLib"*/)
+@Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:ind}", dependencies = "required-after:hardlib")
 public class ExpandedIndustryBase {
 	@Instance("expindustry")
 	public static ExpandedIndustryBase instance;

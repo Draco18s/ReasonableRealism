@@ -57,6 +57,7 @@ item.oreflowers:ironwand.name=Iron Ore Data Manipulator
 item.oreflowers:goldwand.name=Gold Ore Data Manipulator
 item.oreflowers:diamondwand.name=Diamond Ore Data Manipulator
 item.oreflowers:redstonewand.name=Redstone Ore Data Manipulator
+item.oreflowers:datawand.name=Ore Data Reader
 
 indicator.iron=Iron Indicator
 indicator.gold=Gold Indicator
@@ -74,6 +75,11 @@ indicator.zinc=Zinc Indicator
 indicator.fluorite=Fluorite Indicator
 indicator.cadmium=Cadmium Indicator
 indicator.thorium=Thorium Indicator
+
+tooltip:oreflowers:datainfo=Shows non-zero accessible ore counts
+tooltip:oreflowers:datashiftinfo=Shows all accessible ore counts when crouched
+tooltip:oreflowers:datamanipulation=Adds 32 units of ore data to this chunk slice
+tooltip:oreflowers:datashiftmanipulation=Subtracts 32 units when crouched
 
 achievement.oreFlowers=An Indication
 achievement.prospecting=A Growing Search

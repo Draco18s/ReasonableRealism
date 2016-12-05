@@ -43,7 +43,8 @@ public class OreDataHooks implements IOreData {
 		if(map == null || !map.containsKey(ore)) {
 			return 0;
 		}
-		return map.get(ore);
+		int v = map.get(ore);
+		return v;
 	}
 
 	@Override
@@ -62,12 +63,14 @@ public class OreDataHooks implements IOreData {
 			if(!map.containsKey(ore) && amount > 0) {
 				map.put(ore, 0);
 			}
-			int mm = Math.min(map.get(ore), amount);
-			int n = Math.max(map.get(ore) + amount, 0);
+			int v = map.get(ore);
+			if(v < 0) v = 0;
+			int mm = -1*Math.min(v, amount);
+			int n = Math.max(v + amount, 0);
 			if(n == 0) n = -1;
 			map.put(ore, n);
 			amount += mm;
-		}while((y-8*(++k)) >= 0 && amount > 0);
+		}while((y-8*(++k)) >= 0 && amount < 0);
 	}
 	
 	public static void readData(World world, int chunkx, int chunkz, NBTTagCompound nbt) {

@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.util.BlockTileEntityUtils;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.util.OresAchievements;
 
@@ -95,21 +96,7 @@ public class BlockMillstone extends Block {
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		TileEntity tileentity = worldIn.getTileEntity(pos);
-
-		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		for(int i=0; i < inventory.getSlots(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			EntityItem entityIn;
-			if(stack != null) {
-				entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-				entityIn.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityIn);
-			}
-		}
-		MillstoneOrientation millpos = state.getValue(Props.MILL_ORIENTATION);
-		BlockPos p = pos.add(millpos.offset.getX(), 0, millpos.offset.getZ());
-		worldIn.scheduleBlockUpdate(p, this, 1, 10);//low priority
+		BlockTileEntityUtils.dropItems(worldIn, pos);
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
 	

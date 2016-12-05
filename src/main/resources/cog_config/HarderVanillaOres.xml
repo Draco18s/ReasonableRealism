@@ -562,11 +562,11 @@
                     <WireframeColor>0x40221100</WireframeColor>
                     <Setting name='MotherlodeFrequency' avg=':= 0.9 * hardironFreq * _default_ * 3.0'/>
                     <Setting name='MotherlodeSize' avg=':= hardironSize * _default_' range=':= hardironSize * _default_'/>
-                    <Setting name='MotherlodeHeight' avg=':= 50/64 * dimension.groundLevel' range=':= 5/64 * dimension.groundLevel' type='normal'/>
-                    <Setting name='BranchHeightLimit' avg='30'/>
+                    <Setting name='MotherlodeHeight' avg=':= 52/64 * dimension.groundLevel' range=':= 5/64 * dimension.groundLevel' type='normal'/>
+                    <Setting name='BranchHeightLimit' avg='25'/>
 					<Setting name='BranchInclination' avg='0.0' range='0.03' />
 					<Setting name='SegmentAngle' avg='0' range='1.0' type='inverse' />
-					<Setting name='SegmentPitch' avg='0' range='0.06' type='normal' />
+					<Setting name='SegmentPitch' avg='0' range='0.05' type='normal' />
 					<Setting name='SegmentLength' avg=':= 0.5 * _default_' />
 					<Setting name='SegmentForkFrequency' avg='0.01' />
                     <Setting name='SegmentRadius' avg=':= hardironSize * _default_' range=':= hardironSize * _default_'/>

@@ -25,6 +25,7 @@ import com.draco18s.hardlib.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.LootUtils;
 import com.draco18s.hardlib.util.LootUtils.ICondition;
 import com.draco18s.hardlib.util.LootUtils.IMethod;
+import com.google.gson.Gson;
 
 import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
@@ -67,6 +68,7 @@ import net.minecraft.world.storage.loot.LootContext.EntityTarget;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.LootTableManager;
 import net.minecraft.world.storage.loot.conditions.EntityHasProperty;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.functions.LootFunction;
@@ -88,6 +90,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class FarmingEventHandler {
 	public static boolean doSlowCrops;
@@ -403,6 +406,9 @@ public class FarmingEventHandler {
 						lootconds.add(new KilledByWither(true));
 					}
 				} );
+			
+			Gson gson = ReflectionHelper.getPrivateValue(LootTableManager.class, null, "GSON_INSTANCE","field_186526_b");
+			String table = gson.toJson(loot);
 		}
 		if(event.getName().getResourcePath().equals("entities/sheep")) {
 			LootTable loot = event.getTable();

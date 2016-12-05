@@ -18,9 +18,8 @@ public class ClientProxy extends CommonProxy {
 	
 	@Override
 	public World getFilterWorld() {
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+		if(FMLCommonHandler.instance().getMinecraftServerInstance() == null) {
 			if(clientFilterWorld == null) {
-				//WorldInfo info, WorldProvider providerIn, Profiler profilerIn
 				if(Minecraft.getMinecraft().theWorld == null) return null;
 				clientFilterWorld = new FakeWorld(Minecraft.getMinecraft().theWorld.getWorldInfo(), Minecraft.getMinecraft().mcProfiler);
 			}

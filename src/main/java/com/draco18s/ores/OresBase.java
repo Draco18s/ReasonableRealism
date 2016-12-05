@@ -79,7 +79,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-@Mod(modid="harderores", name="HarderOres", version="{@version:ore}", dependencies = "required-after:hardlib;required-after:oreflowers")//@[{@version:lib},)  [{@version:flowers},)
+@Mod(modid="harderores", name="HarderOres", version="{@version:ore}", dependencies = "required-after:hardlib;required-after:oreflowers")
 public class OresBase {
 	@Instance("harderores")
 	public static OresBase instance;

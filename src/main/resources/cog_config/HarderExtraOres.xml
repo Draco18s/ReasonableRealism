@@ -17,7 +17,7 @@
     *************************************************************************************-->
     <ConfigSection>               
     
-        <OptionDisplayGroup name='groupHardExtras' displayName='Extra Harder Ores' displayState='shown'>
+        <OptionDisplayGroup name='groupHardExtras' displayName='Harder Mod Ores' displayState='shown'>
             <Description>
                 Distribution options for copper, tin, lead, uranium, silver, and nickel (ferrous).  These will override any settings from other tabs related to these ores.
             </Description>

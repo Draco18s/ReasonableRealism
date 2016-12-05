@@ -1,9 +1,16 @@
 package com.draco18s.flowers.item;
 
+import java.util.List;
+import java.util.Map;
+
 import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.internal.BlockWrapper;
+import com.draco18s.hardlib.internal.OreFlowerData;
+import com.draco18s.hardlib.internal.OreFlowerDictator;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -11,9 +18,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemOreManipulator extends Item {
 	public final BlockWrapper oreType;
@@ -26,17 +36,54 @@ public class ItemOreManipulator extends Item {
 	}
 	
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(player.isSneaking()) {
-			HardLibAPI.oreData.adjustOreData(world, pos.down(0), oreType, -16);
-			HardLibAPI.oreData.adjustOreData(world, pos.down(8), oreType, -16);
+		if(hand == EnumHand.OFF_HAND || world.isRemote) return EnumActionResult.PASS;
+		if(oreType != null) {
+			if(player.isSneaking()) {
+				HardLibAPI.oreData.adjustOreData(world, pos.down(0), oreType, -32);
+				HardLibAPI.oreData.adjustOreData(world, pos.down(8), oreType, -32);
+			}
+			else {
+				HardLibAPI.oreData.adjustOreData(world, pos.down(0), oreType, 32);
+				HardLibAPI.oreData.adjustOreData(world, pos.down(8), oreType, 32);
+			}
+			player.addChatMessage(new TextComponentString(oreType + " now " + HardLibAPI.oreData.getOreData(world, pos, oreType)));
 		}
 		else {
-			HardLibAPI.oreData.adjustOreData(world, pos.down(0), oreType, 16);
-			HardLibAPI.oreData.adjustOreData(world, pos.down(8), oreType, 16);
-		}
-		if(!world.isRemote) {
-			player.addChatMessage(new TextComponentString(oreType.block.getRegistryName() + " now " + HardLibAPI.oreData.getOreData(world, pos, oreType)));
+			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
+			List<OreFlowerData> entry;
+			for(BlockWrapper ore : list.keySet()) {
+				if(player.isSneaking()) {
+					int count1 = HardLibAPI.oreData.getOreData(world, pos, ore);
+					int count2 = HardLibAPI.oreData.getOreData(world, pos.down(8), ore);
+					int count3 = HardLibAPI.oreData.getOreData(world, pos.down(16), ore);
+					int count4 = HardLibAPI.oreData.getOreData(world, pos.down(24), ore);
+					
+					player.addChatMessage(new TextComponentString(ore + " is " + count1 + "/" + count2 + "/" + count3 + "/" + count4));
+				}
+				else {
+					int count = HardLibAPI.oreData.getOreData(world, pos, ore) +
+							HardLibAPI.oreData.getOreData(world, pos.down(8), ore) +
+							HardLibAPI.oreData.getOreData(world, pos.down(16), ore) +
+							HardLibAPI.oreData.getOreData(world, pos.down(24), ore);
+					if(count > 0)
+						player.addChatMessage(new TextComponentString(ore + " is " + count));
+				}
+			}
 		}
 		return EnumActionResult.SUCCESS;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, player, tooltip, advanced);
+		if(oreType != null) {
+			tooltip.add(I18n.format("tooltip:oreflowers:datamanipulation"));
+			tooltip.add(I18n.format("tooltip:oreflowers:datashiftmanipulation"));
+		}
+		else {
+			tooltip.add(I18n.format("tooltip:oreflowers:datainfo"));
+			tooltip.add(I18n.format("tooltip:oreflowers:datashiftinfo"));
+		}
 	}
 }

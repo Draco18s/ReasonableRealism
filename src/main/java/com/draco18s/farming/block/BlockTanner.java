@@ -9,9 +9,11 @@ import com.draco18s.farming.entities.TileEntityTanner;
 import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.farming.LeatherStatus;
+import com.draco18s.hardlib.util.BlockTileEntityUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -28,6 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -37,6 +40,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class BlockTanner extends Block {
+	public static final AxisAlignedBB TANNER_AABB_SOUTH = new AxisAlignedBB(0.0D, 0.0D, 0.2D, 1.0D, 1.0D, 0.8D);
+	public static final AxisAlignedBB TANNER_AABB_WEST = new AxisAlignedBB(0.2D, 0.0D, 0.0D, 0.8D, 1.0D, 1.0D);
+	
 	private static IProperty LEATHER1 = Props.LEFT_LEATHER_STATE;
 	private static IProperty LEATHER2 = Props.RIGHT_LEATHER_STATE;
 	private static IProperty SALT = Props.SALT_LEVEL;
@@ -44,11 +50,17 @@ public class BlockTanner extends Block {
 	public BlockTanner() {
 		super(Material.WOOD);
 		setHardness(2.0f);
-		setHarvestLevel("axe", 1);
 		setResistance(0.0f);
 		setSoundType(SoundType.WOOD);
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockHorizontal.FACING,EnumFacing.NORTH).withProperty(LEATHER1, LeatherStatus.NONE).withProperty(LEATHER2, LeatherStatus.NONE).withProperty(SALT, 0));
+	}
+	
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		if(state.getValue(BlockHorizontal.FACING) == EnumFacing.SOUTH) {
+			return TANNER_AABB_SOUTH;
+		}
+		return TANNER_AABB_WEST;
 	}
 	
 	@Override
@@ -105,29 +117,31 @@ public class BlockTanner extends Block {
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntityTanner te = (TileEntityTanner)world.getTileEntity(pos);
 		IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-		if(inven != null && inven.getStackInSlot(0) == null) {
-			if(heldItem != null) {
-				ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
-				if(side == EnumFacing.UP && (remain == null || remain.stackSize < heldItem.stackSize)) {
-					player.addStat(FarmingAchievements.saltedHide, 1);
-				}
-				
-				if(remain == null) {
-					heldItem.splitStack(64);
-				}
-				else {
-					heldItem.stackSize = remain.stackSize;
+		if(inven != null) {
+			if(inven.getStackInSlot(0) == null) {
+				if(heldItem != null) {
+					ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
+					if(side == EnumFacing.UP && (remain == null || remain.stackSize < heldItem.stackSize)) {
+						player.addStat(FarmingAchievements.saltedHide, 1);
+					}
+					
+					if(remain == null) {
+						heldItem.splitStack(64);
+					}
+					else {
+						heldItem.stackSize = remain.stackSize;
+					}
 				}
 			}
-		}
-		else {
-			if((heldItem == null || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
-				ItemStack item = inven.extractItem(0, 1, false);
-				player.inventory.addItemStackToInventory(item);
-				
-				if(item != null && item.getItem() == Items.LEATHER) {
-					player.addStat(FarmingAchievements.getLeather, 1);
-					player.addStat(AchievementList.KILL_COW, 1);
+			else {
+				if((heldItem == null || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
+					ItemStack item = inven.extractItem(0, 1, false);
+					player.inventory.addItemStackToInventory(item);
+					
+					if(item != null && item.getItem() == Items.LEATHER) {
+						player.addStat(FarmingAchievements.getLeather, 1);
+						player.addStat(AchievementList.KILL_COW, 1);
+					}
 				}
 			}
 		}
@@ -146,18 +160,18 @@ public class BlockTanner extends Block {
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		TileEntity tileentity = worldIn.getTileEntity(pos);
-
-		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		for (int i = 0; i < inventory.getSlots(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			EntityItem entityIn;
-			if (stack != null && !worldIn.isRemote) {
-				entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-				entityIn.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityIn);
-			}
-		}
+		BlockTileEntityUtils.dropItems(worldIn, pos);
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
+	
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+		if(!worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP)) {
+			dropBlockAsItem(worldIn, pos, state, 0);
+            worldIn.setBlockToAir(pos);
+		}
+	}
+	
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+    	return worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP);
+    }
 }

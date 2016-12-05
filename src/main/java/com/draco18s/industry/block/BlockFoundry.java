@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.util.BlockTileEntityUtils;
 import com.draco18s.industry.ExpandedIndustryBase;
 import com.draco18s.industry.IndustryGuiHandler;
 import com.draco18s.industry.entities.TileEntityFoundry;
@@ -134,21 +135,7 @@ public class BlockFoundry extends Block {
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		if(!worldIn.isRemote) {
-			TileEntity tileentity = worldIn.getTileEntity(pos);
-	
-			IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-					null);
-			for (int i = 0; i < inventory.getSlots(); i++) {
-				ItemStack stack = inventory.getStackInSlot(i);
-				EntityItem entityIn;
-				if (stack != null) {
-					entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-					entityIn.setDefaultPickupDelay();
-					worldIn.spawnEntityInWorld(entityIn);
-				}
-			}
-		}
+		BlockTileEntityUtils.dropItems(worldIn, pos);
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
 }

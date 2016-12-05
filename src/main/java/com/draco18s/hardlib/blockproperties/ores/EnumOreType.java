@@ -29,8 +29,8 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	SILVER,   /*16*/
 	NICKEL,   /*17*/
 	ALUMINUM, /*18*/
-	PLATINUM, /*19*/
-	ZINC,	 /*20*/
+	PLATINUM, /*19*/ //TODO: new dist.  Thin, horizontal layers, stacked; frequently found with (nickel, iron, copper), Palladium, Rhodium, Ruthenium, Iridium, Osmium.  Possible volcanic collumn
+	ZINC,	  /*20*/ //TODO: new dist
 	FLUORITE, /*21*/
 	CADMIUM,  /*22*/
 	THORIUM,  /*23*/

@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert1;
 import com.draco18s.hardlib.interfaces.IFlowerData;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
@@ -67,6 +68,8 @@ public class FlowerDataHandler implements IFlowerData {
 		BlockPos newPos;
 		boolean replaceLeaves = num > 1;
 		while(num > 0 && fails < 20) {
+			//TODO: 
+			//Cluster radius isn't being handled properly
 			newPos = pos.add(r.nextInt(clusterRadius) - (clusterRadius/2), -5, r.nextInt(clusterRadius) - (clusterRadius/2));
 			Iterable<BlockPos> list = BlockPos.getAllInBox(newPos, newPos.up(10));
 			Iterator<BlockPos> it = list.iterator();
@@ -79,7 +82,11 @@ public class FlowerDataHandler implements IFlowerData {
 				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);
 				IBlockState wb2 = pDown;*/
 				if(pDown.isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
-					if(canBeTallPlant && r.nextInt(tallChance) == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
+					int ra = 1;
+					if(canBeTallPlant) {
+						ra = r.nextInt(tallChance);
+					}
+					if(canBeTallPlant && ra == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
 						world.setBlockState(p.up(), flowerState, 3);
 						world.setBlockState(p, flowerState.withProperty(Props.FLOWER_STALK, true), 3);
 					}

@@ -10,4 +10,13 @@
 [x] Filter
 [x] Detector rail
 [x] Ore Flowers: non vanilla ores
-[ ] Check sifter, packager, and others for phantom drops-on-break
+[/] Check [x]sifter, [x]packager, [x]foundry, and others? for phantom drops-on-break
+[x] 2D flower item
+[ ] Container sluice
+[x] Filter unlocalized name
+[ ] Filter item model
+[x] Windmill parts -> Decorative
+[ ] Tanning rack item model
+[ ] 2 item frames
+[ ] Filter client side in SMP
+[ ] Filter NSEW model/blockstate

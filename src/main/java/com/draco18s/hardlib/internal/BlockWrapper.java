@@ -91,4 +91,9 @@ public class BlockWrapper {
 		if(oreValue < 0) return 0;
 		return oreValue;
 	}
+
+	@Override
+	public String toString() {
+		return block.getRegistryName() + ":" + (valProp == null?(meta>=0?meta:"*"):valProp.getName()) + " [" + (valProp != null?"*":oreValue) + "]";
+	}
 }

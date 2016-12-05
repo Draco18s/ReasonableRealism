@@ -11,7 +11,7 @@ public enum EnumOreFlowerDesert1 implements IStringSerializable,IMetaLookup<Enum
 	_3CHANDELIER_TREE(EnumOreType.DIAMOND),
 	_4AVELOZ(EnumOreType.REDSTONE),
 	_5TIN(EnumOreType.TIN),
-	_6COPPER_FLOWER(EnumOreType.COPPER), //replace with Ocimum centraliafricanum
+	_6COPPER_FLOWER(EnumOreType.COPPER),
 	_7SHEEPS_FESCUE(EnumOreType.LEAD),
 	_8PRIMROSE(EnumOreType.URANIUM);
 

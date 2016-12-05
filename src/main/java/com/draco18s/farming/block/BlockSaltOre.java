@@ -34,8 +34,8 @@ public class BlockSaltOre extends Block {
 	@Override
 	public int quantityDroppedWithBonus(int fortune, Random random) {
 		if (Loader.isModLoaded("harderores")) {
-			return 2 + random.nextInt(2) + random.nextInt(fortune + 1);
+			return 1 + random.nextInt(2) + random.nextInt(fortune + 1);
 		}
-		return 3 + random.nextInt(3) + random.nextInt(fortune * 2 + 1);
+		return 1 + random.nextInt(3) + random.nextInt(fortune * 2 + 1);
 	}
 }

@@ -50,7 +50,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
-@Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")//@[{@version:lib},)
+@Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")
 public class OreFlowersBase {
 	@Instance("oreflowers")
 	public static OreFlowersBase instance;
@@ -65,6 +65,7 @@ public class OreFlowersBase {
 	public static Item goldWand;
 	public static Item diamondWand;
 	public static Item redstoneWand;
+	public static Item allDataWand;
 	
 	//@SidedProxy(clientSide="com.draco18s.flowers.client.ClientProxy", serverSide="com.draco18s.flowers.CommonProxy")
 	//public static CommonProxy proxy;
@@ -97,41 +98,44 @@ public class OreFlowersBase {
 		IBlockState flower1State = oreFlowers1.getDefaultState();
 		IBlockState flowerDesert1State = oreFlowersDesert1.getDefaultState();
 		OreFlowerData data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._1POORJOE),
-				8, 3, 0);
+				8, 10, 0);
 		BlockWrapper wrap = new BlockWrapper(Blocks.IRON_ORE, 16);
 		ironWand = new ItemOreManipulator(wrap);
 		EasyRegistry.registerItem(ironWand, "ironwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
 		data = new OreFlowerData(flowerDesert1State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._1RED_SORREL),
-				8, 3, 0);
+				8, 10, 0);
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
 		
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._2HORSETAIL),
-				8, 3, 0);
+				8, 10, 0);
 		wrap = new BlockWrapper(Blocks.GOLD_ORE, 16);
 		goldWand = new ItemOreManipulator(wrap);
 		EasyRegistry.registerItem(goldWand, "goldwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
 		
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._3VALLOZIA),
-				8, 3, 0);
+				8, 10, 0);
 		wrap = new BlockWrapper(Blocks.DIAMOND_ORE, 16);
 		diamondWand = new ItemOreManipulator(wrap);
 		EasyRegistry.registerItem(diamondWand, "diamondwand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
 		data = new OreFlowerData(flowerDesert1State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._3CHANDELIER_TREE).withProperty(Props.FLOWER_STALK, true),
-				8, 3, 0, 1);
+				8, 15, 0, 1);
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
 		
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._4FLAME_LILY).withProperty(Props.FLOWER_STALK, true),
-				8, 3, 0, 3);
+				2, 12, 0, 2);
 		wrap = new BlockWrapper(Blocks.REDSTONE_ORE, 16);
 		redstoneWand = new ItemOreManipulator(wrap);
 		EasyRegistry.registerItem(redstoneWand, "redstonewand");
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.closeDictator, data);
-		data = new OreFlowerData(flowerDesert1State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._4AVELOZ).withProperty(Props.FLOWER_STALK, true), 8,
-				3, 0, 1);
+		data = new OreFlowerData(flowerDesert1State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._4AVELOZ).withProperty(Props.FLOWER_STALK, true),
+				2, 12, 0, 1);
 		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.closeDictator, data);
+
+		allDataWand = new ItemOreManipulator(null);
+		EasyRegistry.registerItem(allDataWand, "datawand");
 		
 		FlowerEventHandler handler = new FlowerEventHandler();
 		MinecraftForge.ORE_GEN_BUS.register(handler);
@@ -178,6 +182,7 @@ public class OreFlowersBase {
 			for(ItemStack stack : oreDictReq) {
 				if(stack.getItem() instanceof ItemBlock) {
 					Block block = Block.getBlockFromItem(stack.getItem());
+					if(block.getRegistryName().toString().contains("dummy")) continue;
 					if(block instanceof IBlockMultiBreak) {
 						wrap = new BlockWrapper(block, Props.ORE_DENSITY);
 					}

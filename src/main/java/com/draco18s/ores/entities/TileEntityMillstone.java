@@ -69,7 +69,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				else if (grindTime <= 0) {
 					grindItem(millpos);
 					
-					if(outputSlot.getStackInSlot(0) != null && outputSlot.getStackInSlot(0).stackSize >= 8) {
+					if(outputSlot.getStackInSlot(0) != null && (outputSlot.getStackInSlot(0).stackSize >= 8 || inputSlot.getStackInSlot(0) == null)) {
 						if(!worldObj.isRemote) {	
 							Random rand = worldObj.rand;
 							float rx = rand.nextFloat() * 0.6F + 0.2F;
@@ -179,7 +179,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == null) {
-				return (T) null;//new CombinedInvWrapper(inputSlot, outputSlot);
+				return (T) new CombinedInvWrapper(inputSlot, outputSlot);
 			}
 			if(worldObj == null) {
 				if(facing == EnumFacing.UP) {

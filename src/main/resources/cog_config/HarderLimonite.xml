@@ -25,20 +25,21 @@
 <IfModInstalled name='harderores'>
   
   <ConfigSection>
-
-    <OptionChoice name='HarderOresActive'
-                  default=':= dimension.generator = "RandomLevelSource" | dimension.generator = "ATGLevelSource"'
-                  displayGroup='groupInternal'>
-      <Choice value='true' displayValue='On'/>
-      <Choice value='false' displayValue='Off'/>
-      <Comment>
-        Controls whether HarderOres is active in the current
-        dimension. By default, it is active in the overworld and
-        Mystcraft ages. To disable for a specific dimension, set this
-        to false in the CustomOreGen_Options.txt found in the
-        dimension directory (preferably before visiting it).
-      </Comment>
-    </OptionChoice>
+	<ConfigSection>
+		<OptionChoice name='HarderOresActive' default='true' displayState='hidden' displayGroup='groupInternal'>
+			<Description>Controls how Coal is generated </Description>
+			<DisplayName>Test option</DisplayName>
+			<Choice value='true' displayValue='On'>
+			</Choice>
+			<Choice value='false' displayValue='Off'>
+			</Choice>
+		</OptionChoice>
+		
+		<OptionNumeric name='limoniteFreq' default='1'  min='0' max='5' displayState=':= if(?advOptions,"shown","hidden")' displayGroup='groupInternal'>
+			<Description>Frequency multiplier for Limonite distributions </Description>
+			<DisplayName>Limonite Freq.</DisplayName>
+		</OptionNumeric>
+	</ConfigSection>
   </ConfigSection>
 
     <ConfigSection> <!-- Biome Sets -->
@@ -144,43 +145,43 @@
                         to only be at the water line, but it now can be found slightly inland.
                  -->
           <Setting name='CloudThickness' avg='0.499' range='0'/>
-          <Setting name='DistributionFrequency' avg='0.03' range='0'/>
+          <Setting name='DistributionFrequency' avg=':= 0.02 * limoniteFreq' range='0'/>
           <Setting name='CloudHeight' avg='62.5' range='0' type='uniform' scaleTo='sealevel'/>
           <Replaces block='minecraft:grass'/>
           <ReplacesRegexp block='.*sand'/>
           <!-- <ReplacesRegexp block='.*dirt'/> -->
           <Replaces block='minecraft:gravel'/>
           <Replaces block='minecraft:clay'/>
+          <Biome name='.*' weight='-1'/>
+          <Biome name='beach' weight='2' />
+          <Biome name='river' weight='2' />
         </CloudPreset>
           <CloudPreset name='Harder-PresetPlacer-Child' inherits='Harder-PresetPlacer' >
             <Setting name='CloudThickness' avg='1.75' range='0.5'/>
-            <Setting name='DistributionFrequency' avg='5.0' range='2'/>
-            <Setting name='ParentRangeLimit' avg='20.0' range='6.0' />
-            <Setting name='CloudHeight' avg='59.75' range='2' type='uniform' scaleTo='sealevel'/>
-            <Replaces block='minecraft:grass'/>
+            <Setting name='DistributionFrequency' avg='4.5' range='2'/>
+            <Setting name='ParentRangeLimit' avg='15.0' range='6.0' />
+            <Setting name='CloudHeight' avg='61.25' range='2' type='uniform' scaleTo='sealevel'/>
             <ReplacesRegexp block='.*sand'/>
             <ReplacesRegexp block='.*dirt'/>
             <Replaces block='minecraft:gravel'/>
             <Replaces block='minecraft:clay'/>
           </CloudPreset>
         <CloudPreset name='Harder-PresetBeachPlacer' inherits='Harder-PresetPlacer'>
-          <Biome name='beach' weight='0.5'/>
           <Setting name='CloudRadius' avg='3' range='1.5' type='normal'/>
         </CloudPreset>
         <CloudPreset name='Harder-PresetBeachPlacer-Child' inherits='Harder-PresetPlacer-Child'>
-          <Biome name='beach' weight='0.5'/>
-          <Setting name='CloudRadius' avg='3' range='1.5' type='normal'/>
+          <Biome name='.*'/>
+		  <Setting name='CloudRadius' avg='3' range='1.5' type='normal'/>
         </CloudPreset>
         <CloudPreset name='Harder-PresetAlluvialPlacer' inherits='Harder-PresetPlacer'>
-          <Biome name='river'/>
           <Setting name='CloudThickness' avg='1' range='0'/>
           <Setting name='DistributionFrequency' avg=':= 2 * _default_'
                    range='0'/>
           <Setting name='CloudRadius' avg='2.5' range='1.5' type='normal'/>
         </CloudPreset>
         <CloudPreset name='Harder-PresetAlluvialPlacer-Child' inherits='Harder-PresetPlacer-Child'>
-          <Biome name='river'/>
-          <Setting name='CloudThickness' avg='1' range='0'/>
+          <Biome name='.*'/>
+		  <Setting name='CloudThickness' avg='1' range='0'/>
           <Setting name='DistributionFrequency' avg=':= 2 * _default_'
                    range='0'/>
           <Setting name='CloudRadius' avg='2.5' range='1.5' type='normal'/>
@@ -307,9 +308,8 @@
 
         <!-- Geologica has two iron beach placements (basaltic and granitic) and
             one rivier (granitic). Here, we use a double frequency beach -->
-            <Cloud name='Harder-LimoniteSandAlluvial'
-                        inherits='Harder-PresetAlluvialPlacer' >
-                <OreBlock block='harderores:ore_limonite' weight='0.5' />
+            <Cloud name='Harder-LimoniteSandAlluvial' inherits='Harder-PresetAlluvialPlacer' >
+				<OreBlock block='harderores:ore_limonite' weight='0.5' />
                 <OreBlock block='minecraft:clay' weight='0.5' />
                 <Cloud name='Harder-LimoniteSandAlluvial-Child' 
                         inherits='Harder-PresetAlluvialPlacer-Child' >
@@ -317,8 +317,7 @@
                     <OreBlock block='minecraft:clay' weight='0.5' />
                 </Cloud>
             </Cloud>
-            <Cloud name='Harder-LimoniteSandBeach'
-                        inherits='Harder-PresetBeachPlacer' >
+            <Cloud name='Harder-LimoniteSandBeach' inherits='Harder-PresetBeachPlacer' >
                 <Setting name='DistributionFrequency' avg=':= 2 * _default_'
                     range='0'/>
                 <OreBlock block='harderores:ore_limonite' weight='0.5' />
