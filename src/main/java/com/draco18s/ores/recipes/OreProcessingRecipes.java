@@ -121,13 +121,31 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		boolean isDirtOrSand = (item == TileEntityBasicSluice.itemSand || item == TileEntityBasicSluice.itemDirt);
 		Block oreAttempt;
 		do {
-			oreAttempt = getRandomSluiceResult(rand);
+			oreAttempt = getRandomSluiceResult(rand, isDirtOrSand);
 		} while(isDirtOrSand && oreAttempt == Blocks.GRAVEL);
 		return oreAttempt;
 	}
 
 	private Block getRandomSluiceResult(Random rand) {
 		return sluiceRecipes.get(rand.nextInt(sluiceRecipes.size()));
+	}
+
+	//we know all gravel is at the end of the array
+	//we also know that gravel is ~25% of the total
+	//by rounding up we insure that we always catch every possible ore
+	//but might catch the first gravel
+	private Block getRandomSluiceResult(Random rand, Boolean skipGravel) {
+		int v = (int) Math.ceil(sluiceRecipes.size()*0.75f);
+		return sluiceRecipes.get(rand.nextInt(v));
+	}
+
+	@Override
+	public List<Block> getRandomSluiceResults(Random rand, Item item) {
+		ArrayList<Block> list = new ArrayList();
+		for(int i = sluiceRecipes.size(); i >= 0; i-=12) {
+			list.add(getRandomSluiceResult(rand, item));
+		}
+		return list;
 	}
 
 	@Override

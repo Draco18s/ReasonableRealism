@@ -1,6 +1,7 @@
 package com.draco18s.hardlib.interfaces;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -108,4 +109,6 @@ public interface IHardOreProcessing {
 	 * @return minimum stack size for input in order to sift.
 	 */
 	public int getPressurePackAmount(ItemStack stack);
+
+	public List<Block> getRandomSluiceResults(Random rand, Item item);
 }

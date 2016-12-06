@@ -98,63 +98,68 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	private void doFilter() {
 		//TODO: failure rate
 		//if(worldObj.isRemote || rand.nextInt(20) >= 7) return;
-		Block b = HardLibAPI.oreMachines.getRandomSluiceResult(this.rand, inputSlot.getStackInSlot(0).getItem());
-		//TODO this should be an error
-		if(b == null) return;
-		BlockWrapper ore = new BlockWrapper(b,16);
-		if(b == Blocks.GRAVEL && inputSlot.getStackInSlot(0).getItem() == itemGravel) {
-			mergeStacks(new ItemStack(Items.FLINT));
-		}
-		else {
-			int best = 0, cur;
-			BlockPos bestLoc = BlockPos.ORIGIN;
-			for(int j = -1; j <= 1; j++) {
-				for(int k = -1; k <= 1; k++) {
-					BlockPos lookPos = pos.add(16*j, 0, 16*k);
-					cur = HardLibAPI.oreData.getOreData(worldObj, lookPos, ore);
-					if(cur > best) {
-						bestLoc = lookPos.down(0);
-						best = cur;
+
+		//we want to pull one result for every ~12 entries
+		//so that as additional mod ores are added, the sluice doesn't get less and less effective
+		List<Block> list = HardLibAPI.oreMachines.getRandomSluiceResults(this.rand, inputSlot.getStackInSlot(0).getItem());
+		for(Block b : list) {
+			//TODO this should be an error
+			if(b == null) return;
+			BlockWrapper ore = new BlockWrapper(b,16);
+			if(b == Blocks.GRAVEL && inputSlot.getStackInSlot(0).getItem() == itemGravel) {
+				mergeStacks(new ItemStack(Items.FLINT));
+			}
+			else {
+				int best = 0, cur;
+				BlockPos bestLoc = BlockPos.ORIGIN;
+				for(int j = -1; j <= 1; j++) {
+					for(int k = -1; k <= 1; k++) {
+						BlockPos lookPos = pos.add(16*j, 0, 16*k);
+						cur = HardLibAPI.oreData.getOreData(worldObj, lookPos, ore);
+						if(cur > best) {
+							bestLoc = lookPos.down(0);
+							best = cur;
+						}
 					}
 				}
-			}
-			if(best > 0) {
-				HardLibAPI.oreData.adjustOreData(worldObj, bestLoc, ore, 1);
-				IBlockState oreState;
-				if(ore.meta >= 0) oreState = ore.block.getStateFromMeta(ore.meta);
-				else oreState = ore.block.getDefaultState();
-				ItemStack basicDrop = new ItemStack(ore.block.getItemDropped(oreState, rand, 0));
-				ItemStack toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop);
-				if(toSpawn != null) {
-					toSpawn.copy();
-					if(inputSlot.getStackInSlot(0).getItem() == itemGravel) {
-						if(rand.nextInt(10) == 0) {
-							toSpawn = basicDrop.copy();
+				if(best > 0) {
+					HardLibAPI.oreData.adjustOreData(worldObj, bestLoc, ore, 1);
+					IBlockState oreState;
+					if(ore.meta >= 0) oreState = ore.block.getStateFromMeta(ore.meta);
+					else oreState = ore.block.getDefaultState();
+					ItemStack basicDrop = new ItemStack(ore.block.getItemDropped(oreState, rand, 0));
+					ItemStack toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop);
+					if(toSpawn != null) {
+						toSpawn.copy();
+						if(inputSlot.getStackInSlot(0).getItem() == itemGravel) {
+							if(rand.nextInt(10) == 0) {
+								toSpawn = basicDrop.copy();
+							}
+							else {
+								//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
+							}
+						}
+						else if(inputSlot.getStackInSlot(0).getItem() == itemSand) {
+							//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
+							if(rand.nextInt(10) == 0) {
+								toSpawn.stackSize = 2;
+							}
 						}
 						else {
-							//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
-						}
-					}
-					else if(inputSlot.getStackInSlot(0).getItem() == itemSand) {
-						//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
-						if(rand.nextInt(10) == 0) {
-							toSpawn.stackSize = 2;
+							int r = rand.nextInt(20);
+							if(r == 0) {
+								toSpawn = basicDrop.copy();
+							}
+							else if(r == 1) {
+								toSpawn.stackSize = 2;
+							}
 						}
 					}
 					else {
-						int r = rand.nextInt(20);
-						if(r == 0) {
-							toSpawn = basicDrop.copy();
-						}
-						else if(r == 1) {
-							toSpawn.stackSize = 2;
-						}
+						toSpawn = basicDrop;
 					}
+					mergeStacks(toSpawn);
 				}
-				else {
-					toSpawn = basicDrop;
-				}
-				mergeStacks(toSpawn);
 			}
 		}
 	}

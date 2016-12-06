@@ -15,7 +15,8 @@
             "silver":   {"textures": {"layer0": "harderores:items/silverdust_sm"} },
             "nickel":   {"textures": {"layer0": "harderores:items/nickeldust_sm"} },
             "aluminum": {"textures": {"layer0": "harderores:items/aluminumdust_sm"} },
-            "osmium":   {"textures": {"layer0": "harderores:items/osmiumdust_sm"} }
+            "osmium":   {"textures": {"layer0": "harderores:items/osmiumdust_sm"} },
+            "platinum":   {"textures": {"layer0": "harderores:items/platinumdust_sm"} }
         }
     }
 }

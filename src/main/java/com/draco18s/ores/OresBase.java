@@ -227,7 +227,17 @@ public class OresBase {
 		EasyRegistry.registerBlockWithCustomItem(oreAluminum, new ItemOreBlock(oreAluminum), "ore_hardaluminum");
 		dummyOreAluminum = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreAluminum, "dummy_ore_aluminum");
-		//platinum 0x0ecaf0
+		orePlatinum = new BlockHardOreBase(EnumOreType.PLATINUM, 1, new Color(0x0ecaf0));
+		orePlatinum.setHardness(5.0f).setHarvestLevel("pickaxe", 2);
+		EasyRegistry.registerBlockWithCustomItem(orePlatinum, new ItemOreBlock(orePlatinum), "ore_hardplatinum");
+		dummyOrePlatinum = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOrePlatinum, "dummy_ore_platinum");
+
+		oreOsmium = new BlockHardOreBase(EnumOreType.OSMIUM, 1, new Color(0x466ec8));
+		oreOsmium.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreOsmium, new ItemOreBlock(oreOsmium), "ore_hardosmium");
+		dummyOreOsmium = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreOsmium, "dummy_ore_osmium");
 		
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");
@@ -324,6 +334,11 @@ public class OresBase {
 		OreDictionary.registerOre("dustTinyTin", new ItemStack(smallDust, 1, EnumOreType.TIN.meta));
 		OreDictionary.registerOre("dustTinyCopper", new ItemStack(smallDust, 1, EnumOreType.COPPER.meta));
 		OreDictionary.registerOre("dustTinyLead", new ItemStack(smallDust, 1, EnumOreType.LEAD.meta));
+		OreDictionary.registerOre("dustTinySilver", new ItemStack(smallDust, 1, EnumOreType.SILVER.meta));
+		OreDictionary.registerOre("dustTinyNickel", new ItemStack(smallDust, 1, EnumOreType.NICKEL.meta));
+		OreDictionary.registerOre("dustTinyAluminum", new ItemStack(smallDust, 1, EnumOreType.ALUMINUM.meta));
+		OreDictionary.registerOre("dustTinyPlatinum", new ItemStack(smallDust, 1, EnumOreType.PLATINUM.meta));
+		OreDictionary.registerOre("dustTinyOsmium", new ItemStack(smallDust, 1, EnumOreType.OSMIUM.meta));
 		
 		OreDictionary.registerOre("dustIron", new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
 		OreDictionary.registerOre("dustGold", new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
@@ -394,9 +409,9 @@ public class OresBase {
 		//TileEntitySluice.cycleLength = cycle * 15;
 		TileEntityBasicSluice.cycleLength = cycle * 15;
 		
-		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
-		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
-		HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
+		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		if(config.get("SLUICE", "canFindIron", true).getBoolean()) {
 			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
 			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
@@ -418,6 +433,7 @@ public class OresBase {
 		/*Milling*/
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.IRON.meta), new ItemStack(smallDust,2,EnumOreType.IRON.meta));
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(rawOre,1,EnumOreType.GOLD.meta), new ItemStack(smallDust,2,EnumOreType.GOLD.meta));
+		//Mod ores handled by addExtraOre()
 		
 		config.addCustomCategoryComment("MILLING", "Enable (hard mode) these to remove vanilla recipes for items and instead require the millstone. In general,\neasy means the millstone doubles resources, while hard is near-vanilla.");
 		boolean hardOption = config.getBoolean("RequireMillingFlour", "MILLING", false, "");
@@ -469,15 +485,13 @@ public class OresBase {
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR, 1, 1));
+		//Mod ores handled by addExtraOre()
 		
 		/*Packing*/
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), new ItemStack(dummyOreIron));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), new ItemStack(dummyOreGold));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
-		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.TIN.meta), new ItemStack(dummyOreTin));
-		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.COPPER.meta), new ItemStack(dummyOreCopper));
-		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.LEAD.meta), new ItemStack(dummyOreLead));
-		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.URANIUM.meta), new ItemStack(dummyOreUranium));
+		//Mod ores handled by addExtraOre()
 		
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.REDSTONE, 9), new ItemStack(Blocks.REDSTONE_BLOCK));
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Items.WHEAT, 9), new ItemStack(Blocks.HAY_BLOCK));
@@ -518,38 +532,59 @@ public class OresBase {
 			OresAchievements.addStoneTools();
 		}
 		List<ItemStack> oreDictReq;
-		int addedOres = 0;
+		int addedOres = 9;
 		oreDictReq = OreDictionary.getOres("oreTin");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Tin", EnumOreType.TIN, oreTin, 3, true);
-			addedOres++;
+			addExtraOre("Tin", EnumOreType.TIN, oreTin, dummyOreTin, 3, true);
+			addedOres += 3;
 		}
 		oreDictReq = OreDictionary.getOres("oreCopper");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Copper", EnumOreType.COPPER, oreCopper, 3, true);
-			addedOres++;
+			addExtraOre("Copper", EnumOreType.COPPER, oreCopper, dummyOreCopper, 3, true);
+			addedOres += 3;
 		}
 		oreDictReq = OreDictionary.getOres("oreLead");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Lead", EnumOreType.LEAD, oreLead, 2, true);
-			addedOres++;
+			addExtraOre("Lead", EnumOreType.LEAD, oreLead, dummyOreLead, 2, true);
+			addedOres += 2;
 		}
 		oreDictReq = OreDictionary.getOres("oreUranium");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Uranium", EnumOreType.URANIUM, oreUranium, 1, false);
-			addedOres++;
+			addExtraOre("Uranium", EnumOreType.URANIUM, oreUranium, dummyOreUranium, 1, false);
+			addedOres += 1;
 		}
-		for(;addedOres>0;addedOres -= 2) {
+		oreDictReq = OreDictionary.getOres("oreSilver");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Silver", EnumOreType.SILVER, oreSilver, dummyOreSilver, 3, false);
+			addedOres += 3;
+		}
+		oreDictReq = OreDictionary.getOres("oreNickel");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Nickel", EnumOreType.NICKEL, oreNickel, dummyOreNickel, 3, false);
+			addedOres += 3;
+		}
+		oreDictReq = OreDictionary.getOres("oreAluminum");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Aluminum", EnumOreType.ALUMINUM, oreAluminum, dummyOreAluminum, 1, false);
+			addedOres += 1;
+		}
+		oreDictReq = OreDictionary.getOres("orePlatinum");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Platinum", EnumOreType.PLATINUM, orePlatinum, dummyOrePlatinum, 2, false);
+			addedOres += 2;
+		}
+		oreDictReq = OreDictionary.getOres("oreOsmium");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Osmium", EnumOreType.OSMIUM, oreOsmium, dummyOreOsmium, 2, false);
+			addedOres += 2;
+		}
+		//one quarter of the entries should be gravel
+		for(;addedOres>0;addedOres -= 3) {
 			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		}
-		
-		OreDictionary.registerOre("oreTin", dummyOreTin);
-		OreDictionary.registerOre("oreCopper", dummyOreCopper);
-		OreDictionary.registerOre("oreLead", dummyOreLead);
-		OreDictionary.registerOre("oreUranium", dummyOreUranium);
 	}
 	
-	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, int sluiceWeight, boolean canFindDefault) {
+	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, Block dummyOre, int sluiceWeight, boolean canFindDefault) {
 		if(!oreType.set) {
 			if(config.get("SLUICE", "canFind"+oreName, canFindDefault).getBoolean()) {
 				for(int i = sluiceWeight; i > 0; i--) {
@@ -575,6 +610,12 @@ public class OresBase {
 				HardLibAPI.oreMachines.addMillRecipe(rawOreIn, instk);
 				HardLibAPI.oreMachines.addSiftRecipe(oreIn, 8, dustStack.get(0));
 			}
+			List<ItemStack> ingotStack = OreDictionary.getOres("ingot"+oreName);
+			if(ingotStack.size() > 0) {
+				GameRegistry.addSmelting(dummyOre, ingotStack.get(0), 0.7f);
+			}
+			HardLibAPI.oreMachines.addPressurePackRecipe(rawOreIn, new ItemStack(dummyOre));
+			OreDictionary.registerOre("ore"+oreName, dummyOre);
 			oreType.set = true;
 		}
 	}

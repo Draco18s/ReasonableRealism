@@ -16,7 +16,8 @@
             "silver":   {"textures": {"layer0": "harderores:items/silverchunk"} },
             "nickel":   {"textures": {"layer0": "harderores:items/nickelchunk"} },
             "aluminum": {"textures": {"layer0": "harderores:items/aluminumchunk"} },
-            "osmium":   {"textures": {"layer0": "harderores:items/osmiumchunk"} }
+            "osmium":   {"textures": {"layer0": "harderores:items/osmiumchunk"} },
+            "platinum":   {"textures": {"layer0": "harderores:items/platinumchunk"} }
         }
     }
 }

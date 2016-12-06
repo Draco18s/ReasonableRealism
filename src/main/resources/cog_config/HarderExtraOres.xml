@@ -339,6 +339,40 @@
             </OptionNumeric>
        
         </ConfigSection>
+		
+		<!--*******************   Platinum Ore   *********************-->
+        <ConfigSection>
+            
+            <OptionChoice name='hardPlatDist' displayGroup='groupHardExtras'>
+                <Description>Controls how Platinum Ore is generated </Description>
+                <DisplayName>Platinum Ore Type</DisplayName>
+                <Default>:= if(?forceExtraOres|blockExists("orePlatinum"),"layeredVeins","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("orePlatinum"),"shown","hidden")</DisplayState>
+                <Choice value='strategicClouds' displayValue='Clouds'>
+                    <Description>
+                        Rare, sparsely populated clouds of ore extending over several chunks.  Found only in jungles and mountains.
+                    </Description>
+                </Choice>
+                <Choice value='vanillaStdGen' displayValue='Clusters'>
+                    <Description>
+                        Small clusters of ore scattered near bedrock.  This is the default platinum ore generation.
+                    </Description>
+                </Choice>
+                <Choice value='none' displayValue='None' description='No platinum ore is generated at all.'/>
+                <Choice value='disabled' displayValue='Disabled' description='No platinum ore is generated, and no platinum ore symbols are available in Mystcraft ages.'/>
+            </OptionChoice>
+            
+            <OptionNumeric name='hardPlatFreq' default='1'  min='0' max='5' displayState=':= if(?advOptions &amp; hardPlatDist != "disabled","shown","hidden")' displayGroup='groupHardExtras'>
+                <Description>Frequency multiplier for Platinum Ore distributions </Description>
+                <DisplayName>Platinum Ore Freq.</DisplayName>
+            </OptionNumeric>
+            
+            <OptionNumeric name='hardPlatSize' default='1'  min='0' max='5' displayState=':= if(?advOptions &amp; hardPlatDist != "disabled","shown","hidden")' displayGroup='groupHardExtras'>
+                <Description>Size multiplier for Platinum Ore distributions </Description>
+                <DisplayName>Platinum Ore Size</DisplayName>
+            </OptionNumeric>
+       
+        </ConfigSection>
 
      </ConfigSection>
    
@@ -1258,7 +1292,7 @@
                              range=':= hardSilverSize * _default_'/>
                     <Setting name='OreDensity' avg=':= 0.5 * _default_'/>
                     <Biome name='Mountain'/>
-                    <Veins name='HardSilverHintVeins' inherits='PresetHintVeins'>
+                    <Veins name='HardSilverHintVeins' block='harderores:ore_hardsilver:3' inherits='PresetHintVeins'>
                         <DrawWireframe>:=drawWireframes</DrawWireframe>
                         <WireframeColor>0x40AAAAAA</WireframeColor>
                         <Setting name='MotherlodeFrequency'
@@ -1379,7 +1413,7 @@
                              range=':= hardNickelSize * _default_'/>
                     <Setting name='OreDensity' avg=':= 0.3 * _default_'/>
                     <Biome name='Swamp'/>
-                    <Veins name='HardNickelHintVeins' inherits='PresetHintVeins'>
+                    <Veins name='HardNickelHintVeins' block='harderores:ore_hardnickel:3' inherits='PresetHintVeins'>
                         <DrawWireframe>:=drawWireframes</DrawWireframe>
                         <WireframeColor>0x40005500</WireframeColor>
                         <Setting name='MotherlodeFrequency'
@@ -1719,6 +1753,255 @@
                         <Setting name="MotherlodeRangeLimit" avg=":= hardOsmiumSize * _default_" range=":= hardOsmiumSize * _default_"/>
 						<ReplacesOre block='stone'/>
                     </Veins>
+                </Cloud>
+            </IfCondition>
+            
+        </ConfigSection>
+		
+		<!--*******************   Platinum Ore   *********************-->           
+		
+		<ConfigSection>
+        
+			<!--<StandardGen name='MekOsmiumStandard' block='minecraft:stone'>
+				<Setting name='Frequency' avg='0' range='0'/>
+			</StandardGen>           
+            <Veins name='MekOsmiumVeins' block='minecraft:stone'>
+				<Setting name='MotherlodeFrequency' avg='0' range='0'/>
+			</Veins>
+			<Cloud name='MekOsmiumBiomeCloud' block='minecraft:stone'>
+				<Setting name='DistributionFrequency' avg='0' range='0'/>
+			</Cloud>-->
+				
+			<IfCondition condition=':= hardPlatinumDist = "vanillaStdGen"'>
+                <StandardGen name="HardPlatinumStandard" block="harderores:ore_hardplatinum:9" inherits="PresetStandardGen">
+                    <Description>Equivalent to regular Mekanism Osmium distribution </Description>
+                    <DrawWireframe>:=drawWireframes</DrawWireframe>
+                    <WireframeColor>0x200ecaf0</WireframeColor>
+                    <Setting name="Size" avg=":= hardPlatSize * _default_"/>
+                    <Setting name="Frequency" avg=":= 2/5 * hardPlatFreq * _default_" range=":= 3 * hardPlatFreq"/>
+                    <Setting name="Height" avg=":= 40/64 * dimension.groundLevel" range=":= 17/64 * dimension.groundLevel" type="uniform"/>
+					<ReplacesOre block='stone'/>
+					<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+					<Replaces block='minecraft:dirt'/>
+                </StandardGen>
+            </IfCondition>
+            
+			<IfCondition condition=':= hardPlatinumDist = "surfaceClouds"'>
+                <Cloud name='HardPlatinumPlateTop1' block='harderores:ore_hardplatinum:15' inherits='PresetStrategicCloud'>
+                    <Description>
+                        Thin, "stacked plates" of low-quality ore.
+                    </Description>
+					<DrawWireframe>:=false</DrawWireframe>
+					<WireframeColor>0x200ecaf0</WireframeColor>
+					<Setting name='CloudThickness' avg='0.25' range='0'/>
+					<Setting name='OreDensity' avg='0'/>
+					<Setting name='CloudHeight' avg='42' range='2' />
+					<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+					<Setting name='DistributionFrequency' avg=':= 0.001 * hardPlatFreq'/>
+					<Setting name='CloudRadius' avg=':= 0.5 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+					<Setting name='CloudInclination' avg='0' range='0.0875' />
+					<ReplacesOre block='stone'/>
+					<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+                    <seed>846279 </seed><!-- Arbitrary; keep consistent -->
+					<!-- TODO -->
+					<Biome name='.*desert.*' weight='1'/>
+					<Biome name='.*mesa.*' weight='1'/>
+					<Biome name='volcano' weight='1'/>
+					<Cloud name='HardPlatinumPlateTop2' block='harderores:ore_hardplatinum:5' inherits='PresetStrategicCloud'>
+						<DrawWireframe>:=drawWireframes</DrawWireframe>
+						<WireframeColor>0x200ecaf0</WireframeColor>
+						<Setting name='ParentRangeLimit' avg='6' range='0' />
+						<Setting name='CloudThickness' avg='0.25' range='0'/>
+						<Setting name='OreDensity' avg='1'/>
+						<Setting name='CloudHeight' avg='42' range='2' />
+						<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+						<Setting name='DistributionFrequency' avg='4' range='0'/>
+						<Setting name='CloudRadius' avg=':= 2.0 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+						<Setting name='CloudInclination' avg='0' range='0.0875' />
+						<ReplacesOre block='stone'/>
+						<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+						<seed>846271 </seed><!-- Arbitrary; keep consistent -->
+						<Cloud name='HardPlatinumPlateTop3' block='harderores:ore_hardplatinum:3' inherits='PresetStrategicCloud'>
+							<DrawWireframe>:=drawWireframes</DrawWireframe>
+							<WireframeColor>0x200ecaf0</WireframeColor>
+							<Setting name='ParentRangeLimit' avg='6' range='0' />
+							<Setting name='CloudThickness' avg='0.4' range='0'/>
+							<Setting name='OreDensity' avg='0.90'/>
+							<Setting name='CloudHeight' avg='42' range='2' />
+							<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+							<Setting name='DistributionFrequency' avg='4' range='0'/>
+							<Setting name='CloudRadius' avg=':= 2.0 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+							<Setting name='CloudInclination' avg='0' range='0.0875' />
+							<ReplacesOre block='stone'/>
+							<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+							<seed>846271 </seed><!-- Arbitrary; keep consistent -->
+							<Cloud name='HardPlatinumPlateTop4' block='harderores:ore_hardplatinum:1' inherits='PresetStrategicCloud'>
+								<DrawWireframe>:=drawWireframes</DrawWireframe>
+								<WireframeColor>0x200ecaf0</WireframeColor>
+								<Setting name='ParentRangeLimit' avg='6' range='0' />
+								<Setting name='CloudThickness' avg='0.8' range='0'/>
+								<Setting name='OreDensity' avg='0.80'/>
+								<Setting name='CloudHeight' avg='42' range='2' />
+								<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+								<Setting name='DistributionFrequency' avg='4' range='0'/>
+								<Setting name='CloudRadius' avg=':= 2.0 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+								<Setting name='CloudInclination' avg='0' range='0.0875' />
+								<ReplacesOre block='stone'/>
+								<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+								<seed>846271 </seed><!-- Arbitrary; keep consistent -->
+							</Cloud>
+						</Cloud>
+					</Cloud>
+                </Cloud>
+                <Cloud name='HardPlatinumPlateMid1' block='harderores:ore_hardplatinum:15' inherits='PresetStrategicCloud'>
+                    <Description>
+                        Thin, "stacked plates" of ore.
+                    </Description>
+					<DrawWireframe>:=false</DrawWireframe>
+					<WireframeColor>0x200ecaf0</WireframeColor>
+					<Setting name='CloudThickness' avg='0.25' range='0'/>
+					<Setting name='OreDensity' avg='0'/>
+					<Setting name='CloudHeight' avg='36' range='2' />
+					<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+					<Setting name='DistributionFrequency' avg=':= 0.001 * hardPlatFreq'/>
+					<Setting name='CloudRadius' avg=':= 0.5 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+					<Setting name='CloudInclination' avg='0' range='0.0875' />
+					<ReplacesOre block='stone'/>
+					<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+                    <seed>846279 </seed><!-- Arbitrary; keep consistent -->
+					<!-- TODO -->
+					<Biome name='.*desert.*' weight='1'/>
+					<Biome name='.*mesa.*' weight='1'/>
+					<Biome name='volcano' weight='1'/>
+					<Cloud name='HardPlatinumPlateMid2' block='harderores:ore_hardplatinum:5' inherits='PresetStrategicCloud'>
+						<DrawWireframe>:=drawWireframes</DrawWireframe>
+						<WireframeColor>0x200ecaf0</WireframeColor>
+						<Setting name='ParentRangeLimit' avg='6' range='0' />
+						<Setting name='CloudThickness' avg='0.25' range='0'/>
+						<Setting name='OreDensity' avg='1'/>
+						<Setting name='CloudHeight' avg='36' range='2' />
+						<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+						<Setting name='DistributionFrequency' avg='4' range='0'/>
+						<Setting name='CloudRadius' avg=':= 1.2 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+						<Setting name='CloudInclination' avg='0' range='0.0875' />
+						<ReplacesOre block='stone'/>
+						<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+						<seed>846272 </seed><!-- Arbitrary; keep consistent -->
+						<Cloud name='HardPlatinumPlateMid3' block='harderores:ore_hardplatinum:3' inherits='PresetStrategicCloud'>
+							<DrawWireframe>:=drawWireframes</DrawWireframe>
+							<WireframeColor>0x200ecaf0</WireframeColor>
+							<Setting name='ParentRangeLimit' avg='6' range='0' />
+							<Setting name='CloudThickness' avg='0.4' range='0'/>
+							<Setting name='OreDensity' avg='0.90'/>
+							<Setting name='CloudHeight' avg='36' range='2' />
+							<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+							<Setting name='DistributionFrequency' avg='4' range='0'/>
+							<Setting name='CloudRadius' avg=':= 1.2 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+							<Setting name='CloudInclination' avg='0' range='0.0875' />
+							<ReplacesOre block='stone'/>
+							<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+							<seed>846272 </seed><!-- Arbitrary; keep consistent -->
+							<Cloud name='HardPlatinumPlateMid4' block='harderores:ore_hardplatinum:1' inherits='PresetStrategicCloud'>
+								<DrawWireframe>:=drawWireframes</DrawWireframe>
+								<WireframeColor>0x200ecaf0</WireframeColor>
+								<Setting name='ParentRangeLimit' avg='6' range='0' />
+								<Setting name='CloudThickness' avg='0.8' range='0'/>
+								<Setting name='OreDensity' avg='0.80'/>
+								<Setting name='CloudHeight' avg='36' range='2' />
+								<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+								<Setting name='DistributionFrequency' avg='4' range='0'/>
+								<Setting name='CloudRadius' avg=':= 1.2 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+								<Setting name='CloudInclination' avg='0' range='0.0875' />
+								<ReplacesOre block='stone'/>
+								<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+								<seed>846272 </seed><!-- Arbitrary; keep consistent -->
+							</Cloud>
+						</Cloud>
+					</Cloud>
+                </Cloud>
+                <Cloud name='HardPlatinumPlateBot1' block='harderores:ore_hardplatinum:15' inherits='PresetStrategicCloud'>
+                    <Description>
+                        Thin, "stacked plates" of ore.
+                    </Description>
+					<DrawWireframe>:=false</DrawWireframe>
+					<WireframeColor>0x200ecaf0</WireframeColor>
+					<Setting name='CloudThickness' avg='0.25' range='0'/>
+					<Setting name='OreDensity' avg='0'/>
+					<Setting name='CloudHeight' avg='30' range='2' />
+					<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+					<Setting name='DistributionFrequency' avg=':= 0.001 * hardPlatFreq'/>
+					<Setting name='CloudRadius' avg=':= 0.5 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+					<Setting name='CloudInclination' avg='0' range='0.0875' />
+					<ReplacesOre block='stone'/>
+					<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+                    <seed>846279 </seed><!-- Arbitrary; keep consistent -->
+					<!-- TODO -->
+					<Biome name='.*desert.*' weight='1'/>
+					<Biome name='.*mesa.*' weight='1'/>
+					<Biome name='volcano' weight='1'/>
+					<Cloud name='HardPlatinumPlateBot2' block='harderores:ore_hardplatinum:5' inherits='PresetStrategicCloud'>
+						<DrawWireframe>:=drawWireframes</DrawWireframe>
+						<WireframeColor>0x200ecaf0</WireframeColor>
+						<Setting name='ParentRangeLimit' avg='6' range='0' />
+						<Setting name='CloudThickness' avg='0.25' range='0'/>
+						<Setting name='OreDensity' avg='1'/>
+						<Setting name='CloudHeight' avg='30' range='2' />
+						<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+						<Setting name='DistributionFrequency' avg='4' range='0'/>
+						<Setting name='CloudRadius' avg=':= 0.8 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+						<Setting name='CloudInclination' avg='0' range='0.0875' />
+						<ReplacesOre block='stone'/>
+						<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+						<seed>846273 </seed><!-- Arbitrary; keep consistent -->
+						<Cloud name='HardPlatinumPlateBot3' block='harderores:ore_hardplatinum:3' inherits='PresetStrategicCloud'>
+							<DrawWireframe>:=drawWireframes</DrawWireframe>
+							<WireframeColor>0x200ecaf0</WireframeColor>
+							<Setting name='ParentRangeLimit' avg='6' range='0' />
+							<Setting name='CloudThickness' avg='0.4' range='0'/>
+							<Setting name='OreDensity' avg='0.90'/>
+							<Setting name='CloudHeight' avg='30' range='2' />
+							<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+							<Setting name='DistributionFrequency' avg='4' range='0'/>
+							<Setting name='CloudRadius' avg=':= 0.8 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+							<Setting name='CloudInclination' avg='0' range='0.0875' />
+							<ReplacesOre block='stone'/>
+							<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+							<seed>846273 </seed><!-- Arbitrary; keep consistent -->
+							<Cloud name='HardPlatinumPlateBot4' block='harderores:ore_hardplatinum:1' inherits='PresetStrategicCloud'>
+								<DrawWireframe>:=drawWireframes</DrawWireframe>
+								<WireframeColor>0x200ecaf0</WireframeColor>
+								<Setting name='ParentRangeLimit' avg='6' range='0' />
+								<Setting name='CloudThickness' avg='0.8' range='0'/>
+								<Setting name='OreDensity' avg='0.80'/>
+								<Setting name='CloudHeight' avg='30' range='2' />
+								<Setting name='CloudSizeNoise' avg='0.1' range='0.025' />
+								<Setting name='DistributionFrequency' avg='4' range='0'/>
+								<Setting name='CloudRadius' avg=':= 0.8 * hardPlatSize * _default_' range=':= 0.3 * hardPlatSize * _default_'/>
+								<Setting name='CloudInclination' avg='0' range='0.0875' />
+								<ReplacesOre block='stone'/>
+								<ReplacesOre block='ganyssurface:.*' weight='-1'/>
+								<seed>846273 </seed><!-- Arbitrary; keep consistent -->
+							</Cloud>
+						</Cloud>
+						<Veins name='PlatLavaTubes' block='minecraft:lava' inherits='PresetVerticalVeins'>
+							<Description>
+								Isolated veins (no motherlodes) that run vertically.
+							</Description>
+							<DrawWireframe>:=drawWireframes</DrawWireframe>
+							<WireframeColor>0x20550000</WireframeColor>
+							<Setting name='MotherlodeHeight' avg='10' range='2'/>
+							<Setting name='ParentRangeLimit' avg='25' range='0' />
+							<Setting name='MotherlodeFrequency' avg=':= 1'/>
+							<Setting name='SegmentRadius' avg=':= 1.5 * _default_' range=':= 1 * _default_'/>
+							<Setting name='BranchInclination' avg='1.31' range='0.22'/>
+							<Setting name='BranchLength' avg='40' range='2' />
+							<Replaces block='harderores:ore_hardplatinum'/>
+							<ReplacesOre block='stone'/>
+							<ReplacesOre block='minecraft:dirt'/>
+							<ReplacesOre block='minecraft:gravel'/>
+							<ReplacesOre block='minecraft:sand'/>
+						</Veins>
+					</Cloud>
                 </Cloud>
             </IfCondition>
             
