@@ -224,9 +224,9 @@ public class OresBase {
 		EasyRegistry.registerBlockWithItem(dummyOreNickel, "dummy_ore_nickel");
 		oreAluminum = new BlockHardOreBase(EnumOreType.ALUMINUM, 1, new Color(0x524032));
 		oreAluminum.setHardness(3.0f).setHarvestLevel("shovel", 1);
-		EasyRegistry.registerBlockWithCustomItem(oreAluminum, new ItemOreBlock(oreAluminum), "ore_hardaluminum");
+		EasyRegistry.registerBlockWithCustomItem(oreAluminum, new ItemOreBlock(oreAluminum), "ore_hardbauxite");
 		dummyOreAluminum = new BlockDummyOre();
-		EasyRegistry.registerBlockWithItem(dummyOreAluminum, "dummy_ore_aluminum");
+		EasyRegistry.registerBlockWithItem(dummyOreAluminum, "dummy_ore_bauxite");
 		orePlatinum = new BlockHardOreBase(EnumOreType.PLATINUM, 1, new Color(0x0ecaf0));
 		orePlatinum.setHardness(5.0f).setHarvestLevel("pickaxe", 2);
 		EasyRegistry.registerBlockWithCustomItem(orePlatinum, new ItemOreBlock(orePlatinum), "ore_hardplatinum");

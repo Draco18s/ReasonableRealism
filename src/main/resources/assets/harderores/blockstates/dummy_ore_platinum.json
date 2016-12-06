@@ -1,0 +1,19 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "ore": "harderores:items/platinumchunk",
+            "particle": "harderores:items/platinumchunk"
+        },
+        "model": "harderores:dummy_ore",
+        "uvlock": false
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+            
+        }]
+    }
+}

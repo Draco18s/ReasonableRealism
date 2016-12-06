@@ -24,6 +24,8 @@ tile.oreflowers:aveloz.name=Aveloz
 tile.oreflowers:copper_flower.name=Copper Flower
 tile.oreflowers:sheeps_fescue.name=Sheeps Fescue
 tile.oreflowers:primrose.name=Primrose
+tile.oreflowers:paintbrush.name=Indian Paintbrush
+tile.oreflowers:arrowhead.name=Broadleafed Arrowhead
 
 item.oreflowers:poorjoe.name=Poorjoe
 item.oreflowers:horsetail.name=Horsetail
@@ -51,6 +53,8 @@ item.oreflowers:aveloz.name=Aveloz
 item.oreflowers:copper_flower.name=Copper Flower
 item.oreflowers:sheeps_fescue.name=Sheeps Fescue
 item.oreflowers:primrose.name=Primrose
+item.oreflowers:arrowhead.name=Broadleafed Arrowhead
+item.oreflowers:paintbrush.name=Indian Paintbrush
 
 item.oreflowers:sticky_goo.name=Sticky Goo
 item.oreflowers:ironwand.name=Iron Ore Data Manipulator
@@ -75,6 +79,7 @@ indicator.zinc=Zinc Indicator
 indicator.fluorite=Fluorite Indicator
 indicator.cadmium=Cadmium Indicator
 indicator.thorium=Thorium Indicator
+indicator.osmium=Osmium Indicator
 
 tooltip:oreflowers:datainfo=Shows non-zero accessible ore counts
 tooltip:oreflowers:datashiftinfo=Shows all accessible ore counts when crouched

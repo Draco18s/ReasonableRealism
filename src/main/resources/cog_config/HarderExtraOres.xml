@@ -154,23 +154,23 @@
                 <DisplayName>Lead Type</DisplayName>
                 <Default>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("ThermalFoundation"),"layeredVeins","disabled")</Default>
             	<DisplayState>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
-                <Choice value='layeredVeins' displayValue='Veins'>
+                <Choice value='layeredVeins' displayValue='Veins'>4
                     <Description>
                         Groups of long narrow veins found about one third of the way down to bedrock.  Especially common in jungles.
                     </Description>
                 </Choice>
-                <Choice value='strategicClouds' displayValue='Clouds'>
+                <Choice value='strategicClouds' displayValue='Clouds'>1
                     <Description>
                         Rare, sparsely populated clouds of ore extending over several chunks.  Found only in jungles.
                     </Description>
                 </Choice>
-                <Choice value='vanillaStdGen' displayValue='Clusters'>
+                <Choice value='vanillaStdGen' displayValue='Clusters'>3
                     <Description>
                         Small clusters of ore scattered about one third of the way down to bedrock.  This is the default IC2 lead generation.
                     </Description>
                 </Choice>
-                <Choice value='none' displayValue='None' description='No lead is generated at all.'/>
-                <Choice value='disabled' displayValue='Disabled' description='No lead is generated, and no lead symbols are available in Mystcraft ages.'/>
+                <Choice value='none' displayValue='None' description='No lead is generated at all.'/>5
+                <Choice value='disabled' displayValue='Disabled' description='No lead is generated, and no lead symbols are available in Mystcraft ages.'/>2
             </OptionChoice>
             
             <OptionNumeric name='hic2LeadFreq' default='1'  min='0' max='5' displayState=':= if(?advOptions &amp; hic2LeadDist != "disabled","shown","hidden")' displayGroup='groupHardExtras'>
@@ -346,7 +346,7 @@
             <OptionChoice name='hardPlatDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Platinum Ore is generated </Description>
                 <DisplayName>Platinum Ore Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("orePlatinum"),"layeredVeins","disabled")</Default>
+                <Default>:= if(?forceExtraOres|blockExists("orePlatinum"),"strategicClouds","disabled")</Default>
             	<DisplayState>:= if(?forceExtraOres|blockExists("orePlatinum"),"shown","hidden")</DisplayState>
                 <Choice value='strategicClouds' displayValue='Clouds'>
                     <Description>
@@ -1772,9 +1772,9 @@
 				<Setting name='DistributionFrequency' avg='0' range='0'/>
 			</Cloud>-->
 				
-			<IfCondition condition=':= hardPlatinumDist = "vanillaStdGen"'>
+			<IfCondition condition=':= hardPlatDist = "vanillaStdGen"'>
                 <StandardGen name="HardPlatinumStandard" block="harderores:ore_hardplatinum:9" inherits="PresetStandardGen">
-                    <Description>Equivalent to regular Mekanism Osmium distribution </Description>
+                    <Description>Equivalent to regular Mekanism Platinum distribution </Description>
                     <DrawWireframe>:=drawWireframes</DrawWireframe>
                     <WireframeColor>0x200ecaf0</WireframeColor>
                     <Setting name="Size" avg=":= hardPlatSize * _default_"/>
@@ -1786,7 +1786,7 @@
                 </StandardGen>
             </IfCondition>
             
-			<IfCondition condition=':= hardPlatinumDist = "surfaceClouds"'>
+			<IfCondition condition=':= hardPlatDist = "strategicClouds"'>
                 <Cloud name='HardPlatinumPlateTop1' block='harderores:ore_hardplatinum:15' inherits='PresetStrategicCloud'>
                     <Description>
                         Thin, "stacked plates" of low-quality ore.
