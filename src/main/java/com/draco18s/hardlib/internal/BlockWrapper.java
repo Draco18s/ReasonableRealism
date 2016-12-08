@@ -18,7 +18,7 @@ public class BlockWrapper {
 	 * @param b
 	 */
 	public BlockWrapper(Block b) {
-		this(b, -1);
+		this(b, 9);
 	}
 	
 	/**
@@ -26,13 +26,13 @@ public class BlockWrapper {
 	 * @param state
 	 */
 	public BlockWrapper(IBlockState state) {
-		this(state, -1);
+		this(state, 9);
 	}
 	
 	/**
 	 * Wildcard blockstate with ore value
 	 * @param b
-	 * @param v - Relative ore value per block
+	 * @param v - Relative ore value per block; roughly "how many nuggets" (9 for an ingot)
 	 */
 	public BlockWrapper(Block b, int v) {
 		this.block = b;
@@ -42,9 +42,9 @@ public class BlockWrapper {
 	}
 	
 	/**
-	 * By valid blockstate with ore value
+	 * By valid blockstate with ore value (where blockstate defines ore type)
 	 * @param state
-	 * @param v - Relative ore value per block
+	 * @param v - Relative ore value per block; roughly "how many nuggets" (9 for an ingot)
 	 */
 	public BlockWrapper(IBlockState state, int v) {
 		this.block = state.getBlock();
@@ -54,12 +54,26 @@ public class BlockWrapper {
 	}
 	
 	/**
-	 * By valid block with property
+	 * By valid block with property (where the property defines the ore value)
 	 * @param b
-	 * @param v - Relative ore value by property
+	 * @param prop - Relative ore value by property; roughly "how many nuggets" (9 for an ingot)
 	 */
 	public BlockWrapper(Block b, PropertyInteger prop) {
 		this.block = b;
+		this.meta = -1;
+		this.oreValue = -1;
+		this.valProp = prop;
+	}
+	
+	/**
+	 * By blockstate with property (where the property defines the ore value)<br>
+	 * <b>Don't use this one.</b> There's no way to perform state-to-state matching while ignoring a given property.<br>
+	 * Blockstate will be treated as wildcard, identical to {@link #BlockWrapper(Block, PropertyInteger)}
+	 * @param state
+	 * @param prop - Relative ore value by property; roughly "how many nuggets" (9 for an ingot)
+	 */
+	public BlockWrapper(IBlockState state, PropertyInteger prop) {
+		this.block = state.getBlock();
 		this.meta = -1;
 		this.oreValue = -1;
 		this.valProp = prop;

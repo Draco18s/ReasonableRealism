@@ -14,7 +14,8 @@
             "model": "item/generated"
         }],
          "flower_type": {
-            "paintbrush":      { "textures": { "cross": "oreflowers:items/indian_paintbrush"} }
+            "paintbrush": { "textures": { "cross": "oreflowers:items/indian_paintbrush"} },
+            "quartz":     { "textures": { "cross": "oreflowers:items/na"} }
         },
         "item":{
             "true":{

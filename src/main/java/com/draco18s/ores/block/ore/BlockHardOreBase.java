@@ -45,7 +45,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 		super(Material.ROCK, MapColor.STONE);
 		setResistance(5.0f);
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.ORE_DENSITY, 0));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.ORE_DENSITY, 1));
 		oreType = type;
 		metaChange = metaDecrement;
 		color = particleColor;
@@ -73,11 +73,11 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 	}
 
 	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(Props.ORE_DENSITY, Integer.valueOf(meta));
+		return this.getDefaultState().withProperty(Props.ORE_DENSITY, Integer.valueOf(meta+1));
 	}
 
 	public int getMetaFromState(IBlockState state) {
-		return state.getValue(Props.ORE_DENSITY).intValue();
+		return state.getValue(Props.ORE_DENSITY).intValue()-1;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -98,7 +98,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	public int quantityDropped(IBlockState state, int fortune, Random random) {
-		return 1 + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY))/6+1);
+		return 1 + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY)-1)/6+1);
 	}
 
 	public Color getProspectorParticleColor(IBlockAccess worldIn, BlockPos pos, IBlockState state) {

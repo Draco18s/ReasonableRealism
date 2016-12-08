@@ -19,7 +19,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.common.property.Properties;
 
 public class Props {
-	public static final PropertyInteger ORE_DENSITY = PropertyInteger.create("ore_density", 0, 15);
+	public static final PropertyInteger ORE_DENSITY = PropertyInteger.create("ore_density", 1, 16);
 	public static final PropertyEnum<MillstoneOrientation> MILL_ORIENTATION = PropertyEnum.<MillstoneOrientation>create("mill_orientation", MillstoneOrientation.class);
 	public static final PropertyEnum<AxelOrientation> AXEL_ORIENTATION = PropertyEnum.<AxelOrientation>create("axel_orientation", AxelOrientation.class);
 	public static final PropertyBool FLOWER_STALK = PropertyBool.create("flower_stalk");

@@ -30,7 +30,7 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	NICKEL,   /*17*/
 	ALUMINUM, /*18*/
 	PLATINUM, /*19*/
-	ZINC,	  /*20*/ //TODO: new dist https://www.sec.gov/Archives/edgar/data/1030219/000117625609000278/pg68.jpg
+	ZINC,	  /*20*/ //new dist https://www.sec.gov/Archives/edgar/data/1030219/000117625609000278/pg68.jpg
 	FLUORITE, /*21*/
 	CADMIUM,  /*22*/
 	THORIUM,  /*23*/

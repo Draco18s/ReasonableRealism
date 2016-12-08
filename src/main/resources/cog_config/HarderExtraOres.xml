@@ -2095,7 +2095,7 @@
                     </Description>
 					<DrawWireframe>:=false</DrawWireframe>
 					<WireframeColor>0x20808080</WireframeColor>
-					<Setting name='OreVolumeNoiseCutoff' avg='0'/> 
+					<Setting name='OreVolumeNoiseCutoff' avg='0.25'/> 
 					<Setting name='CloudThickness' avg='10' range='0'/>
 					<Setting name='OreDensity' avg='0.3'/>
 					<Setting name='CloudHeight' avg='24' range='2' />
@@ -2114,7 +2114,7 @@
                     </Description>
 					<DrawWireframe>:=false</DrawWireframe>
 					<WireframeColor>0x20808080</WireframeColor>
-					<Setting name='OreVolumeNoiseCutoff' avg='0'/> 
+					<Setting name='OreVolumeNoiseCutoff' avg='0.15'/> 
 					<Setting name='CloudThickness' avg='10' range='0'/>
 					<Setting name='OreDensity' avg='1'/>
 					<Setting name='CloudHeight' avg='24' range='2' />

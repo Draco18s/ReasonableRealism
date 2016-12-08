@@ -14,7 +14,8 @@
             "model": "item/generated"
         }],
          "flower_type": {
-            "paintbrush":      { "textures": { "cross": "oreflowers:items/na"} }
+            "paintbrush": { "textures": { "cross": "oreflowers:items/na"} },
+            "quartz":     { "textures": { "cross": "oreflowers:items/na"} }
         },
         "item":{
             "true":{

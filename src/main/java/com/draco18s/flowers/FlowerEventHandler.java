@@ -47,6 +47,9 @@ public class FlowerEventHandler {
 					
 					for(;--count >= 0;) {
 						for(OreFlowerData data : entry) {
+							if(count >= data.highConcentrationThreshold && event.getEntityPlayer() != null) {
+								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower.withProperty(Props.FLOWER_STALK, false), rand, 1, 7, data.flower.getValue(Props.FLOWER_STALK), data.twoBlockChance);
+							}
 							if(rand.nextBoolean() && (event.getEntityPlayer() != null || rand.nextInt(128) == 0)) {
 								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower.withProperty(Props.FLOWER_STALK, false), rand, 1, 7, data.flower.getValue(Props.FLOWER_STALK), data.twoBlockChance);
 							}

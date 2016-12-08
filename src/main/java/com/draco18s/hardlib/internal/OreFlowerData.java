@@ -17,7 +17,7 @@ public class OreFlowerData {
 	 * @param plant - the plant blockstate; if it can be a tall flower, pass .withProperty(Props.FLOWER_STALK,true)
 	 * @param clusterQuantity - how many flowers to spawn
 	 * @param clusterRadius - radius of the cluster
-	 * @param threshold - high concentration threshold, for bonemeal (spawns an extra, guaranteed plant)
+	 * @param threshold - high concentration threshold, for bonemeal (spawns an extra, guaranteed plants)
 	 */
 	public OreFlowerData(@Nonnull IBlockState plant, int clusterQuantity, int clusterRadius, int threshold) {
 		flower = plant;

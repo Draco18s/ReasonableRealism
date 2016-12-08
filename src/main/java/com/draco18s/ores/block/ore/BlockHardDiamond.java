@@ -22,7 +22,7 @@ public class BlockHardDiamond extends BlockHardOreBase {
 	public int quantityDropped(IBlockState state, int fortune, Random random) {
 		float f = 0;
 		if(fortune > 0) {
-			f = random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY))/5+1);
+			f = random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY)-1)/5+1);
 		}
 		return 1 + Math.round(f/1.0f);
 	}
