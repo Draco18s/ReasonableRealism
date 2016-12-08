@@ -1,0 +1,19 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "ore": "harderores:items/zincchunk",
+            "particle": "harderores:items/zincchunk"
+        },
+        "model": "harderores:dummy_ore",
+        "uvlock": false
+    },
+    "variants": {
+        "normal": [{
+
+        }],
+        "inventory": [{
+            
+        }]
+    }
+}

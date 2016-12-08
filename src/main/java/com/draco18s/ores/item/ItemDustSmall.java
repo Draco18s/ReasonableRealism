@@ -38,6 +38,7 @@ public class ItemDustSmall extends Item {
 			case NICKEL:
 			case ALUMINUM:
 			case PLATINUM:
+			case ZINC:
 			case OSMIUM:
 				return "item.harderores:small_"+v.name+"_dust";
 			default:
@@ -58,6 +59,7 @@ public class ItemDustSmall extends Item {
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.NICKEL.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.ALUMINUM.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.PLATINUM.meta));
+		subItems.add(new ItemStack(itemIn, 1, EnumOreType.ZINC.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.OSMIUM.meta));
 	}
 }

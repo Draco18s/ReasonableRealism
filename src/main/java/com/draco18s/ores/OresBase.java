@@ -102,12 +102,13 @@ public class OresBase {
 	public static Block oreNickel;
 	public static Block oreAluminum;
 	public static Block orePlatinum;
-	//public static Block oreZinc;
+	public static Block oreZinc;
 	//public static Block oreFluorite;
 	//public static Block oreCadmium;
 	//public static Block oreThorium;
 	
 	public static Block oreOsmium;
+	public static Block oreQuartz;
 	
 	public static Block dummyOreIron;
 	public static Block dummyOreGold;
@@ -121,12 +122,13 @@ public class OresBase {
 	public static Block dummyOreNickel;
 	public static Block dummyOreAluminum;
 	public static Block dummyOrePlatinum;
-	//public static Block dummyOreZinc;
+	public static Block dummyOreZinc;
 	//public static Block dummyOreFluorite;
 	//public static Block dummyOreCadmium;
 	//public static Block dummyOreThorium;
 	
 	public static Block dummyOreOsmium;
+	public static Block dummyOreQuartz;
 	
 	public static Block millstone;
 	public static Block axel;
@@ -191,7 +193,7 @@ public class OresBase {
 		dummyOreDiamond = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOreDiamond, "dummy_ore_diamond");
 		
-		oreTin = new BlockHardOreBase(EnumOreType.TIN, 1, new Color(0xc3c3c3));
+		oreTin = new BlockHardOreBase(EnumOreType.TIN, 1, new Color(0xdbdbbd));
 		oreTin.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
 		EasyRegistry.registerBlockWithCustomItem(oreTin, new ItemOreBlock(oreTin), "ore_hardtin");
 		dummyOreTin = new BlockDummyOre();
@@ -232,6 +234,16 @@ public class OresBase {
 		EasyRegistry.registerBlockWithCustomItem(orePlatinum, new ItemOreBlock(orePlatinum), "ore_hardplatinum");
 		dummyOrePlatinum = new BlockDummyOre();
 		EasyRegistry.registerBlockWithItem(dummyOrePlatinum, "dummy_ore_platinum");
+		oreZinc = new BlockHardOreBase(EnumOreType.ZINC, 1, new Color(0xc3c3c3));
+		oreZinc.setHardness(5.0f).setHarvestLevel("pickaxe", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreZinc, new ItemOreBlock(oreZinc), "ore_hardzinc");
+		dummyOreZinc = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreZinc, "dummy_ore_zinc");
+		oreQuartz = new BlockHardOreBase(EnumOreType.QUARTZ, 1, new Color(0xd6e8f2));
+		oreQuartz.setHardness(2.0f).setHarvestLevel("pickaxe", 1);
+		EasyRegistry.registerBlockWithCustomItem(oreQuartz, new ItemOreBlock(oreQuartz), "ore_hardquartz");
+		dummyOreQuartz = new BlockDummyOre();
+		EasyRegistry.registerBlockWithItem(dummyOreQuartz, "dummy_ore_quartz");
 
 		oreOsmium = new BlockHardOreBase(EnumOreType.OSMIUM, 1, new Color(0x466ec8));
 		oreOsmium.setHardness(6.0f).setHarvestLevel("pickaxe", 1);
@@ -326,6 +338,13 @@ public class OresBase {
 		OreDictionary.registerOre("rawOreChunkCopper", new ItemStack(rawOre, 1, EnumOreType.COPPER.meta));
 		OreDictionary.registerOre("rawOreChunkLead", new ItemStack(rawOre, 1, EnumOreType.LEAD.meta));
 		OreDictionary.registerOre("rawOreChunkUranium", new ItemStack(rawOre, 1, EnumOreType.URANIUM.meta));
+		OreDictionary.registerOre("rawOreChunkSilver", new ItemStack(rawOre, 1, EnumOreType.SILVER.meta));
+		OreDictionary.registerOre("rawOreChunkNickel", new ItemStack(rawOre, 1, EnumOreType.NICKEL.meta));
+		OreDictionary.registerOre("rawOreChunkAluminum", new ItemStack(rawOre, 1, EnumOreType.ALUMINUM.meta));
+		OreDictionary.registerOre("rawOreChunkPlatinum", new ItemStack(rawOre, 1, EnumOreType.PLATINUM.meta));
+		OreDictionary.registerOre("rawOreChunkZinc", new ItemStack(rawOre, 1, EnumOreType.ZINC.meta));
+		OreDictionary.registerOre("rawOreChunkOsmium", new ItemStack(rawOre, 1, EnumOreType.OSMIUM.meta));
+		OreDictionary.registerOre("gemBlueQuartz", new ItemStack(rawOre, 1, EnumOreType.QUARTZ.meta));
 		
 		OreDictionary.registerOre("dustTinyIron", new ItemStack(smallDust, 1, EnumOreType.IRON.meta));
 		OreDictionary.registerOre("dustTinyGold", new ItemStack(smallDust, 1, EnumOreType.GOLD.meta));
@@ -338,6 +357,7 @@ public class OresBase {
 		OreDictionary.registerOre("dustTinyNickel", new ItemStack(smallDust, 1, EnumOreType.NICKEL.meta));
 		OreDictionary.registerOre("dustTinyAluminum", new ItemStack(smallDust, 1, EnumOreType.ALUMINUM.meta));
 		OreDictionary.registerOre("dustTinyPlatinum", new ItemStack(smallDust, 1, EnumOreType.PLATINUM.meta));
+		OreDictionary.registerOre("dustTinyZinc", new ItemStack(smallDust, 1, EnumOreType.ZINC.meta));
 		OreDictionary.registerOre("dustTinyOsmium", new ItemStack(smallDust, 1, EnumOreType.OSMIUM.meta));
 		
 		OreDictionary.registerOre("dustIron", new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
@@ -354,6 +374,7 @@ public class OresBase {
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.LIMONITE.meta), new ItemStack(rawOre, 1, EnumOreType.IRON.meta), 0.05f);
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.IRON.meta), new ItemStack(nuggets, 1, EnumOreType.IRON.meta), 0.08f);
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_NUGGET, 1), 0.11f);
+		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.QUARTZ.meta), new ItemStack(Blocks.GLASS_PANE, 1), 0.11f);
 		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(nuggets, 1, EnumOreType.IRON.meta), 0.08f);
 		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_NUGGET, 1), 0.11f);
 		GameRegistry.addSmelting(new ItemStack(largeDust, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1), 0.7f);
@@ -361,6 +382,7 @@ public class OresBase {
 		GameRegistry.addSmelting(dummyOreIron, new ItemStack(Items.IRON_INGOT), 0.7f);
 		GameRegistry.addSmelting(dummyOreGold, new ItemStack(Items.GOLD_INGOT), 1.0f);
 		GameRegistry.addSmelting(dummyOreDiamond, new ItemStack(Items.DIAMOND), 1.0f);
+		GameRegistry.addSmelting(dummyOreQuartz, new ItemStack(Blocks.GLASS, 3), 1.0f);
 		
 		/*Crafting*/
 		RecipesUtils.craftNineOf(new ItemStack(rawOre, 1, EnumOreType.DIAMOND.meta), new ItemStack(Items.DIAMOND,1));
@@ -369,6 +391,7 @@ public class OresBase {
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
 		RecipesUtils.craftNineOf(new ItemStack(nuggets, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1));
+		
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), "x", 'x', new ItemStack(dummyOreIron));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), "x", 'x', new ItemStack(dummyOreGold));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), "x", 'x', new ItemStack(dummyOreDiamond));
@@ -555,22 +578,22 @@ public class OresBase {
 		}
 		oreDictReq = OreDictionary.getOres("oreSilver");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Silver", EnumOreType.SILVER, oreSilver, dummyOreSilver, 3, false);
+			addExtraOre("Silver", EnumOreType.SILVER, oreSilver, dummyOreSilver, 3, true);
 			addedOres += 3;
 		}
 		oreDictReq = OreDictionary.getOres("oreNickel");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Nickel", EnumOreType.NICKEL, oreNickel, dummyOreNickel, 3, false);
+			addExtraOre("Nickel", EnumOreType.NICKEL, oreNickel, dummyOreNickel, 3, true);
 			addedOres += 3;
 		}
 		oreDictReq = OreDictionary.getOres("oreAluminum");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Aluminum", EnumOreType.ALUMINUM, oreAluminum, dummyOreAluminum, 1, false);
+			addExtraOre("Aluminum", EnumOreType.ALUMINUM, oreAluminum, dummyOreAluminum, 1, true);
 			addedOres += 1;
 		}
 		oreDictReq = OreDictionary.getOres("orePlatinum");
 		if(oreDictReq.size() > 0) {
-			addExtraOre("Platinum", EnumOreType.PLATINUM, orePlatinum, dummyOrePlatinum, 2, false);
+			addExtraOre("Platinum", EnumOreType.PLATINUM, orePlatinum, dummyOrePlatinum, 2, true);
 			addedOres += 2;
 		}
 		oreDictReq = OreDictionary.getOres("oreOsmium");
@@ -578,12 +601,18 @@ public class OresBase {
 			addExtraOre("Osmium", EnumOreType.OSMIUM, oreOsmium, dummyOreOsmium, 2, false);
 			addedOres += 2;
 		}
+		oreDictReq = OreDictionary.getOres("oreZinc");
+		if(oreDictReq.size() > 0) {
+			addExtraOre("Zinc", EnumOreType.ZINC, oreZinc, dummyOreZinc, 2, true);
+			addedOres += 2;
+			addExtraOre("Quartz", EnumOreType.QUARTZ, oreQuartz, dummyOreQuartz, 1, true);
+			addedOres += 1;
+		}
 		//one quarter of the entries should be gravel
 		for(;addedOres>0;addedOres -= 3) {
 			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		}
 	}
-	
 	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, Block dummyOre, int sluiceWeight, boolean canFindDefault) {
 		if(!oreType.set) {
 			if(config.get("SLUICE", "canFind"+oreName, canFindDefault).getBoolean()) {

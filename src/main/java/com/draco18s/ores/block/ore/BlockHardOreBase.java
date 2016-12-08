@@ -98,7 +98,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	public int quantityDropped(IBlockState state, int fortune, Random random) {
-		return 1 + fortune + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY))/6+1);
+		return 1 + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY))/6+1);
 	}
 
 	public Color getProspectorParticleColor(IBlockAccess worldIn, BlockPos pos, IBlockState state) {

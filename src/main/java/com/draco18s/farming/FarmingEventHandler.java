@@ -3,23 +3,17 @@ package com.draco18s.farming;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.Level;
-
-import com.draco18s.farming.entities.EntityItemFrameReplacement;
 import com.draco18s.farming.entities.ai.EntityAIAging;
 import com.draco18s.farming.entities.ai.EntityAIMilking;
 import com.draco18s.farming.entities.ai.EntityAgeTracker;
 import com.draco18s.farming.entities.capabilities.CowStats;
 import com.draco18s.farming.entities.capabilities.IMilking;
-import com.draco18s.farming.entities.capabilities.MilkStorage;
 import com.draco18s.farming.loot.KilledByWither;
 import com.draco18s.farming.util.FarmingAchievements;
-import com.draco18s.flowers.OreFlowersBase;
-import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.Props;
 import com.draco18s.hardlib.capability.SimpleCapabilityProvider;
 import com.draco18s.hardlib.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.LootUtils;
@@ -27,20 +21,16 @@ import com.draco18s.hardlib.util.LootUtils.ICondition;
 import com.draco18s.hardlib.util.LootUtils.IMethod;
 import com.google.gson.Gson;
 
-import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockCocoa;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockReed;
 import net.minecraft.block.BlockStem;
 import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
@@ -58,12 +48,10 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.loot.LootContext.EntityTarget;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
@@ -78,16 +66,16 @@ import net.minecraft.world.storage.loot.properties.EntityProperty;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -107,6 +95,18 @@ public class FarmingEventHandler {
 			ResourceLocation bioName = it.next();
 			Biome bio = Biome.REGISTRY.getObject(bioName);
 			biomeTemps.put(bio, bio.getTemperature());
+		}
+	}
+
+	@SubscribeEvent
+	public void onCropGrow(LivingDropsEvent event) {
+		if(event.getEntity() instanceof IShearable) {
+			List<EntityItem> list = event.getDrops();
+			for(EntityItem ent : list) {
+				//if(ent.getEntityItem().getItem() == Item.getItemFromBlock(Blocks.WOOL)) {
+					ent.getEntityItem().stackSize += 1 + rand.nextInt(2);
+				//}
+			}
 		}
 	}
 

@@ -161,25 +161,25 @@ public class OreFlowersBase {
 		IBlockState flower3State = oreFlowers3.getDefaultState();
 		IBlockState flowerDesert3State = oreFlowersDesert3.getDefaultState();
 		FlowerAchievements.addCoreAchievements();
-		addArbitraryOre("oreIron",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._1POORJOE,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._1RED_SORREL);
-		addArbitraryOre("oreGold",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._2HORSETAIL,	Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._2GOLD*/);
-		addArbitraryOre("oreDiamond",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._3VALLOZIA,	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._3CHANDELIER_TREE);
-		addArbitraryOre("oreRedstone",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._4FLAME_LILY,	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._4AVELOZ);
-		addArbitraryOre("oreTin",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._5TANSY, 		Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._5TIN*/);
-		addArbitraryOre("oreCopper",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._6HAUMAN, 		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._6COPPER_FLOWER);
-		addArbitraryOre("oreLead", 		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._7LEADPLANT, 	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._7SHEEPS_FESCUE);
-		addArbitraryOre("oreUranium", 	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._8RED_AMARANTH,Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._8PRIMROSE);
+		addArbitraryOre("oreIron",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._1POORJOE,			Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._1RED_SORREL);
+		addArbitraryOre("oreGold",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._2HORSETAIL,		Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._2GOLD*/);
+		addArbitraryOre("oreDiamond",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._3VALLOZIA,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._3CHANDELIER_TREE);
+		addArbitraryOre("oreRedstone",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._4FLAME_LILY,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._4AVELOZ);
+		addArbitraryOre("oreTin",		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._5TANSY, 			Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._5TIN*/);
+		addArbitraryOre("oreCopper",	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._6HAUMAN, 			Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._6COPPER_FLOWER);
+		addArbitraryOre("oreLead", 		flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._7LEADPLANT, 		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._7SHEEPS_FESCUE);
+		addArbitraryOre("oreUranium", 	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._8RED_AMARANTH,	Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._8PRIMROSE);
 
-		addArbitraryOre("oreSilver",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._1RAPESEED);
-		addArbitraryOre("oreNickel",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._2SHRUB_VIOLET,Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._2MILKWORT);
-		addArbitraryOre("oreAluminum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._3AFFINE, 		Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._3ALUMINUM*/);
-		addArbitraryOre("orePlatinum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._4PLATINUM, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._4MADWORT);
-		addArbitraryOre("oreZinc",		flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._5CLOVER, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._5ZILLA);
-		addArbitraryOre("oreFluorite",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._6CAMELLIA, 	Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._6FLUORITE*/);
-		addArbitraryOre("oreCasmium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._7MALVA, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._7MARIGOLD);
-		addArbitraryOre("oreThorium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._8MELASTOMA, 	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._8THORIUM);
+		addArbitraryOre("oreSilver",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._1MUSTARD, 		Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._1RAPESEED);
+		addArbitraryOre("oreNickel",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._2SHRUB_VIOLET,	Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._2MILKWORT);
+		addArbitraryOre("oreAluminum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._3AFFINE, 			Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._3ALUMINUM*/);
+		addArbitraryOre("orePlatinum",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, null/*EnumOreFlower2._4PLATINUM*/,Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._4MADWORT);
+		addArbitraryOre("oreZinc",		flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._5CLOVER, 			Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._5ZILLA);
+		addArbitraryOre("oreFluorite",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._6CAMELLIA, 		Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._6FLUORITE*/);
+		addArbitraryOre("oreCasmium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._7MALVA, 			Props.DESERT_FLOWER_TYPE2, EnumOreFlowerDesert2._7MARIGOLD);
+		addArbitraryOre("oreThorium",	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._8MELASTOMA, 		Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._8THORIUM*/);
 
-		addArbitraryOre("oreOsmium",	flower3State, flowerDesert3State, Props.FLOWER_TYPE3, EnumOreFlower3._1ARROWHEAD, 	Props.DESERT_FLOWER_TYPE3, EnumOreFlowerDesert3._1PAINTBRUSH);
+		addArbitraryOre("oreOsmium",	flower3State, flowerDesert3State, Props.FLOWER_TYPE3, EnumOreFlower3._1ARROWHEAD, 		Props.DESERT_FLOWER_TYPE3, EnumOreFlowerDesert3._1PAINTBRUSH);
 	}
 	
 	private <T extends Comparable<T>, V extends T,U extends Comparable<U>, W extends U>

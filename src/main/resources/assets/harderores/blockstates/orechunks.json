@@ -16,8 +16,10 @@
             "silver":   {"textures": {"layer0": "harderores:items/silverchunk"} },
             "nickel":   {"textures": {"layer0": "harderores:items/nickelchunk"} },
             "aluminum": {"textures": {"layer0": "harderores:items/aluminumchunk"} },
+            "platinum": {"textures": {"layer0": "harderores:items/platinumchunk"} },
+            "zinc":     {"textures": {"layer0": "harderores:items/zincchunk"} },
             "osmium":   {"textures": {"layer0": "harderores:items/osmiumchunk"} },
-            "platinum":   {"textures": {"layer0": "harderores:items/platinumchunk"} }
+            "quartz":   {"textures": {"layer0": "harderores:items/quartzchunk"} }
         }
     }
 }
