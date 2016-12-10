@@ -261,7 +261,7 @@ public class BlockSluice extends Block {
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		//TODO
+		//TODO: all this would do is maybe drop a block of sand/gravel
 		/*TileEntity tileentity = worldIn.getTileEntity(pos);
 
 		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,

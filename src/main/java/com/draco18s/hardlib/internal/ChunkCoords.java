@@ -2,6 +2,8 @@ package com.draco18s.hardlib.internal;
 
 import com.draco18s.hardlib.math.HashUtils;
 
+import net.minecraft.util.math.BlockPos;
+
 public class ChunkCoords {
 	public int dimID;
 	public int posX;
@@ -17,6 +19,14 @@ public class ChunkCoords {
 		hashCode();
 	}
 	
+	public ChunkCoords(int dim, BlockPos pos) {
+		dimID = dim;
+		posX = pos.getX();
+		posY = pos.getY();
+		posZ = pos.getZ();
+		hashCode();
+	}
+
 	@Override
 	public int hashCode() {
 		if (fHashCode == 0) {

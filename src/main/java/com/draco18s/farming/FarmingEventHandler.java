@@ -188,7 +188,7 @@ public class FarmingEventHandler {
 			float t = bio.getTemperature();
 			float r = bio.getRainfall();
 			if(BiomeDictionary.isBiomeOfType(bio, Type.OCEAN) || BiomeDictionary.isBiomeOfType(bio, Type.RIVER)) {
-				//TODO: figure out this
+				//TODO: figure out time offsets
 				//lesson the effects of temperature on Ocean and River biomes
 				//t += getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) * 0.333f;
 			}

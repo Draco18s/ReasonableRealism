@@ -113,8 +113,10 @@ public class RecipeToolMold implements IRecipe {
 		ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
 		for (int i = 0; i < aitemstack.length; ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
-			//TODO: destroy the tool?
 			aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+			if(aitemstack[i] == null && getActualTool(itemstack, input) != null) {
+				aitemstack[i] = itemstack.copy();
+			}
 		}
 		return aitemstack;
 	}

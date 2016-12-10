@@ -1,6 +1,5 @@
 package com.draco18s.flowers.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,10 +9,8 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.internal.BlockWrapper;
 import com.draco18s.hardlib.internal.OreFlowerData;
 import com.draco18s.hardlib.internal.OreFlowerDictator;
-import com.draco18s.hardlib.math.HashUtils;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -37,8 +34,8 @@ public class ChunkOreCounter {
 				BlockWrapper key = new BlockWrapper(state);
 				OreCounter count = blockList.get(key);
 				if(count != null) {
-					/*if(cx == -19 && cz == -14 && count.b.block == OresBase.oreIron) {
-						OresBase.logger.log(Level.INFO, "Doing flowers for " + (i*8) + ": " + count.countA);
+					/*if(cx == 3 && cz == 20 && count.b.block == OresBase.oreDiamond) {
+						OreFlowersBase.logger.log(Level.INFO, "Doing flowers for " + (i*8) + ": " + count.countA);
 					}*/
 					count.increment(state);
 					HardLibAPI.oreFlowers.trySpawnFlowerCluster(world, pos, key);
@@ -46,9 +43,9 @@ public class ChunkOreCounter {
 			}
 			for(BlockWrapper ore : blockList.keySet()) {
 				OreCounter c = blockList.get(ore);
-				/*if(cx == -19 && cz == -14 && c.b.block == OresBase.oreIron) {
-					OresBase.logger.log(Level.INFO, "Iron @" + (i*8) + ": " + c.countA);
-					OresBase.logger.log(Level.INFO, "    " + Math.round(c.countA*(2f/3f) + c.countB*(1f/3f)));
+				/*if(cx == 3 && cz == 20 && c.b.block == OresBase.oreDiamond) {
+					OreFlowersBase.logger.log(Level.INFO, "Diamond @" + (i*8) + ": " + c.countA);
+					OreFlowersBase.logger.log(Level.INFO, "    " + Math.round(c.countA*(2f/3f) + c.countB*(1f/3f)));
 				}*/
 				HardLibAPI.oreData.putOreData(world, new BlockPos(cx,i*8,cz), ore, Math.round(c.countA*(2f/3f) + c.countB*(1f/3f)));
 				c.cycleCounts();

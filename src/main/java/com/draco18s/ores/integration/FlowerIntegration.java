@@ -1,4 +1,4 @@
-package com.draco18s.ores.flowers;
+package com.draco18s.ores.integration;
 
 import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -43,10 +43,10 @@ public class FlowerIntegration {
 		wrap = new BlockWrapper(OresBase.oreDiamond, Props.ORE_DENSITY);
 		data = new OreFlowerData(flower1State.withProperty(Props.FLOWER_TYPE, EnumOreFlower1._3VALLOZIA),
 				8, 15, 5);
-		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
+		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.commonDictator, data);
 		data = new OreFlowerData(flower2State.withProperty(Props.DESERT_FLOWER_TYPE, EnumOreFlowerDesert1._3CHANDELIER_TREE).withProperty(Props.FLOWER_STALK, true),
 				8, 15, 5, 1);
-		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.defaultDictator, data);
+		HardLibAPI.oreFlowers.addOreFlowerData(wrap, OreFlowerDictator.commonDictator, data);
 		
 		HardLibAPI.oreMachines.addMillRecipe(new ItemStack(flower2State.getBlock(), 1, EnumOreFlowerDesert1._4AVELOZ.ordinal()), new ItemStack(OreFlowersBase.gooBlob));
 		

@@ -1,8 +1,20 @@
 package com.draco18s.ores.client;
 
+import java.awt.Color;
+import java.util.HashMap;
+
+import com.draco18s.hardlib.client.ModelsCache;
+import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.internal.ChunkCoords;
+import com.draco18s.ores.CommonProxy;
+import com.draco18s.ores.OresBase;
+import com.draco18s.ores.client.rendering.RenderOreCart;
+import com.draco18s.ores.entities.EntityOreMinecart;
+import com.draco18s.ores.entities.TileEntityMillstone;
+import com.draco18s.ores.networking.ClientOreParticleHandler;
+import com.draco18s.ores.networking.ToClientMessageOreParticles;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -10,34 +22,19 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-
-import java.awt.Color;
-
-import com.draco18s.hardlib.client.ModelsCache;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
-import com.draco18s.ores.CommonProxy;
-import com.draco18s.ores.OreEventHandler;
-import com.draco18s.ores.OresBase;
-import com.draco18s.ores.client.rendering.RenderOreCart;
-import com.draco18s.ores.entities.EntityOreMinecart;
-import com.draco18s.ores.networking.ClientOreParticleHandler;
-import com.draco18s.ores.networking.ServerOreCartHandler;
-import com.draco18s.ores.networking.ToClientMessageOreParticles;
-import com.draco18s.ores.networking.ToServerMessageOreCart;
 
 public class ClientProxy extends CommonProxy {
+	private HashMap<ChunkCoords, SoundWindmill> sounds = new HashMap<ChunkCoords,SoundWindmill>();
+	
 	@Override
 	public void registerRenderers() {
 		RenderingRegistry.registerEntityRenderingHandler(EntityOreMinecart.class,
@@ -72,6 +69,28 @@ public class ClientProxy extends CommonProxy {
 				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, ClientOreParticleHandler.DUST, -4));
 			}
 		});
+	}
+
+	@Override
+	public void startMillSound(TileEntityMillstone te) {
+		if(!OresBase.useSounds) return;
+		ChunkCoords tepos = new ChunkCoords(te.getWorld().provider.getDimension(), te.getPos());
+		if(!sounds.containsKey(tepos)) {
+			SoundWindmill snd = new SoundWindmill(new ResourceLocation("harderores:grain-mill-loop"), SoundCategory.BLOCKS, te);
+			OreClientEventHandler.soundsToStart.put(snd, 0);
+			//Minecraft.getMinecraft().getSoundHandler().playSound(snd);
+			sounds.put(tepos, snd);
+		}
+		else {
+			SoundWindmill snd = sounds.get(tepos);
+			if(snd.isDonePlaying()) {
+				sounds.remove(tepos);
+				snd = new SoundWindmill(new ResourceLocation("harderores:grain-mill-loop"), SoundCategory.BLOCKS, te);
+				OreClientEventHandler.soundsToStart.put(snd, 0);
+				//Minecraft.getMinecraft().getSoundHandler().playSound(snd);
+				sounds.put(tepos, snd);
+			}
+		}
 	}
 	
 	private static void drawParticle(World worldObj, Particle particle) {

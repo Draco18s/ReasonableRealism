@@ -2,6 +2,11 @@ package com.draco18s.industry.item;
 
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
+import com.draco18s.industry.ExpandedIndustryBase;
+import com.draco18s.industry.integration.FarmingIntegration;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,8 +19,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.Int;
 
 public class ItemCastingMold extends Item {
 	public ItemCastingMold() {
@@ -28,9 +35,18 @@ public class ItemCastingMold extends Item {
 			@Override
 			public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn) {
 				if(!stack.hasTagCompound())
-					return 0;
-				else
-					return 1;
+					return Int.MinValue();
+				else {
+					NBTTagCompound nbt = stack.getTagCompound();
+					NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
+					ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+					String list = result.getUnlocalizedName();
+					int v = list.hashCode();
+					if(result.getItem().getRegistryName().getResourceDomain().equals("minecraft"))
+						return -Math.abs(v);
+					return Math.abs(v);
+					//return 1;
+				}
 			}
 		});
 	}
@@ -44,6 +60,9 @@ public class ItemCastingMold extends Item {
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_HOE)));
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_PICKAXE)));
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_SHOVEL)));
+		if(Loader.isModLoaded("harderfarming")) {
+			FarmingIntegration.addButcherKnifeMold(base, subItems);
+		}
 		
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_SWORD)));
 		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_HELMET)));
@@ -86,5 +105,19 @@ public class ItemCastingMold extends Item {
 				tooltip.add(I18n.format("tooltip.expindustry:imprint4.text", list));
 			}
 		}
+	}
+	
+	@Override
+	public int getMaxDamage(ItemStack stack) {
+		if(stack.hasTagCompound())
+			return super.getMaxDamage(stack);
+		return 0;
+	}
+	
+	@Override
+	public int getItemStackLimit(ItemStack stack) {
+		if(stack.hasTagCompound())
+			return 1;
+		return super.getItemStackLimit(stack);
 	}
 }

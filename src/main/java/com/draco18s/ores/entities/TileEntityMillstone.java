@@ -89,8 +89,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 			}
 			else if (canGrind(millpos)) {
 				grindTime = 400;
-				//TODO: sounds
-				//OresBase.proxy.startMillSound(this);
+				OresBase.proxy.startMillSound(this);
 			}
 		}
 		else {
@@ -158,7 +157,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		}
 	}
 
-	private boolean canGrind(MillstoneOrientation millpos) {
+	public boolean canGrind(MillstoneOrientation millpos) {
 		if(millpos != MillstoneOrientation.CENTER || inputSlot.getStackInSlot(0) == null) return false;
 		ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlot.getStackInSlot(0));
 		if(result == null) return false;
@@ -246,5 +245,9 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 	
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock();
+	}
+
+	public float getGrindTime() {
+		return grindTime;
 	}
 }

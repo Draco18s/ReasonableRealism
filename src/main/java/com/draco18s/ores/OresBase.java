@@ -31,7 +31,7 @@ import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntityPackager;
 import com.draco18s.ores.entities.TileEntitySifter;
-import com.draco18s.ores.flowers.FlowerIntegration;
+import com.draco18s.ores.integration.FlowerIntegration;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
 import com.draco18s.ores.item.ItemDiamondStudShovel;
@@ -161,7 +161,7 @@ public class OresBase {
 	public static SimpleNetworkWrapper networkWrapper;
 
 	public static boolean sluiceAllowDirt;
-
+	public static boolean useSounds;
 	private boolean stoneTools;
 
 
@@ -426,6 +426,7 @@ public class OresBase {
 			GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
 			GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
 		}
+		useSounds = config.getBoolean("Use Sounds", "GENERAL", true, "If true, then the millstone will make noise.");
 		/*Sluicing*/
 		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
 		int cycle = config.getInt("sluiceCycleTime", "SLUICE", 2, 1, 20, "Time it takes for the sluice to make 1 operation.  This value is multiplied by 75 ticks.");

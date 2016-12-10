@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.networking.ClientOreParticleHandler;
 import com.draco18s.ores.networking.ServerOreCartHandler;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
@@ -26,6 +27,10 @@ public class CommonProxy {
 	}
 
 	public void handleMessage(ToClientMessageOreParticles message, MessageContext ctx) {
+		
+	}
+
+	public void startMillSound(TileEntityMillstone te) {
 		
 	}
 }

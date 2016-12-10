@@ -42,7 +42,6 @@ public class FlowerDataHandler implements IFlowerData {
 		if(pos.getY() >= 256) return;
 		
 		Random r = new Random(pos.toLong());
-		
 		if(r.nextInt(dictator.spawnChance) != 0) return;
 		
 		float[] u = MathUtils.RandomInUnitCircle(r);
@@ -65,8 +64,6 @@ public class FlowerDataHandler implements IFlowerData {
 		BlockPos newPos;
 		boolean replaceLeaves = num > 1;
 		while(num > 0 && fails < 20) {
-			//TODO: 
-			//Cluster radius isn't being handled properly
 			newPos = pos.add(r.nextInt(clusterRadius) - (clusterRadius/2), -5, r.nextInt(clusterRadius) - (clusterRadius/2));
 			Iterable<BlockPos> list = BlockPos.getAllInBox(newPos, newPos.up(10));
 			Iterator<BlockPos> it = list.iterator();
@@ -74,10 +71,6 @@ public class FlowerDataHandler implements IFlowerData {
 				BlockPos p = it.next();
 				IBlockState wb = world.getBlockState(p);
 				IBlockState pDown = world.getBlockState(p.down());
-				/*boolean place = flowerState.getBlock().canPlaceBlockAt(world, p);
-				boolean replace = (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES);
-				boolean liquid = (wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock);
-				IBlockState wb2 = pDown;*/
 				if(pDown.isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
 					int ra = 1;
 					if(canBeTallPlant) {
@@ -114,24 +107,6 @@ public class FlowerDataHandler implements IFlowerData {
 			flowerList.put(ore, new Tuple<OreFlowerDictator, List<OreFlowerData>>(dictator, val));
 		}
 	}
-	
-
-	/*@Override
-	public void addOreFlowerData(@Nonnull Block ore, @Nonnull OreFlowerDictator dictator, @Nonnull OreFlowerData data) {
-		BlockWrapper key = new BlockWrapper(ore);
-		if(flowerList.containsKey(key)) {
-			if(flowerList.get(key).getFirst() != dictator) {
-				throw new RuntimeException("Non-matching dictators for " + ore.getRegistryName() + "!");
-			}
-			List<OreFlowerData> val = flowerList.get(key).getSecond();
-			val.add(data);
-		}
-		else {
-			List<OreFlowerData> val = new ArrayList<OreFlowerData>();
-			val.add(data);
-			flowerList.put(key, new Tuple<OreFlowerDictator, List<OreFlowerData>>(dictator, val));
-		}
-	}*/
 	
 
 	@Override

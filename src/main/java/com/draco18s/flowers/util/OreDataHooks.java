@@ -77,7 +77,7 @@ public class OreDataHooks implements IOreData {
 		if(nbt.hasKey("HardOreData")) {
 			NBTTagCompound honbt = nbt.getCompoundTag("HardOreData");
 			if(honbt.getInteger("version") != VERSION) {
-				//TODO
+				//TODO: write updater code? rescan?
 				return;
 			}
 			for(int y=0; y < 256; y+=8) {

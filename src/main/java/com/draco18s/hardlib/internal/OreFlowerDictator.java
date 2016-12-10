@@ -9,6 +9,8 @@ public class OreFlowerDictator {
 	public static OreFlowerDictator closeDictator = new OreFlowerDictator(200, 15);
 	public static OreFlowerDictator rareDictator = new OreFlowerDictator(400, 30);
 	public static OreFlowerDictator closeRareDictator = new OreFlowerDictator(400, 15);
+	public static OreFlowerDictator commonDictator = new OreFlowerDictator(100, 30);
+	public static OreFlowerDictator closeCommonDictator = new OreFlowerDictator(100, 15);
 	
 	public final int spawnChance;
 	public final int spawnDistance;

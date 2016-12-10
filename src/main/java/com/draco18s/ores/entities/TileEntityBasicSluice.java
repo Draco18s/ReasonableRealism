@@ -103,7 +103,6 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 		//so that as additional mod ores are added, the sluice doesn't get less and less effective
 		List<Block> list = HardLibAPI.oreMachines.getRandomSluiceResults(this.rand, inputSlot.getStackInSlot(0).getItem());
 		for(Block b : list) {
-			//TODO this should be an error
 			if(b == null) return;
 			BlockWrapper ore = new BlockWrapper(b,16);
 			if(b == Blocks.GRAVEL && inputSlot.getStackInSlot(0).getItem() == itemGravel) {
