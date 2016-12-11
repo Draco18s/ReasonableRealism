@@ -2,7 +2,7 @@ package com.draco18s.ores.block;
 
 import java.util.Random;
 
-import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.Props;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;

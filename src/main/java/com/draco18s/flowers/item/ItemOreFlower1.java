@@ -2,9 +2,9 @@ package com.draco18s.flowers.item;
 
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower3;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.internal.IMetaLookup;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower3;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.internal.IMetaLookup;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;

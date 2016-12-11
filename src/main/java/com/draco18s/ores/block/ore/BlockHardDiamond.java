@@ -3,8 +3,8 @@ package com.draco18s.ores.block.ore;
 import java.awt.Color;
 import java.util.Random;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;

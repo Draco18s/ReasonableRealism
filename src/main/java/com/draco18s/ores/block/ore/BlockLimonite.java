@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Level;
 
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.ores.OresBase;
 
 import net.minecraft.block.Block;

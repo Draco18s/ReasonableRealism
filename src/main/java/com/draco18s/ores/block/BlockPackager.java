@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.util.BlockTileEntityUtils;
 import com.draco18s.ores.OreGuiHandler;
 import com.draco18s.ores.OresBase;

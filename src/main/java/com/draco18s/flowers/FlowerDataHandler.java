@@ -11,11 +11,11 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.interfaces.IFlowerData;
-import com.draco18s.hardlib.internal.BlockWrapper;
-import com.draco18s.hardlib.internal.OreFlowerData;
-import com.draco18s.hardlib.internal.OreFlowerDictator;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.interfaces.IFlowerData;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.OreFlowerData;
+import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 import com.draco18s.hardlib.math.MathUtils;
 
 import net.minecraft.block.BlockLiquid;

@@ -4,9 +4,9 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Level;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.AxelOrientation;
-import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
+import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.TileEntityAxel;
 import com.draco18s.ores.entities.TileEntityMillstone;

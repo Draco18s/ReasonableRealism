@@ -1,6 +1,6 @@
 package com.draco18s.industry.inventory;
 
-import com.draco18s.hardlib.internal.CommonContainer;
+import com.draco18s.hardlib.api.internal.CommonContainer;
 import com.draco18s.industry.entities.TileEntityFilter;
 
 import net.minecraft.entity.player.EntityPlayer;

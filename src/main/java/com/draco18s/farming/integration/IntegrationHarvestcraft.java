@@ -1,7 +1,7 @@
 package com.draco18s.farming.integration;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.internal.CropWeatherOffsets;
+import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
 import net.minecraft.block.Block;
 

@@ -2,16 +2,16 @@ package com.draco18s.ores.integration;
 
 import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower1;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower2;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower3;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert1;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert2;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlowerDesert3;
-import com.draco18s.hardlib.internal.BlockWrapper;
-import com.draco18s.hardlib.internal.OreFlowerData;
-import com.draco18s.hardlib.internal.OreFlowerDictator;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower1;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower2;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower3;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlowerDesert1;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlowerDesert2;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlowerDesert3;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.OreFlowerData;
+import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 import com.draco18s.ores.OresBase;
 
 import net.minecraft.block.state.IBlockState;

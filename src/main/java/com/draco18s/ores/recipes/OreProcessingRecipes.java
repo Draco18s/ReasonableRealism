@@ -19,9 +19,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
-import com.draco18s.hardlib.interfaces.IHardOreProcessing;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.ores.entities.TileEntityBasicSluice;
 import com.google.common.collect.Maps;
 

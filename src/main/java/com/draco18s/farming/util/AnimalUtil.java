@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 
 import com.draco18s.farming.FarmingBase;
-import com.draco18s.hardlib.interfaces.IHardAnimals;
+import com.draco18s.hardlib.api.interfaces.IHardAnimals;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;

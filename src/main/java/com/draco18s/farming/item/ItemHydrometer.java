@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Level;
 
 import com.draco18s.farming.FarmingBase;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.interfaces.IItemFrameOutput;
-import com.draco18s.hardlib.internal.CropWeatherOffsets;
+import com.draco18s.hardlib.api.interfaces.IItemFrameOutput;
+import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;

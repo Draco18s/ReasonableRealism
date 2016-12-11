@@ -1,15 +1,17 @@
 package com.draco18s.hardlib;
 
 import com.draco18s.flowers.states.StateMapperFlowers;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.interfaces.IBlockWithMapper;
-import com.draco18s.hardlib.internal.IMetaLookup;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
+import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
+import com.draco18s.hardlib.api.internal.IMetaLookup;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -39,6 +41,24 @@ public class EasyRegistry {
 		HardLib.proxy._registerItemWithVariants(item, registryname, variant);
 	}
 	
+	/**
+	 * Registers an item and loads/registers models based on the item's SubItems.
+	 * @param item - Must implement IItemWithMeshDefinition
+	 * @param registryname
+	 */
+	public static <T extends Item & IItemWithMeshDefinition> void registerItemWithCustomMeshDefinition(T item, String registryname) {
+		HardLib.proxy._registerItemWithCustomMeshDefinition(item, registryname);
+	}
+	
+	/**
+	 * Registers a specific model for variant item stack.
+	 * @param item - Must implement IItemWithMeshDefinition
+	 * @param variantStack
+	 */
+	public static <T extends Item & IItemWithMeshDefinition> void registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
+		HardLib.proxy._registerSpecificItemVariantsWithBakery(item, variantStack);
+	}
+	
 	public void _registerBlock(Block block, String registryname) {
 		block.setRegistryName(registryname);
 		block.setUnlocalizedName(block.getRegistryName().toString());
@@ -62,7 +82,7 @@ public class EasyRegistry {
 		GameRegistry.register(iBlock);
 	}
 
-	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, String registryname) {
+	public <T extends Block & IBlockWithMapper> void _registerBlockWithCustomItemAndMapper(T block, ItemBlock iBlock, String registryname) {
 		block.setRegistryName(registryname);
 		block.setUnlocalizedName(block.getRegistryName().toString());
 		iBlock.setRegistryName(registryname);
@@ -74,6 +94,16 @@ public class EasyRegistry {
 		item.setRegistryName(registryname);
 		item.setUnlocalizedName(item.getRegistryName().toString());
 		GameRegistry.register(item);
+	}
+
+	public <T extends Item & IItemWithMeshDefinition> void _registerItemWithCustomMeshDefinition(T item, String registryname) {
+		item.setRegistryName(registryname);
+		item.setUnlocalizedName(item.getRegistryName().toString());
+		GameRegistry.register(item);
+	}
+	
+	public <T extends IItemWithMeshDefinition> void _registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
+		
 	}
 
 	public <T extends IMetaLookup> void _registerItemWithVariants(Item item, String registryname, T variant) {

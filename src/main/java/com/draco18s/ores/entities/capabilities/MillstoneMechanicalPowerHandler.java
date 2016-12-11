@@ -1,6 +1,6 @@
 package com.draco18s.ores.entities.capabilities;
 
-import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
+import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 
 public class MillstoneMechanicalPowerHandler extends RawMechanicalPowerHandler {
 

@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.Level;
 
 import com.draco18s.flowers.OreFlowersBase;
-import com.draco18s.hardlib.interfaces.IOreData;
-import com.draco18s.hardlib.internal.BlockWrapper;
-import com.draco18s.hardlib.internal.ChunkCoords;
+import com.draco18s.hardlib.api.interfaces.IOreData;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.ChunkCoords;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;

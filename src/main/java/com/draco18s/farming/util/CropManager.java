@@ -2,8 +2,8 @@ package com.draco18s.farming.util;
 
 import java.util.HashMap;
 
-import com.draco18s.hardlib.interfaces.IHardCrops;
-import com.draco18s.hardlib.internal.CropWeatherOffsets;
+import com.draco18s.hardlib.api.interfaces.IHardCrops;
+import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
 import net.minecraft.block.Block;
 

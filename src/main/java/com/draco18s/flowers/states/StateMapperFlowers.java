@@ -3,7 +3,7 @@ package com.draco18s.flowers.states;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.draco18s.hardlib.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.Props;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;

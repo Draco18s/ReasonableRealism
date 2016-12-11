@@ -1,7 +1,7 @@
 package com.draco18s.ores.client;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.ores.entities.TileEntityMillstone;
 
 import net.minecraft.client.audio.ITickableSound;

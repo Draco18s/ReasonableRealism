@@ -1,6 +1,6 @@
 package com.draco18s.farming.entities;
 
-import com.draco18s.hardlib.interfaces.IItemFrameOutput;
+import com.draco18s.hardlib.api.interfaces.IItemFrameOutput;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.item.EntityItemFrame;

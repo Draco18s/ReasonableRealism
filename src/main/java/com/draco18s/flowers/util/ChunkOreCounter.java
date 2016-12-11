@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.internal.BlockWrapper;
-import com.draco18s.hardlib.internal.OreFlowerData;
-import com.draco18s.hardlib.internal.OreFlowerDictator;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.OreFlowerData;
+import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;

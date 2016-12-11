@@ -4,8 +4,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.util.BlockTileEntityUtils;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.util.OresAchievements;

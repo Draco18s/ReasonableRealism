@@ -3,9 +3,9 @@ package com.draco18s.flowers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
-import com.draco18s.hardlib.interfaces.IHardOres;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.api.interfaces.IHardOres;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

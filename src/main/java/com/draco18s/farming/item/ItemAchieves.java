@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.draco18s.farming.util.EnumFarmAchieves;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;

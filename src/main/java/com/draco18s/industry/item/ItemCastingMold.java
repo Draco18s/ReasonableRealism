@@ -2,53 +2,29 @@ package com.draco18s.industry.item;
 
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
+import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
+import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 
-import com.draco18s.industry.ExpandedIndustryBase;
-import com.draco18s.industry.integration.FarmingIntegration;
-
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.Int;
 
-public class ItemCastingMold extends Item {
+public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 	public ItemCastingMold() {
 		//setHasSubtypes(true);
 		setMaxDamage(32);
 		setNoRepair();
 		setCreativeTab(CreativeTabs.MATERIALS);
-		
-		this.addPropertyOverride(new ResourceLocation("state"), new IItemPropertyGetter() {
-			@Override
-			public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn) {
-				if(!stack.hasTagCompound())
-					return Int.MinValue();
-				else {
-					NBTTagCompound nbt = stack.getTagCompound();
-					NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-					ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
-					String list = result.getUnlocalizedName();
-					int v = list.hashCode();
-					if(result.getItem().getRegistryName().getResourceDomain().equals("minecraft"))
-						return -Math.abs(v);
-					return Math.abs(v);
-					//return 1;
-				}
-			}
-		});
 	}
 	
 	@Override
@@ -56,30 +32,23 @@ public class ItemCastingMold extends Item {
 	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
 		ItemStack base = new ItemStack(itemIn);
 		subItems.add(base);
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_AXE)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_HOE)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_PICKAXE)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_SHOVEL)));
-		if(Loader.isModLoaded("harderfarming")) {
-			FarmingIntegration.addButcherKnifeMold(base, subItems);
+		boolean skip = false;
+		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.allMoldItems) {
+			subItems.add(addImprint(base.copy(),stack.input, stack.resourceDomain));
 		}
-		
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_SWORD)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_HELMET)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_CHESTPLATE)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_LEGGINGS)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.IRON_BOOTS)));
-
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.SHEARS)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Items.BUCKET)));
-		subItems.add(addImprint(base.copy(), new ItemStack(Blocks.RAIL, 16)));
 	}
 	
 	private static ItemStack addImprint(ItemStack out, ItemStack imprint) {
+		return addImprint(out, imprint, null);
+	}
+	
+	private static ItemStack addImprint(ItemStack out, ItemStack imprint, String resourceDomain) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		NBTTagCompound itemTag = new NBTTagCompound();
 		imprint.writeToNBT(itemTag);
 		nbt.setTag("expindustry:item_mold", itemTag);
+		if(resourceDomain != null)
+			nbt.setString("expindustry:resourceDomain",resourceDomain);
 		out.setTagCompound(nbt);
 		return out;
 	}
@@ -119,5 +88,36 @@ public class ItemCastingMold extends Item {
 		if(stack.hasTagCompound())
 			return 1;
 		return super.getItemStackLimit(stack);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public ItemMeshDefinition getMeshDefinition() {
+		return new ItemMeshDefinition()
+		{
+			public ModelResourceLocation getModelLocation(ItemStack stack)
+			{
+				if(stack.hasTagCompound()) {
+					NBTTagCompound nbt = stack.getTagCompound();
+					NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
+					ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+					String imprintName = result.getUnlocalizedName();
+					String domain = "expindustry";
+					if(nbt.hasKey("expindustry:resourceDomain")) {
+						domain = nbt.getString("expindustry:resourceDomain");
+					}
+					if(imprintName.contains(":")) {
+						imprintName = imprintName.substring(imprintName.indexOf(':')+1);
+					}
+					imprintName = imprintName.replaceAll("tile.", "");
+					imprintName = imprintName.replaceAll("item.", "");
+					imprintName = imprintName.replaceAll("[Ii]ron", "");
+					ResourceLocation loc = new ResourceLocation(domain, "mold_"+imprintName);
+					ModelResourceLocation fullModelLocation = new ModelResourceLocation(loc, "inventory");
+					return fullModelLocation;
+				}
+				return new ModelResourceLocation(new ResourceLocation("expindustry", "mold_clean"), "inventory");
+			}
+		};
 	}
 }

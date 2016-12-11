@@ -3,7 +3,7 @@ package com.draco18s.ores;
 import java.lang.reflect.InvocationTargetException;
 
 import com.draco18s.hardlib.EasyRegistry;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.networking.ClientOreParticleHandler;
 import com.draco18s.ores.networking.ServerOreCartHandler;

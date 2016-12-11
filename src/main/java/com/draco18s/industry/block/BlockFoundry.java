@@ -2,8 +2,8 @@ package com.draco18s.industry.block;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.util.BlockTileEntityUtils;
 import com.draco18s.industry.ExpandedIndustryBase;
 import com.draco18s.industry.IndustryGuiHandler;

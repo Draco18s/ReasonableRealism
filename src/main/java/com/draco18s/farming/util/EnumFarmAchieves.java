@@ -1,6 +1,6 @@
 package com.draco18s.farming.util;
 
-import com.draco18s.hardlib.internal.IMetaLookup;
+import com.draco18s.hardlib.api.internal.IMetaLookup;
 
 public enum EnumFarmAchieves implements IMetaLookup<EnumFarmAchieves> {
 	KILL_WEEDS,

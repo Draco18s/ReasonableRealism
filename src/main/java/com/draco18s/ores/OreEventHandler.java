@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.networking.Packets;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;

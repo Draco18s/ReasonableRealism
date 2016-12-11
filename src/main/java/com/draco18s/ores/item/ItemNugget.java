@@ -2,7 +2,7 @@ package com.draco18s.ores.item;
 
 import java.util.List;
 
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;

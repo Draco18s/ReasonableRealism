@@ -1,6 +1,6 @@
 package com.draco18s.ores.item;
 
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.ores.OresBase;
 
 import net.minecraft.item.ItemPickaxe;

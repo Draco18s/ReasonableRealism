@@ -6,9 +6,10 @@ import java.util.List;
 
 import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.EasyRegistry;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.interfaces.IBlockWithMapper;
-import com.draco18s.hardlib.internal.IMetaLookup;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
+import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
+import com.draco18s.hardlib.api.internal.IMetaLookup;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.block.Block;
@@ -53,7 +54,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 
 	@Override
-	public void _registerBlockWithCustomItemAndMapper(Block block, ItemBlock iBlock, String registryname) {
+	public <T extends Block & IBlockWithMapper> void _registerBlockWithCustomItemAndMapper(T block, ItemBlock iBlock, String registryname) { 
 		super._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
 		BlockStateContainer bsc = block.getBlockState();
 		ImmutableList<IBlockState> values = bsc.getValidStates();
@@ -95,6 +96,34 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 
 	@Override
+	public <T extends Item & IItemWithMeshDefinition> void _registerItemWithCustomMeshDefinition(T item, String registryname) {
+		super._registerItemWithCustomMeshDefinition(item, registryname);
+		//final ModelResourceLocation fullModelLocation = new ModelResourceLocation(item.getRegistryName().toString(), "inventory");
+		//ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
+		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
+		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		item.getSubItems(item, CreativeTabs.SEARCH, subItems);
+		for(ItemStack stack : subItems) {
+			ModelBakery.registerItemVariants(item, def.getModelLocation(stack));
+		}
+		ModelLoader.setCustomMeshDefinition(item, def);
+		
+		/*ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition()
+		{
+			public ModelResourceLocation getModelLocation(ItemStack stack)
+			{
+				return fullModelLocation;
+			}
+		});*/
+	}
+	
+	@Override
+	public <T extends IItemWithMeshDefinition> void _registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
+		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
+		ModelBakery.registerItemVariants((Item)item, def.getModelLocation(variantStack));
+	}
+
+	@Override
 	public <T extends IMetaLookup> void _registerItemWithVariants(Item item, String registryname, T variant) {
 		super._registerItemWithVariants(item, registryname, variant);
 		String variantName = variant.getID();
@@ -116,7 +145,6 @@ public class ClientEasyRegistry extends EasyRegistry {
 
 	private void _registerItemModel(Item item, final ModelResourceLocation fullModelLocation) {
 		ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
-		//registerItemModel(item, MeshDefinitionFix.create(stack -> fullModelLocation));
 		ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition()
 		{
 			public ModelResourceLocation getModelLocation(ItemStack stack)

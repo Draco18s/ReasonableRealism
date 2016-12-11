@@ -29,9 +29,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 import com.draco18s.ores.OresBase;
 
 public class BlockHardOreBase extends Block implements IBlockMultiBreak {

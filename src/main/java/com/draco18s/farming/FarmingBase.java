@@ -10,6 +10,7 @@ import com.draco18s.farming.entities.EntityItemFrameReplacement;
 import com.draco18s.farming.entities.TileEntityTanner;
 import com.draco18s.farming.entities.capabilities.IMilking;
 import com.draco18s.farming.entities.capabilities.MilkStorage;
+import com.draco18s.farming.integration.IndustryIntegration;
 import com.draco18s.farming.integration.IntegrationHarvestcraft;
 import com.draco18s.farming.item.ItemAchieves;
 import com.draco18s.farming.item.ItemButcherKnife;
@@ -25,8 +26,8 @@ import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.farming.world.WorldGenerator;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.internal.CropWeatherOffsets;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.CapabilityUtils;
 
 import net.minecraft.block.Block;
@@ -63,7 +64,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.Type;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib")
+@Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib;after:expindustry")
 public class FarmingBase {
 	@Instance("harderfarming")
 	public static FarmingBase instance;
@@ -149,6 +150,10 @@ public class FarmingBase {
 		EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);
 		
 		((AnimalUtil) HardLibAPI.animalManager).parseConfig(config);
+		
+		if(Loader.isModLoaded("expindustry")) {
+			IndustryIntegration.addMoldRecipes();
+		}
 	}
 	
 	@EventHandler

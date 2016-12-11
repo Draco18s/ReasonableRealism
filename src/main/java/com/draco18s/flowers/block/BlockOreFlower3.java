@@ -6,11 +6,10 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.draco18s.flowers.states.StateMapperFlowers;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.flowers.EnumOreFlower3;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.interfaces.IBlockWithMapper;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower3;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;

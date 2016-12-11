@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 import com.draco18s.industry.block.BlockCartLoader;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
@@ -24,7 +26,6 @@ import com.draco18s.industry.entities.capabilities.CastingItemStackHandler;
 import com.draco18s.industry.item.ItemCastingMold;
 import com.draco18s.industry.network.CtoSMessage;
 import com.draco18s.industry.network.PacketHandlerServer;
-import com.draco18s.industry.recipes.RecipeToolMold;
 import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
@@ -110,8 +111,9 @@ public class ExpandedIndustryBase {
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
 		GameRegistry.registerTileEntity(TileEntityFoundry.class, "machine_foundry");
 		
-		itemMold = new ItemCastingMold();
-		EasyRegistry.registerItem(itemMold, "casting_mold");
+		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
+		//EasyRegistry.registerItem(itemMold, "casting_mold");
+		EasyRegistry.registerItemWithCustomMeshDefinition((ItemCastingMold)itemMold, "casting_mold");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 		FilterDimension.mainRegistry();

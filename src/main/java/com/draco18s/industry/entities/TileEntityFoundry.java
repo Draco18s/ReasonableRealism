@@ -5,7 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.internal.inventory.OutputItemStackHandler;
+import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.entities.capabilities.CastingItemStackHandler;
 import com.draco18s.industry.entities.capabilities.MoldTemplateItemStackHandler;

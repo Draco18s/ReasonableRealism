@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.block.BlockSluice;
 import com.draco18s.ores.entities.capabilities.ItemStackHandlerDirt;

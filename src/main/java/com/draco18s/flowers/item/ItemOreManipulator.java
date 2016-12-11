@@ -5,10 +5,10 @@ import java.util.Map;
 
 import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.internal.BlockWrapper;
-import com.draco18s.hardlib.internal.OreFlowerData;
-import com.draco18s.hardlib.internal.OreFlowerDictator;
+import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.OreFlowerData;
+import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;

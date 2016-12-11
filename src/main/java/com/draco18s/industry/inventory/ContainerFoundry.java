@@ -2,8 +2,8 @@ package com.draco18s.industry.inventory;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.internal.CommonContainer;
-import com.draco18s.hardlib.internal.inventory.SlotOutput;
+import com.draco18s.hardlib.api.internal.CommonContainer;
+import com.draco18s.hardlib.api.internal.inventory.SlotOutput;
 import com.draco18s.industry.entities.TileEntityFoundry;
 import com.draco18s.ores.entities.TileEntitySifter;
 

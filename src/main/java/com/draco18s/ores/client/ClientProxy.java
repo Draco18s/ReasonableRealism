@@ -3,9 +3,9 @@ package com.draco18s.ores.client;
 import java.awt.Color;
 import java.util.HashMap;
 
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.api.internal.ChunkCoords;
 import com.draco18s.hardlib.client.ModelsCache;
-import com.draco18s.hardlib.interfaces.IBlockMultiBreak;
-import com.draco18s.hardlib.internal.ChunkCoords;
 import com.draco18s.ores.CommonProxy;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.client.rendering.RenderOreCart;

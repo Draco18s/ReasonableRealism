@@ -5,10 +5,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.capability.CapabilityMechanicalPower;
-import com.draco18s.hardlib.capability.RawMechanicalPowerHandler;
-import com.draco18s.hardlib.internal.inventory.OutputItemStackHandler;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
+import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
+import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
 import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 import com.draco18s.ores.inventory.ContainerSifter;

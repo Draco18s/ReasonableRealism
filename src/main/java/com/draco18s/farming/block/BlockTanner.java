@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Level;
 import com.draco18s.farming.FarmingBase;
 import com.draco18s.farming.entities.TileEntityTanner;
 import com.draco18s.farming.util.FarmingAchievements;
-import com.draco18s.hardlib.blockproperties.Props;
-import com.draco18s.hardlib.blockproperties.farming.LeatherStatus;
+import com.draco18s.hardlib.api.blockproperties.Props;
+import com.draco18s.hardlib.api.blockproperties.farming.LeatherStatus;
 import com.draco18s.hardlib.util.BlockTileEntityUtils;
 
 import net.minecraft.block.Block;
