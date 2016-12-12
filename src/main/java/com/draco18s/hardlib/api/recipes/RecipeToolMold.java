@@ -70,7 +70,7 @@ public class RecipeToolMold implements IRecipe {
 		this.output = output;
 		this.input = itemStack;
 		this.mold = new ItemStack(mold, 1, 0);
-		this.resourceDomain = resourceDomain;
+		this.resourceDomain = resourceDomain!=null?resourceDomain.toLowerCase():resourceDomain;
 		
 		if(output instanceof IItemWithMeshDefinition) {
 			ItemStack tempResult = new ItemStack(output);

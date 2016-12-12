@@ -50,17 +50,7 @@ public interface IFlowerData {
 	 * @param data
 	 */
 	void addOreFlowerData(BlockWrapper ore, OreFlowerDictator dictator, OreFlowerData data);
-	/*void addOreFlowerData(@Nonnull IBlockState ore, @Nonnull OreFlowerDictator dictator, @Nonnull OreFlowerData data);
 	
-	/**
-	 * Registers an ore (wildcard) with its matching indicator plant.<br>
-	 * 
-	 * @param ore
-	 * @param dictator
-	 * @param data
-	 */
-	/*void addOreFlowerData(@Nonnull Block ore, @Nonnull OreFlowerDictator dictator, @Nonnull OreFlowerData data);*/
-
 	/**
 	 * Gets the hash of all of the registered ore blocks for flower data.
 	 * @return

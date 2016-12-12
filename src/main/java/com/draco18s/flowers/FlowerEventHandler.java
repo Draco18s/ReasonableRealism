@@ -20,6 +20,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -27,6 +28,13 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 public class FlowerEventHandler {
 	private boolean poopBonemealFlowers = false;
 	private Random rand = new Random();
+	
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event) {
+		if(HardLibAPI.oreFlowers.getOreList().size() == 0) {
+			OreFlowersBase.instance.addAllOres();
+		}
+	}
 
 	@SubscribeEvent
 	public void onBonemeal(BonemealEvent event) {

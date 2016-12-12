@@ -38,7 +38,7 @@ public class FlowerDataHandler implements IFlowerData {
 		if(dictator == null || data == null) return;
 		do {
 			pos = pos.up();
-		} while(world.getBlockState(pos).getMaterial() != Material.AIR && world.getLightFor(EnumSkyBlock.SKY, pos) < 8);
+		} while(!checkMaterial(world, pos) && world.getLightFor(EnumSkyBlock.SKY, pos) < 8);
 		if(pos.getY() >= 256) return;
 		
 		Random r = new Random(pos.toLong());
@@ -71,12 +71,12 @@ public class FlowerDataHandler implements IFlowerData {
 				BlockPos p = it.next();
 				IBlockState wb = world.getBlockState(p);
 				IBlockState pDown = world.getBlockState(p.down());
-				if(pDown.isFullCube() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || wb.getMaterial() == Material.LEAVES) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
+				if(/*pDown.isFullCube() &&*/ pDown.getBlock() != flowerState.getBlock() && flowerState.getBlock().canPlaceBlockAt(world, p) && (wb.getBlock().isReplaceable(world, p) || checkMaterial(world, p)) && !(wb.getBlock() instanceof BlockLiquid || wb.getBlock() instanceof IFluidBlock)) {
 					int ra = 1;
 					if(canBeTallPlant) {
 						ra = r.nextInt(tallChance);
 					}
-					if(canBeTallPlant && ra == 0 && world.getBlockState(p.up()).getMaterial() == Material.AIR) {
+					if(canBeTallPlant && ra == 0 && checkMaterial(world, p.up())) {
 						world.setBlockState(p.up(), flowerState, 3);
 						world.setBlockState(p, flowerState.withProperty(Props.FLOWER_STALK, true), 3);
 					}
@@ -89,6 +89,13 @@ public class FlowerDataHandler implements IFlowerData {
 			}
 			++fails;
 		}
+	}
+
+	private boolean checkMaterial(World world, BlockPos p) {
+		Material mat = world.getBlockState(p).getMaterial();
+		return mat == Material.AIR || 
+				mat == Material.LEAVES || 
+				mat == Material.VINE;
 	}
 
 

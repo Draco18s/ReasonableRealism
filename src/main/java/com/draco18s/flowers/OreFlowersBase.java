@@ -40,6 +40,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -74,11 +75,15 @@ public class OreFlowersBase {
 	public static Logger logger;
 
 	public static ChunkOreCounter oreCounter;
-	protected static OreDataHooks dataHooks; 
+	protected static OreDataHooks dataHooks;
+	
+	public static Configuration config;
+	public static boolean configProcessOreDictLatest = true;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
+		config = new Configuration(event.getSuggestedConfigurationFile());
 		oreCounter = new ChunkOreCounter();
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = dataHooks = new OreDataHooks();
@@ -145,6 +150,14 @@ public class OreFlowersBase {
 		FlowerEventHandler handler = new FlowerEventHandler();
 		MinecraftForge.ORE_GEN_BUS.register(handler);
 		MinecraftForge.EVENT_BUS.register(handler);
+		
+		configProcessOreDictLatest = config.getBoolean("processOreDictLatest", "GENERAL", true,
+				"Process the OreDictionary list as late as possible?\n" +
+				"When enabled, the blocks lists of flowers to match against are scanned in the OreDictionary as\n" +
+				"late as possible - specifically, when the world is first loaded. This ensures maximum compatibility\n" +
+				"with mods that do some fancy or tricky worldgen, for example Underground Biomes Constructs.\n"
+		);
+		config.save();
 	}
 	
 	@EventHandler
@@ -154,13 +167,19 @@ public class OreFlowersBase {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		FlowerAchievements.addCoreAchievements();
+		
+		if(!configProcessOreDictLatest)
+			addAllOres();
+	}
+	
+	public void addAllOres() {
 		IBlockState flower1State = oreFlowers1.getDefaultState();
 		IBlockState flowerDesert1State = oreFlowersDesert1.getDefaultState();
 		IBlockState flower2State = oreFlowers2.getDefaultState();
 		IBlockState flowerDesert2State = oreFlowersDesert2.getDefaultState();
 		IBlockState flower3State = oreFlowers3.getDefaultState();
 		IBlockState flowerDesert3State = oreFlowersDesert3.getDefaultState();
-		FlowerAchievements.addCoreAchievements();
 		addArbitraryOre("oreIron",		 8, 11, 7, OreFlowerDictator.defaultDictator,	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._1POORJOE,			Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._1RED_SORREL);
 		addArbitraryOre("oreGold",		 9, 11, 6, OreFlowerDictator.defaultDictator,	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._2HORSETAIL,		Props.DESERT_FLOWER_TYPE,  null/*EnumOreFlowerDesert1._2GOLD*/);
 		addArbitraryOre("oreDiamond",	 8, 11, 5, OreFlowerDictator.commonDictator,	flower1State, flowerDesert1State, Props.FLOWER_TYPE,  EnumOreFlower1._3VALLOZIA,		Props.DESERT_FLOWER_TYPE,  EnumOreFlowerDesert1._3CHANDELIER_TREE);

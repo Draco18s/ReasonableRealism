@@ -99,22 +99,24 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 			{
 				if(stack.hasTagCompound()) {
 					NBTTagCompound nbt = stack.getTagCompound();
-					NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-					ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
-					String imprintName = result.getUnlocalizedName();
-					String domain = "expindustry";
-					if(nbt.hasKey("expindustry:resourceDomain")) {
-						domain = nbt.getString("expindustry:resourceDomain");
+					if(nbt.hasKey("expindustry:item_mold")) {
+						NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
+						ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+						String imprintName = result.getUnlocalizedName();
+						String domain = "expindustry";
+						if(nbt.hasKey("expindustry:resourceDomain")) {
+							domain = nbt.getString("expindustry:resourceDomain");
+						}
+						if(imprintName.contains(":")) {
+							imprintName = imprintName.substring(imprintName.indexOf(':')+1);
+						}
+						imprintName = imprintName.replaceAll("tile.", "");
+						imprintName = imprintName.replaceAll("item.", "");
+						imprintName = imprintName.replaceAll("[Ii]ron", "");
+						ResourceLocation loc = new ResourceLocation(domain, "mold_"+imprintName);
+						ModelResourceLocation fullModelLocation = new ModelResourceLocation(loc, "inventory");
+						return fullModelLocation;
 					}
-					if(imprintName.contains(":")) {
-						imprintName = imprintName.substring(imprintName.indexOf(':')+1);
-					}
-					imprintName = imprintName.replaceAll("tile.", "");
-					imprintName = imprintName.replaceAll("item.", "");
-					imprintName = imprintName.replaceAll("[Ii]ron", "");
-					ResourceLocation loc = new ResourceLocation(domain, "mold_"+imprintName);
-					ModelResourceLocation fullModelLocation = new ModelResourceLocation(loc, "inventory");
-					return fullModelLocation;
 				}
 				return new ModelResourceLocation(new ResourceLocation("expindustry", "mold_clean"), "inventory");
 			}
