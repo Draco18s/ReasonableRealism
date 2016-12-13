@@ -24,6 +24,7 @@ import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.block.ore.BlockLimonite;
 import com.draco18s.ores.enchantments.EnchantmentProspector;
 import com.draco18s.ores.enchantments.EnchantmentPulverize;
+import com.draco18s.ores.enchantments.EnchantmentShatter;
 import com.draco18s.ores.enchantments.EnchantmentVeinCracker;
 import com.draco18s.ores.entities.EntityOreMinecart;
 import com.draco18s.ores.entities.TileEntityAxel;
@@ -151,14 +152,15 @@ public class OresBase {
 	
 	public static Enchantment enchPulverize;
 	public static Enchantment enchCracker;
+	public static Enchantment enchShatter;
 	public static Enchantment enchProspector;
 	
 	public static ToolMaterial toolMaterialDiamondStud;
 	public static EntityMinecart.Type oreCartEnum;
-	
-	public static Configuration config;
 
 	public static SimpleNetworkWrapper networkWrapper;
+	
+	public static Configuration config;
 
 	public static boolean sluiceAllowDirt;
 	public static boolean useSounds;
@@ -304,6 +306,11 @@ public class OresBase {
 		enchCracker.setRegistryName("cracker");
 		enchCracker.setName(enchCracker.getRegistryName().toString());
 		GameRegistry.register(enchCracker);
+		
+		enchShatter = new EnchantmentShatter(slots);
+		enchShatter.setRegistryName("shatter");
+		enchShatter.setName(enchShatter.getRegistryName().toString());
+		GameRegistry.register(enchShatter);
 
 		slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.OFFHAND};
 		enchProspector = new EnchantmentProspector(slots);

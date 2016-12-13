@@ -9,6 +9,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.ExpandedIndustryBase;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class RecipeToolMold implements IRecipe {
-	public static List<RecipeSubItem> allMoldItems = new ArrayList<RecipeSubItem>();
+	private static final List<RecipeSubItem> allMoldItems = new ArrayList<RecipeSubItem>();
 	protected Item output;
 	protected ItemStack input;
 	protected ItemStack mold;
@@ -75,14 +76,18 @@ public class RecipeToolMold implements IRecipe {
 		if(output instanceof IItemWithMeshDefinition) {
 			ItemStack tempResult = new ItemStack(output);
 			addImprint(itemStack, tempResult, resourceDomain);
-			EasyRegistry.registerSpecificItemVariantsWithBakery(cast(output), tempResult);
+			EasyRegistry.registerSpecificItemVariantsWithBakery(typCast(output), tempResult);
 			if(output == HardLibAPI.itemMold) {
 				allMoldItems.add(new RecipeSubItem(this.input, resourceDomain));
 			}
 		}
 	}
 
-	private static <T extends Item & IItemWithMeshDefinition>T cast(Item item) {
+	public static ImmutableList<RecipeSubItem> getAllmolditems() {
+		return ImmutableList.copyOf(allMoldItems);
+	}
+
+	private static <T extends Item & IItemWithMeshDefinition>T typCast(Item item) {
 		if(!(item instanceof IItemWithMeshDefinition)) {
 			throw new RuntimeException(item.getClass().getSimpleName() + " does not implement IItemWithMeshDefinition!");
 		}
@@ -187,7 +192,7 @@ public class RecipeToolMold implements IRecipe {
 		return null;
 	}
 	
-	public static ItemStack addImprint(ItemStack imprintStack, ItemStack moldToImprint, String resourceDomain) {
+	public static final ItemStack addImprint(ItemStack imprintStack, ItemStack moldToImprint, String resourceDomain) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		NBTTagCompound itemTag = new NBTTagCompound();
 		imprintStack.writeToNBT(itemTag);

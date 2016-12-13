@@ -19,12 +19,12 @@ public class EnchantmentPulverize extends Enchantment {
 	
 	@Override
 	public int getMinEnchantability(int par1) {
-		return 5 * par1;
+		return 10 + 5 * par1;
 	}
 	
 	@Override
 	public int getMaxEnchantability(int par1) {
-		return getMinEnchantability(par1) + 5;
+		return getMinEnchantability(par1) + 15;
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package com.draco18s.ores.enchantments;
 
 import java.util.Set;
 
+import com.draco18s.ores.OresBase;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.init.Enchantments;
@@ -19,12 +21,12 @@ public class EnchantmentVeinCracker extends Enchantment {
 	
 	@Override
 	public int getMinEnchantability(int par1) {
-		return 3 * par1;
+		return 5 + 8 * par1;
 	}
 	
 	@Override
 	public int getMaxEnchantability(int par1) {
-		return getMinEnchantability(par1) + 6;
+		return getMinEnchantability(par1) + 15;
 	}
 	
 	@Override
@@ -34,8 +36,9 @@ public class EnchantmentVeinCracker extends Enchantment {
 	
 	public boolean canApplyTogether(Enchantment other) {
 		boolean ret = super.canApplyTogether(other);
-		ret |= other != Enchantments.EFFICIENCY;
-		ret |= other != Enchantments.SILK_TOUCH;
+		ret &= other != Enchantments.EFFICIENCY;
+		ret &= other != Enchantments.SILK_TOUCH;
+		ret &= other != OresBase.enchShatter;
 		return ret;
 	}
 	

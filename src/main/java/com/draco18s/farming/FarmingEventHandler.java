@@ -152,7 +152,7 @@ public class FarmingEventHandler {
 		Block block = state.getBlock();
 		if(block != Blocks.REEDS) {
 			//grow nearby crops instead of this, if nearby crops are younger
-			Iterator<BlockPos> list = BlockPos.getAllInBox(pos.south().west(), pos.north().east()).iterator();
+			Iterator<BlockPos> list = BlockPos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1)).iterator();
 			while(list.hasNext()) {
 				BlockPos p = list.next();
 				int ox = p.getX() - pos.getX();
@@ -501,7 +501,7 @@ public class FarmingEventHandler {
 		}
 		if(bl instanceof BlockCrops) {
 			World world = event.getWorld();
-			Iterator<BlockPos> list = BlockPos.getAllInBox(event.getPos().south().west(), event.getPos().north().east()).iterator();
+			Iterator<BlockPos> list = BlockPos.getAllInBox(event.getPos().add(-1,0,-1), event.getPos().add(1,0,1)).iterator();
 			boolean anyWeeds = false;
 			boolean anyCarpet = false;
 			while(list.hasNext()) {

@@ -13,12 +13,14 @@ import com.draco18s.ores.networking.ToClientMessageOreParticles;
 import com.draco18s.ores.util.OresAchievements;
 
 import net.minecraft.block.BlockStone;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
@@ -29,6 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -36,15 +39,46 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class OreEventHandler {
 	@SubscribeEvent
+	public void breakSpeed(BreakSpeed event) {
+		if(event.getEntityPlayer() != null) {
+			EntityPlayer harvester = event.getEntityPlayer();
+			IBlockState state = event.getState();
+			//World world = harvester.worldObj;
+			BlockPos pos = event.getPos();
+			if(state.getProperties().containsKey(Props.ORE_DENSITY)) {
+				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchShatter, harvester.getHeldItemMainhand());
+				if(level > 0) {
+					event.setNewSpeed(event.getNewSpeed() / 2f);
+				}
+			}
+		}
+	}
+	
+	@SubscribeEvent
 	public void harvest(HarvestDropsEvent event) {
-		//System.out.println("Event");
 		if(event.getHarvester() != null) {
-			//System.out.println("Done by player");
 			EntityPlayer harvester = event.getHarvester();
 			IBlockState state = event.getState();
 			World world = event.getWorld();
 			BlockPos pos = event.getPos();
-			//System.out.println("active: " + harvester.getActiveItemStack());
+			if(state.getProperties().containsKey(Props.ORE_DENSITY)) {
+				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchShatter, harvester.getHeldItemMainhand());
+				if(level > 0) {
+					float rollover = 0;
+					for(level += 1;level > 0;level--) {
+						int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, harvester.getHeldItemMainhand());
+						List<ItemStack> drps = HardLibAPI.hardOres.mineHardOreOnce(world, pos, fortune);
+						if(drps != null) {
+							rollover += 0.75f;
+							if(rollover >= 0.75f) {
+								harvester.getHeldItemMainhand().damageItem(1, harvester);
+								rollover -= 1;
+							}
+							event.getDrops().addAll(drps);
+						}
+					}
+				}
+			}
 			if(state.getProperties().containsKey(Props.ORE_DENSITY)) {
 				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchCracker, harvester.getHeldItemMainhand());
 				int max = 0;
@@ -53,18 +87,13 @@ public class OreEventHandler {
 					EnumFacing dir = EnumFacing.VALUES[world.rand.nextInt(6)];
 					if(state.getBlock() == world.getBlockState(pos.offset(dir, 1)).getBlock()) {
 						level--;
-						//ArrayList<ItemStack> drps = null;
 						List<ItemStack> drps = HardLibAPI.hardOres.mineHardOreOnce(world, pos.offset(dir, 1), 0);
-						//System.out.println(dir + ":" + drps);
 						if(drps != null) {
 							rollover += 0.75f;
 							if(rollover >= 0.75f) {
 								harvester.getHeldItemMainhand().damageItem(1, harvester);
 								rollover -= 1;
 							}
-							//for(ItemStack stack : drps) {
-								//dropStack(world, event.getPos(), stack);
-							//}
 							event.getDrops().addAll(drps);
 						}
 					}
@@ -72,7 +101,6 @@ public class OreEventHandler {
 				level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchPulverize, harvester.getHeldItemMainhand());
 
 				if(level > 0 && state.getValue(Props.ORE_DENSITY) <= level*2+3) {
-					//System.out.println("level " + level +", " + event.getDrops().size());
 					Iterator<ItemStack> it = event.getDrops().iterator();
 					ArrayList<ItemStack> newItems = new ArrayList<ItemStack>();
 					max = 2+level;
@@ -82,7 +110,6 @@ public class OreEventHandler {
 						if(out != null) {
 							int s = Math.min(stk.stackSize,max);
 							ItemStack dustStack = out.copy();
-							//System.out.println("Num dust: " + (dustStack.stackSize*s));
 							int n = dustStack.stackSize;
 							dustStack.stackSize = 0;
 							for(; s > 0; s--) {
@@ -96,31 +123,27 @@ public class OreEventHandler {
 							}
 						}
 					}
-					//System.out.println("Max: " + max);
 					event.getDrops().addAll(newItems);
 				}
 			}
 
-			if(state.getBlock() == Blocks.STONE) {
-				//System.out.println("Stone broken");
+			if(state.getMaterial() == Material.ROCK) {//state.getMaterial() == Material.ROCK?
 				int level = EnchantmentHelper.getEnchantmentLevel(OresBase.enchProspector, harvester.getHeldItemOffhand());
-
-				//System.out.println("Level: " + level);
+				if(harvester.getHeldItemMainhand() != null && harvester.getHeldItemMainhand().getItem() != Items.COMPASS)
+					level = Math.max(level, EnchantmentHelper.getEnchantmentLevel(OresBase.enchProspector, harvester.getHeldItemMainhand())); 
 				if(level > 0) {
 					int llevel = level*2+1;
-					boolean anyOre = false;
+					boolean anyOre = state.getProperties().containsKey(Props.ORE_DENSITY);
 					for(EnumFacing dir : EnumFacing.VALUES) {
 						if(world.getBlockState(pos).getProperties().containsKey(Props.ORE_DENSITY)) {
 							anyOre = true;
 						}
 					}
 					if(!anyOre) {
-						//System.out.println("No ore adjacent");
 						Iterable<BlockPos> cube = pos.getAllInBox(pos.add(-llevel, -llevel, -llevel), pos.add(llevel, llevel, llevel));
 						for(BlockPos p : cube) {
 							IBlockState st = world.getBlockState(p);
 							if(HardLibAPI.hardOres.isHardOre(st)) {
-								//System.out.println("Sending packet");
 								ToClientMessageOreParticles packet = new ToClientMessageOreParticles(Packets.PROSPECTING, pos, p);
 								OresBase.networkWrapper.sendTo(packet, (EntityPlayerMP) event.getHarvester());
 								if(level >= 3) {
@@ -128,7 +151,9 @@ public class OreEventHandler {
 										List<ItemStack> list = HardLibAPI.hardOres.getHardOreDropsOnce(world, p, 0);
 										ArrayList<ItemStack> toDrop = new ArrayList();
 										for(ItemStack s:list) {
-											toDrop.add(HardLibAPI.oreMachines.getMillResult(s).copy());
+											ItemStack milled = HardLibAPI.oreMachines.getMillResult(s);
+											if(milled != null)
+												toDrop.add(milled.copy());
 										}
 										for(ItemStack s:toDrop) {
 											s.stackSize = 1;

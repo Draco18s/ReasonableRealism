@@ -55,7 +55,7 @@ public class BlockCropWeeds extends BlockCrops {
 	}
 
 	protected void weedSpread(World world, BlockPos pos, Random rand) {
-		Iterable<BlockPos> list = BlockPos.getAllInBox(pos.south().west(), pos.north().east());
+		Iterable<BlockPos> list = BlockPos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1));
 		world.setBlockState(pos, this.getDefaultState());
 		int placed = 0;
 		for (BlockPos p : list) {

@@ -109,7 +109,7 @@ public class BlockMillstone extends Block {
 	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
 		checkPlacement(worldIn, pos);
 		if(!checkPlacement(worldIn, pos)) {
-			Iterable<BlockPos> list = pos.getAllInBox(pos.south().west(), pos.north().east());
+			Iterable<BlockPos> list = pos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1));
 			for(BlockPos p : list) {
 				if(worldIn.getBlockState(p).getBlock() == this) {
 					if(checkPlacement(worldIn, p))

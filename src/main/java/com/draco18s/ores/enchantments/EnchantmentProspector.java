@@ -26,7 +26,7 @@ public class EnchantmentProspector extends Enchantment {
 	
 	@Override
 	public int getMaxEnchantability(int par1) {
-		return getMinEnchantability(par1) + 5;
+		return getMinEnchantability(par1) + 15;
 	}
 	
 	@Override

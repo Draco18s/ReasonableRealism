@@ -81,6 +81,7 @@ tile.harderores:packager.name=Pressure Packager
 enchantment.harderores:prospector=Prospector
 enchantment.harderores:pulverize=Pulverize
 enchantment.harderores:cracker=Vein Cracker
+enchantment.harderores:shatter=Ore Breaker
 
 container.harderores:sifter=Sifter
 container.harderores:packager=Packager

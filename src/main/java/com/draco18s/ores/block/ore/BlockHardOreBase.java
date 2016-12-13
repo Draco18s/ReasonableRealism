@@ -127,7 +127,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 				int m = state.getValue(Props.ORE_DENSITY);
 				m = m - (playerIn.isSneaking()?1:4);
 				System.out.println(m);
-				if(m < 0)
+				if(m < 1)
 					m += 16;
 				worldIn.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
 			}
@@ -144,7 +144,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 		Item item = getItemDropped(state, rand, fortune);
 		ret.add(new ItemStack(item, count, damageDropped(state)));
 		int metadata = state.getValue(Props.ORE_DENSITY);
-		for(int m = metadata-metaChange; m >= 0; m-=metaChange) {
+		for(int m = metadata-metaChange; m >= 1; m-=metaChange) {
 			ArrayList<ItemStack> extra = getDropsStandard(world, pos, state.withProperty(Props.ORE_DENSITY, metadata), fortune, rand);
 			//25% lost if not using API methods
 			//player mining will avoid this, as only the first stack (above) is usex by dropBlockAsItemWithChance
@@ -181,7 +181,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 			this.onBlockHarvested(world, pos, state, player);
 			int m = state.getValue(Props.ORE_DENSITY);
 			m -= metaChange;
-			if(m < 0)
+			if(m < 1)
 				return world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 
 			world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);

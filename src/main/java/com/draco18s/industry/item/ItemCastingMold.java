@@ -33,24 +33,9 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 		ItemStack base = new ItemStack(itemIn);
 		subItems.add(base);
 		boolean skip = false;
-		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.allMoldItems) {
-			subItems.add(addImprint(base.copy(),stack.input, stack.resourceDomain));
+		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.getAllmolditems()) {
+			subItems.add(RecipeToolMold.addImprint(base.copy(),stack.input, stack.resourceDomain));
 		}
-	}
-	
-	private static ItemStack addImprint(ItemStack out, ItemStack imprint) {
-		return addImprint(out, imprint, null);
-	}
-	
-	private static ItemStack addImprint(ItemStack out, ItemStack imprint, String resourceDomain) {
-		NBTTagCompound nbt = new NBTTagCompound();
-		NBTTagCompound itemTag = new NBTTagCompound();
-		imprint.writeToNBT(itemTag);
-		nbt.setTag("expindustry:item_mold", itemTag);
-		if(resourceDomain != null)
-			nbt.setString("expindustry:resourceDomain",resourceDomain);
-		out.setTagCompound(nbt);
-		return out;
 	}
 
 	@Override
