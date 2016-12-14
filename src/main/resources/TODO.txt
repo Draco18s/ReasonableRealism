@@ -10,7 +10,7 @@
 [x] Filter
 [x] Detector rail
 [x] Ore Flowers: non vanilla ores
-[x] Check [x]sifter, [x]packager, [x]foundry, and others? for phantom drops-on-break
+[x] Check [x]sifter, [x]packager, [x]foundry, [x]millstone, and others? for phantom drops-on-break
 [x] 2D flower item
 [ ] Container sluice
 [x] Filter unlocalized name

@@ -10,10 +10,25 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
+def libVersion      = "1"
+def majorVersion    = "1"
+def minorVersion    = "0"
+//bugpatch or testing versions
+def flowersVersion  = "a"
+def oresVersion     = "a"
+def farmVersion     = "a"
+def industryVersion = "a"
+def prePend = "1.10.2-"
+def packageVersion  = libVersion+"."+majorVersion+"."+minorVersion+flowersVersion+oresVersion+farmVersion+industryVersion
 
-version = "0.0.1"
+flowersVersion = libVersion+"."+majorVersion+"."+minorVersion+flowersVersion
+oresVersion = libVersion+"."+majorVersion+"."+minorVersion+oresVersion
+farmVersion = libVersion+"."+majorVersion+"."+minorVersion+farmVersion
+industryVersion = libVersion+"."+majorVersion+"."+minorVersion+industryVersion
+
+version = ""
 group= "com.draco18s.harderores" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "harderores"
+archivesBaseName = prePend+"HardStuff"+packageVersion
 
 sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
 compileJava {
@@ -31,7 +46,7 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20160518"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-	replace "{@version:ore}":"0.0.1"
+	replace "{@version:lib}":libVersion,"{@version:ore}":oresVersion,"{@version:farm}":farmVersion,"{@version:ind}":industryVersion,"{@version:flowers}":flowersVersion,"required-after:hardlib":("required-after:hardlib@["+libVersion+",]"),"/*{uncomment}":"","{uncomment}*/":""
 }
 
 dependencies {
@@ -77,3 +92,98 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+task coreJarNoCog(type: Jar) {
+    baseName = prePend+'HardLib-v'+libVersion
+
+    from('etc/lib') {
+        include '*.info'
+        expand 'version': libVersion, 'mcversion': project.minecraft.version
+	}
+
+    from zipTree(jar.outputs.getFiles().getSingleFile()).matching {
+        exclude 'com/draco18s/ores/**', 'com/draco18s/industry/**', 'com/draco18s/farming/**', 'mcmod.info', 'TODO.txt', 'assets/**', 'cog_config/**', 'config/**', 'CustomOreGen/**','com/draco18s/flowers/**'
+    }
+}
+
+task oresJar(type: Jar) {
+    baseName = prePend+'HarderOres-'+oresVersion
+
+    from('etc/ores') {
+        include '*.info'
+        expand 'version': oresVersion, 'mcversion': project.minecraft.version
+    }
+
+    from zipTree(jar.outputs.getFiles().getSingleFile()).matching {
+        include 'com/draco18s/ores/**', 'assets/harderores/**', 'cog_config/**'
+		exclude 'cog_config/UndergroundHazards.xml','**.xcf'
+    }
+}
+
+task industryJar(type: Jar) {
+    baseName = prePend+'ExpandedIndustry-'+industryVersion
+
+    from('etc/industry') {
+        include '*.info'
+        expand 'version': industryVersion, 'mcversion': project.minecraft.version
+    }
+
+    from zipTree(jar.outputs.getFiles().getSingleFile()).matching {
+        include 'com/draco18s/industry/**', 'assets/expindustry/**'
+		exclude '**.xcf'
+    }
+}
+
+task farmingJar(type: Jar) {
+    baseName = prePend+'Harderfarming-'+farmVersion
+
+    from('etc/farming') {
+        include '*.info'
+        expand 'version': farmVersion, 'mcversion': project.minecraft.version
+    }
+
+    from zipTree(jar.outputs.getFiles().getSingleFile()).matching {
+        include 'com/draco18s/farming/**', 'assets/harderfarming/**'
+		exclude '**.xcf'
+    }
+}
+
+task flowersJar(type: Jar) {
+    baseName = prePend+'OreFlowers-'+flowersVersion
+
+    from('etc/flowers') {
+        include '*.info'
+        expand 'version': '4.0.1', 'mcversion': project.minecraft.version
+    }
+
+    from zipTree(jar.outputs.getFiles().getSingleFile()).matching {
+        include 'com/draco18s/flowers/**', 'assets/oreflowers/**'
+		exclude '**.xcf'
+    }
+}
+
+coreJarNoCog.dependsOn('reobfJar')
+oresJar.dependsOn('reobfJar')
+farmingJar.dependsOn('reobfJar')
+industryJar.dependsOn('reobfJar')
+flowersJar.dependsOn('reobfJar')
+
+oresJar.dependsOn('flowersJar')
+
+task releaseJars(type: Copy) {
+    from coreJarNoCog
+	from flowersJar
+    from oresJar
+    from farmingJar
+    from industryJar
+    //one of these lines crashes it?
+    rename '-(.*)jar', '.jar'
+    rename '-(.*)zip', '.zip'
+    into '.'
+}
+
+task fullBuild(type: Delete) {
+    delete jar
+}
+
+fullBuild.dependsOn('releaseJars')
