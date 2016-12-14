@@ -16,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -23,11 +24,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockWindvane extends Block {
+	public static final AxisAlignedBB NORTH = new AxisAlignedBB(0.0D, 0.4D, 0.0D, 0.75D, 0.6D, 1.0D);
+	public static final AxisAlignedBB WEST = new AxisAlignedBB(0.0D, 0.4D, 0.0D, 1.0D, 0.6D, 0.75D);
+	public static final AxisAlignedBB UP = new AxisAlignedBB(0.3D, 0.0D, 0.4D, 1.0D, 1.0D, 0.6D);
+	public static final AxisAlignedBB DOWN = new AxisAlignedBB(0.0D, 0.0D, 0.4D, 0.7D, 1.0D, 0.6D);
 
 	public BlockWindvane() {
 		super(Material.CLOTH, MapColor.SNOW);
 		setHardness(1.0f);
-		//setHarvestLevel("axe", 1);
 		setResistance(0.1f);
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		setSoundType(SoundType.CLOTH);
@@ -80,12 +84,24 @@ public class BlockWindvane extends Block {
 		}
 	}
 	
-	/*@Override
-	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-		checkPlacement(worldIn, pos, state);
-	}
-	
-	public boolean checkPlacement(World worldIn, BlockPos pos, IBlockState stateIn) {
-		return false;
-	}*/
+	@Override
+	    @Deprecated
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		switch(state.getValue(BlockDirectional.FACING)) {
+			case DOWN:
+				return DOWN;
+			case EAST:
+				return WEST;
+			case NORTH:
+				return NORTH;
+			case SOUTH:
+				return NORTH;
+			case UP:
+				return UP;
+			case WEST:
+				return WEST;
+			default:
+				return FULL_BLOCK_AABB;
+		}
+    }
 }

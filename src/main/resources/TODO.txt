@@ -1,7 +1,7 @@
 [ ] Animals eating grass (set to dirt)
  - new AI task
 [ ] JEI integration
-[ ] build.gradle automation
+[x] build.gradle automation
 [x] Stone tool replacement recipes
 [x] Wooden hopper
 [x] Distributor
@@ -10,13 +10,14 @@
 [x] Filter
 [x] Detector rail
 [x] Ore Flowers: non vanilla ores
-[/] Check [x]sifter, [x]packager, [x]foundry, and others? for phantom drops-on-break
+[x] Check [x]sifter, [x]packager, [x]foundry, and others? for phantom drops-on-break
 [x] 2D flower item
 [ ] Container sluice
 [x] Filter unlocalized name
-[ ] Filter item model
+[x] Cart Loader item model
 [x] Windmill parts -> Decorative
-[ ] Tanning rack item model
-[ ] 2 item frames
-[ ] Filter client side in SMP
-[ ] Filter NSEW model/blockstate
+[x] Tanning rack item model
+[/] 2 item frames
+ - unfixable?
+[x] Filter client side in SMP
+[x] Filter NSEW model/blockstate (check in game)
