@@ -1,0 +1,38 @@
+tooltip.harderfarming:damagebonus=+%d Schaden gegen Tiere
+tooltip.harderfarming:growsColdWeather=Gedeiht bei kalten Temperaturen
+tooltip.harderfarming:linkedcrop.text=Verknüpfte Pflanze:
+tooltip.harderfarming:unlink.text=Rechtsklick zum Trennen
+tooltip.harderfarming:link.text=Rechtsklick auf Pflanze zum Verknüpfen
+
+item.harderfarming:seeds_winter_wheat.name=Winterweizensamen
+item.harderfarming:thermometer.name=Thermometer
+item.harderfarming:hydrometer.name=Hydrometer
+item.harderfarming:rawleather.name=Rohleder
+item.harderfarming:rawsalt.name=Salzbrocken
+item.harderfarming:saltpile.name=Salz
+item.harderfarming:butcherknife.name=Metzgermesser
+
+tile.harderfarming:crop_winter_wheat.name=Winterweizen
+tile.harderfarming:weeds.name=Unkraut
+tile.harderfarming:tanner.name=Gerbgestell
+tile.harderfarming:saltore.name=Salzerz
+
+achievement.collectWinterWheat=Kalte Pflanzen
+achievement.killWeeds=Gartenarbeit
+achievement.cropRotation=Fruchtfolge
+achievement.weedSuppressor=Unkrautunterdrücker
+achievement.craftThermometer=Warte, WIE kalt ist es?
+achievement.collectRawhide=Rohleder!
+achievement.craftTanner=Gegerbte Haut
+achievement.getLeather=Lederwaren
+achievement.saltedHide=Salzige Härtung
+
+achievement.collectWinterWheat.desc=Finde ein kaltes Biom und ernte die Belohnungen
+achievement.cropRotation.desc=Zerstöre einen Unkrautblock
+achievement.killWeeds.desc=Pflanze Reihen von abwechselnden Pflanzen
+achievement.weedSuppressor.desc=Setze Bodenstoff, um Unkraut zu verhindern
+achievement.craftThermometer.desc=Stelle ein Thermometer oder Hydrometer her
+achievement.collectRawhide.desc=Töte eine Kuh, ein Schwein oder ein Pferd
+achievement.craftTanner.desc=Rohleder ist für nichts zu gebrauchen, stelle ein Gerbgestell her
+achievement.getLeather.desc=Lass es einfach in der Sonne
+achievement.saltedHide.desc=Verwende Salz, um den Härtungsprozess zu beschleunigen
