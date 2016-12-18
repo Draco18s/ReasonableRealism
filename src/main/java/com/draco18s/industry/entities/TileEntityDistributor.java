@@ -36,7 +36,7 @@ public class TileEntityDistributor extends TileEntityHopper {
 			delay--;
 			if(delay <= 0) {
 				face = face.rotateY();
-				worldObj.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, face), 3);
+				worldObj.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, face), 2);
 				delay = 4;
 				setTransferCooldown(0);
 				updateHopper();

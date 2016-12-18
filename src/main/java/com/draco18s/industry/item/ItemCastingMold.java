@@ -34,7 +34,7 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 		subItems.add(base);
 		boolean skip = false;
 		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.getAllmolditems()) {
-			subItems.add(RecipeToolMold.addImprint(base.copy(),stack.input, stack.resourceDomain));
+			subItems.add(RecipeToolMold.addImprint(stack.input, base.copy(), stack.resourceDomain));
 		}
 	}
 

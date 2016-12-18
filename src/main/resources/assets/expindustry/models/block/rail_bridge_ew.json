@@ -1,41 +1,44 @@
 {
-    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+    "__comment": "Designed by Stohun with Cubik Studio - https://cubik.studio",
     "textures": {
-        "rail": "expindustry:blocks/rail_bridge",
+        "particle": "blocks/rail_normal",
+        "rail": "blocks/rail_normal",
         "supports": "blocks/planks_oak"
     },
     "elements": [
         {
-            "name": "Rails",
-            "from": [ 0.0, 1.0, 0.0 ], 
-            "to": [ 16.0, 1.0, 16.0 ], 
+            "__comment": "RailPlane",
+            "from": [ 0, 1, 0 ],
+            "to": [ 16, 1.001, 16 ],
             "faces": {
-                "up": { "texture": "#rail", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "rotation": 90 },
-                "down": { "texture": "#rail", "uv": [ 0.0, 0.0, 16.0, 16.0 ], "rotation": 90 }
+                "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#rail", "rotation": 270 },
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#rail", "rotation": 270 }
             }
         },
         {
-            "name": "Support1",
-            "from": [ 0.0, -2.0, 1.0 ], 
-            "to": [ 16.0, 1.0, 4.0 ], 
+            "__comment": "Support1",
+            "from": [ 0, -2, 12 ],
+            "to": [ 16, 0, 16 ],
             "faces": {
-                "north": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-                "east": { "texture": "#supports", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-                "south": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-                "west": { "texture": "#supports", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-                "down": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 16.0 ] }
+                "down": { "uv": [ 0, 0, 16, 4 ], "texture": "#supports" },
+                "up": { "uv": [ 0, 12, 16, 16 ], "texture": "#supports" },
+                "north": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "south": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "west": { "uv": [ 12, 0, 16, 2 ], "texture": "#supports" },
+                "east": { "uv": [ 0, 0, 4, 2 ], "texture": "#supports" }
             }
         },
         {
-            "name": "Support 2",
-            "from": [ 0.0, -2.0, 12.0 ], 
-            "to": [ 16.0, 1.0, 15.0 ], 
+            "__comment": "Support2",
+            "from": [ 0, -2, 0 ],
+            "to": [ 16, 0, 4 ],
             "faces": {
-                "north": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-                "east": { "texture": "#supports", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-                "south": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-                "west": { "texture": "#supports", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-                "down": { "texture": "#supports", "uv": [ 0.0, 0.0, 3.0, 16.0 ] }
+                "down": { "uv": [ 0, 12, 16, 16 ], "texture": "#supports" },
+                "up": { "uv": [ 0, 0, 16, 4 ], "texture": "#supports" },
+                "north": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "south": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "west": { "uv": [ 0, 0, 4, 2 ], "texture": "#supports" },
+                "east": { "uv": [ 12, 0, 16, 2 ], "texture": "#supports" }
             }
         }
     ]

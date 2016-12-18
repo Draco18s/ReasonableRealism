@@ -130,7 +130,12 @@ public class ExpandedIndustryBase {
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
+		if(OreDictionary.doesOreNameExist("stoneAny")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stoneAny", 'f', Blocks.FURNACE, 'b', "bucket"));
+		}
+		else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
+		}
 		
 		List<ItemStack> list = new ArrayList<ItemStack>();
 		list.add(new ItemStack(Blocks.CLAY));

@@ -17,7 +17,7 @@ def minorVersion    = "0"
 def flowersVersion  = "a"
 def oresVersion     = "a"
 def farmVersion     = "a"
-def industryVersion = "a"
+def industryVersion = "b"
 def prePend = "1.10.2-"
 def packageVersion  = libVersion+"."+majorVersion+"."+minorVersion+flowersVersion+oresVersion+farmVersion+industryVersion
 

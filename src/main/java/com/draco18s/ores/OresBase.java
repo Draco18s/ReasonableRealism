@@ -404,7 +404,12 @@ public class OresBase {
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), "x", 'x', new ItemStack(dummyOreDiamond));
 		GameRegistry.addRecipe(new ItemStack(nuggets, 9, EnumOreType.IRON.meta), "x",'x',new ItemStack(Items.IRON_INGOT, 1));
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
+		if(OreDictionary.doesOreNameExist("stoneAny")) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
+		}
+		else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
+		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 		true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 	true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 		true, "WWW", 'W', "logWood"));
