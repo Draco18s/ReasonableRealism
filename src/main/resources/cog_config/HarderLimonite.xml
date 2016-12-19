@@ -148,8 +148,8 @@
           <Setting name='DistributionFrequency' avg=':= 0.02 * limoniteFreq' range='0'/>
           <Setting name='CloudHeight' avg='62.5' range='0' type='uniform' scaleTo='sealevel'/>
           <Replaces block='minecraft:grass'/>
-          <ReplacesRegexp block='.*sand'/>
-          <!-- <ReplacesRegexp block='.*dirt'/> -->
+          <Replaces block='minecraft:sand'/>
+          <!-- <Replaces block='minecraft:dirt'/> -->
           <Replaces block='minecraft:gravel'/>
           <Replaces block='minecraft:clay'/>
           <Biome name='.*' weight='-1'/>
@@ -161,8 +161,8 @@
             <Setting name='DistributionFrequency' avg='4.5' range='2'/>
             <Setting name='ParentRangeLimit' avg='15.0' range='6.0' />
             <Setting name='CloudHeight' avg='61.25' range='2' type='uniform' scaleTo='sealevel'/>
-            <ReplacesRegexp block='.*sand'/>
-            <ReplacesRegexp block='.*dirt'/>
+            <Replaces block='minecraft:sand'/>
+            <Replaces block='minecraft:dirt'/>
             <Replaces block='minecraft:gravel'/>
             <Replaces block='minecraft:clay'/>
           </CloudPreset>
