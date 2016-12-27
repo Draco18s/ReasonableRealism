@@ -373,6 +373,10 @@ public class OresBase {
 
 		OreDictionary.registerOre("nuggetIron", new ItemStack(nuggets, 1, EnumOreType.IRON.meta));
 		
+		OreDictionary.registerOre("oreIronHard", oreIron);
+		OreDictionary.registerOre("oreGoldHard", oreGold);
+		OreDictionary.registerOre("oreDiamondHard", oreDiamond);
+		
 		OreDictionary.registerOre("oreIron", dummyOreIron);
 		OreDictionary.registerOre("oreGold", dummyOreGold);
 		OreDictionary.registerOre("oreDiamond", dummyOreDiamond);
@@ -626,6 +630,7 @@ public class OresBase {
 			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		}
 	}
+	
 	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, Block dummyOre, int sluiceWeight, boolean canFindDefault) {
 		if(!oreType.set) {
 			if(config.get("SLUICE", "canFind"+oreName, canFindDefault).getBoolean()) {
@@ -658,6 +663,7 @@ public class OresBase {
 			}
 			HardLibAPI.oreMachines.addPressurePackRecipe(rawOreIn, new ItemStack(dummyOre));
 			OreDictionary.registerOre("ore"+oreName, dummyOre);
+			OreDictionary.registerOre("ore"+oreName+"Hard", oreBlock);
 			oreType.set = true;
 		}
 	}
