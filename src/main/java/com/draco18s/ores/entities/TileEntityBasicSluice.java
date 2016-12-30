@@ -3,6 +3,10 @@ package com.draco18s.ores.entities;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
+import org.apache.logging.log4j.Level;
+
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.ores.OresBase;
@@ -11,6 +15,7 @@ import com.draco18s.ores.entities.capabilities.ItemStackHandlerDirt;
 import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDynamicLiquid;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,6 +25,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -74,25 +81,48 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 				subtractDirt();
 			}
 		}
-		else if(waterAmount > 0 && inputSlot.getStackInSlot(0) != null) {
-			timer = 25 * cycleLength;
+		else if(waterAmount > 0) {
+			if(inputSlot.getStackInSlot(0) != null) {
+				timer = 25 * cycleLength;
+			}
+			else {
+				makeRequest();
+				timer = -5 * cycleLength;
+				downstremrequests = 0;
+			}
+			sendUpdates();
 		}
-		if(downstremrequests > 0 && inputSlot.getStackInSlot(0).stackSize > 1) {
+		if(downstremrequests > 0 && inputSlot.getStackInSlot(0) != null && inputSlot.getStackInSlot(0).stackSize > 1) {
 			float rx = 0.5F;
-			float ry = rand.nextFloat() * 0.5F + 0.5F;
+			float ry = rand.nextFloat() * 0.25F + 0.25F;
 			float rz = 0.5F;
 
 			EntityItem entityItem = new EntityItem(worldObj,
 					pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
 					inputSlot.getStackInSlot(0).splitStack(1));
 
-			Vec3d flowVec = BlockSluice.getFlowVec(worldObj.getBlockState(pos));
-			entityItem.motionX = flowVec.xCoord*0.014D;
+			//Vec3d flowVec = BlockSluice.getFlowVec(worldObj.getBlockState(pos));
+			entityItem.motionX = 0;//flowVec.xCoord*0.014D;
 			entityItem.motionY = 0;
-			entityItem.motionZ = flowVec.zCoord*0.014D;
-			entityItem.setInfinitePickupDelay();
+			entityItem.motionZ = 0;//flowVec.zCoord*0.014D;
+			entityItem.setPickupDelay(300);
 			worldObj.spawnEntityInWorld(entityItem);
+			downstremrequests--;
+			sendUpdates();
 		}
+	}
+
+	private void makeRequest() {
+		BlockPos p = pos;
+		EnumFacing dir = worldObj.getBlockState(p).getValue(BlockSluice.FACING).getOpposite();
+		do {
+			p=p.offset(dir,1);
+		} while(worldObj.getBlockState(p).getBlock() == OresBase.sluice);
+		p = p.offset(dir.getOpposite(), 1);
+		TileEntity te = worldObj.getTileEntity(p);
+		if(te != null && te instanceof TileEntityBasicSluice && te != this) {
+			((TileEntityBasicSluice)te).downstremrequests++;
+		}		
 	}
 
 	private void doFilter() {
@@ -163,14 +193,26 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 		}
 	}
 	
+	private void sendUpdates() {
+		worldObj.markBlockRangeForRenderUpdate(pos, pos);
+		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
+		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		markDirty();
+	}
+
+	private IBlockState getState() {
+		return worldObj.getBlockState(pos);
+	}
+	
 	private void subtractDirt() {
 		if(inputSlot.getStackInSlot(0).stackSize > 1) inputSlot.getStackInSlot(0).stackSize--;
 		else inputSlot.setStackInSlot(0, null);
+		sendUpdates();
 	}
 
 	private void suckItems() {
 		EntityItem ent;
-		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos.getX(), pos.getY() + 1, pos.getZ()));
+		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
 		if (ents.size() > 0) {
 			ItemStack stack;
 			if(inputSlot.getStackInSlot(0) == null) {
@@ -184,6 +226,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 							inputSlot.setStackInSlot(0, stack.copy());
 							ent.setDead();
 						}
+						sendUpdates();
 						break;
 					}
 				}
@@ -270,6 +313,14 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 		if (prevWater != waterAmount) {
 			worldObj.markBlockRangeForRenderUpdate(pos, pos);
 		}
+		dir = state.getValue(BlockSluice.FACING);
+		if(waterAmount > 0 && !worldObj.isRemote) {
+			Material mat = worldObj.getBlockState(pos.offset(dir).down()).getMaterial();
+			if(mat == Material.AIR) {
+				IBlockState st = Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockDynamicLiquid.LEVEL, 0);
+				worldObj.setBlockState(pos.offset(dir).down(), st, 3);
+			}
+		}
 	}
 	
 	@Override
@@ -281,7 +332,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		//IBlockState bs = worldObj.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			if(inputSlot.getStackInSlot(0).stackSize > (downstremrequests>0?1:0)+1) return null;
+			if(inputSlot.getStackInSlot(0) != null && inputSlot.getStackInSlot(0).stackSize >= (downstremrequests>0?1:0)+1) return null;
 			return (T) inputSlot;
 		}
 		return super.getCapability(capability, facing);
@@ -293,6 +344,23 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	public int getTime() {
 		return timer;
+	}
+	
+	@Override
+	@Nullable
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+	}
+
+	@Override
+	public NBTTagCompound getUpdateTag() {
+		return this.writeToNBT(new NBTTagCompound());
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		super.onDataPacket(net, pkt);
+		handleUpdateTag(pkt.getNbtCompound());
 	}
 	
 	@Override

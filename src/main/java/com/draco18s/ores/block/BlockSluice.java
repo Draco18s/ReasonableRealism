@@ -157,7 +157,7 @@ public class BlockSluice extends Block {
 
 	public static Vec3d getFlowVec(IBlockState blockState) {
 		EnumFacing dir = blockState.getValue(FACING);
-		return new Vec3d(dir.getFrontOffsetX() * 2, 0, dir.getFrontOffsetZ() * 2);
+		return new Vec3d(dir.getFrontOffsetX() * 1, 0, dir.getFrontOffsetZ() * 1);
 	}
 
 	public static float getFlowDirection(IBlockState blockState) {
@@ -257,6 +257,16 @@ public class BlockSluice extends Block {
 			}
 		}
 		world.setBlockState(pos, getUpdatedState(world, pos, world.getBlockState(pos)), 3);
+	}
+	
+	@Override
+	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+		EnumFacing dir = state.getValue(BlockSluice.FACING);
+		if(!worldIn.isRemote && worldIn.getBlockState(pos.offset(dir).down()).getMaterial() == Material.WATER) {
+			IBlockState st = Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockDynamicLiquid.LEVEL, 1);
+			worldIn.setBlockState(pos.offset(dir).down(), st, 3);
+		}
+		super.breakBlock(worldIn, pos, state);
 	}
 
 	@Override

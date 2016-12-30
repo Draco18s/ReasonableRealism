@@ -15,7 +15,7 @@ def majorVersion    = "1"
 def minorVersion    = "0"
 //bugpatch or testing versions
 def flowersVersion  = "a"
-def oresVersion     = "c"
+def oresVersion     = "d"
 def farmVersion     = "a"
 def industryVersion = "b"
 def prePend = "1.10.2-"

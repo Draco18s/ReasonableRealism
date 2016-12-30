@@ -4,11 +4,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.Level;
+
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
+import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.capabilities.MillableItemsHandler;
 import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 import com.draco18s.ores.inventory.ContainerSifter;
@@ -39,14 +42,12 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	protected ItemStackHandler outputSlot;
 	private ItemStackHandler outputSlotWrapper;
 	private float siftTime;
-	private AxisAlignedBB suckZone = null;
 	private int activeSlot = -1;
 	
 	public TileEntitySifter() {
 		inputSlot = new SiftableItemsHandler();
 		outputSlot = new ItemStackHandler();
 		outputSlotWrapper = new OutputItemStackHandler(outputSlot);
-		suckZone = new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX()+1, pos.getY()+1.25f, pos.getZ()+1);
 	}
 	
 	@Override
@@ -106,7 +107,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	}
 	
 	private void suckItems() {
-		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, suckZone);
+		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
 		if(ents.size() > 0) {
 			ItemStack stack;
 			EntityItem ent;
@@ -125,6 +126,10 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 				}
 			}
 		}
+	}
+	
+	private AxisAlignedBB getAABB(BlockPos p) {
+		return new AxisAlignedBB(p.getX(), p.getY(), p.getZ(), p.getX()+1, p.getY()+1.25, p.getZ()+1);
 	}
 	
 	@Override
