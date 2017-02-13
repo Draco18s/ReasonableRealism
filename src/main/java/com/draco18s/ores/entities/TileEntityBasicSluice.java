@@ -5,14 +5,11 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.Level;
-
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.ores.OresBase;
 import com.draco18s.ores.block.BlockSluice;
 import com.draco18s.ores.entities.capabilities.ItemStackHandlerDirt;
-import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
@@ -32,12 +29,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	public static Item itemGravel;

@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
+import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
@@ -205,6 +206,9 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 			if(facing == EnumFacing.DOWN) {
 				return (T) outputSlotWrapper;
 			}
+		}
+		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
+			return (T) powerUser;
 		}
 		return super.getCapability(capability, facing);
 	}

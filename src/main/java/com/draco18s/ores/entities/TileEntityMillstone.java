@@ -203,7 +203,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 		if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
 			MillstoneOrientation millpos = worldObj.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
 			if(millpos == MillstoneOrientation.CENTER) {
-				return (T) new RawMechanicalPowerHandler();
+				return (T) powerUser;
 			}
 		}
 		return super.getCapability(capability, facing);

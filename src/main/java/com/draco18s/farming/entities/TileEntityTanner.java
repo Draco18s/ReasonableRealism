@@ -50,6 +50,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 				if(cureLeather(0)) {
 					leftSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
 					setBlockToUpdate();
+					tanningTime[0] = 0;
 				}
 			}
 		}
@@ -61,6 +62,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 				if(cureLeather(1)) {
 					rightSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
 					setBlockToUpdate();
+					tanningTime[1] = 0;
 				}
 			}
 		}

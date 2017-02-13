@@ -5,6 +5,9 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.Level;
+
+import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.flowers.states.StateMapperFlowers;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower1;
@@ -61,7 +64,7 @@ public class BlockOreFlower1 extends BlockBush implements IBlockWithMapper {
 	protected ItemStack createStackedBlock(IBlockState state) {
 		//return super.createStackedBlock(state);
 		Item item = Item.getItemFromBlock(this);
-		int i = this.getMetaFromState(state);
+		int i = state.getValue(Props.FLOWER_TYPE).ordinal();
 		return new ItemStack(item, 1, i);
 	}
 	
@@ -127,7 +130,9 @@ public class BlockOreFlower1 extends BlockBush implements IBlockWithMapper {
 	
 	@Override
 	public int damageDropped(IBlockState state) {
-		return state.getValue(Props.FLOWER_TYPE).getOrdinal();
+		int v = state.getValue(Props.FLOWER_TYPE).getOrdinal();
+		OreFlowersBase.logger.log(Level.INFO,"meta from pick: " + v);
+		return v;
 	}
 	
 	@Override

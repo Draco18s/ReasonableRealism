@@ -61,7 +61,7 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	protected ItemStack createStackedBlock(IBlockState state) {
 		//return super.createStackedBlock(state);
 		Item item = Item.getItemFromBlock(this);
-		int i = this.getMetaFromState(state);
+		int i = state.getValue(Props.FLOWER_TYPE2).ordinal();
 		return new ItemStack(item, 1, i);
 	}
 	

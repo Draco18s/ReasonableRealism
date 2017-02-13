@@ -105,11 +105,11 @@ public class ExpandedIndustryBase {
 		blockFoundry = new BlockFoundry();
 		EasyRegistry.registerBlockWithItem(blockFoundry, "machine_foundry");
 
-		GameRegistry.registerTileEntity(TileEntityWoodenHopper.class, "machine_wood_hopper");
-		GameRegistry.registerTileEntity(TileEntityDistributor.class, "machine_distributor");
-		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "machine_cart_loader");
-		GameRegistry.registerTileEntity(TileEntityFilter.class, "machine_filter");
-		GameRegistry.registerTileEntity(TileEntityFoundry.class, "machine_foundry");
+		GameRegistry.registerTileEntity(TileEntityWoodenHopper.class, "expindustry:machine_wood_hopper");
+		GameRegistry.registerTileEntity(TileEntityDistributor.class, "expindustry:machine_distributor");
+		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "expindustry:machine_cart_loader");
+		GameRegistry.registerTileEntity(TileEntityFilter.class, "expindustry:machine_filter");
+		GameRegistry.registerTileEntity(TileEntityFoundry.class, "expindustry:machine_foundry");
 		
 		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
 		//EasyRegistry.registerItem(itemMold, "casting_mold");

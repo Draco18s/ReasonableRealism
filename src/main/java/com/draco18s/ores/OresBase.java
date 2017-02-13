@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.CogHelper;
@@ -69,6 +70,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -255,21 +257,21 @@ public class OresBase {
 		
 		millstone = new BlockMillstone();
 		EasyRegistry.registerBlockWithItem(millstone, "millstone");
-		GameRegistry.registerTileEntity(TileEntityMillstone.class, "millstone");
+		GameRegistry.registerTileEntity(TileEntityMillstone.class, "harderores:millstone");
 		axel = new BlockAxel();
 		EasyRegistry.registerBlockWithItem(axel, "axel");
-		GameRegistry.registerTileEntity(TileEntityAxel.class, "axel");
+		GameRegistry.registerTileEntity(TileEntityAxel.class, "harderores:axel");
 		windvane = new BlockWindvane();
 		EasyRegistry.registerBlockWithItem(windvane, "windvane");
 		sifter = new BlockSifter();
 		EasyRegistry.registerBlockWithItem(sifter, "sifter");
-		GameRegistry.registerTileEntity(TileEntitySifter.class, "sifter");
+		GameRegistry.registerTileEntity(TileEntitySifter.class, "harderores:sifter");
 		sluice = new BlockSluice();
 		EasyRegistry.registerBlockWithItem(sluice, "basic_sluice");
-		GameRegistry.registerTileEntity(TileEntityBasicSluice.class, "basic_sluice");
+		GameRegistry.registerTileEntity(TileEntityBasicSluice.class, "harderores:basic_sluice");
 		pressurePackager = new BlockPackager();
 		EasyRegistry.registerBlockWithItem(pressurePackager, "packager");
-		GameRegistry.registerTileEntity(TileEntityPackager.class, "packager");
+		GameRegistry.registerTileEntity(TileEntityPackager.class, "harderores:packager");
 		
 		rawOre = new ItemRawOre();
 		EasyRegistry.registerItemWithVariants(rawOre, "orechunks", EnumOreType.IRON);
@@ -283,8 +285,8 @@ public class OresBase {
 		toolMaterialDiamondStud = EnumHelper.addToolMaterial("DIAMOND_STUD", 3, 750, 7.0F, 2.0F, 5);
 		toolMaterialDiamondStud.setRepairItem(new ItemStack(OresBase.rawOre, 1, EnumOreType.DIAMOND.meta));
 
-		EntityRegistry.registerModEntity(EntityOreMinecart.class, "oreMinecart", 0, this, 80, 3, true);
-		
+		EntityRegistry.registerModEntity(EntityOreMinecart.class, "harderores:oreMinecart", 0, this, 80, 3, true);
+
 		diaStudPick = new ItemDiamondStudPickaxe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudPick, "diamondstud_pickaxe");
 		diaStudShovel = new ItemDiamondStudShovel(toolMaterialDiamondStud);
@@ -412,11 +414,12 @@ public class OresBase {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
 		}
 		else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stone", 'W', "logWood"));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 		true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 	true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 		true, "WWW", 'W', "logWood"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 			true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 		true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 			true, "WWW", 'W', "logWood"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(pressurePackager),	true, "sps","s s","sss", 's', "stoneAny", 'p', Blocks.PISTON));
 		
 		ItemStack diamondNugget = new ItemStack(rawOre,1,EnumOreType.DIAMOND.meta);
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudPick), true, "dId", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
@@ -524,7 +527,7 @@ public class OresBase {
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.IRON.meta), new ItemStack(largeDust, 1, EnumOreType.IRON.meta));
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
 		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
-		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR, 1, 1));
+		HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(smallDust, 8, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR, 1));
 		//Mod ores handled by addExtraOre()
 		
 		/*Packing*/

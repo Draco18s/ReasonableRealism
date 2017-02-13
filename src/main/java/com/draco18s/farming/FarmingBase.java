@@ -120,7 +120,7 @@ public class FarmingBase {
 		EasyRegistry.registerBlockWithItem(saltOre, "saltore");
 		tanningRack = new BlockTanner();
 		EasyRegistry.registerBlockWithItem(tanningRack, "tanner");
-		GameRegistry.registerTileEntity(TileEntityTanner.class, "tanning_rack");
+		GameRegistry.registerTileEntity(TileEntityTanner.class, "harderfarming:tanning_rack");
 
 		thermometer = new ItemThermometer();
 		EasyRegistry.registerItem(thermometer, "thermometer");
@@ -144,7 +144,7 @@ public class FarmingBase {
 		} catch (ExistingSubstitutionException e) {
 			e.printStackTrace();
 		}
-		EntityRegistry.registerModEntity(EntityItemFrameReplacement.class, "item_frame_rep", 0, this, 48, 10, false);
+		EntityRegistry.registerModEntity(EntityItemFrameReplacement.class, "harderfarming:item_frame_rep", 0, this, 48, 10, false);
 		
 		itemAchievementIcons = new ItemAchieves();
 		EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);
