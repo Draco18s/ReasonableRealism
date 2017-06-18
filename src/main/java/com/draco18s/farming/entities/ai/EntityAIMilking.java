@@ -84,7 +84,7 @@ public class EntityAIMilking extends EntityAIBase {
 		Vec3d animpos= new Vec3d((int)entity.posX, (int)entity.posY, (int)entity.posZ);
 		int d = 3;//(entity instanceof EntityGoat?9:3);
 		int e = 2;//(entity instanceof EntityGoat?4:2);
-		Block b = entity.worldObj.getBlockState(new BlockPos(animpos.xCoord, animpos.yCoord-1, animpos.zCoord)).getBlock();
+		Block b = entity.world.getBlockState(new BlockPos(animpos.xCoord, animpos.yCoord-1, animpos.zCoord)).getBlock();
 		if(checkBlock(b, moo)) {
 			close = animpos;
 			return true;
@@ -94,7 +94,7 @@ public class EntityAIMilking extends EntityAIBase {
 		for(int ox=(int)entity.posX-d;ox<=(int)entity.posX+d;ox++) {
 			for(int oz=(int)entity.posZ-d;oz<=(int)entity.posZ+d;oz++) {
 				for(int oy=(int)entity.posY-e;oy<=(int)entity.posY+e;oy++) {
-					b = entity.worldObj.getBlockState(new BlockPos(ox, oy, oz)).getBlock();
+					b = entity.world.getBlockState(new BlockPos(ox, oy, oz)).getBlock();
 					if(checkBlock(b, moo)) {
 						here = new Vec3d(ox,oy,oz);
 						grassNear = true;

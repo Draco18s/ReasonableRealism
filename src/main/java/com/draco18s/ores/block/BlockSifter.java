@@ -64,8 +64,8 @@ public class BlockSifter extends Block {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(OresBase.instance, OreGuiHandler.SIFTER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		player.openGui(OresBase.instance, OreGuiHandler.SIFTER, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 
@@ -82,7 +82,7 @@ public class BlockSifter extends Block {
 				if (stack != null) {
 					entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
 					entityIn.setDefaultPickupDelay();
-					worldIn.spawnEntityInWorld(entityIn);
+					worldIn.spawnEntity(entityIn);
 				}
 			}
 		}

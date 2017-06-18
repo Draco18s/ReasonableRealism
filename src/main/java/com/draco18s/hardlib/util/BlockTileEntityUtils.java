@@ -19,7 +19,7 @@ public class BlockTileEntityUtils {
 			if (stack != null && !worldIn.isRemote) {
 				entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
 				entityIn.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityIn);
+				worldIn.spawnEntity(entityIn);
 			}
 		}
 	}

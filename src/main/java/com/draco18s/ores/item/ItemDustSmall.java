@@ -12,6 +12,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,7 +27,7 @@ public class ItemDustSmall extends Item {
 
 	public String getUnlocalizedNameInefficiently(ItemStack stack) {
 		EnumOreType v = EnumOreType.values()[stack.getItemDamage()];
-		switch(v) {
+		/*switch(v) {
 			case IRON:
 			case GOLD:
 			case FLOUR:
@@ -43,11 +44,13 @@ public class ItemDustSmall extends Item {
 				return "item.harderores:small_"+v.name+"_dust";
 			default:
 				return "item.harderores:unknown_small_dust";
-		}
+		}*/
+		return "item.harderores:small_"+v.name+"_dust";
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.GOLD.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.FLOUR.meta));

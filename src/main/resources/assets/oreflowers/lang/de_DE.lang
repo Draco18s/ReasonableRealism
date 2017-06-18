@@ -26,6 +26,7 @@ tile.oreflowers:sheeps_fescue.name=Echter Schaf-Schwingel
 tile.oreflowers:primrose.name=Primel
 tile.oreflowers:paintbrush.name=Indianerpinsel
 tile.oreflowers:arrowhead.name=Pfeilkraut
+tile.oreflowers:stoneroot.name=Steinwurzel
 
 item.oreflowers:poorjoe.name=Diodella
 item.oreflowers:horsetail.name=Schachtelhalm
@@ -55,6 +56,7 @@ item.oreflowers:sheeps_fescue.name=Echter Schaf-Schwingel
 item.oreflowers:primrose.name=Primel
 item.oreflowers:arrowhead.name=Pfeilkraut
 item.oreflowers:paintbrush.name=Indianerpinsel
+item.oreflowers:stoneroot.name=Steinwurzel
 
 item.oreflowers:sticky_goo.name=Klebriges Zeug
 item.oreflowers:ironwand.name=Eisenerz-Datenmanipulator
@@ -80,11 +82,13 @@ indicator.fluorite=Fluoritindikator
 indicator.cadmium=Kadmiumindikator
 indicator.thorium=Thoriumindikator
 indicator.osmium=Osmiumindikator
+indicator.stone=Steinindikator
 
 tooltip:oreflowers:datainfo=Zeigt zugängliche Erzzählungen an (nicht null)
 tooltip:oreflowers:datashiftinfo=Zeigt alle zugänglichen Erzzählungen beim Schleichen an
 tooltip:oreflowers:datamanipulation=Fügt 32 Einheiten an Erzdaten zu diesem Chunk-Abschnitt hinzu
 tooltip:oreflowers:datashiftmanipulation=Zieht 32 Einheiten beim Schleichen ab
+tooltip:oreflowers:april.one=Aprilscherz!
 
 achievement.oreFlowers=Ein Zeichen
 achievement.prospecting=Eine wachsende Suche

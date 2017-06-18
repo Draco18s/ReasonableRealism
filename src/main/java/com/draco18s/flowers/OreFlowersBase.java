@@ -1,9 +1,11 @@
 package com.draco18s.flowers;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.flowers.block.BlockOreFlower1;
@@ -169,7 +171,7 @@ public class OreFlowersBase {
 	public void postInit(FMLPostInitializationEvent event) {
 		FlowerAchievements.addCoreAchievements();
 		
-		if(!configProcessOreDictLatest)
+		//if(!configProcessOreDictLatest)
 			addAllOres();
 	}
 	
@@ -199,6 +201,11 @@ public class OreFlowersBase {
 		addArbitraryOre("oreThorium",	 5,  8, 4, OreFlowerDictator.defaultDictator,	flower2State, flowerDesert2State, Props.FLOWER_TYPE2, EnumOreFlower2._8MELASTOMA, 		Props.DESERT_FLOWER_TYPE2, null/*EnumOreFlowerDesert2._8THORIUM*/);
 		
 		addArbitraryOre("oreOsmium",	 5,  9, 5, OreFlowerDictator.defaultDictator,	flower3State, flowerDesert3State, Props.FLOWER_TYPE3, EnumOreFlower3._1ARROWHEAD, 		Props.DESERT_FLOWER_TYPE3, EnumOreFlowerDesert3._1PAINTBRUSH);
+		
+		Calendar date = Calendar.getInstance();
+		if(date.get(Calendar.DAY_OF_MONTH) == 1 && date.get(Calendar.MONTH) == 3){
+			addArbitraryOre("stone",	 5,  9, 5, OreFlowerDictator.rareDictator,		flower3State, flowerDesert3State, Props.FLOWER_TYPE3, EnumOreFlower3._3STONEROOT, 		Props.DESERT_FLOWER_TYPE3, null/*EnumOreFlowerDesert3._1PAINTBRUSH*/);
+		}
 	}
 	
 	private <T extends Comparable<T>, V extends T,U extends Comparable<U>, W extends U>

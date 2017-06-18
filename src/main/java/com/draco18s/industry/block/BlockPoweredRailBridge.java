@@ -40,7 +40,7 @@ public class BlockPoweredRailBridge extends BlockRailPowered {
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block) {
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
 		if (!world.isRemote) {
 			if(!canPlaceBlockAt(world, pos)) {
 				this.dropBlockAsItem(world, pos, state, 0);
@@ -85,7 +85,7 @@ public class BlockPoweredRailBridge extends BlockRailPowered {
 			}
 			else if (railDir == BlockRailBase.EnumRailDirection.EAST_WEST)
 			{
-				if (cart.worldObj.getBlockState(pos.west()).isNormalCube())
+				if (cart.world.getBlockState(pos.west()).isNormalCube())
 				{
 					cart.motionX = 0.02D;
 				}

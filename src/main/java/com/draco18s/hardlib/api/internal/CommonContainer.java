@@ -1,5 +1,6 @@
 package com.draco18s.hardlib.api.internal;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,9 +34,9 @@ public class CommonContainer extends Container {
 	}
 
 	@Override
-	@Nullable
+	@Nonnull
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.inventorySlots.get(index);
 
 		if (slot != null && slot.getHasStack()) {
@@ -44,15 +45,15 @@ public class CommonContainer extends Container {
 
 			if (index <  invenSize) {
 				if (!this.mergeItemStack(itemstack1, invenSize, this.inventorySlots.size(), true)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
 			else if (!this.mergeItemStack(itemstack1, 0, invenSize, false)) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 
-			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack)null);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			}
 			else {
 				slot.onSlotChanged();
@@ -69,22 +70,22 @@ public class CommonContainer extends Container {
 		if (reverseDirection) i = endIndex - 1;
 		
 		if (stack.isStackable()){
-			while (stack.stackSize > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)){
+			while (stack.getCount() > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)){
 				Slot slot = (Slot)this.inventorySlots.get(i);
 				ItemStack itemstack = slot.getStack();
 				int maxLimit = Math.min(stack.getMaxStackSize(), slot.getSlotStackLimit());
 				
-				if (itemstack != null && areItemStacksEqual(stack, itemstack)){
-					int j = itemstack.stackSize + stack.stackSize;
+				if (!itemstack.isEmpty() && areItemStacksEqual(stack, itemstack)){
+					int j = itemstack.getCount() + stack.getCount();
 					if (j <= maxLimit){
-						stack.stackSize = 0;
-						itemstack.stackSize = j;
+						stack.setCount(0);
+						itemstack.setCount(j);
 						slot.onSlotChanged();
 						flag = true;
 						
-					}else if (itemstack.stackSize < maxLimit){
-						stack.stackSize -= maxLimit - itemstack.stackSize;
-						itemstack.stackSize = maxLimit;
+					}else if (itemstack.getCount() < maxLimit){
+						stack.shrink(maxLimit - itemstack.getCount());
+						itemstack.setCount(maxLimit);
 						slot.onSlotChanged();
 						flag = true;
 					}
@@ -94,7 +95,7 @@ public class CommonContainer extends Container {
 				}else ++i;
 			}
 		}
-		if (stack.stackSize > 0){
+		if (stack.getCount() > 0){
 			if (reverseDirection){
 				i = endIndex - 1;
 			}else i = startIndex;
@@ -103,17 +104,17 @@ public class CommonContainer extends Container {
 				Slot slot1 = (Slot)this.inventorySlots.get(i);
 				ItemStack itemstack1 = slot1.getStack();
 
-				if (itemstack1 == null && slot1.isItemValid(stack)){ // Forge: Make sure to respect isItemValid in the slot.
-					if(stack.stackSize <= slot1.getSlotStackLimit()){
+				if (itemstack1.isEmpty() && slot1.isItemValid(stack)){ // Forge: Make sure to respect isItemValid in the slot.
+					if(stack.getCount() <= slot1.getSlotStackLimit()){
 						slot1.putStack(stack.copy());
 						slot1.onSlotChanged();
-						stack.stackSize = 0;
+						stack.setCount(0);
 						flag = true;
 						break;
 					}else{
 						itemstack1 = stack.copy();
-						stack.stackSize -= slot1.getSlotStackLimit();
-						itemstack1.stackSize = slot1.getSlotStackLimit();
+						stack.shrink(slot1.getSlotStackLimit());
+						itemstack1.setCount(slot1.getSlotStackLimit());
 						slot1.putStack(itemstack1);
 						slot1.onSlotChanged();
 						flag = true;

@@ -37,7 +37,8 @@ public enum EnumOreType implements IMetaLookup<EnumOreType> {
 	
 	/*Flower 3*/
 	OSMIUM,   /*24*/
-	QUARTZ;   /*25*/ //no flowers
+	QUARTZ,   /*25*/ //no flowers
+	STONE;    /*26*/ //april fools
 	
 	//cobalt, Thlaspi caerulescens
 	

@@ -54,14 +54,14 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 				boolean flag = entityIn != null;
 				Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
 				if (world == null && entity != null) {
-					world = entity.worldObj;
+					world = entity.world;
 				}
 				if(world == null || entity == null) {
 					return 6;
 				}
 				NBTTagCompound tag = stack.getTagCompound();
 				
-				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
+				Biome bio = world.getBiome(new BlockPos(entity.posX, 0, entity.posZ));
 				float t = bio.getTemperature();
 
 				float flat = 0;
@@ -80,8 +80,9 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Block block = world.getBlockState(pos).getBlock();
+		ItemStack stack = player.getHeldItem(hand);
 		if(HardLibAPI.hardCrops.isCropBlock(block)) {
 			NBTTagCompound tag = stack.getTagCompound();
 			if(tag == null) {
@@ -153,7 +154,7 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
 		NBTTagCompound tag = stack.getTagCompound();
-		Biome bio = player.getEntityWorld().getBiomeGenForCoords(new BlockPos(player.posX, 0, player.posZ));
+		Biome bio = player.getEntityWorld().getBiome(new BlockPos(player.posX, 0, player.posZ));
 		float t = bio.getTemperature();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.harderfarming:linkedcrop.text") + " " + tag.getString("linkedCropName"));
@@ -176,7 +177,7 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 			flat = tag.getFloat("tempflat");
 			time = tag.getFloat("temptime");
 		}
-		Biome bio = entity.getEntityWorld().getBiomeGenForCoords(entity.getPosition());
+		Biome bio = entity.getEntityWorld().getBiome(entity.getPosition());
 		float f = bio.getTemperature();
 		f += flat;
 		f = Math.round((f+1.35f) * 4);

@@ -19,7 +19,7 @@ public class PacketHandlerServer implements IMessageHandler<CtoSMessage, IMessag
 	@Override
 	public IMessage onMessage(final CtoSMessage packet, MessageContext context) {
 		final EntityPlayerMP player = context.getServerHandler().playerEntity;
-		final World world = player.worldObj;
+		final World world = player.world;
 		System.out.println("Packet recieved");
 		final IThreadListener mainThread = (WorldServer) world;
 		mainThread.addScheduledTask(new Runnable() {

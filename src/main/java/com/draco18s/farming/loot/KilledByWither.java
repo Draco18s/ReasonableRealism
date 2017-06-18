@@ -27,8 +27,8 @@ public class KilledByWither implements LootCondition {
 	@Override
 	public boolean testCondition(Random rand, LootContext context) {
 		DamageSource damage = ReflectionHelper.getPrivateValue(LootContext.class, context, "damageSource","field_186503_f");
-		if(invert)return (damage == DamageSource.wither);
-		else return (damage != DamageSource.wither);
+		if(invert)return (damage == DamageSource.WITHER);
+		else return (damage != DamageSource.WITHER);
 	}
 	
 	public static class Serializer extends LootCondition.Serializer<KilledByWither> {

@@ -11,7 +11,7 @@ public class MillableItemsHandler extends ItemStackHandler {
 	}
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-		if(HardLibAPI.oreMachines.getMillResult(stack) == null) return stack;
+		if(HardLibAPI.oreMachines.getMillResult(stack).isEmpty()) return stack;
 		return super.insertItem(slot, stack, simulate);
 	}
 }

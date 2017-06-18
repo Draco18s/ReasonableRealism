@@ -109,7 +109,7 @@ public class ProspectorParticle extends Particle {
 			this.setExpired();
 		}
 
-		this.moveEntity(0,0,0);
+		this.move(0,0,0);
 		//this.particleGreen = (float)((double)this.particleGreen * 0.96D);
 		//this.particleBlue = (float)((double)this.particleBlue * 0.9D);
 	}

@@ -1,5 +1,6 @@
 package com.draco18s.flowers.block;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,21 +22,28 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.IShearable;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
+public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper, IShearable {
 
 	protected static final AxisAlignedBB FLOWER_AABB = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 1.0D, 0.699999988079071D);
 
@@ -53,13 +61,13 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-		return createStackedBlock(state);
+		return getSilkTouchDrop(state);
 	}
 
 	@Override
 	@Nullable
-	protected ItemStack createStackedBlock(IBlockState state) {
-		//return super.createStackedBlock(state);
+	protected ItemStack getSilkTouchDrop(IBlockState state) {
+		//return super.getSilkTouchDrop(state);
 		Item item = Item.getItemFromBlock(this);
 		int i = state.getValue(Props.FLOWER_TYPE2).ordinal();
 		return new ItemStack(item, 1, i);
@@ -67,7 +75,7 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list) {
+	public void getSubBlocks(Item item, CreativeTabs tab, NonNullList<ItemStack> list) {
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 1));
 		list.add(new ItemStack(item, 1, 2));
@@ -92,7 +100,7 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	}
 	
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		IBlockState state = this.getStateFromMeta(meta);
 		state = state.withProperty(Props.FLOWER_STALK, false);
 		EnumOreFlower2 thisType = state.getValue(Props.FLOWER_TYPE2);
@@ -143,4 +151,48 @@ public class BlockOreFlower2 extends BlockBush implements IBlockWithMapper {
 	public StateMapperBase getStateMapper() {
 		return new StateMapperFlowers(Props.FLOWER_TYPE2);
 	}
+
+	@Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack) {
+        player.addStat(StatList.getBlockStats(this));
+        player.addExhaustion(0.025F);
+
+        if (player.isSneaking()) {
+            List<ItemStack> items = new ArrayList<ItemStack>();
+            ItemStack itemstack = this.getSilkTouchDrop(state);
+
+            if (itemstack != null)
+            {
+                items.add(itemstack);
+            }
+
+            ForgeEventFactory.fireBlockHarvesting(items, worldIn, pos, state, 0, 1.0f, true, player);
+            for (ItemStack item : items)
+            {
+                spawnAsEntity(worldIn, pos, item);
+            }
+        }
+        else {
+            harvesters.set(player);
+            int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
+            this.dropBlockAsItem(worldIn, pos, state, i);
+            harvesters.set(null);
+        }
+    }
+
+	@Override
+    public int quantityDropped(IBlockState state, int fortune, Random random) {
+        return 0;
+    }
+
+    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){
+    	return true;
+    }
+    
+    @Override
+    public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
+        List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
+        ret.add(new ItemStack(this, 1, world.getBlockState(pos).getValue(Props.FLOWER_TYPE2).getOrdinal()));
+        return ret;
+    }
 }

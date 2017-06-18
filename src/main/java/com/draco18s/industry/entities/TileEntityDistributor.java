@@ -2,8 +2,6 @@ package com.draco18s.industry.entities;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
-
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,20 +25,20 @@ public class TileEntityDistributor extends TileEntityHopper {
 
 	@Override
 	public void update() {
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockHopper.FACING);
 		if(face == EnumFacing.DOWN || face == EnumFacing.UP) {
-			worldObj.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, EnumFacing.NORTH), 3);
+			world.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, EnumFacing.NORTH), 3);
 		}
 		else {
 			delay--;
 			if(delay <= 0) {
 				face = face.rotateY();
-				worldObj.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, face), 2);
+				world.setBlockState(this.getPos(), state.withProperty(BlockHopper.FACING, face), 2);
 				delay = 4;
 				setTransferCooldown(0);
 				updateHopper();
-				worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+				world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 				this.markDirty();
 			}
 		}

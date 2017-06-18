@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -33,7 +34,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TileEntityFilter extends TileEntityHopper {
-	private ItemStack[] filters = new ItemStack[6];
+	private NonNullList<ItemStack> filters = NonNullList.create();
 	private IBlockState[] filterStates = new IBlockState[6];
 	private EnumAcceptType acceptRule = EnumAcceptType.OR;
 
@@ -49,6 +50,8 @@ public class TileEntityFilter extends TileEntityHopper {
 	public TileEntityFilter() {
 		super();
 		setCustomName("container.expindustry:filter");
+		for(int i=0; i < 6; i++)
+			filters.add(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -56,9 +59,9 @@ public class TileEntityFilter extends TileEntityHopper {
 		super.update();
 	}
 
-	@Override
+	/*@Override
 	public boolean updateHopper() {
-		if (worldObj != null && !worldObj.isRemote) {
+		if (world != null && !world.isRemote) {
 			if (!isOnTransferCooldown() && BlockHopper.isEnabled(getBlockMetadata())) {
 				boolean flag = false;
 
@@ -82,7 +85,7 @@ public class TileEntityFilter extends TileEntityHopper {
 		else {
 			return false;
 		}
-	}
+	}*/
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
@@ -90,7 +93,7 @@ public class TileEntityFilter extends TileEntityHopper {
 			return super.getStackInSlot(slot);
 		}
 		else {
-			return filters[slot - 5];
+			return filters.get(slot - 5);
 		}
 	}
 
@@ -117,8 +120,8 @@ public class TileEntityFilter extends TileEntityHopper {
 			World w = getFilterWorld();
 			if(w == null) return false;
 			boolean ret = createAndCheckTE(w, pos, stack, slot - 5);
-			worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-			worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+			world.notifyBlockUpdate(pos, getState(), getState(), 3);
+			world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 			markDirty();
 			return ret;
 		}
@@ -140,16 +143,16 @@ public class TileEntityFilter extends TileEntityHopper {
 
 	private boolean acceptOr(int slot, ItemStack stack) {
 		boolean ret = false;
-		for (int i = filters.length - 1; i >= 0; i--) {
-			if (filters[i] != null) {
+		for (int i = filters.size() - 1; i >= 0; i--) {
+			if (filters.get(i) != ItemStack.EMPTY) {
 				World w = getFilterWorld();
-				createAndCheckTE(w, pos, filters[i], i);
+				createAndCheckTE(w, pos, filters.get(i), i);
 				TileEntity te = w.getTileEntity(pos.up(i));
 				EnumFacing side = getFacingForSlot(i);
 				IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
 				for (int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
 					ItemStack input = stack.copy();
-					input.stackSize = 1;
+					input.setCount(1);
 					int numSlots = inven.getSlots();
 					ret |= doesAccept(te, inven, fakeSlot, input, i);
 				}
@@ -160,17 +163,17 @@ public class TileEntityFilter extends TileEntityHopper {
 
 	private boolean acceptAnd(int slot, ItemStack stack) {
 		boolean ret = true;
-		for (int i = filters.length - 1; i >= 0; i--) {
-			if (filters[i] != null) {
+		for (int i = filters.size() - 1; i >= 0; i--) {
+			if (filters.get(i) != ItemStack.EMPTY) {
 				boolean anySlot = false;
 				World w = getFilterWorld();
-				createAndCheckTE(w, pos, filters[i], slot);
+				createAndCheckTE(w, pos, filters.get(i), slot);
 				TileEntity te = w.getTileEntity(pos.up(i));
 				EnumFacing side = getFacingForSlot(i);
 				IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
 				for (int fakeSlot = 0; inven != null && fakeSlot < inven.getSlots(); fakeSlot++) {
 					ItemStack input = stack.copy();
-					input.stackSize = 1;
+					input.setCount(1);
 					anySlot = anySlot || doesAccept(te, inven, fakeSlot, input, i);
 				}
 				ret &= anySlot;
@@ -189,13 +192,13 @@ public class TileEntityFilter extends TileEntityHopper {
 			}
 			else if (/* slot == 0 && */(filterSlot == 0 || filterSlot == 1)) {
 				ItemStack s = FurnaceRecipes.instance().getSmeltingResult(stack);
-				return s != null;
+				return !s.areItemStacksEqual(s, ItemStack.EMPTY);
 			}
 			return false;
 		}
 		else {
 			ItemStack remain = inven.insertItem(slot, stack, true);
-			return (remain == null);
+			return (remain.areItemStacksEqual(remain, ItemStack.EMPTY));
 		}
 	}
 
@@ -205,22 +208,22 @@ public class TileEntityFilter extends TileEntityHopper {
 			super.setInventorySlotContents(slot, stack);
 		}
 		else if (stack == null) {
-			filters[slot - 5] = null;
+			filters.set(slot-5, ItemStack.EMPTY);
 			filterStates[slot - 5] = null;
-			if(!this.worldObj.isRemote) {
+			if(!this.world.isRemote) {
 				World w = getFilterWorld();
 				if(w == null) return;
 				w.setBlockToAir(pos);
 			}
 		}
 		else if (stack.getItem() instanceof ItemBlock) {
-			filters[slot - 5] = stack;
+			filters.set(slot-5, stack);
 		}
-		if (worldObj != null) {
-			worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
+		if (world != null) {
+			world.notifyBlockUpdate(pos, getState(), getState(), 3);
 		}
-		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		world.notifyBlockUpdate(pos, getState(), getState(), 3);
+		world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 		markDirty();
 	}
 
@@ -229,13 +232,13 @@ public class TileEntityFilter extends TileEntityHopper {
 		if (slot < 5) {
 			return super.decrStackSize(slot, num);
 		}
-		if (filters[slot - 5] != null) {
+		if (filters.get(slot-5) != ItemStack.EMPTY) {
 			//ItemStack itemstack;
-			if (filters[slot - 5].stackSize <= num) {
+			if (filters.get(slot-5).getCount() <= num) {
 				//itemstack = filters[slot - 5];
-				filters[slot - 5] = null;
+				filters.set(slot-5, ItemStack.EMPTY);
 				filterStates[slot - 5] = null;
-				if(!this.worldObj.isRemote) {
+				if(!this.world.isRemote) {
 					World w = getFilterWorld();
 					if(w == null) return null;
 					w.setBlockToAir(pos);
@@ -244,10 +247,10 @@ public class TileEntityFilter extends TileEntityHopper {
 			}
 			else {
 				//itemstack = filters[slot - 5].splitStack(num);
-				if (filters[slot - 5].stackSize == 0) {
-					filters[slot - 5] = null;
+				if (filters.get(slot-5).getCount() == 0) {
+					filters.set(slot-5, ItemStack.EMPTY);
 					filterStates[slot - 5] = null;
-					if(!this.worldObj.isRemote) {
+					if(!this.world.isRemote) {
 						World w = getFilterWorld();
 						if(w == null) return null;
 						w.setBlockToAir(pos);
@@ -255,8 +258,8 @@ public class TileEntityFilter extends TileEntityHopper {
 				}
 				//return itemstack;
 			}
-			worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-			worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+			world.notifyBlockUpdate(pos, getState(), getState(), 3);
+			world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 			markDirty();
 			return null;
 		}
@@ -271,7 +274,7 @@ public class TileEntityFilter extends TileEntityHopper {
 	}
 
 	private IBlockState getState() {
-		return worldObj.getBlockState(pos);
+		return world.getBlockState(pos);
 	}
 
 	public EnumAcceptType getEnumType() {
@@ -297,12 +300,14 @@ public class TileEntityFilter extends TileEntityHopper {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		NBTTagList nbttaglist = tag.getTagList("expindustry:filters", 10);
-		filters = new ItemStack[6];
+		filters = NonNullList.create();
+		for(int i=0; i < 6; i++)
+			filters.add(ItemStack.EMPTY);
 		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
 			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			int j = nbttagcompound1.getByte("expindustry:fslot") & 255;
-			if (j >= 0 && j < filters.length) {
-				filters[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+			if (j >= 0 && j < filters.size()) {
+				filters.set(j,new ItemStack(nbttagcompound1));
 			}
 		}
 		acceptRule = EnumAcceptType.values()[tag.getInteger("expindustry:accepttype")];
@@ -312,11 +317,11 @@ public class TileEntityFilter extends TileEntityHopper {
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		NBTTagList nbttaglist = new NBTTagList();
-		for (int i = 0; i < filters.length; ++i) {
-			if (filters[i] != null) {
+		for (int i = 0; i < filters.size(); ++i) {
+			if (filters.get(i) != ItemStack.EMPTY) {
 				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 				nbttagcompound1.setByte("expindustry:fslot", (byte) i);
-				filters[i].writeToNBT(nbttagcompound1);
+				filters.get(i).writeToNBT(nbttagcompound1);
 				nbttaglist.appendTag(nbttagcompound1);
 			}
 		}
@@ -327,14 +332,14 @@ public class TileEntityFilter extends TileEntityHopper {
 
 	@Override
 	public void validate() {
-		if(!this.worldObj.isRemote && getFilterWorld() != null)
+		if(!this.world.isRemote && getFilterWorld() != null)
 			ExpandedIndustryBase.forceChunkLoad(getFilterWorld(), new ChunkPos(pos));
 		super.validate();
 	}
 
 	@Override
 	public void invalidate() {
-		if(!this.worldObj.isRemote && getFilterWorld() != null)
+		if(!this.world.isRemote && getFilterWorld() != null)
 			ExpandedIndustryBase.releaseChunkLoad(getFilterWorld(), new ChunkPos(pos));
 		super.invalidate();
 	}
@@ -427,20 +432,10 @@ public class TileEntityFilter extends TileEntityHopper {
 	/*====================================== Overrides for Filtering ======================================*/
 	/*============================================ Hopper Stuff ===========================================*/
 
-	private boolean isEmpty() {
-		for (int i = 0; i < getSizeInventory(); i++) {
-			ItemStack itemstack = getStackInSlot(i);
-			if (itemstack != null) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	private boolean isFull() {
 		for (int i = 0; i < getSizeInventory(); i++) {
 			ItemStack itemstack = getStackInSlot(i);
-			if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize()) {
+			if (itemstack == null || itemstack.getCount() != itemstack.getMaxStackSize()) {
 				return false;
 			}
 		}
@@ -466,9 +461,9 @@ public class TileEntityFilter extends TileEntityHopper {
 				for (int i = 0; i < getSizeInventory(); ++i) {
 					if (getStackInSlot(i) != null) {
 						ItemStack itemstack = getStackInSlot(i).copy();
-						ItemStack itemstack1 = putStackInInventoryAllSlots(iinventory, decrStackSize(i, 1), enumfacing);
+						ItemStack itemstack1 = putStackInInventoryAllSlots(this, iinventory, decrStackSize(i, 1), enumfacing);
 
-						if (itemstack1 == null || itemstack1.stackSize == 0) {
+						if (itemstack1 == null || itemstack1.getCount() == 0) {
 							iinventory.markDirty();
 							return true;
 						}
@@ -519,7 +514,7 @@ public class TileEntityFilter extends TileEntityHopper {
 		else {
 			for (EntityItem entityitem : getCaptureItems(hopper.getWorld(), hopper.getXPos(), hopper.getYPos(),
 					hopper.getZPos())) {
-				if (putDropInInventoryAllSlots(hopper, entityitem)) {
+				if (putDropInInventoryAllSlots((IInventory)null, hopper, entityitem)) {
 					return true;
 				}
 			}
@@ -536,7 +531,7 @@ public class TileEntityFilter extends TileEntityHopper {
 			for (int k : aint) {
 				ItemStack itemstack1 = isidedinventory.getStackInSlot(k);
 
-				if (itemstack1 == null || itemstack1.stackSize != itemstack1.getMaxStackSize()) {
+				if (itemstack1 == null || itemstack1.getCount() != itemstack1.getMaxStackSize()) {
 					return false;
 				}
 			}
@@ -547,7 +542,7 @@ public class TileEntityFilter extends TileEntityHopper {
 			for (int j = 0; j < i; ++j) {
 				ItemStack itemstack = inventoryIn.getStackInSlot(j);
 
-				if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize()) {
+				if (itemstack == null || itemstack.getCount() != itemstack.getMaxStackSize()) {
 					return false;
 				}
 			}
@@ -598,10 +593,10 @@ public class TileEntityFilter extends TileEntityHopper {
 
 		if (itemstack != null && canExtractItemFromSlot(inventoryIn, itemstack, index, direction)) {
 			ItemStack itemstack1 = itemstack.copy();
-			ItemStack itemstack2 = putStackInInventoryAllSlots(hopper, inventoryIn.decrStackSize(index, 1),
+			ItemStack itemstack2 = putStackInInventoryAllSlots(inventoryIn, hopper, inventoryIn.decrStackSize(index, 1),
 					(EnumFacing) null);
 
-			if (itemstack2 == null || itemstack2.stackSize == 0) {
+			if (itemstack2 == null || itemstack2.getCount() == 0) {
 				inventoryIn.markDirty();
 				return true;
 			}
@@ -636,8 +631,8 @@ public class TileEntityFilter extends TileEntityHopper {
 			if (extractItem != null) {
 				for (int j = 0; j < dest.getSizeInventory(); j++) {
 					ItemStack destStack = dest.getStackInSlot(j);
-					if (destStack == null || destStack.stackSize < destStack.getMaxStackSize()
-							&& destStack.stackSize < dest.getInventoryStackLimit()
+					if (destStack == null || destStack.getCount() < destStack.getMaxStackSize()
+							&& destStack.getCount() < dest.getInventoryStackLimit()
 							&& ItemHandlerHelper.canItemStacksStack(extractItem, destStack)) {
 						// override! we need to check that the insert is valid!
 						if (dest.isItemValidForSlot(j, extractItem)) {
@@ -646,7 +641,7 @@ public class TileEntityFilter extends TileEntityHopper {
 								dest.setInventorySlotContents(j, extractItem);
 							}
 							else {
-								destStack.stackSize++;
+								destStack.grow(1);
 								dest.setInventorySlotContents(j, destStack);
 							}
 							dest.markDirty();

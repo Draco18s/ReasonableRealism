@@ -104,7 +104,7 @@ public class FarmingEventHandler {
 			List<EntityItem> list = event.getDrops();
 			for(EntityItem ent : list) {
 				//if(ent.getEntityItem().getItem() == Item.getItemFromBlock(Blocks.WOOL)) {
-					ent.getEntityItem().stackSize += 1 + rand.nextInt(2);
+					ent.getEntityItem().grow(1 + rand.nextInt(2));
 				//}
 			}
 		}
@@ -118,7 +118,7 @@ public class FarmingEventHandler {
 			BlockPos pos = event.getPos();
 			Biome bio = world.getBiomeForCoordsBody(pos);
 			Result value = Result.DEFAULT;
-			Iterator<IProperty<?>> props = state.getPropertyNames().iterator();
+			Iterator<IProperty<?>> props = state.getPropertyKeys().iterator();
 			while(props.hasNext()) {
 				IProperty<?> p = props.next();
 				if(p instanceof PropertyInteger && p.getName().toLowerCase().equals("age")) {
@@ -187,12 +187,12 @@ public class FarmingEventHandler {
 		if(doBiomeCrops) {
 			float t = bio.getTemperature();
 			float r = bio.getRainfall();
-			if(BiomeDictionary.isBiomeOfType(bio, Type.OCEAN) || BiomeDictionary.isBiomeOfType(bio, Type.RIVER)) {
+			if(BiomeDictionary.hasType(bio, Type.OCEAN) || BiomeDictionary.hasType(bio, Type.RIVER)) {
 				//TODO: figure out time offsets
 				//lesson the effects of temperature on Ocean and River biomes
 				//t += getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) * 0.333f;
 			}
-			if(BiomeDictionary.isBiomeOfType(bio, Type.NETHER) != world.getPrecipitationHeight(pos).getY() > pos.getY()) {
+			if(BiomeDictionary.hasType(bio, Type.NETHER) != world.getPrecipitationHeight(pos).getY() > pos.getY()) {
 				//if the crop is inside, halve the effects of climate.
 				//nether is treated in reverse
 				t = (t + 0.8f)/2f;
@@ -276,7 +276,7 @@ public class FarmingEventHandler {
 
 	@SubscribeEvent
 	public void onEntityAdded(EntityJoinWorldEvent event) {
-		if(event.getEntity() instanceof EntityAnimal && !event.getEntity().worldObj.isRemote && !(event.getEntity() instanceof EntityWolf)) {
+		if(event.getEntity() instanceof EntityAnimal && !event.getEntity().world.isRemote && !(event.getEntity() instanceof EntityWolf)) {
 			EntityAnimal animal = (EntityAnimal)event.getEntity();
 			EntityAgeTracker t = new EntityAgeTracker();
 			animal.tasks.addTask(8, new EntityAIAging(new Random(), animal, t));
@@ -484,12 +484,12 @@ public class FarmingEventHandler {
 	public void harvestGrass(BlockEvent.HarvestDropsEvent event) {
 		Block bl = event.getState().getBlock();
 		if(bl instanceof BlockTallGrass) {
-			Biome bio = event.getWorld().getBiomeGenForCoords(event.getPos());
+			Biome bio = event.getWorld().getBiome(event.getPos());
 			if(biomeTemps.get(bio) <= 0.3f) {
 				ArrayList<ItemStack> drps = new ArrayList<ItemStack>();
 				for(ItemStack is:event.getDrops()) {
 					if(is.getItem() == Items.WHEAT_SEEDS) {
-						drps.add(new ItemStack(FarmingBase.winterWheatSeeds, is.stackSize));
+						drps.add(new ItemStack(FarmingBase.winterWheatSeeds, is.getCount()));
 					}
 					else {
 						drps.add(is);
@@ -591,7 +591,7 @@ public class FarmingEventHandler {
 
 	private void consumeItemFromStack(EntityPlayer player, ItemStack stack) {
 		if (!player.capabilities.isCreativeMode) {
-			--stack.stackSize;
+			stack.shrink(1);
 		}
 	}
 	

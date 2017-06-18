@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
@@ -64,6 +65,7 @@ public interface IHardOreProcessing {
 	 * @param checkStackSize - whether or not we care if we have enough input or we just need to know if the input stack is valid
 	 * @return an ItemStack sifting result. <b>Must</b> call {@link ItemSack#copy}.
 	 */
+	@Nonnull
 	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize);
 
 	/**
@@ -71,7 +73,7 @@ public interface IHardOreProcessing {
 	 * @param itemStack
 	 * @return an ItemStack milling result. <b>Must</b> call {@link ItemSack#copy}.
 	 */
-	@Nullable
+	@Nonnull
 	public ItemStack getMillResult(ItemStack stack);
 	
 	/**
@@ -101,6 +103,7 @@ public interface IHardOreProcessing {
 	 * @param checkSize
 	 * @return
 	 */
+	@Nonnull
 	public ItemStack getPressurePackResult(ItemStack stack, boolean checkStackSize);
 	
 	/**
@@ -108,6 +111,7 @@ public interface IHardOreProcessing {
 	 * @param itemStack
 	 * @return minimum stack size for input in order to sift.
 	 */
+	@Nonnull
 	public int getPressurePackAmount(ItemStack stack);
 
 	public List<Block> getRandomSluiceResults(Random rand, Item item);

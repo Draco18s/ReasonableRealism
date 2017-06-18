@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.logging.log4j.Level;
+
 import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
@@ -18,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -48,7 +51,7 @@ public class FlowerEventHandler {
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(8), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(16), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(24), ore);
-				
+				OreFlowersBase.logger.log(Level.WARN, ore.block.getRegistryName() + ": " + count);
 				if(count > 0) {
 					count = (int)Math.min(Math.round(Math.log(count)), 10);
 					entry = list.get(ore).getSecond();
@@ -91,12 +94,18 @@ public class FlowerEventHandler {
 	}
 	
 	@SubscribeEvent
-	public void onPickup(PlayerEvent.ItemPickupEvent event) {
-		Item item = event.pickedUp.getEntityItem().getItem();
-		if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2)) {
-			event.player.addStat(FlowerAchievements.oreFlowers, 1);
+	public void onPickup(EntityItemPickupEvent event) {
+		Item item = event.getItem().getEntityItem().getItem();
+		if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers3) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert3)) {
+			event.getEntityPlayer().addStat(FlowerAchievements.oreFlowers, 1);
 		}
 	}
+	//public void onPickup(PlayerEvent.ItemPickupEvent event) {
+		//Item item = event.pickedUp.getEntityItem().getItem();
+		//if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2)) {
+			//event.player.addStat(FlowerAchievements.oreFlowers, 1);
+		//}
+	//}
 	
 	@SubscribeEvent
 	public void chunkLoad(ChunkDataEvent.Load event) {

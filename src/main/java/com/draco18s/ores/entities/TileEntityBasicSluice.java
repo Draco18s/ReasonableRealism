@@ -87,21 +87,21 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 			}
 			sendUpdates();
 		}
-		if(downstremrequests > 0 && inputSlot.getStackInSlot(0) != null && inputSlot.getStackInSlot(0).stackSize > 1) {
+		if(downstremrequests > 0 && !inputSlot.getStackInSlot(0).isEmpty() && inputSlot.getStackInSlot(0).getCount() > 1) {
 			float rx = 0.5F;
 			float ry = rand.nextFloat() * 0.25F + 0.25F;
 			float rz = 0.5F;
 
-			EntityItem entityItem = new EntityItem(worldObj,
+			EntityItem entityItem = new EntityItem(world,
 					pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
 					inputSlot.getStackInSlot(0).splitStack(1));
 
-			//Vec3d flowVec = BlockSluice.getFlowVec(worldObj.getBlockState(pos));
+			//Vec3d flowVec = BlockSluice.getFlowVec(world.getBlockState(pos));
 			entityItem.motionX = 0;//flowVec.xCoord*0.014D;
 			entityItem.motionY = 0;
 			entityItem.motionZ = 0;//flowVec.zCoord*0.014D;
 			entityItem.setPickupDelay(300);
-			worldObj.spawnEntityInWorld(entityItem);
+			world.spawnEntity(entityItem);
 			downstremrequests--;
 			sendUpdates();
 		}
@@ -109,12 +109,12 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	private void makeRequest() {
 		BlockPos p = pos;
-		EnumFacing dir = worldObj.getBlockState(p).getValue(BlockSluice.FACING).getOpposite();
+		EnumFacing dir = world.getBlockState(p).getValue(BlockSluice.FACING).getOpposite();
 		do {
 			p=p.offset(dir,1);
-		} while(worldObj.getBlockState(p).getBlock() == OresBase.sluice);
+		} while(world.getBlockState(p).getBlock() == OresBase.sluice);
 		p = p.offset(dir.getOpposite(), 1);
-		TileEntity te = worldObj.getTileEntity(p);
+		TileEntity te = world.getTileEntity(p);
 		if(te != null && te instanceof TileEntityBasicSluice && te != this) {
 			((TileEntityBasicSluice)te).downstremrequests++;
 		}		
@@ -122,7 +122,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	private void doFilter() {
 		//TODO: failure rate
-		//if(worldObj.isRemote || rand.nextInt(20) >= 7) return;
+		//if(world.isRemote || rand.nextInt(20) >= 7) return;
 
 		//we want to pull one result for every ~12 entries
 		//so that as additional mod ores are added, the sluice doesn't get less and less effective
@@ -139,7 +139,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 				for(int j = -1; j <= 1; j++) {
 					for(int k = -1; k <= 1; k++) {
 						BlockPos lookPos = pos.add(16*j, 0, 16*k);
-						cur = HardLibAPI.oreData.getOreData(worldObj, lookPos, ore);
+						cur = HardLibAPI.oreData.getOreData(world, lookPos, ore);
 						if(cur > best) {
 							bestLoc = lookPos.down(0);
 							best = cur;
@@ -147,13 +147,13 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 					}
 				}
 				if(best > 0) {
-					HardLibAPI.oreData.adjustOreData(worldObj, bestLoc, ore, 1);
+					HardLibAPI.oreData.adjustOreData(world, bestLoc, ore, 1);
 					IBlockState oreState;
 					if(ore.meta >= 0) oreState = ore.block.getStateFromMeta(ore.meta);
 					else oreState = ore.block.getDefaultState();
 					ItemStack basicDrop = new ItemStack(ore.block.getItemDropped(oreState, rand, 0));
 					ItemStack toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop);
-					if(toSpawn != null) {
+					if(!toSpawn.isEmpty()) {
 						toSpawn.copy();
 						if(inputSlot.getStackInSlot(0).getItem() == itemGravel) {
 							if(rand.nextInt(10) == 0) {
@@ -166,7 +166,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 						else if(inputSlot.getStackInSlot(0).getItem() == itemSand) {
 							//toSpawn = HardLibAPI.oreMachines.getMillResult(basicDrop).copy();
 							if(rand.nextInt(10) == 0) {
-								toSpawn.stackSize = 2;
+								toSpawn.setCount(2);
 							}
 						}
 						else {
@@ -175,7 +175,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 								toSpawn = basicDrop.copy();
 							}
 							else if(r == 1) {
-								toSpawn.stackSize = 2;
+								toSpawn.setCount(2);
 							}
 						}
 					}
@@ -189,25 +189,25 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	}
 	
 	private void sendUpdates() {
-		worldObj.markBlockRangeForRenderUpdate(pos, pos);
-		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		world.markBlockRangeForRenderUpdate(pos, pos);
+		world.notifyBlockUpdate(pos, getState(), getState(), 3);
+		world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 		markDirty();
 	}
 
 	private IBlockState getState() {
-		return worldObj.getBlockState(pos);
+		return world.getBlockState(pos);
 	}
 	
 	private void subtractDirt() {
-		if(inputSlot.getStackInSlot(0).stackSize > 1) inputSlot.getStackInSlot(0).stackSize--;
+		if(inputSlot.getStackInSlot(0).getCount() > 1) inputSlot.getStackInSlot(0).shrink(1);
 		else inputSlot.setStackInSlot(0, null);
 		sendUpdates();
 	}
 
 	private void suckItems() {
 		EntityItem ent;
-		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
+		List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
 		if (ents.size() > 0) {
 			ItemStack stack;
 			if(inputSlot.getStackInSlot(0) == null) {
@@ -215,7 +215,7 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 					ent = (EntityItem) ents.get(e);
 					stack = ent.getEntityItem();
 					if (stack.getItem() == itemGravel || stack.getItem() == itemSand || (OresBase.sluiceAllowDirt && stack.getItem() == itemDirt)) {
-						if (stack.stackSize > 1) {
+						if (stack.getCount() > 1) {
 							inputSlot.setStackInSlot(0, stack.splitStack(1));
 						} else {
 							inputSlot.setStackInSlot(0, stack.copy());
@@ -229,14 +229,14 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 		}
 		boolean flowItemsTowards = true;
 		if(flowItemsTowards && waterAmount >= 2) {
-			IBlockState state = worldObj.getBlockState(pos);
+			IBlockState state = world.getBlockState(pos);
 			EnumFacing dir = state.getValue(BlockSluice.FACING).getOpposite();
-			IBlockState source = this.worldObj.getBlockState(pos.offset(dir));
+			IBlockState source = this.world.getBlockState(pos.offset(dir));
 			if (source.getBlock() == Blocks.WATER || source.getBlock() == Blocks.FLOWING_WATER) {
-				ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos.offset(dir.getOpposite()),pos.up().offset(dir).offset(dir.rotateY())));
+				ents = world.getEntitiesWithinAABB(EntityItem.class, getAABB(pos.offset(dir.getOpposite()),pos.up().offset(dir).offset(dir.rotateY())));
 			}
 			else {
-				ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
+				ents = world.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
 			}
 			if(ents.size() > 0) {
 				for(int e = ents.size()-1; e >= 0; e--) {
@@ -252,18 +252,18 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 	}
 	
 	private void mergeStacks(ItemStack stack) {
-		if(worldObj.isRemote) return;
+		if(world.isRemote) return;
 		float rx = 0.4F + rand.nextFloat()*0.2f;
 		float ry = rand.nextFloat() * 0.25F + 0.25F;
 		float rz = 0.4F + rand.nextFloat()*0.2f;
 
-		EntityItem entityItem = new EntityItem(worldObj,pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,stack);
+		EntityItem entityItem = new EntityItem(world,pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,stack);
 
 		entityItem.motionX = 0;
 		entityItem.motionY = 0;
 		entityItem.motionZ = 0;
 		entityItem.setPickupDelay(10);
-		worldObj.spawnEntityInWorld(entityItem);
+		world.spawnEntity(entityItem);
 	}
 
 	private AxisAlignedBB getAABB(BlockPos p) {
@@ -283,20 +283,20 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	private void updateWater() {
 		int prevWater = waterAmount;
-		IBlockState state = this.worldObj.getBlockState(pos);
+		IBlockState state = this.world.getBlockState(pos);
 		EnumFacing dir = state.getValue(BlockSluice.FACING).getOpposite();
 
-		IBlockState source = this.worldObj.getBlockState(pos.offset(dir));
+		IBlockState source = this.world.getBlockState(pos.offset(dir));
 
 		if (source.getBlock() == Blocks.WATER || source.getBlock() == Blocks.FLOWING_WATER) {
 			waterAmount = 8 - source.getValue(BlockLiquid.LEVEL);
 		} else if (source.getBlock() == OresBase.sluice) {
-			waterAmount = ((TileEntityBasicSluice) worldObj
+			waterAmount = ((TileEntityBasicSluice) world
 					.getTileEntity(pos.offset(dir))).getWaterAmount() - 2;
 		}
 		dir = dir.rotateY();
-		Material left = worldObj.getBlockState(pos.offset(dir)).getMaterial();
-		Material right = worldObj.getBlockState(pos.offset(dir.getOpposite())).getMaterial();
+		Material left = world.getBlockState(pos.offset(dir)).getMaterial();
+		Material right = world.getBlockState(pos.offset(dir.getOpposite())).getMaterial();
 
 		if (left == Material.AIR || left == Material.GROUND || left == Material.GRASS || left == Material.SAND || right == Material.AIR || right == Material.GROUND || right == Material.GRASS || right == Material.SAND) {
 			waterAmount = 0;
@@ -306,14 +306,14 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 		//	waterAmount--;
 		//}
 		if (prevWater != waterAmount) {
-			worldObj.markBlockRangeForRenderUpdate(pos, pos);
+			world.markBlockRangeForRenderUpdate(pos, pos);
 		}
 		dir = state.getValue(BlockSluice.FACING);
-		if(waterAmount > 0 && !worldObj.isRemote) {
-			Material mat = worldObj.getBlockState(pos.offset(dir).down()).getMaterial();
+		if(waterAmount > 0 && !world.isRemote) {
+			Material mat = world.getBlockState(pos.offset(dir).down()).getMaterial();
 			if(mat == Material.AIR) {
 				IBlockState st = Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockDynamicLiquid.LEVEL, 0);
-				worldObj.setBlockState(pos.offset(dir).down(), st, 3);
+				world.setBlockState(pos.offset(dir).down(), st, 3);
 			}
 		}
 	}
@@ -325,9 +325,9 @@ public class TileEntityBasicSluice extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		//IBlockState bs = worldObj.getBlockState(pos);
+		//IBlockState bs = world.getBlockState(pos);
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			if(inputSlot.getStackInSlot(0) != null && inputSlot.getStackInSlot(0).stackSize >= (downstremrequests>0?1:0)+1) return null;
+			if(inputSlot.getStackInSlot(0) != null && inputSlot.getStackInSlot(0).getCount() >= (downstremrequests>0?1:0)+1) return null;
 			return (T) inputSlot;
 		}
 		return super.getCapability(capability, facing);

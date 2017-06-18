@@ -29,7 +29,7 @@ public class ServerOreCartHandler implements IMessageHandler<ToServerMessageOreC
 
 	public IMessage onMessage(final ToServerMessageOreCart message, final MessageContext ctx) {
 		//System.out.println("===###Packet Recieved###===");
-		final WorldServer mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+		final WorldServer mainThread = (WorldServer) ctx.getServerHandler().playerEntity.world;
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {

@@ -28,7 +28,7 @@ public class ContainerFilter extends CommonContainer {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return tileEntity.isUseableByPlayer(playerIn);
+		return tileEntity.isUsableByPlayer(playerIn);
 	}
 	
 	@Override

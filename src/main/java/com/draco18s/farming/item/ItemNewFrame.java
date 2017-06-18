@@ -27,23 +27,23 @@ public class ItemNewFrame extends ItemHangingEntity
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		BlockPos blockpos = pos.offset(facing);
+		ItemStack stack = player.getHeldItem(hand);
 
-		if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && playerIn.canPlayerEdit(blockpos, facing, stack))
+		if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && player.canPlayerEdit(blockpos, facing, stack))
 		{
-			EntityHanging entityhanging = this.createEntity(worldIn, blockpos, facing);
+			EntityHanging entityhanging = this.createEntity(world, blockpos, facing);
 
 			if (entityhanging != null && entityhanging.onValidSurface())
 			{
-				if (!worldIn.isRemote)
+				if (!world.isRemote)
 				{
 					entityhanging.playPlaceSound();
-					worldIn.spawnEntityInWorld(entityhanging);
+					world.spawnEntity(entityhanging);
 				}
 
-				--stack.stackSize;
+				stack.shrink(1);
 			}
 
 			return EnumActionResult.SUCCESS;
@@ -55,8 +55,8 @@ public class ItemNewFrame extends ItemHangingEntity
 	}
 
 	@Nullable
-	private EntityHanging createEntity(World worldIn, BlockPos pos, EnumFacing clickedSide)
+	private EntityHanging createEntity(World world, BlockPos pos, EnumFacing clickedSide)
 	{
-		return new EntityItemFrameReplacement(worldIn, pos, clickedSide);
+		return new EntityItemFrameReplacement(world, pos, clickedSide);
 	}
 }

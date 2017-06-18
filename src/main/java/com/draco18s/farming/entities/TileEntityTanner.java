@@ -45,7 +45,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 
 	@Override
 	public void update() {
-		if(leftSlot.getStackInSlot(0) != null) {
+		if(!leftSlot.getStackInSlot(0).isEmpty()) {
 			if(leftSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) {
 				if(cureLeather(0)) {
 					leftSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
@@ -57,7 +57,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		else {
 			tanningTime[0] = 0;
 		}
-		if(rightSlot.getStackInSlot(0) != null) {
+		if(!rightSlot.getStackInSlot(0).isEmpty()) {
 			if(rightSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) {
 				if(cureLeather(1)) {
 					rightSlot.setStackInSlot(0, new ItemStack(Items.LEATHER));
@@ -74,7 +74,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 			if(saltTime <= 0)
 				setBlockToUpdate();
 		}
-		//if(!worldObj.isRemote)
+		//if(!world.isRemote)
 			//FarmingBase.logger.log(Level.INFO, tanningTime[0] + "," + tanningTime[1] + "|" + saltTime);
 		int v = Math.max(Math.max(tanningTime[0], tanningTime[1]),saltTime);
 		if(v > 0 && v % 100 <= 1) {
@@ -92,18 +92,18 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	}
 	
 	private void sendUpdates() {
-		worldObj.markBlockRangeForRenderUpdate(pos, pos);
-		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		world.markBlockRangeForRenderUpdate(pos, pos);
+		world.notifyBlockUpdate(pos, getState(), getState(), 3);
+		world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 		markDirty();
 	}
 
 	private boolean canRainHere() {
-		return worldObj.isRaining() && worldObj.getPrecipitationHeight(pos).getY() <= pos.getY();
+		return world.isRaining() && world.getPrecipitationHeight(pos).getY() <= pos.getY();
 	}
 
 	private IBlockState getState() {
-		return worldObj.getBlockState(pos);
+		return world.getBlockState(pos);
 	}
 
 	private boolean cureLeather(int i) {
@@ -118,7 +118,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		if(saltTime>0) {
 			return true;
 		}
-		else if(saltSlot.getStackInSlot(0) != null) {
+		else if(!saltSlot.getStackInSlot(0).isEmpty()) {
 			saltSlot.extractItem(0, 1, false);
 			saltTime = 4800 - 1;//time enough to cure 8 leather (optimal)
 			setBlockToUpdate();
@@ -136,7 +136,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			setBlockToUpdate();
-			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(world != null && world.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);
 			}
 			if(facing == null) {
@@ -148,7 +148,7 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 			if(facing == EnumFacing.DOWN) {
 				return (T) getOuputSlots();
 			}
-			IBlockState bs = worldObj.getBlockState(pos);
+			IBlockState bs = world.getBlockState(pos);
 			EnumFacing bface = bs.getValue(BlockHorizontal.FACING);
 			if(bface == facing) {
 				return (T) leftSlot;
@@ -162,10 +162,10 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 
 	private CombinedInvWrapper getOuputSlots() {
 		ArrayList<ItemStackHandler> allSlots = new ArrayList();
-		if(leftSlot.getStackInSlot(0) != null && leftSlot.getStackInSlot(0).getItem() == Items.LEATHER) {
+		if(!leftSlot.getStackInSlot(0).isEmpty() && leftSlot.getStackInSlot(0).getItem() == Items.LEATHER) {
 			allSlots.add(leftSlot);
 		}
-		if(rightSlot.getStackInSlot(0) != null && rightSlot.getStackInSlot(0).getItem() == Items.LEATHER) {
+		if(!rightSlot.getStackInSlot(0).isEmpty() && rightSlot.getStackInSlot(0).getItem() == Items.LEATHER) {
 			allSlots.add(rightSlot);
 		}
 		return new CombinedInvWrapper(allSlots.toArray(new ItemStackHandler[0]));
@@ -233,10 +233,10 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 	}
 
 	public int getSalt() {
-		if(saltSlot.getStackInSlot(0) == null) {
+		if(saltSlot.getStackInSlot(0).isEmpty()) {
 			return (saltTime > 0)?1:0;
 		}
-		int size = saltSlot.getStackInSlot(0).stackSize;
+		int size = saltSlot.getStackInSlot(0).getCount();
 		if(size <= 2) return 2;
 		if(size <= 16) return 3;
 		if(size <= 32) return 4;
@@ -249,13 +249,13 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		if(slot == 0) {
 			//FarmingBase.logger.log(Level.INFO, "	  " + leftSlot.getStackInSlot(0));
 			//return leftSlot.getStackInSlot(0) != null;
-			if(leftSlot.getStackInSlot(0) == null) return 0;
+			if(leftSlot.getStackInSlot(0).isEmpty()) return 0;
 			if(leftSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) return 1;
 			if(leftSlot.getStackInSlot(0).getItem() == Items.LEATHER) return 2;
 		}
 		if(slot == 1) {
 			//FarmingBase.logger.log(Level.INFO, "	  " + rightSlot.getStackInSlot(0));
-			if(rightSlot.getStackInSlot(0) == null) return 0;
+			if(rightSlot.getStackInSlot(0).isEmpty()) return 0;
 			if(rightSlot.getStackInSlot(0).getItem() == FarmingBase.rawLeather) return 1;
 			if(rightSlot.getStackInSlot(0).getItem() == Items.LEATHER) return 2;
 		}

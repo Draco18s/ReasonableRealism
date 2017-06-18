@@ -27,7 +27,7 @@ public class MoldTemplateItemStackHandler extends ItemStackHandler {
 	
 	private IRecipe getRecipeForTemplate(NBTTagCompound nbt) {
 		NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-		ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+		ItemStack result = new ItemStack(itemTags);
 		
 		return RecipesUtils.getRecipeWithOutput(result);
 	}

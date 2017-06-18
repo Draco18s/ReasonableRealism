@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -103,7 +104,7 @@ public class RecipeToolMold implements IRecipe {
 			for (int j = 0; j < inv.getWidth(); ++j) {
 				ItemStack itemstack = inv.getStackInRowAndColumn(j, i);
 
-				if (itemstack != null) {
+				if (itemstack != ItemStack.EMPTY) {
 					boolean flag = false;
 
 					for (ItemStack itemstack1 : list) {
@@ -169,13 +170,14 @@ public class RecipeToolMold implements IRecipe {
 	}
 
 	@Override
-	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-		ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
-		for (int i = 0; i < aitemstack.length; ++i) {
+	public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+		NonNullList<ItemStack> aitemstack = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+		//ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
+		for (int i = 0; i < aitemstack.size(); ++i) {
 			ItemStack itemstack = inv.getStackInSlot(i);
-			aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
-			if(aitemstack[i] == null && getActualTool(itemstack, input) != null) {
-				aitemstack[i] = itemstack.copy();
+			aitemstack.set(i,net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+			if(aitemstack.get(i) == ItemStack.EMPTY && getActualTool(itemstack, input) != ItemStack.EMPTY) {
+				aitemstack.set(i,itemstack.copy());
 			}
 		}
 		return aitemstack;
@@ -189,7 +191,7 @@ public class RecipeToolMold implements IRecipe {
 				return test;
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 	
 	public static final ItemStack addImprint(ItemStack imprintStack, ItemStack moldToImprint, String resourceDomain) {

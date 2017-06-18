@@ -20,13 +20,13 @@ public class WorldProviderVoid extends WorldProvider {
 	public void createBiomeProvider() {
 		this.biomeProvider = new BiomeProviderSingle(Biomes.PLAINS);
 		this.hasNoSky = true;
-		NBTTagCompound nbttagcompound = this.worldObj.getWorldInfo().getDimensionData(DimensionType.OVERWORLD);
+		NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.OVERWORLD);
 	}
 	
 	@Override
 	public IChunkGenerator createChunkGenerator()
 	{
-		return new ChunkProviderVoid(this.worldObj);
+		return new ChunkProviderVoid(this.world);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class WorldProviderVoid extends WorldProvider {
 	{
 		int i = 10518688;
 		float f = MathHelper.cos(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
-		f = MathHelper.clamp_float(f, 0.0F, 1.0F);
+		f = MathHelper.clamp(f, 0.0F, 1.0F);
 		float f1 = 0.627451F;
 		float f2 = 0.5019608F;
 		float f3 = 0.627451F;

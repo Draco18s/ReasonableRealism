@@ -20,19 +20,19 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 public class VolatileChunkProvider implements IChunkProvider {
 	private Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
-	private final World worldObj;
+	private final World world;
 	public final IChunkGenerator chunkGenerator;
 	public final Long2ObjectMap<Chunk> id2ChunkMap = new Long2ObjectOpenHashMap(8192);
 	private final Set<Long> droppedChunksSet = Sets.<Long>newHashSet();
 
 	public VolatileChunkProvider(World worldIn) {
-		worldObj = worldIn;
+		world = worldIn;
 		chunkGenerator = new ChunkProviderVoid(worldIn);
 	}
 
 	@Override
 	public Chunk getLoadedChunk(int x, int z) {
-		long i = ChunkPos.chunkXZ2Int(x, z);
+		long i = ChunkPos.asLong(x, z);
 		Chunk chunk = id2ChunkMap.get(i);
 
 		if (chunk != null) {
@@ -47,7 +47,7 @@ public class VolatileChunkProvider implements IChunkProvider {
 		Chunk chunk = this.loadChunk(x, z);
 
 		if (chunk == null) {
-			long i = ChunkPos.chunkXZ2Int(x, z);
+			long i = ChunkPos.asLong(x, z);
 
 			try {
 				chunk = chunkGenerator.provideChunk(x, z);
@@ -69,11 +69,11 @@ public class VolatileChunkProvider implements IChunkProvider {
 		return chunk;
 	}
 
-	@Override
+	/*@Override
 	public boolean unloadQueuedChunks() {
 		if (!droppedChunksSet.isEmpty()) {
-			for (ChunkPos forced : worldObj.getPersistentChunks().keySet()) {
-				droppedChunksSet.remove(ChunkPos.chunkXZ2Int(forced.chunkXPos, forced.chunkZPos));
+			for (ChunkPos forced : world.getPersistentChunks().keySet()) {
+				droppedChunksSet.remove(ChunkPos.asLong(forced.chunkXPos, forced.chunkZPos));
 			}
 
 			Iterator<Long> iterator = droppedChunksSet.iterator();
@@ -87,11 +87,11 @@ public class VolatileChunkProvider implements IChunkProvider {
 					id2ChunkMap.remove(olong);
 					++i;
 					net.minecraftforge.common.ForgeChunkManager
-							.putDormantChunk(ChunkPos.chunkXZ2Int(chunk.xPosition, chunk.zPosition), chunk);
+							.putDormantChunk(ChunkPos.asLong(chunk.xPosition, chunk.zPosition), chunk);
 					if (id2ChunkMap.size() == 0 && net.minecraftforge.common.ForgeChunkManager
-							.getPersistentChunksFor(worldObj).size() == 0
-							&& !worldObj.provider.getDimensionType().shouldLoadSpawn()) {
-						net.minecraftforge.common.DimensionManager.unloadWorld(worldObj.provider.getDimension());
+							.getPersistentChunksFor(world).size() == 0
+							&& !world.provider.getDimensionType().shouldLoadSpawn()) {
+						net.minecraftforge.common.DimensionManager.unloadWorld(world.provider.getDimension());
 						break;
 					}
 				}
@@ -99,7 +99,7 @@ public class VolatileChunkProvider implements IChunkProvider {
 		}
 
 		return false;
-	}
+	}*/
 
 	@Override
 	public String makeString() {
@@ -115,17 +115,17 @@ public class VolatileChunkProvider implements IChunkProvider {
 	public Chunk loadChunk(int x, int z, Runnable runnable) {
 		Chunk chunk = getLoadedChunk(x, z);
 		if (chunk == null) {
-			long pos = ChunkPos.chunkXZ2Int(x, z);
-			chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, worldObj);
+			long pos = ChunkPos.asLong(x, z);
+			chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, world);
 			if (chunk != null) {
 				if (!loadingChunks.add(pos)) {
 					net.minecraftforge.fml.common.FMLLog.bigWarning(
 							"There is an attempt to load a chunk (%d,%d) in dimension %d that is already being loaded. This will cause weird chunk breakages.",
-							x, z, worldObj.provider.getDimension());
+							x, z, world.provider.getDimension());
 				}
 
 				if (chunk != null) {
-					id2ChunkMap.put(ChunkPos.chunkXZ2Int(x, z), chunk);
+					id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
 					chunk.onChunkLoad();
 					chunk.populateChunk(this, chunkGenerator);
 				}
@@ -140,4 +140,13 @@ public class VolatileChunkProvider implements IChunkProvider {
 		}
 		return chunk;
 	}
+
+	@Override
+	public boolean tick() {
+		return false;
+	}
+
+    public boolean isChunkGeneratedAt(int x, int z) {
+        return this.id2ChunkMap.containsKey(ChunkPos.asLong(x, z));
+    }
 }

@@ -22,6 +22,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -45,14 +46,15 @@ public class BlockAxel extends Block{
 		this.setDefaultState(this.blockState.getBaseState().withProperty(Props.AXEL_ORIENTATION, AxelOrientation.NONE).withProperty(BlockHorizontal.FACING, EnumFacing.NORTH));
 	}
 	
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	@Override
+	 public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		EnumFacing dir = getFacingFromEntity(pos, placer);
 		IBlockState state = this.getDefaultState();
 		if(dir == EnumFacing.UP || dir == EnumFacing.DOWN) {
 			dir = EnumFacing.NORTH;
 			state = state.withProperty(Props.AXEL_ORIENTATION, AxelOrientation.UP);
 		}
-		worldIn.scheduleBlockUpdate(pos, this, 1, 10);
+		world.scheduleBlockUpdate(pos, this, 1, 10);
 		state = state.withProperty(BlockHorizontal.FACING, dir);
 		return state;
 	}
@@ -243,8 +245,9 @@ public class BlockAxel extends Block{
 			OresBase.logger.log(Level.DEBUG, message);
 	}
 	
+	@Override
 	@Deprecated
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(blockIn != this)
 			worldIn.scheduleBlockUpdate(pos, this, 1, 10);
 		else if(state.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.GEARS)

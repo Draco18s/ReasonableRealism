@@ -31,6 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -107,18 +108,18 @@ public class OreEventHandler {
 					while(it.hasNext()) {
 						ItemStack stk = it.next();
 						ItemStack out = HardLibAPI.oreMachines.getMillResult(stk);
-						if(out != null) {
-							int s = Math.min(stk.stackSize,max);
+						if(!out.isEmpty()) {
+							int s = Math.min(stk.getCount(),max);
 							ItemStack dustStack = out.copy();
-							int n = dustStack.stackSize;
-							dustStack.stackSize = 0;
+							int n = dustStack.getCount();
+							dustStack.setCount(0);
 							for(; s > 0; s--) {
-								dustStack.stackSize += n;
+								dustStack.grow(n);
 								max--;
-								stk.stackSize--;
+								stk.shrink(1);
 							}
 							newItems.add(dustStack);
-							if(stk.stackSize == 0) {
+							if(stk.getCount() == 0) {
 								it.remove();
 							}
 						}
@@ -156,12 +157,12 @@ public class OreEventHandler {
 												toDrop.add(milled.copy());
 										}
 										for(ItemStack s:toDrop) {
-											s.stackSize = 1;
+											s.setCount(1);
 											float rx = world.rand.nextFloat() * 0.6F + 0.2F;
 											float ry = world.rand.nextFloat() * 0.2F + 0.6F - 1;
 											float rz = world.rand.nextFloat() * 0.6F + 0.2F;
 											EntityItem ent = new EntityItem(world, pos.getX()+rx, pos.getY()+ry, pos.getZ()+rz, s);
-											world.spawnEntityInWorld(ent);
+											world.spawnEntity(ent);
 											ent.motionX = 0;
 											ent.motionY = -0.2F;
 											ent.motionZ = 0;
@@ -177,27 +178,29 @@ public class OreEventHandler {
 	}
 	
 	@SubscribeEvent
-	public void onPickup(PlayerEvent.ItemPickupEvent event) {
-		Item item = event.pickedUp.getEntityItem().getItem();
-		int meta = event.pickedUp.getEntityItem().getItemDamage();
+	//public void onPickup(PlayerEvent.ItemPickupEvent event) {
+	//}
+	public void onPickup(EntityItemPickupEvent event) {
+		Item item = event.getItem().getEntityItem().getItem();
+		int meta = event.getItem().getEntityItem().getItemDamage();
 		if(item == OresBase.rawOre && meta == EnumOreType.LIMONITE.meta) {
-			event.player.addStat(OresAchievements.mineLimonite, 1);
+			event.getEntityPlayer().addStat(OresAchievements.mineLimonite, 1);
 		}
 		if(item == OresBase.rawOre && meta == EnumOreType.IRON.meta) {
-			event.player.addStat(OresAchievements.acquireIronChunk, 1);
+			event.getEntityPlayer().addStat(OresAchievements.acquireIronChunk, 1);
 		}
 		if(item == Item.getItemFromBlock(OresBase.millstone)) {
-			event.player.addStat(OresAchievements.craftMill, 1);
+			event.getEntityPlayer().addStat(OresAchievements.craftMill, 1);
 		}
 		if(item == Item.getItemFromBlock(Blocks.STONE) && meta == BlockStone.EnumType.DIORITE.getMetadata()) {
-			event.player.addStat(OresAchievements.mineDiorite, 1);
+			event.getEntityPlayer().addStat(OresAchievements.mineDiorite, 1);
 		}
 		if(item == OresBase.rawOre && meta == EnumOreType.DIAMOND.meta){
-			event.player.addStat(AchievementList.DIAMONDS, 1);
+			event.getEntityPlayer().addStat(AchievementList.DIAMONDS, 1);
 		}
-		ItemStack s = HardLibAPI.oreMachines.getSiftResult(event.pickedUp.getEntityItem(), false);
-		if(s != null && item != Items.DYE) {
-			event.player.addStat(OresAchievements.grindOre, 1);
+		ItemStack s = HardLibAPI.oreMachines.getSiftResult(event.getItem().getEntityItem(), false);
+		if(!s.isEmpty() && item != Items.DYE) {
+			event.getEntityPlayer().addStat(OresAchievements.grindOre, 1);
 		}
 	}
 	
@@ -284,7 +287,7 @@ public class OreEventHandler {
 			if(!worldIn.getBlockState(pos.offset(dir)).isNormalCube() || dir == EnumFacing.DOWN) {
 				EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0+dir.getFrontOffsetX(), (double)pos.getY() + d1+dir.getFrontOffsetY(), (double)pos.getZ() + d2+dir.getFrontOffsetZ(), stack);
 				entityitem.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityitem);
+				worldIn.spawnEntity(entityitem);
 				return;
 			}
 		}

@@ -14,7 +14,7 @@ public class SlotIInventory extends Slot {
 	public boolean isItemValid(ItemStack stack) {
 		if(inventory.isItemValidForSlot(slotNumber, stack)) {
 			ItemStack ss = stack.copy();
-			ss.stackSize = 1;
+			ss.setCount(1);
 			inventory.setInventorySlotContents(slotNumber, ss);
 		}
 		//return inventory.isItemValidForSlot(slotNumber, stack);

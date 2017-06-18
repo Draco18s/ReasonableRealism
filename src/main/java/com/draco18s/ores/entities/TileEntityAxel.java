@@ -33,19 +33,19 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 
 	@Override
 	public void update() {
-		if(worldObj.isRemote) {
+		if(world.isRemote) {
 			//System.out.println(powerAmt + " " + powerScale(powerAmt));
 		}
-		else if(this.pos.getY() >= worldObj.provider.getAverageGroundLevel()-4) {
-			if(worldObj.getBlockState(pos).getValue(Props.AXEL_ORIENTATION) != AxelOrientation.HUB) return;
+		else if(this.pos.getY() >= world.provider.getAverageGroundLevel()-4) {
+			if(world.getBlockState(pos).getValue(Props.AXEL_ORIENTATION) != AxelOrientation.HUB) return;
 			
-			int rawPower = checkAirVolumeFull(pos.down(2), this.worldObj.getBlockState(this.pos).getValue(BlockHorizontal.FACING));
+			int rawPower = checkAirVolumeFull(pos.down(2), this.world.getBlockState(this.pos).getValue(BlockHorizontal.FACING));
 			powerSupply.setRawPower(rawPower);
 		}
 	}
 
 	private int checkAirVolumeFull(BlockPos pos, EnumFacing dir) {
-		if(worldObj.isRemote) return 750;
+		if(world.isRemote) return 750;
 		
 		int x = (int) Math.signum(pos.getX());
 		int z = (int) Math.signum(pos.getZ());
@@ -54,7 +54,7 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 		int k = rand.nextInt(5);
 		
 		BlockPos newpos = pos.add(dir.getFrontOffsetX()*i+dir.getFrontOffsetZ()*k,0,dir.getFrontOffsetZ()*i+dir.getFrontOffsetX()*k);
-		lightArray[i][k] = worldObj.getLightFor(EnumSkyBlock.SKY, newpos);
+		lightArray[i][k] = world.getLightFor(EnumSkyBlock.SKY, newpos);
 		int lightTot = 0;
 		int lowest = 99;
 		for(i = 0; i < 10; ++i) {
@@ -76,8 +76,8 @@ public class TileEntityAxel extends TileEntity implements ITickable {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		if(worldObj != null) {
-			IBlockState bs = worldObj.getBlockState(pos);
+		if(world != null) {
+			IBlockState bs = world.getBlockState(pos);
 			AxelOrientation millpos = bs.getValue(Props.AXEL_ORIENTATION);
 			if(capability == CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
 				if(millpos == AxelOrientation.HUB) {

@@ -36,7 +36,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		siftRecipes.put(input, output);
 		if(registerOutput && input != output) {
 			output = output.copy();
-			output.stackSize = 1;
+			output.setCount(1);
 			siftRecipes.put(output, output);
 		}
 	}
@@ -51,7 +51,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		List<ItemStack> stk = OreDictionary.getOres(input);
 		for(ItemStack stack : stk) {
 			ItemStack s = stack.copy();
-			s.stackSize = stackSize;
+			s.setCount(stackSize);
 			addSiftRecipe(s,output,registerOutput);
 		}
 	}
@@ -78,27 +78,29 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 			entry = iterator.next();
 			//are we sure we don't have to compare size?
 		} while (!compareItemStacks(stack, (ItemStack)entry.getKey()));
-		return ((ItemStack)entry.getKey()).stackSize;
+		return ((ItemStack)entry.getKey()).getCount();
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize) {
 		for (Entry<ItemStack, ItemStack> entry : this.siftRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, entry.getKey(), checkStackSize)) {
 				return (ItemStack)entry.getValue();
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getMillResult(ItemStack stack) {
 		for (Entry<ItemStack, ItemStack> entry : this.millRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, (ItemStack)entry.getKey())) {
 				return (ItemStack)entry.getValue();
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	private boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
@@ -107,7 +109,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	private boolean compareItemStacks(ItemStack key, ItemStack entry, boolean keyStackBiggerThanEntry) {
-		return entry.getItem() == key.getItem() && (entry.getMetadata() == 32767 || entry.getMetadata() == key.getMetadata()) && (!keyStackBiggerThanEntry || key.stackSize >= entry.stackSize);
+		return entry.getItem() == key.getItem() && (entry.getMetadata() == 32767 || entry.getMetadata() == key.getMetadata()) && (!keyStackBiggerThanEntry || key.getCount() >= entry.getCount());
 	}
 
 	@Override
@@ -154,13 +156,14 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getPressurePackResult(ItemStack stack, boolean checkStackSize) {
 		for (Entry<ItemStack, ItemStack> entry : this.packingRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, entry.getKey(), checkStackSize)) {
 				return (ItemStack)entry.getValue();
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 	
 	public int getPressurePackAmount(ItemStack stack) {
@@ -174,6 +177,6 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 			entry = iterator.next();
 			//are we sure we don't have to compare size?
 		} while (!compareItemStacks(stack, (ItemStack)entry.getKey()));
-		return ((ItemStack)entry.getKey()).stackSize;
+		return ((ItemStack)entry.getKey()).getCount();
 	}
 }

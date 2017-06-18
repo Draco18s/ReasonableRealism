@@ -35,9 +35,9 @@ public class EntityItemFrameReplacement extends EntityItemFrame implements IEnti
 		if(item == Items.CLOCK) {
 			double d0;
 
-			if (worldObj.provider.isSurfaceWorld())
+			if (world.provider.isSurfaceWorld())
 			{
-				d0 = (double)worldObj.getCelestialAngle(1.0F);
+				d0 = (double)world.getCelestialAngle(1.0F);
 			}
 			else
 			{
@@ -51,12 +51,12 @@ public class EntityItemFrameReplacement extends EntityItemFrame implements IEnti
 		}
 		/*if(item == Items.COMPASS) {
 			double d0;
-			if (worldObj.provider.isSurfaceWorld())
+			if (world.provider.isSurfaceWorld())
 			{
 				double d1 = this.getRotation();
 				d1 = d1 % 360.0D;
 				//what entity?
-				double d2 = this.getSpawnToAngle(worldObj, entity);
+				double d2 = this.getSpawnToAngle(world, entity);
 				d0 = Math.PI - ((d1 - 90.0D) * 0.01745329238474369D - d2);
 			}
 			else

@@ -127,7 +127,7 @@ public class RecipesUtils {
 	 */
 	@Nullable
 	public static IRecipe getSimilarRecipeWithGivenInput(IRecipe toMatch, ItemStack material) {
-		material.stackSize = 1;
+		material.setCount(1);
 		ItemStack recipeResult = null;
 		
 		//check toMatch against material first

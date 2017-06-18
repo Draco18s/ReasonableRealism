@@ -30,11 +30,11 @@ public class TileEntityCartLoader extends TileEntityHopper {
 	
 	@Override
 	public void update() {
-		if(worldObj.getBlockState(pos).getValue(BlockHopper.FACING) != EnumFacing.DOWN) {
-			worldObj.setBlockState(this.getPos(), this.getBlockType().getDefaultState().withProperty(BlockHopper.FACING, EnumFacing.DOWN), 3);
+		if(world.getBlockState(pos).getValue(BlockHopper.FACING) != EnumFacing.DOWN) {
+			world.setBlockState(this.getPos(), this.getBlockType().getDefaultState().withProperty(BlockHopper.FACING, EnumFacing.DOWN), 3);
 		}
 		if(nbtCarts.size() > 0) {
-			List<EntityMinecartContainer> list = worldObj.getEntitiesWithinAABB(EntityMinecartContainer.class, new AxisAlignedBB(pos.north().west().down(2), pos.south(2).east(2).up(2)), EntitySelectors.HAS_INVENTORY);
+			List<EntityMinecartContainer> list = world.getEntitiesWithinAABB(EntityMinecartContainer.class, new AxisAlignedBB(pos.north().west().down(2), pos.south(2).east(2).up(2)), EntitySelectors.HAS_INVENTORY);
 			if (list != null && list.size() > 0) {
 				for(Entity o : list) {
 					if(o instanceof EntityMinecartContainer) {
@@ -51,8 +51,8 @@ public class TileEntityCartLoader extends TileEntityHopper {
 			}
 		}
 		super.update();
-		if(!worldObj.isRemote) {
-			List<EntityMinecartContainer> list = worldObj.getEntitiesWithinAABB(EntityMinecartContainer.class, new AxisAlignedBB(pos.down(), pos.south().east().up(2)), EntitySelectors.HAS_INVENTORY);
+		if(!world.isRemote) {
+			List<EntityMinecartContainer> list = world.getEntitiesWithinAABB(EntityMinecartContainer.class, new AxisAlignedBB(pos.down(), pos.south().east().up(2)), EntitySelectors.HAS_INVENTORY);
 			//System.out.println("list:"+list.size());
 			if (list != null && list.size() > 0) {
 				for(EntityMinecartContainer obj : list) {
@@ -64,7 +64,7 @@ public class TileEntityCartLoader extends TileEntityHopper {
 							//if cart has items...
 							int firstNonEmpty = -1;
 							for(int j = 0; j < cart.getSizeInventory() && !hasItems; j++) {
-								if(cart.getStackInSlot(j) != null) {
+								if(!cart.getStackInSlot(j).isEmpty()) {
 									hasItems = true;
 									firstNonEmpty = j;
 								}
@@ -73,7 +73,7 @@ public class TileEntityCartLoader extends TileEntityHopper {
 								hasItems = false;
 								//if I have room...
 								for(int j = getSizeInventory() - 1; j >= 0 && !hasItems; j--) {
-									if(getStackInSlot(j) == null || (isItemValidForSlot(j, cart.getStackInSlot(firstNonEmpty)) && getStackInSlot(j).stackSize < getInventoryStackLimit())) {
+									if(getStackInSlot(j).isEmpty() || (isItemValidForSlot(j, cart.getStackInSlot(firstNonEmpty)) && getStackInSlot(j).getCount() < getInventoryStackLimit())) {
 										hasItems = true;
 									}
 								}
@@ -84,7 +84,7 @@ public class TileEntityCartLoader extends TileEntityHopper {
 							//if I have items...
 							int firstNonEmpty = -1;
 							for(int j = 0; j < getSizeInventory() && !hasItems; j++) {
-								if(getStackInSlot(j) != null) {
+								if(!getStackInSlot(j).isEmpty()) {
 									hasItems = true;
 									firstNonEmpty = j;
 								}
@@ -93,7 +93,7 @@ public class TileEntityCartLoader extends TileEntityHopper {
 							if(hasItems) {
 								hasItems = false;
 								for(int j = cart.getSizeInventory() - 1; j >= 0 && !hasItems; j--) {
-									if(cart.getStackInSlot(j) == null || (cart.isItemValidForSlot(j, getStackInSlot(firstNonEmpty)) && cart.getStackInSlot(j).stackSize < cart.getInventoryStackLimit())) {
+									if(cart.getStackInSlot(j).isEmpty() || (cart.isItemValidForSlot(j, getStackInSlot(firstNonEmpty)) && cart.getStackInSlot(j).getCount() < cart.getInventoryStackLimit())) {
 										hasItems = true;
 									}
 								}

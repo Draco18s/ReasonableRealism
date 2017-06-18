@@ -23,7 +23,7 @@ public class SlotTemplate extends SlotItemHandler {
 			NBTTagCompound nbt = stack.getTagCompound();
 			if(nbt == null) return false;
 			NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-			ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+			ItemStack result = new ItemStack(itemTags);
 			
 			return result != null;
 		}

@@ -16,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -66,26 +67,28 @@ public class BlockWindvane extends Block {
 		return state.getValue(BlockDirectional.FACING).getIndex();
 	}
 	
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		worldIn.scheduleBlockUpdate(pos, this, 1, 10);
+	@Override
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		world.scheduleBlockUpdate(pos, this, 1, 10);
 		
 		for(EnumFacing face : EnumFacing.VALUES) {
-			worldIn.getBlockState(pos.offset(face, 1)).neighborChanged(worldIn, pos.offset(face, 1), this);
-			worldIn.getBlockState(pos.offset(face, 2)).neighborChanged(worldIn, pos.offset(face, 2), this);
+			world.getBlockState(pos.offset(face, 2)).neighborChanged(world, pos.offset(face, 2), this, pos);
+			world.getBlockState(pos.offset(face, 2)).neighborChanged(world, pos.offset(face, 2), this, pos);
 		}
 		
 		return getDefaultState().withProperty(BlockDirectional.FACING, EnumFacing.UP);
 	}
-	
+
+	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		for(EnumFacing face : EnumFacing.VALUES) {
-			worldIn.getBlockState(pos.offset(face, 1)).neighborChanged(worldIn, pos.offset(face, 1), this);
-			worldIn.getBlockState(pos.offset(face, 2)).neighborChanged(worldIn, pos.offset(face, 2), this);
+			worldIn.getBlockState(pos.offset(face, 1)).neighborChanged(worldIn, pos.offset(face, 1), this, pos);
+			worldIn.getBlockState(pos.offset(face, 2)).neighborChanged(worldIn, pos.offset(face, 2), this, pos);
 		}
 	}
 	
 	@Override
-	    @Deprecated
+	@Deprecated
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		switch(state.getValue(BlockDirectional.FACING)) {
 			case DOWN:

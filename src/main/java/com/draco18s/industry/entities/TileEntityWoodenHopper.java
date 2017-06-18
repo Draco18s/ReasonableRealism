@@ -23,8 +23,8 @@ public class TileEntityWoodenHopper extends TileEntityHopper {
 
 	@Override
 	public void update() {
-		if(worldObj.getBlockState(pos).getValue(BlockHopper.FACING) != EnumFacing.DOWN) {
-			worldObj.setBlockState(this.getPos(), this.getBlockType().getDefaultState().withProperty(BlockHopper.FACING, EnumFacing.DOWN), 3);
+		if(world.getBlockState(pos).getValue(BlockHopper.FACING) != EnumFacing.DOWN) {
+			world.setBlockState(this.getPos(), this.getBlockType().getDefaultState().withProperty(BlockHopper.FACING, EnumFacing.DOWN), 3);
 		}
 		super.update();
 	}

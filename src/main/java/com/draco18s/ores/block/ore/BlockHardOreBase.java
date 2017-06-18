@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
@@ -63,7 +64,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+	public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list) {
 		list.add(new ItemStack(itemIn, 1, 15));
 	}
 
@@ -107,12 +108,12 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-		return createStackedBlock(state);
+		return getSilkTouchDrop(state);
 	}
 
 	@Override
 	@Nullable
-	protected ItemStack createStackedBlock(IBlockState state) {
+	protected ItemStack getSilkTouchDrop(IBlockState state) {
 		//return super.createStackedBlock(state);
 		Item item = Item.getItemFromBlock(this);
 		int i = this.getMetaFromState(state);
@@ -120,16 +121,16 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if(playerIn != null && playerIn.capabilities.isCreativeMode && playerIn.getHeldItem(EnumHand.MAIN_HAND) == null) {
-			if(!worldIn.isRemote) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if(player != null && player.capabilities.isCreativeMode && player.getHeldItem(EnumHand.MAIN_HAND) == null) {
+			if(!world.isRemote) {
 				//avoidGeneration = true;
 				int m = state.getValue(Props.ORE_DENSITY);
-				m = m - (playerIn.isSneaking()?1:4);
+				m = m - (player.isSneaking()?1:4);
 				System.out.println(m);
 				if(m < 1)
 					m += 16;
-				worldIn.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
+				world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);
 			}
 			return true;
 		}
@@ -149,13 +150,13 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 			//25% lost if not using API methods
 			//player mining will avoid this, as only the first stack (above) is usex by dropBlockAsItemWithChance
 			for(ItemStack ex : extra) {
-				float f = ex.stackSize * 0.75f;
+				float f = ex.getCount() * 0.75f;
 				int c = (int) Math.floor(f);
 				f -= c;
 				if(f > 0 && rand.nextFloat() < f) {
 					c++;
 				}
-				ex.stackSize = c;
+				ex.setCount(c);
 			}
 			ret.addAll(extra);
 		}
@@ -220,7 +221,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 			if(!worldIn.getBlockState(pos).isNormalCube()) {
 				EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
 				entityitem.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityitem);
+				worldIn.spawnEntity(entityitem);
 				return;
 			}
 			else {
@@ -228,7 +229,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 					if(!worldIn.getBlockState(pos.offset(dir)).isNormalCube() || dir == EnumFacing.DOWN) {
 						EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0+dir.getFrontOffsetX(), (double)pos.getY() + d1+dir.getFrontOffsetY(), (double)pos.getZ() + d2+dir.getFrontOffsetZ(), stack);
 						entityitem.setDefaultPickupDelay();
-						worldIn.spawnEntityInWorld(entityitem);
+						worldIn.spawnEntity(entityitem);
 						return;
 					}
 				}

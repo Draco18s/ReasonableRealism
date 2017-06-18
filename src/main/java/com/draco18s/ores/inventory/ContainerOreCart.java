@@ -31,13 +31,13 @@ public class ContainerOreCart extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
-		return this.lowerChestInventory.isUseableByPlayer(playerIn);
+		return this.lowerChestInventory.isUsableByPlayer(playerIn);
 	}
 
 	@Override
 	@Nullable
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.inventorySlots.get(index);
 
 		if (slot != null && slot.getHasStack()) {
@@ -53,8 +53,8 @@ public class ContainerOreCart extends Container {
 				return null;
 			}
 
-			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack)null);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			}
 			else {
 				slot.onSlotChanged();

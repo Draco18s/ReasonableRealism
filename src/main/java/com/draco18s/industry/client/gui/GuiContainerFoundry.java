@@ -1,7 +1,6 @@
 package com.draco18s.industry.client.gui;
 
 import com.draco18s.industry.entities.TileEntityFoundry;
-import com.draco18s.ores.entities.TileEntitySifter;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;

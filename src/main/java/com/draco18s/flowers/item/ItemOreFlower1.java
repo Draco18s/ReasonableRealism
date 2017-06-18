@@ -2,6 +2,7 @@ package com.draco18s.flowers.item;
 
 import java.util.List;
 
+import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower3;
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.api.internal.IMetaLookup;
@@ -10,9 +11,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -34,8 +37,6 @@ public class ItemOreFlower1 extends ItemBlock {
 	
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		//EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
-		//return "item."+prop.getByOrdinal(stack.getMetadata()).name();
 		return "item.oreflowers:"+((IMetaLookup)prop.getEnumConstants()[0].getByOrdinal(stack.getMetadata())).getVariantName();
 	}
 	
@@ -45,5 +46,8 @@ public class ItemOreFlower1 extends ItemBlock {
 		super.addInformation(stack, player, tooltip, advanced);
 		EnumOreType type = EnumOreType.values()[stack.getMetadata()+metaOffset];
 		tooltip.add(I18n.format("indicator."+type.getVariantName()));
+		if(stack.getItem() == Item.getItemFromBlock(OreFlowersBase.oreFlowers3) && stack.getMetadata() == 2) {
+			tooltip.add(TextFormatting.LIGHT_PURPLE + I18n.format("tooltip:oreflowers:april.one"));
+		}
 	}
 }

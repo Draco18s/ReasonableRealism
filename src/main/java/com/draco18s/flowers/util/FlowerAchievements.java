@@ -2,7 +2,6 @@ package com.draco18s.flowers.util;
 
 import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
-import com.draco18s.ores.OresBase;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;

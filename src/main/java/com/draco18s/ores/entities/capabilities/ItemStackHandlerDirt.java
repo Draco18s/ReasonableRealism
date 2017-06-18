@@ -6,6 +6,7 @@ import com.draco18s.ores.OresBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class ItemStackHandlerDirt extends ItemStackHandler {
@@ -18,7 +19,7 @@ public class ItemStackHandlerDirt extends ItemStackHandler {
 		super(size);
 	}
 
-	public ItemStackHandlerDirt(ItemStack[] stacks) {
+	public ItemStackHandlerDirt(NonNullList<ItemStack> stacks) {
 		super(stacks);
 	}
 	

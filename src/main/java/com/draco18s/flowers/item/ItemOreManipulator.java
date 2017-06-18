@@ -35,7 +35,8 @@ public class ItemOreManipulator extends Item {
 		this.setCreativeTab(CreativeTabs.TOOLS);
 	}
 	
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	@Override
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if(hand == EnumHand.OFF_HAND || world.isRemote) return EnumActionResult.PASS;
 		if(oreType != null) {
 			if(player.isSneaking()) {
@@ -46,7 +47,7 @@ public class ItemOreManipulator extends Item {
 				HardLibAPI.oreData.adjustOreData(world, pos.down(0), oreType, 32);
 				HardLibAPI.oreData.adjustOreData(world, pos.down(8), oreType, 32);
 			}
-			player.addChatMessage(new TextComponentString(oreType + " now " + HardLibAPI.oreData.getOreData(world, pos, oreType)));
+			player.sendMessage(new TextComponentString(oreType + " now " + HardLibAPI.oreData.getOreData(world, pos, oreType)));
 		}
 		else {
 			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
@@ -58,7 +59,7 @@ public class ItemOreManipulator extends Item {
 					int count3 = HardLibAPI.oreData.getOreData(world, pos.down(16), ore);
 					int count4 = HardLibAPI.oreData.getOreData(world, pos.down(24), ore);
 					
-					player.addChatMessage(new TextComponentString(ore + " is " + count1 + "/" + count2 + "/" + count3 + "/" + count4));
+					player.sendMessage(new TextComponentString(ore + " is " + count1 + "/" + count2 + "/" + count3 + "/" + count4));
 				}
 				else {
 					int count = HardLibAPI.oreData.getOreData(world, pos, ore) +
@@ -66,7 +67,7 @@ public class ItemOreManipulator extends Item {
 							HardLibAPI.oreData.getOreData(world, pos.down(16), ore) +
 							HardLibAPI.oreData.getOreData(world, pos.down(24), ore);
 					if(count > 0)
-						player.addChatMessage(new TextComponentString(ore + " is " + count));
+						player.sendMessage(new TextComponentString(ore + " is " + count));
 				}
 			}
 		}

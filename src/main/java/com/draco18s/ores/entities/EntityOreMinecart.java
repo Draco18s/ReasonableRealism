@@ -29,6 +29,7 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
 
 public class EntityOreMinecart extends EntityMinecartContainer {
 	private static final DataParameter<Byte> DIRECTION = EntityDataManager.<Byte>createKey(EntityOreMinecart.class,
@@ -58,23 +59,23 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 		this.dataManager.register(FULLNESS, 0f);
 	}
 
-	public static void func_189681_a(DataFixer p_189681_0_) {
-		EntityMinecartContainer.func_189680_b(p_189681_0_, "MinecartOrecart");
-	}
+	//public static void func_189681_a(DataFixer p_189681_0_) {
+	//	EntityMinecartContainer.func_189680_b(p_189681_0_, "MinecartOrecart");
+	//}
 
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		int px = MathHelper.floor_double(this.posX);
-		int py = MathHelper.floor_double(this.posY);
-		int pz = MathHelper.floor_double(this.posZ);
+		int px = MathHelper.floor(this.posX);
+		int py = MathHelper.floor(this.posY);
+		int pz = MathHelper.floor(this.posZ);
 		BlockPos blockpos = new BlockPos(px, py, pz);
-		IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
+		IBlockState iblockstate = this.world.getBlockState(blockpos);
 		if (iblockstate.getBlock() != Blocks.ACTIVATOR_RAIL || !blockpos.equals(lastActivator)) {
 			timeOnActivator = 0;
 			lastActivator = blockpos;
 		}
-		if (!this.worldObj.isRemote) {
+		if (!this.world.isRemote) {
 			this.setInventoryFullness((float) Container.calcRedstoneFromInventory(this));
 		}
 	}
@@ -84,9 +85,9 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 		if (receivingPower) {
 			if (timeOnActivator % 10 == 0) {
 				if (this.dumpingDirection == DumpDir.RIGHT)
-					dropInventoryItems(this.worldObj, this.posX + Math.signum(this.motionZ), this.posY, this.posZ + Math.signum(this.motionX), this);
+					dropInventoryItems(this.world, this.posX + Math.signum(this.motionZ), this.posY, this.posZ + Math.signum(this.motionX), this);
 				else
-					dropInventoryItems(this.worldObj, this.posX - Math.signum(this.motionZ), this.posY, this.posZ - Math.signum(this.motionX), this);
+					dropInventoryItems(this.world, this.posX - Math.signum(this.motionZ), this.posY, this.posZ - Math.signum(this.motionX), this);
 				this.markDirty();
 			}
 			timeOnActivator++;
@@ -110,11 +111,11 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 	}
 
 	@Override
-	public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand) {
-		if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand)))
+	public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+		if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new MinecartInteractEvent(this, player, hand)))
 			return true;
-		if (!this.worldObj.isRemote) {
-			player.openGui(OresBase.instance, OreGuiHandler.ORE_CART, this.worldObj, (int) this.getEntityId(), -1, -1);
+		if (!this.world.isRemote) {
+			player.openGui(OresBase.instance, OreGuiHandler.ORE_CART, this.world, (int) this.getEntityId(), -1, -1);
 		}
 
 		return true;
@@ -144,7 +145,7 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 		// int i = stack.stackSize;
 
 		// stack.stackSize -= i;
-		EntityItem entityitem = new EntityItem(worldIn, MathHelper.floor_double(x) + (double) f, MathHelper.floor_double(y) + (double) f1, MathHelper.floor_double(z) + (double) f2, stack);
+		EntityItem entityitem = new EntityItem(worldIn, MathHelper.floor(x) + (double) f, MathHelper.floor(y) + (double) f1, MathHelper.floor(z) + (double) f2, stack);
 
 		// if (stack.hasTagCompound()) {
 		// entityitem.getEntityItem().setTagCompound(stack.getTagCompound().copy());
@@ -155,7 +156,7 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 		entityitem.motionY = 0;// RANDOM.nextGaussian() * 0.05000000074505806D +
 								// 0.20000000298023224D;
 		entityitem.motionZ = 0;// RANDOM.nextGaussian() * 0.05000000074505806D;
-		worldIn.spawnEntityInWorld(entityitem);
+		worldIn.spawnEntity(entityitem);
 
 		// }
 	}
@@ -207,8 +208,8 @@ public class EntityOreMinecart extends EntityMinecartContainer {
 	public void killMinecart(DamageSource source) {
 		this.setDead();
 
-		if (this.worldObj.getGameRules().getBoolean("doEntityDrops")) {
-			InventoryHelper.dropInventoryItems(this.worldObj, this, this);
+		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+			InventoryHelper.dropInventoryItems(this.world, this, this);
 			ItemStack itemstack = new ItemStack(OresBase.oreMinecart, 1);
 
 			if (this.getName() != null) {

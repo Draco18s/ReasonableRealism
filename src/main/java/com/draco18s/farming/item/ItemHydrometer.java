@@ -56,14 +56,14 @@ public class ItemHydrometer extends Item implements IItemFrameOutput {
 				boolean flag = entityIn != null;
 				Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
 				if (world == null && entity != null) {
-					world = entity.worldObj;
+					world = entity.world;
 				}
 				if(world == null || entity == null) {
 					return 6;
 				}
 				NBTTagCompound tag = stack.getTagCompound();
 				
-				Biome bio = world.getBiomeGenForCoords(new BlockPos(entity.posX, 0, entity.posZ));
+				Biome bio = world.getBiome(new BlockPos(entity.posX, 0, entity.posZ));
 				float t = bio.getRainfall();
 
 				float flat = 0;
@@ -82,8 +82,9 @@ public class ItemHydrometer extends Item implements IItemFrameOutput {
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Block block = world.getBlockState(pos).getBlock();
+		ItemStack stack = player.getHeldItem(hand);
 		if(HardLibAPI.hardCrops.isCropBlock(block)) {
 			NBTTagCompound tag = stack.getTagCompound();
 			if(tag == null) {
@@ -175,7 +176,7 @@ public class ItemHydrometer extends Item implements IItemFrameOutput {
 			flat = tag.getFloat("tempflat");
 			time = tag.getFloat("temptime");
 		}
-		Biome bio = entity.getEntityWorld().getBiomeGenForCoords(entity.getPosition());
+		Biome bio = entity.getEntityWorld().getBiome(entity.getPosition());
 		float f = bio.getRainfall();
 		f += flat;
 		f = Math.round((f+1.15f) * 4);

@@ -107,9 +107,9 @@ public class BlockFoundry extends Block {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		for(EnumFacing dir : EnumFacing.HORIZONTALS) {
-			IBlockState state = worldIn.getBlockState(pos.offset(dir));
+			IBlockState state = world.getBlockState(pos.offset(dir));
 			if(state.getBlock() == Blocks.FURNACE || state.getBlock() == Blocks.LIT_FURNACE || state.getBlock() == Blocks.FLOWING_LAVA) {
 				return this.getDefaultState().withProperty(BlockHorizontal.FACING, dir.getOpposite());
 			}
@@ -128,7 +128,7 @@ public class BlockFoundry extends Block {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		playerIn.openGui(ExpandedIndustryBase.instance, IndustryGuiHandler.FOUNDRY, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}

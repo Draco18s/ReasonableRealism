@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Level;
 
-import com.draco18s.farming.FarmingBase;
 import com.google.gson.JsonElement;
 
 import net.minecraft.init.Items;

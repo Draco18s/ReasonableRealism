@@ -31,7 +31,7 @@ public class ItemEntityOreCart extends Item
 		 */
 		public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
 		{
-			EnumFacing enumfacing = (EnumFacing)source.func_189992_e().getValue(BlockDispenser.FACING);
+			EnumFacing enumfacing = (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING);
 			World world = source.getWorld();
 			double d0 = source.getX() + (double)enumfacing.getFrontOffsetX() * 1.125D;
 			double d1 = Math.floor(source.getY()) + (double)enumfacing.getFrontOffsetY();
@@ -79,7 +79,7 @@ public class ItemEntityOreCart extends Item
 				entityminecart.setCustomNameTag(stack.getDisplayName());
 			}
 
-			world.spawnEntityInWorld(entityminecart);
+			world.spawnEntity(entityminecart);
 			stack.splitStack(1);
 			return stack;
 		}
@@ -104,37 +104,33 @@ public class ItemEntityOreCart extends Item
 	/**
 	 * Called when a Block is right-clicked with this Item
 	 */
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
+	@Override
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		IBlockState iblockstate = worldIn.getBlockState(pos);
-
-		if (!BlockRailBase.isRailBlock(iblockstate))
-		{
+		
+		if (!BlockRailBase.isRailBlock(iblockstate)) {
 			return EnumActionResult.FAIL;
 		}
-		else
-		{
-			if (!worldIn.isRemote)
-			{
+		else {
+			ItemStack stack = player.getHeldItem(hand);
+			if (!worldIn.isRemote) {
 				BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? (BlockRailBase.EnumRailDirection)iblockstate.getValue(((BlockRailBase)iblockstate.getBlock()).getShapeProperty()) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 				double d0 = 0.0D;
 
-				if (blockrailbase$enumraildirection.isAscending())
-				{
+				if (blockrailbase$enumraildirection.isAscending()) {
 					d0 = 0.5D;
 				}
 
 				EntityMinecart entityminecart = createCustomCart(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, this.minecartType);
 
-				if (stack.hasDisplayName())
-				{
+				if (stack.hasDisplayName()) {
 					entityminecart.setCustomNameTag(stack.getDisplayName());
 				}
 
-				worldIn.spawnEntityInWorld(entityminecart);
+				worldIn.spawnEntity(entityminecart);
 			}
 
-			--stack.stackSize;
+			stack.shrink(1);
 			return EnumActionResult.SUCCESS;
 		}
 	}

@@ -38,23 +38,25 @@ public class BlockCartLoader extends BlockHopper {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		playerIn.openGui(ExpandedIndustryBase.instance, IndustryGuiHandler.EXT_HOPPER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	
 	@Override
 	public boolean removedByPlayer(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-		TileEntity tileentity = worldIn.getTileEntity(pos);
-		
-		IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		for(int i=0; i < inventory.getSlots(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-			EntityItem entityIn;
-			if(stack != null) {
-				entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-				entityIn.setDefaultPickupDelay();
-				worldIn.spawnEntityInWorld(entityIn);
+		if(!worldIn.isRemote) {
+			TileEntity tileentity = worldIn.getTileEntity(pos);
+			
+			IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+			for(int i=0; i < inventory.getSlots(); i++) {
+				ItemStack stack = inventory.getStackInSlot(i);
+				EntityItem entityIn;
+				if(stack != null) {
+					entityIn = new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
+					entityIn.setDefaultPickupDelay();
+					worldIn.spawnEntity(entityIn);
+				}
 			}
 		}
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);

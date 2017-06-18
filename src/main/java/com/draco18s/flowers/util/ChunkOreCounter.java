@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
+import com.draco18s.flowers.OreFlowersBase;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
@@ -33,6 +36,7 @@ public class ChunkOreCounter {
 				IBlockState state = world.getBlockState(pos);
 				BlockWrapper key = new BlockWrapper(state);
 				OreCounter count = blockList.get(key);
+				//OreFlowersBase.logger.log(Level.WARN, "");
 				if(count != null) {
 					/*if(cx == 3 && cz == 20 && count.b.block == OresBase.oreDiamond) {
 						OreFlowersBase.logger.log(Level.INFO, "Doing flowers for " + (i*8) + ": " + count.countA);

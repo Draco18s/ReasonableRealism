@@ -12,6 +12,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,7 +27,7 @@ public class ItemRawOre extends Item {
 
 	public String getUnlocalizedNameInefficiently(ItemStack stack) {
 		EnumOreType v = EnumOreType.values()[stack.getItemDamage()];
-		switch(v) {
+		/*switch(v) {
 			case IRON:
 			case GOLD:
 			case DIAMOND:
@@ -45,11 +46,13 @@ public class ItemRawOre extends Item {
 				return "item.harderores:"+v.name+"_ore";
 			default:
 				return "item.harderores:unknown_raw_ore";
-		}
+		}*/
+		return "item.harderores:"+v.name+"_ore";
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.GOLD.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.DIAMOND.meta));

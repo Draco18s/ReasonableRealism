@@ -9,7 +9,6 @@ import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.entities.capabilities.CastingItemStackHandler;
 import com.draco18s.industry.entities.capabilities.MoldTemplateItemStackHandler;
-import com.draco18s.ores.entities.capabilities.SiftableItemsHandler;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -58,7 +57,7 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 	public void update() {
 		boolean craft = canCast();
 		boolean canCast = craft && hasNearbyFurnace();
-		boolean isRemote = worldObj.isRemote;
+		boolean isRemote = world.isRemote;
 		if(castingTime > 0) {
 			--castingTime;
 			if(!canCast) {
@@ -72,26 +71,26 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 		else if(canCast) {
 			castingTime = 1599;
 		}
-		worldObj.markBlockRangeForRenderUpdate(pos, pos);
-		worldObj.notifyBlockUpdate(pos, getState(), getState(), 3);
-		worldObj.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
+		world.markBlockRangeForRenderUpdate(pos, pos);
+		world.notifyBlockUpdate(pos, getState(), getState(), 3);
+		world.scheduleBlockUpdate(pos,this.getBlockType(),0,0);
 		markDirty();
 	}
 
 	private IBlockState getState() {
-		return worldObj.getBlockState(pos);
+		return world.getBlockState(pos);
 	}
 
 	private boolean canCast() {
 		//if any stack is null, return false: we can't craft
-		if(inputSlot.getStackInSlot(1) == null || templateSlot.getStackInSlot(0) == null)
+		if(inputSlot.getStackInSlot(1).isEmpty() || templateSlot.getStackInSlot(0).isEmpty())
 			return false;
 
 		//get the recipe
 		IRecipe recipe = getRecipeForTemplate(templateSlot.getStackInSlot(0));
 		if(recipe == null) return false;
 		ItemStack output = recipe.getRecipeOutput();
-		boolean canFitOutput = outputSlot.insertItem(0, output, true) == null;
+		boolean canFitOutput = outputSlot.insertItem(0, output, true).isEmpty();
 		//if they're the same as stored, check quantity
 		//also check that the output slot is empty
 		//if(lastCheckRecipe == recipe && compareItemStacks(lastCheckSticks,inputSlot.getStackInSlot(0)) && compareItemStacks(lastCheckIngots,inputSlot.getStackInSlot(1))) {
@@ -179,7 +178,7 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 			}
 		}
 		if(cannotCraft) return false;
-		if(inputSlot.getStackInSlot(0) == null)
+		if(inputSlot.getStackInSlot(0).isEmpty())
 			lastCheckSticks = null;
 		else
 			lastCheckSticks = inputSlot.getStackInSlot(0).copy();
@@ -187,14 +186,14 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 		lastCheckNumSticks = numSticks;
 		lastCheckNumIngots = numIngots;
 		lastCheckRecipe = recipe;
-		return ((inputSlot.getStackInSlot(0) == null && numSticks == 0) || inputSlot.getStackInSlot(0).stackSize >= numSticks) && inputSlot.getStackInSlot(1).stackSize >= numIngots && canFitOutput;
+		return ((inputSlot.getStackInSlot(0).isEmpty() && numSticks == 0) || inputSlot.getStackInSlot(0).getCount() >= numSticks) && inputSlot.getStackInSlot(1).getCount() >= numIngots && canFitOutput;
 	}
 	
 	private IRecipe getRecipeForTemplate(ItemStack stackInSlot) {
 		NBTTagCompound nbt = stackInSlot.getTagCompound();
 		if(nbt == null) return null;
 		NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-		ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+		ItemStack result = new ItemStack(itemTags);
 		
 		return RecipesUtils.getRecipeWithOutput(result);
 	}
@@ -222,8 +221,8 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 	
 	private boolean hasNearbyFurnace() {
 		for(EnumFacing dir : EnumFacing.values()) {
-			IBlockState state = worldObj.getBlockState(pos.offset(dir));
-			if(state.getBlock() == Blocks.LIT_FURNACE || state.getBlock() == Blocks.FLOWING_LAVA) {
+			IBlockState state = world.getBlockState(pos.offset(dir));
+			if(state.getBlock() == Blocks.LIT_FURNACE || state.getBlock() == Blocks.LAVA || state.getBlock() == Blocks.FLOWING_LAVA) {
 				return true;
 			}
 		}
@@ -239,7 +238,7 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(world != null && world.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, templateSlot, outputSlotWrapper);
 			}
 			if(facing == null) {

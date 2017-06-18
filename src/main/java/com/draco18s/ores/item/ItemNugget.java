@@ -2,11 +2,15 @@ package com.draco18s.ores.item;
 
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.ores.OresBase;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,18 +22,24 @@ public class ItemNugget extends Item {
 		this.setCreativeTab(CreativeTabs.MATERIALS);
 	}
 
+	@Override
 	public String getUnlocalizedNameInefficiently(ItemStack stack) {
 		EnumOreType v = EnumOreType.values()[stack.getItemDamage()];
-		switch(v) {
+		/*switch(v) {
+			case LIMONITE:
+				return "item.harderores:"+v.name+"_nugget";
 			case IRON:
 				return "item.harderores:"+v.name+"_nugget";
 			default:
 				return "item.harderores:unknown_nugget";
-		}
+		}*/
+		return "item.harderores:"+v.name+"_nugget";
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		OresBase.logger.log(Level.DEBUG, "Adding 1 nugget");
 		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
 	}
 }

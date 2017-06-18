@@ -34,18 +34,18 @@ public class ItemSaltHandler extends ItemStackHandler {
 	@Override
 	protected void onContentsChanged(int slot) {
 		super.onContentsChanged(slot);
-		if(slot+1 >= stacks.length) return;
-		if(this.stacks[slot] != null && this.stacks[slot+1] != null) {
-			if(ItemStack.areItemsEqual(stacks[slot], stacks[slot+1])) {
-				int totalSize = stacks[slot].stackSize + stacks[slot+1].stackSize;
-				int change = stacks[slot+1].stackSize;
-				if(totalSize > stacks[slot].getMaxStackSize()) {
-					change = stacks[slot].getMaxStackSize() - stacks[slot].stackSize;
+		if(slot+1 >= stacks.size()) return;
+		if(this.stacks.get(slot) != ItemStack.EMPTY && this.stacks.get(slot+1) != ItemStack.EMPTY) {
+			if(ItemStack.areItemsEqual(this.stacks.get(slot), this.stacks.get(slot+1))) {
+				int totalSize = this.stacks.get(slot).getCount() + this.stacks.get(slot+1).getCount();
+				int change = this.stacks.get(slot+1).getCount();
+				if(totalSize > this.stacks.get(slot).getMaxStackSize()) {
+					change = this.stacks.get(slot).getMaxStackSize() - this.stacks.get(slot).getCount();
 				}
-				stacks[slot].stackSize += change;
-				stacks[slot+1].stackSize -= change;
-				if(stacks[slot+1].stackSize == 0) {
-					stacks[slot+1] = null;
+				this.stacks.get(slot).grow(change);
+				this.stacks.get(slot+1).shrink(change);
+				if(this.stacks.get(slot+1).isEmpty()) {
+					this.stacks.set(slot+1, ItemStack.EMPTY);
 				}
 				onContentsChanged(slot+1);
 			}

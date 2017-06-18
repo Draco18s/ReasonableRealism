@@ -7,8 +7,9 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumOreFlowerDesert3 implements IStringSerializable,IMetaLookup<EnumOreFlowerDesert3> {
 	_1PAINTBRUSH(EnumOreType.OSMIUM),
-	_2QUARTZ(EnumOreType.QUARTZ);
-
+	_2QUARTZ(EnumOreType.QUARTZ),
+	_3STONE(EnumOreType.STONE);
+	
 	private String name;
 	private EnumOreType ore;
 	

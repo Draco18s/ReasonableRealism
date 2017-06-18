@@ -51,8 +51,8 @@ public class BlockPackager extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		playerIn.openGui(OresBase.instance, OreGuiHandler.PACKAGER, worldIn, pos.getX(), pos.getY(), pos.getZ());
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		player.openGui(OresBase.instance, OreGuiHandler.PACKAGER, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 	

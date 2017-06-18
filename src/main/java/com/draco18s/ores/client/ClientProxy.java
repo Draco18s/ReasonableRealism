@@ -62,11 +62,11 @@ public class ClientProxy extends CommonProxy {
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+				EntityPlayerSP p = Minecraft.getMinecraft().player;
 				//System.out.println(String.format("Received %s from %s", message.oreAt, p.getDisplayName()));
-				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, ClientOreParticleHandler.RADAR, 0));
-				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, ClientOreParticleHandler.DUST, 0));
-				drawParticle(p.worldObj,getParticle(p.worldObj, message.oreAt, message.eventAt, ClientOreParticleHandler.DUST, -4));
+				drawParticle(p.world,getParticle(p.world, message.oreAt, message.eventAt, ClientOreParticleHandler.RADAR, 0));
+				drawParticle(p.world,getParticle(p.world, message.oreAt, message.eventAt, ClientOreParticleHandler.DUST, 0));
+				drawParticle(p.world,getParticle(p.world, message.oreAt, message.eventAt, ClientOreParticleHandler.DUST, -4));
 			}
 		});
 	}
@@ -93,23 +93,23 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 	
-	private static void drawParticle(World worldObj, Particle particle) {
+	private static void drawParticle(World world, Particle particle) {
 		if(particle != null)
 			Minecraft.getMinecraft().effectRenderer.addEffect(particle);
 	}
 	
-	public static Particle getParticle(World worldObj, BlockPos oreAt, BlockPos eventAt, int id, int startingAge) {
+	public static Particle getParticle(World world, BlockPos oreAt, BlockPos eventAt, int id, int startingAge) {
 		Particle particle = null;
 		if(id == ClientOreParticleHandler.RADAR) {
 			float x, y, z;
 			x = ((int)((float)Math.random() * 4f))/5f + 0.1f;
 			y = 0.5f + (float)Math.random() * 0.75f;
 			z = ((int)((float)Math.random() * 4f))/5f + 0.1f;
-			particle = new ProspectorParticle(worldObj, oreAt.getX()+x, oreAt.getY()+y, oreAt.getZ()+z, 0, 0, 0);//3, 20
-			IBlockState state = worldObj.getBlockState(oreAt);
+			particle = new ProspectorParticle(world, oreAt.getX()+x, oreAt.getY()+y, oreAt.getZ()+z, 0, 0, 0);//3, 20
+			IBlockState state = world.getBlockState(oreAt);
 			Block block = state.getBlock();
 			if(block instanceof IBlockMultiBreak) {
-				Color c = ((IBlockMultiBreak)block).getProspectorParticleColor(worldObj, oreAt, state);
+				Color c = ((IBlockMultiBreak)block).getProspectorParticleColor(world, oreAt, state);
 				particle.setRBGColorF(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f);
 			}
 		}
@@ -118,11 +118,11 @@ public class ClientProxy extends CommonProxy {
 			x = ((int)((float)Math.random() * 8f))/10f + 0.1f;
 			y = 0.5f + (float)Math.random() * 0.5f;
 			z = ((int)((float)Math.random() * 8f))/10f + 0.1f;
-			particle = new ProspectorParticleDust(worldObj, eventAt.getX()+x, eventAt.getY()+y, eventAt.getZ()+z, 0, 0, 0,startingAge);//3, 20
-			IBlockState state = worldObj.getBlockState(oreAt);
+			particle = new ProspectorParticleDust(world, eventAt.getX()+x, eventAt.getY()+y, eventAt.getZ()+z, 0, 0, 0,startingAge);//3, 20
+			IBlockState state = world.getBlockState(oreAt);
 			Block block = state.getBlock();
 			if(block instanceof IBlockMultiBreak) {
-				Color c = ((IBlockMultiBreak)block).getProspectorParticleColor(worldObj, oreAt, state);
+				Color c = ((IBlockMultiBreak)block).getProspectorParticleColor(world, oreAt, state);
 				particle.setRBGColorF(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f);
 			}
 		}

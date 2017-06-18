@@ -15,7 +15,8 @@
         }],
          "flower_type": {
             "paintbrush": { "textures": { "cross": "oreflowers:items/na"} },
-            "quartz":     { "textures": { "cross": "oreflowers:items/na"} }
+            "quartz":     { "textures": { "cross": "oreflowers:items/na"} },
+            "stone":      { "textures": { "cross": "oreflowers:items/na"} }
         },
         "item":{
             "true":{

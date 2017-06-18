@@ -45,7 +45,7 @@ public class BlockRailBridge extends BlockRail {
 	}
 
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block) {
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if (!world.isRemote) {
 			if(!canPlaceBlockAt(world, pos)) {
 				this.dropBlockAsItem(world, pos, state, 0);

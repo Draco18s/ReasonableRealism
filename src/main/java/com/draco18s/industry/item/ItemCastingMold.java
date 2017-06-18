@@ -12,9 +12,11 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -29,7 +31,7 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		ItemStack base = new ItemStack(itemIn);
 		subItems.add(base);
 		boolean skip = false;
@@ -44,7 +46,7 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
 			NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-			ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+			ItemStack result = new ItemStack(itemTags);
 			Object[] list = result.getDisplayName().split("[ -]");
 			if(list.length == 1) {
 				tooltip.add(I18n.format("tooltip.expindustry:imprint1.text", list));
@@ -86,7 +88,7 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 					NBTTagCompound nbt = stack.getTagCompound();
 					if(nbt.hasKey("expindustry:item_mold")) {
 						NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");
-						ItemStack result = ItemStack.loadItemStackFromNBT(itemTags);
+						ItemStack result = new ItemStack(itemTags);
 						String imprintName = result.getUnlocalizedName();
 						String domain = "expindustry";
 						if(nbt.hasKey("expindustry:resourceDomain")) {

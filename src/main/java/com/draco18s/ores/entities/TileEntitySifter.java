@@ -52,7 +52,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	
 	@Override
 	public void update() {
-		if(worldObj.getBlockState(pos).getBlock() != this.getBlockType()) return;
+		if(world.getBlockState(pos).getBlock() != this.getBlockType()) return;
 		suckItems();
 		if(siftTime > 0) {
 			--siftTime;
@@ -89,25 +89,25 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	private boolean canSift(int slot) {
 		if(inputSlot.getStackInSlot(slot) == null) return false;
 		ItemStack result = HardLibAPI.oreMachines.getSiftResult(inputSlot.getStackInSlot(slot), true);
-		if(result == null) return false;
-		if(outputSlot.insertItem(0, result, true) != null) return false;
+		if(result.isEmpty()) return false;
+		if(!outputSlot.insertItem(0, result, true).isEmpty()) return false;
 		return true;
 	}
 
 	private void siftItem() {
 		for(int s = 0; s < inputSlot.getSlots(); s++) {
 			ItemStack stack = inputSlot.getStackInSlot(s);
-			if(stack == null) continue;
+			if(stack.isEmpty()) continue;
 			ItemStack result = HardLibAPI.oreMachines.getSiftResult(stack, true);
-			if(result == null) continue;
-			if(outputSlot.insertItem(0, result, true) != null) continue;
+			if(result.isEmpty()) continue;
+			if(!outputSlot.insertItem(0, result, true).isEmpty()) continue;
 			inputSlot.extractItem(s, HardLibAPI.oreMachines.getSiftAmount(stack), false);
 			outputSlot.insertItem(0, result.copy(), false);
 		}
 	}
 	
 	private void suckItems() {
-		List<EntityItem> ents = worldObj.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
+		List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, getAABB(pos));
 		if(ents.size() > 0) {
 			ItemStack stack;
 			EntityItem ent;
@@ -116,9 +116,9 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 				stack = ent.getEntityItem().copy();
 				if(HardLibAPI.oreMachines.getSiftResult(stack, false) != null) {
 					stack = inputSlot.insertItem(0, stack, false);
-					if(stack != null)
+					if(!stack.isEmpty())
 						stack = inputSlot.insertItem(1, stack, false);
-					if(stack != null)
+					if(!stack.isEmpty())
 						ent.setEntityItemStack(stack);
 					else
 						ent.setDead();
@@ -141,7 +141,7 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(world != null && world.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == null) {

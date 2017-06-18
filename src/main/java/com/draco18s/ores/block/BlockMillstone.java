@@ -71,13 +71,14 @@ public class BlockMillstone extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		ItemStack heldItem = player.getHeldItem(hand);
 		if(heldItem != null) {
 			TileEntityMillstone te = (TileEntityMillstone)world.getTileEntity(pos);
 			IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP);
 			if(inventory == null) return false;
 			ItemStack stack = heldItem.copy();
-			stack.stackSize = 1;
+			stack.setCount(1);
 			stack = inventory.insertItem(0, stack, true);
 			if(stack == null) {
 				stack = inventory.insertItem(0, heldItem.splitStack(1), false);
@@ -99,9 +100,10 @@ public class BlockMillstone extends Block {
 		BlockTileEntityUtils.dropItems(worldIn, pos);
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
-	
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		worldIn.scheduleBlockUpdate(pos, this, 1, 10);//low priority
+
+	@Override
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		world.scheduleBlockUpdate(pos, this, 1, 10);//low priority
 		return this.getStateFromMeta(meta);
 	}
 	

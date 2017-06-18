@@ -72,7 +72,7 @@ public class ProspectorParticleDust extends Particle {
 		RenderHelper.disableStandardItemLighting();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(PARTICLES_TEXTURE);
-		int i = MathHelper.clamp_int((int)(((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F), 0, 15);
+		int i = MathHelper.clamp((int)(((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F), 0, 15);
 		
 		float f = (float)(i % 15) / 32.0F;
 		float f1 = f + 0.03125f;
@@ -116,7 +116,7 @@ public class ProspectorParticleDust extends Particle {
 			this.setExpired();
 		}
 		if(this.particleAge < 0) return;
-		this.moveEntity(0, this.motionY, 0);
+		this.move(0, this.motionY, 0);
 		this.motionY -= 0.003000000026077032D;
 		this.motionY = Math.max(this.motionY, -0.14000000059604645D);
 	}

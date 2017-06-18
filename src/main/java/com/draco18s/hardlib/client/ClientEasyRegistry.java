@@ -25,6 +25,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -101,7 +102,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 		//final ModelResourceLocation fullModelLocation = new ModelResourceLocation(item.getRegistryName().toString(), "inventory");
 		//ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
 		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
-		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		NonNullList<ItemStack> subItems = NonNullList.create();
 		item.getSubItems(item, CreativeTabs.SEARCH, subItems);
 		for(ItemStack stack : subItems) {
 			ModelBakery.registerItemVariants(item, def.getModelLocation(stack));
@@ -127,7 +128,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 	public <T extends IMetaLookup> void _registerItemWithVariants(Item item, String registryname, T variant) {
 		super._registerItemWithVariants(item, registryname, variant);
 		String variantName = variant.getID();
-		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		NonNullList<ItemStack> subItems = NonNullList.create();
 		item.getSubItems(item, CreativeTabs.SEARCH, subItems);
 		for (ItemStack stack : subItems) {
 			_registerItemModelForMeta(item, stack.getMetadata(), variantName + "=" + variant.getByOrdinal(stack.getMetadata()));

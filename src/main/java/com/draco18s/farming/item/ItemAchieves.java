@@ -13,6 +13,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,10 +25,19 @@ public class ItemAchieves extends Item {
 		this.setMaxDamage(0);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		subItems.add(new ItemStack(itemIn, 1, EnumFarmAchieves.KILL_WEEDS.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumFarmAchieves.CROP_ROTATION.meta));
 		subItems.add(new ItemStack(itemIn, 1, EnumFarmAchieves.THERMOMETER.meta));
 	}
+
+	@Override
+    @Nullable
+    @SideOnly(Side.CLIENT)
+    public CreativeTabs getCreativeTab()
+    {
+        return null;
+    }
 }

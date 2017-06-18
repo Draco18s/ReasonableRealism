@@ -56,7 +56,7 @@ public class OresAchievements {
 		
 		mineLimonite = new Achievement("mineLimonite", "mineLimonite", 3, 0, new ItemStack(OresBase.rawOre, 1, EnumOreType.LIMONITE.meta), AchievementList.BUILD_WORK_BENCH).registerStat();
 		acquireIronChunk = new Achievement("acquireIronChunk", "acquireIronChunk", 2, 1, new ItemStack(OresBase.rawOre, 1, EnumOreType.IRON.meta), mineLimonite).registerStat();
-		acquireNuggets = new Achievement("acquireNuggets", "acquireNuggets", 1, 2, new ItemStack(OresBase.nuggets,1,EnumOreType.IRON.meta), acquireIronChunk).registerStat();
+		acquireNuggets = new Achievement("acquireNuggets", "acquireNuggets", 1, 2, new ItemStack(Items.field_191525_da), acquireIronChunk).registerStat();
 		//hope this works: it doesn't :(
 		//ArrayList list = (ArrayList)AchievementList.ACHIEVEMENTS;
 		//list.remove(AchievementList.ACQUIRE_IRON);

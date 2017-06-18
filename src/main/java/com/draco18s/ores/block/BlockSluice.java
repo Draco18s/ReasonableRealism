@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -202,8 +203,8 @@ public class BlockSluice extends Block {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return getUpdatedState(worldIn, pos,this.getDefaultState());
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		return getUpdatedState(world, pos, this.getDefaultState());
 	}
 
 	private IBlockState getUpdatedState(IBlockAccess world, BlockPos pos, IBlockState thisState) {
@@ -236,7 +237,7 @@ public class BlockSluice extends Block {
 	@Override
 	@Deprecated
 	@Nullable
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
 		return null;
 	}
 	
@@ -248,7 +249,7 @@ public class BlockSluice extends Block {
 
 	@Override
 	@Deprecated
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn) {
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(!world.getBlockState(pos.down()).isSideSolid(world, pos, EnumFacing.UP)) {
 			if (!world.isRemote)  {
 				dropBlockAsItem(world, pos, state, 0);

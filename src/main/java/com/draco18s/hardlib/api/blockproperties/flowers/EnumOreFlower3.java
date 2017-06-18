@@ -7,7 +7,8 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumOreFlower3 implements IStringSerializable,IMetaLookup<EnumOreFlower3> {
 	_1ARROWHEAD(EnumOreType.OSMIUM),
-	_2QUARTZ(EnumOreType.QUARTZ);
+	_2QUARTZ(EnumOreType.QUARTZ),
+	_3STONEROOT(EnumOreType.STONE);
 
 	private String name;
 	private EnumOreType ore;

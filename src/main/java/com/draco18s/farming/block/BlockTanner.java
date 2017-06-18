@@ -56,6 +56,7 @@ public class BlockTanner extends Block {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(BlockHorizontal.FACING,EnumFacing.NORTH).withProperty(LEATHER1, LeatherStatus.NONE).withProperty(LEATHER2, LeatherStatus.NONE).withProperty(SALT, 0));
 	}
 	
+	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		if(state.getValue(BlockHorizontal.FACING) == EnumFacing.SOUTH) {
 			return TANNER_AABB_SOUTH;
@@ -114,31 +115,32 @@ public class BlockTanner extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntityTanner te = (TileEntityTanner)world.getTileEntity(pos);
 		IItemHandler inven = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
+		ItemStack heldItem = player.getHeldItem(hand);
 		if(inven != null) {
-			if(inven.getStackInSlot(0) == null) {
-				if(heldItem != null) {
+			if(inven.getStackInSlot(0).isEmpty()) {
+				if(!heldItem.isEmpty()) {
 					ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
-					if(side == EnumFacing.UP && (remain == null || remain.stackSize < heldItem.stackSize)) {
+					if(side == EnumFacing.UP && (remain.isEmpty() || remain.getCount() < heldItem.getCount())) {
 						player.addStat(FarmingAchievements.saltedHide, 1);
 					}
 					
-					if(remain == null) {
+					if(remain.isEmpty()) {
 						heldItem.splitStack(64);
 					}
 					else {
-						heldItem.stackSize = remain.stackSize;
+						heldItem.setCount(remain.getCount());
 					}
 				}
 			}
 			else {
-				if((heldItem == null || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
+				if((heldItem.isEmpty() || heldItem.getItem() == Items.LEATHER) && side != EnumFacing.UP) {
 					ItemStack item = inven.extractItem(0, 1, false);
 					player.inventory.addItemStackToInventory(item);
 					
-					if(item != null && item.getItem() == Items.LEATHER) {
+					if(!item.isEmpty() && item.getItem() == Items.LEATHER) {
 						player.addStat(FarmingAchievements.getLeather, 1);
 						player.addStat(AchievementList.KILL_COW, 1);
 					}
@@ -152,7 +154,7 @@ public class BlockTanner extends Block {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		EnumFacing face = placer.getHorizontalFacing();
 		if(face == EnumFacing.NORTH || face == EnumFacing.EAST) face = face.getOpposite();
 		return this.getDefaultState().withProperty(BlockHorizontal.FACING, face);
@@ -163,14 +165,16 @@ public class BlockTanner extends Block {
 		BlockTileEntityUtils.dropItems(worldIn, pos);
 		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
 	}
-	
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
 		if(!worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP)) {
 			dropBlockAsItem(worldIn, pos, state, 0);
             worldIn.setBlockToAir(pos);
 		}
 	}
-	
+
+	@Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
     	return worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos) && worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP);
     }

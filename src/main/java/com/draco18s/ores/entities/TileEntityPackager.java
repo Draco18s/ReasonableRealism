@@ -62,7 +62,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	
 	@Override
 	public void update() {
-		if(worldObj.getBlockState(pos).getBlock() != this.getBlockType()) return;
+		if(world.getBlockState(pos).getBlock() != this.getBlockType()) return;
 		if(packTime > 0) {
 			float pow = calcAndGetPower()/timeMod;
 			packTime -= pow;
@@ -99,7 +99,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 							Block block = Block.getBlockFromItem(inputSlot.getStackInSlot(s).getItem());
 							
 							IBlockState state;
-							state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
+							state = block.getStateForPlacement(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
 							inMod = state.getBlockHardness(null, BlockPos.ORIGIN) * 2;
 							if(block.getHarvestTool(state).equals("pickaxe") && block.getHarvestLevel(state) >= 0) {
 								inMod *= (block.getHarvestLevel(state) + 2);
@@ -109,12 +109,12 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 							inMod = 1;
 						}
 					}
-					if(nextResult != null && nextResult.getItem() instanceof ItemBlock) {
+					if(!nextResult.isEmpty() && nextResult.getItem() instanceof ItemBlock) {
 						try {
 							Block block = Block.getBlockFromItem(nextResult.getItem());
 							
 							IBlockState state;
-							state = block.onBlockPlaced(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
+							state = block.getStateForPlacement(null, BlockPos.ORIGIN, EnumFacing.DOWN, 0, 0, 0, nextResult.getMetadata(), null);
 							outMod = state.getBlockHardness(null, BlockPos.ORIGIN);
 							if(block.getHarvestTool(state).equals("shovel") && block.getHarvestLevel(state) >= 0) {
 								outMod *= 2;
@@ -131,18 +131,18 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	}
 
 	private float calcAndGetPower() {
-		if(worldObj.isRemote) return powerUser.getScaledPower(powerUser.getRawPower());
+		if(world.isRemote) return powerUser.getScaledPower(powerUser.getRawPower());
 		int numBlocksOut = 0;
 		BlockPos p = pos;
 		EnumFacing searchDir = EnumFacing.UP;
 		do {
 			p = p.offset(searchDir,1);
-			if(worldObj.getBlockState(p).getBlock() == OresBase.axel) {
-				if(worldObj.getBlockState(p).getValue(Props.AXEL_ORIENTATION) == AxelOrientation.UP) {
+			if(world.getBlockState(p).getBlock() == OresBase.axel) {
+				if(world.getBlockState(p).getValue(Props.AXEL_ORIENTATION) == AxelOrientation.UP) {
 					searchDir = EnumFacing.UP;
 				}
 				else {
-					searchDir = worldObj.getBlockState(p).getValue(BlockHorizontal.FACING);
+					searchDir = world.getBlockState(p).getValue(BlockHorizontal.FACING);
 				}
 				numBlocksOut++;
 			}
@@ -151,9 +151,9 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 				numBlocksOut = 999;
 			}
 		} while(numBlocksOut <= 8);
-		IBlockState s = worldObj.getBlockState(p);
+		IBlockState s = world.getBlockState(p);
 		if(s.getBlock() == OresBase.axel && s.getValue(Props.AXEL_ORIENTATION) == AxelOrientation.HUB) {
-			TileEntity te = worldObj.getTileEntity(p);
+			TileEntity te = world.getTileEntity(p);
 			if(te.hasCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir)) {
 				IMechanicalPower pow = te.getCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir);
 				powerUser.setRawPower(pow.getRawPower());
@@ -167,7 +167,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	private boolean canPackage(int slot) {
 		if(inputSlot.getStackInSlot(slot) == null) return false;
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(slot), true);
-		if(result == null) return false;
+		if(result.isEmpty()) return false;
 		if(outputSlot.insertItem(0, result, true) != null) return false;
 		return true;
 	}
@@ -175,10 +175,10 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	private void packItem() {
 		for(int s = 0; s < inputSlot.getSlots(); s++) {
 			ItemStack stack = inputSlot.getStackInSlot(s);
-			if(stack == null) continue;
+			if(stack.isEmpty()) continue;
 			ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(stack, true);
-			if(result == null) continue;
-			if(outputSlot.insertItem(0, result, true) != null) continue;
+			if(result.isEmpty()) continue;
+			if(!outputSlot.insertItem(0, result, true).isEmpty()) continue;
 			inputSlot.extractItem(s, HardLibAPI.oreMachines.getPressurePackAmount(stack), false);
 			outputSlot.insertItem(0, result.copy(), false);
 		}
@@ -194,7 +194,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
-			if(worldObj != null && worldObj.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
+			if(world != null && world.getBlockState(pos).getBlock() != getBlockType()) {//if the block at myself isn't myself, allow full access (Block Broken)
 				return (T) new CombinedInvWrapper(inputSlot, outputSlotWrapper);
 			}
 			if(facing == null) {

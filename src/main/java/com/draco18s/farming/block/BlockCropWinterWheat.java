@@ -27,7 +27,7 @@ public class BlockCropWinterWheat extends BlockCrops {
 	}
 
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
-		Biome bio = world.getBiomeGenForCoords(pos);
+		Biome bio = world.getBiome(pos);
 		if (world.getLightFromNeighbors(pos.up()) >= 9) {
 			int i = this.getAge(state);
 

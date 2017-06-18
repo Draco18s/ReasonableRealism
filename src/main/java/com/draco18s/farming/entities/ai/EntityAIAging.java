@@ -84,17 +84,17 @@ public class EntityAIAging extends EntityAIBase {
 				entity.get().getEntityData().setInteger("AnimalDeathAge", age.deathAge);
 			}
 			if(age.entityAge > age.deathAge && entity.get().hurtResistantTime <= 0) {
-				entity.get().attackEntityFrom(DamageSource.wither, 0.5f);
+				entity.get().attackEntityFrom(DamageSource.WITHER, 0.5f);
 				if(age.entityAge > age.deathAge+1000*age.ageFactor) {
-					entity.get().attackEntityFrom(DamageSource.wither, 1.5f);
+					entity.get().attackEntityFrom(DamageSource.WITHER, 1.5f);
 				}
 				if(age.entityAge > age.deathAge+10000*age.ageFactor) {
-					entity.get().attackEntityFrom(DamageSource.wither, 15f);
+					entity.get().attackEntityFrom(DamageSource.WITHER, 15f);
 				}
 			}
 			else if(age.entityAge % (150) == 0) {
-				List ents = entity.get().worldObj.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
-				String bioName = entity.get().worldObj.getBiomeForCoordsBody(new BlockPos(entity.get().posX, entity.get().posY, entity.get().posZ)).getBiomeName().toLowerCase();
+				List ents = entity.get().world.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
+				String bioName = entity.get().world.getBiomeForCoordsBody(new BlockPos(entity.get().posX, entity.get().posY, entity.get().posZ)).getBiomeName().toLowerCase();
 				int extraCountAllowed = 0;
 				if(bioName.contains("rainbow") && bioName.contains("forest")) {
 					extraCountAllowed = 25;
@@ -124,10 +124,10 @@ public class EntityAIAging extends EntityAIBase {
 				}
 			}
 			
-			EntityPlayer player = entity.get().worldObj.getClosestPlayerToEntity(entity.get(), 32);
+			EntityPlayer player = entity.get().world.getClosestPlayerToEntity(entity.get(), 32);
 			if(entity.get().isInLove()) {
 				if(player == null && rand.nextInt(100) == 0) {
-					List ents = entity.get().worldObj.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
+					List ents = entity.get().world.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
 					if(ents.size() > 0) {
 						EntityAnimal mate = null;
 						EntityAnimal anim;
@@ -148,7 +148,7 @@ public class EntityAIAging extends EntityAIBase {
 			}
 			else if(this.entity.get().getAttackTarget() == null) {
 				if(rand.nextInt(200) == 0) {
-					List ents = entity.get().worldObj.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
+					List ents = entity.get().world.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
 					if(ents.size() > 0) {
 						EntityAnimal animal = (EntityAnimal) ents.get(rand.nextInt(ents.size()));
 						this.entity.get().setAttackTarget(animal);
@@ -189,10 +189,10 @@ public class EntityAIAging extends EntityAIBase {
 				double d0 = rand.nextGaussian() * 0.02D;
 				double d1 = rand.nextGaussian() * 0.02D;
 				double d2 = rand.nextGaussian() * 0.02D;
-				entity.get().worldObj.spawnParticle(EnumParticleTypes.HEART, entity.get().posX + (double)(rand.nextFloat() * entity.get().width * 2.0F) - (double)entity.get().width, entity.get().posY + 0.5D + (double)(rand.nextFloat() * entity.get().height), entity.get().posZ + (double)(rand.nextFloat() * entity.get().width * 2.0F) - (double)entity.get().width, d0, d1, d2);
+				entity.get().world.spawnParticle(EnumParticleTypes.HEART, entity.get().posX + (double)(rand.nextFloat() * entity.get().width * 2.0F) - (double)entity.get().width, entity.get().posY + 0.5D + (double)(rand.nextFloat() * entity.get().height), entity.get().posZ + (double)(rand.nextFloat() * entity.get().width * 2.0F) - (double)entity.get().width, d0, d1, d2);
 			}
 
-			entity.get().worldObj.spawnEntityInWorld(entityageable);
+			entity.get().world.spawnEntity(entityageable);
 		}
 	}
 }

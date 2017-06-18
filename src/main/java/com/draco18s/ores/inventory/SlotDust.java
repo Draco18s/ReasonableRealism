@@ -14,6 +14,6 @@ public class SlotDust extends SlotItemHandler {
 	
 	@Override
 	public boolean isItemValid(ItemStack stack) {
-		return super.isItemValid(stack) && HardLibAPI.oreMachines.getSiftResult(stack, false) != null;
+		return super.isItemValid(stack) && !HardLibAPI.oreMachines.getSiftResult(stack, false).isEmpty();
 	}
 }
