@@ -109,7 +109,7 @@ public class BlockCropWeeds extends BlockCrops {
 			mat = ToolMaterial.valueOf(((ItemHoe)s.getItem()).getMaterialName());
 		}
 		else if(s != null && s.getItem().getToolClasses(s).contains("hoe")) {
-			mat = ((ItemTool)s.getItem()).getToolMaterial();
+			mat = Item.ToolMaterial.valueOf(((ItemTool)s.getItem()).getToolMaterialName());
 		}
 		else {
 			return hardness;
@@ -136,7 +136,8 @@ public class BlockCropWeeds extends BlockCrops {
 	}
 	
 	@Override
-	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack) {
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+		ItemStack stack = player.getHeldItemMainhand();
 		if(stack != null) {
 			Item i = stack.getItem();
 			if(i instanceof ItemTool) {
@@ -146,6 +147,6 @@ public class BlockCropWeeds extends BlockCrops {
 				stack.damageItem(1, player);
 			}
 		}
-		player.addStat(FarmingAchievements.killWeeds, 1);
+		return super.removedByPlayer(state, world, pos, player, willHarvest);
 	}
 }

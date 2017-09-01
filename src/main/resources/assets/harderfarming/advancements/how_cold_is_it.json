@@ -1,0 +1,68 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderfarming:achieve_icons",
+            "data": 2
+        },
+        "title": {
+            "translate": "achievement.craftThermometer"
+        },
+        "description": {
+            "translate": "achievement.craftThermometer.desc"
+        }
+    },
+    "parent": "minecraft:husbandry/plant_seed",
+    "criteria": {
+        "has_item": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "block":"harderfarming:hydrometer"
+            }
+        },
+        "has_item2": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "block":"harderfarming:thermometer"
+            }
+        },
+        "taiga_cold": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:taiga_cold"
+            }
+        },
+        "ice_mountains": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:ice_mountains"
+            }
+        },
+        "frozen_river": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:frozen_river"
+            }
+        },
+        "taiga_cold_hills": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:taiga_cold_hills"
+            }
+        },
+        "ice_plains": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:ice_flats"
+            }
+        },
+        "extreme_hills_with_trees": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "biome": "minecraft:extreme_hills_with_trees"
+            }
+        }
+    },
+    "requirements": [
+        ["has_item","has_item2"],["taiga_cold","ice_mountains","frozen_river","taiga_cold_hills","ice_plains","extreme_hills_with_trees"]
+    ]
+}

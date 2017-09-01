@@ -18,6 +18,7 @@ import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockStem;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -115,7 +116,8 @@ public class ItemHydrometer extends Item implements IItemFrameOutput {
 			}
 			if(item == null) {
 				if (block instanceof BlockCrops){
-					Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, new String[]{ "func_149865_P", "getCrop" });
+					Method method = ReflectionHelper.findMethod(BlockCrops.class, "getCrop", "func_149865_P");
+					//Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, new String[]{ "func_149865_P", "getCrop" });
 					try {
 						item = (Item)method.invoke(block, new Object[]{});
 					} catch (IllegalAccessException e) {
@@ -154,7 +156,7 @@ public class ItemHydrometer extends Item implements IItemFrameOutput {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.harderfarming:linkedcrop.text") + " " + tag.getString("linkedCropName"));

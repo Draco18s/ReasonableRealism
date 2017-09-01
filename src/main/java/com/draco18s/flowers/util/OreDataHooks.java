@@ -38,7 +38,7 @@ public class OreDataHooks implements IOreData {
 		Chunk c = world.getChunkFromBlockCoords(pos);
 		int y = pos.getY();
 		y -= y%8;
-		ChunkCoords key = new ChunkCoords(world.provider.getDimension(), c.xPosition,y,c.zPosition);
+		ChunkCoords key = new ChunkCoords(world.provider.getDimension(), c.x,y,c.z);
 		HashMap<BlockWrapper,Integer> map = graphs.get(key);
 		if(map == null || !map.containsKey(ore)) {
 			return 0;
@@ -54,7 +54,7 @@ public class OreDataHooks implements IOreData {
 		y -= y%8;
 		int k = 0;
 		do {
-			ChunkCoords key = new ChunkCoords(world.provider.getDimension(), c.xPosition,y-8*k,c.zPosition);
+			ChunkCoords key = new ChunkCoords(world.provider.getDimension(), c.x,y-8*k,c.z);
 			HashMap<BlockWrapper,Integer> map = graphs.get(key);
 			if(map == null) {
 				map = new HashMap();

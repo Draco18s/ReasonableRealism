@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "expindustry:rail_bridge_powered"
+  },
+  "pattern": [
+    "R",
+    "P"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "ore": "plankWood",
+      "type": "forge:ore_dict"
+    },
+    "R": {
+      "item": "minecraft:golden_rail"
+    }
+  }
+}

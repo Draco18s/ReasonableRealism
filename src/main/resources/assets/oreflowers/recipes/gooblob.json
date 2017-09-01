@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "xx",
+        "xx"
+    ],
+    "key": {
+        "x": {
+            "item": "oreflowers:oreflowersdesert1",
+            "data": 3
+        }
+    },
+    "result": {
+        "item": "oreflowers:sticky_goo"
+    }
+}

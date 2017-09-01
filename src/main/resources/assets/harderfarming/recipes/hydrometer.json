@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "harderfarming:hydrometer"
+  },
+  "pattern": [
+    "ggg",
+    "gig",
+    "ggg"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "g": {
+      "item": "minecraft:glass_pane"
+    },
+    "i": {
+      "ore": "nuggetGold",
+      "type": "forge:ore_dict"
+    }
+  }
+}

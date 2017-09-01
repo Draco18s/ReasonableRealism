@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "harderfarming:tanner"
+  },
+  "pattern": [
+    "sss",
+    "sts",
+    "s s"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "s": {
+      "ore": "stickWood",
+      "type": "forge:ore_dict"
+    },
+    "t": {
+      "item": "minecraft:string"
+    }
+  }
+}

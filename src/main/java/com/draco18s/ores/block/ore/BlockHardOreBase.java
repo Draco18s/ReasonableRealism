@@ -64,8 +64,8 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(itemIn, 1, 15));
+	public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
+		list.add(new ItemStack(this, 1, 15));
 	}
 
 	@Override
@@ -73,10 +73,12 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 		return new BlockStateContainer(this, new IProperty[] {Props.ORE_DENSITY});
 	}
 
+	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return this.getDefaultState().withProperty(Props.ORE_DENSITY, Integer.valueOf(meta+1));
 	}
 
+	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(Props.ORE_DENSITY).intValue()-1;
 	}
@@ -102,6 +104,7 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 		return 1 + random.nextInt(fortune+(state.getValue(Props.ORE_DENSITY)-1)/6+1);
 	}
 
+	@Override
 	public Color getProspectorParticleColor(IBlockAccess worldIn, BlockPos pos, IBlockState state) {
 		return color;
 	}
@@ -122,12 +125,10 @@ public class BlockHardOreBase extends Block implements IBlockMultiBreak {
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		if(player != null && player.capabilities.isCreativeMode && player.getHeldItem(EnumHand.MAIN_HAND) == null) {
+		if(player != null && player.capabilities.isCreativeMode && player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) {
 			if(!world.isRemote) {
-				//avoidGeneration = true;
 				int m = state.getValue(Props.ORE_DENSITY);
 				m = m - (player.isSneaking()?1:4);
-				System.out.println(m);
 				if(m < 1)
 					m += 16;
 				world.setBlockState(pos, state.withProperty(Props.ORE_DENSITY, m), 3);

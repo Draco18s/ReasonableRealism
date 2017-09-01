@@ -1,18 +1,25 @@
 package com.draco18s.ores;
 
 import java.awt.Color;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
+import com.draco18s.flowers.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
+import com.draco18s.hardlib.util.AdvancementUtils;
 import com.draco18s.hardlib.util.RecipesUtils;
+import com.draco18s.ores.advancement.MillstoneTrigger;
 import com.draco18s.ores.block.BlockAxel;
 import com.draco18s.ores.block.BlockDummyOre;
 import com.draco18s.ores.block.BlockMillstone;
@@ -34,6 +41,7 @@ import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntityPackager;
 import com.draco18s.ores.entities.TileEntitySifter;
 import com.draco18s.ores.integration.FlowerIntegration;
+import com.draco18s.ores.item.ItemDiamondStudAxe;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
 import com.draco18s.ores.item.ItemDiamondStudShovel;
@@ -50,6 +58,11 @@ import com.draco18s.ores.networking.ToServerMessageOreCart;
 import com.draco18s.ores.recipes.OreProcessingRecipes;
 import com.draco18s.ores.util.OresAchievements;
 
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementList;
+import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.advancements.AdvancementTreeNode;
+import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockStone;
@@ -66,18 +79,20 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -164,6 +179,8 @@ public class OresBase {
 	public static SimpleNetworkWrapper networkWrapper;
 	
 	public static Configuration config;
+
+	public static MillstoneTrigger MILL_BUILT;
 
 	public static boolean sluiceAllowDirt;
 	public static boolean useSounds;
@@ -295,7 +312,7 @@ public class OresBase {
 		EasyRegistry.registerItem(diaStudShovel, "diamondstud_shovel");
 		diaStudHoe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudHoe, "diamondstud_hoe");
-		diaStudAxe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
+		diaStudAxe = new ItemDiamondStudAxe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudAxe, "diamondstud_axe");
 		oreMinecart = new ItemEntityOreCart(oreCartEnum);
 		EasyRegistry.registerItem(oreMinecart, "orecart");
@@ -304,23 +321,27 @@ public class OresBase {
 		enchPulverize = new EnchantmentPulverize(slots);
 		enchPulverize.setRegistryName("pulverize");
 		enchPulverize.setName(enchPulverize.getRegistryName().toString());
-		GameRegistry.register(enchPulverize);
+		EasyRegistry.registerOther(enchPulverize);
+		//GameRegistry.register(enchPulverize);
 		
 		enchCracker = new EnchantmentVeinCracker(slots);
 		enchCracker.setRegistryName("cracker");
 		enchCracker.setName(enchCracker.getRegistryName().toString());
-		GameRegistry.register(enchCracker);
+		EasyRegistry.registerOther(enchCracker);
+		//GameRegistry.register(enchCracker);
 		
 		enchShatter = new EnchantmentShatter(slots);
 		enchShatter.setRegistryName("shatter");
 		enchShatter.setName(enchShatter.getRegistryName().toString());
-		GameRegistry.register(enchShatter);
+		EasyRegistry.registerOther(enchShatter);
+		//GameRegistry.register(enchShatter);
 
 		slots = new EntityEquipmentSlot[] {EntityEquipmentSlot.OFFHAND};
 		enchProspector = new EnchantmentProspector(slots);
 		enchProspector.setRegistryName("prospector");
 		enchProspector.setName(enchProspector.getRegistryName().toString());
-		GameRegistry.register(enchProspector);
+		EasyRegistry.registerOther(enchProspector);
+		//GameRegistry.register(enchProspector);
 		
 		proxy.registerEventHandlers();
 		proxy.registerRenderers();
@@ -387,10 +408,10 @@ public class OresBase {
 		
 		/*Smelting*/
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.LIMONITE.meta), new ItemStack(rawOre, 1, EnumOreType.IRON.meta), 0.05f);
-		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.IRON.meta), new ItemStack(Items.field_191525_da), 0.08f);
+		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_NUGGET), 0.08f);
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_NUGGET, 1), 0.11f);
 		GameRegistry.addSmelting(new ItemStack(rawOre, 1, EnumOreType.QUARTZ.meta), new ItemStack(Blocks.GLASS_PANE, 1), 0.11f);
-		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(Items.field_191525_da), 0.08f);
+		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_NUGGET), 0.08f);
 		GameRegistry.addSmelting(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_NUGGET, 1), 0.11f);
 		GameRegistry.addSmelting(new ItemStack(largeDust, 1, EnumOreType.IRON.meta), new ItemStack(Items.IRON_INGOT, 1), 0.7f);
 		GameRegistry.addSmelting(new ItemStack(largeDust, 1, EnumOreType.GOLD.meta), new ItemStack(Items.GOLD_INGOT, 1), 1.0f);
@@ -405,48 +426,53 @@ public class OresBase {
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), new ItemStack(largeDust, 1, EnumOreType.GOLD.meta));
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta), new ItemStack(largeDust, 1, EnumOreType.FLOUR.meta));
 		RecipesUtils.craftNineOf(new ItemStack(smallDust, 1, EnumOreType.SUGAR.meta), new ItemStack(Items.SUGAR));
-		RecipesUtils.craftNineOf(new ItemStack(Items.field_191525_da), new ItemStack(Items.IRON_INGOT, 1));
+		
+		//RecipesUtils.setupDir(config);
+		//RecipesUtils.addShapedRecipe(new ItemStack(smallDust, 1, EnumOreType.GOLD.meta), "x x", " x ", " s ", 's', "stickWood", 'x', "ingotGold");
+		//completed: recipes
+		/*
+		[✓]RecipesUtils.craftNineOf(new ItemStack(Items.IRON_NUGGET), new ItemStack(Items.IRON_INGOT, 1));
 		
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.IRON.meta), "x", 'x', new ItemStack(dummyOreIron));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.GOLD.meta), "x", 'x', new ItemStack(dummyOreGold));
 		GameRegistry.addRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), "x", 'x', new ItemStack(dummyOreDiamond));
-		GameRegistry.addRecipe(new ItemStack(Items.field_191525_da, 9), "x",'x',new ItemStack(Items.IRON_INGOT, 1));
+		[✓]GameRegistry.addRecipe(new ItemStack(Items.IRON_NUGGET, 9), "x",'x',new ItemStack(Items.IRON_INGOT, 1));
 		
 		if(OreDictionary.doesOreNameExist("stoneAny")) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
+			[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
 		}
 		else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
+			[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(millstone,9), 	true, "SSS","SWS","SSS", 'S', "stoneAny", 'W', "logWood"));
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 			true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 		true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 			true, "WWW", 'W', "logWood"));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(pressurePackager),	true, "sps","s s","sss", 's', "stoneAny", 'p', Blocks.PISTON));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sifter), 			true, "PBP","PbP", 'b', Items.BUCKET, 'P', "plankWood", 'B', Blocks.IRON_BARS));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(windvane, 2), 		true, "SW", "SW", "SW", 'S', "stickWood", 'W', Blocks.WOOL));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(axel, 2), 			true, "WWW", 'W', "logWood"));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(pressurePackager),	true, "sps","s s","sss", 's', "stoneAny", 'p', Blocks.PISTON));
 		
 		ItemStack diamondNugget = new ItemStack(rawOre,1,EnumOreType.DIAMOND.meta);
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudPick), true, "dId", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudAxe), true, "dI ", "Is ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudShovel), true, " d ", " I ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudHoe), true, "dI ", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sluice), true, "sss","ppp",'s',"stickWood",'p',"slabWood"));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudPick), true, "dId", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudAxe), true, "dI ", "Is ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudShovel), true, " d ", " I ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(diaStudHoe), true, "dI ", " s ", " s ", 's', "stickWood", 'I', "ingotIron", 'd', diamondNugget));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(sluice), true, "sss","ppp",'s',"stickWood",'p',"slabWood"));
 		
 		List<ItemStack> list = new ArrayList<ItemStack>();
 		list.add(new ItemStack(Items.BUCKET));
 		list.add(new ItemStack(Items.MINECART));
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(oreMinecart), list));
+		[✓]GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(oreMinecart), list));
 		stoneTools = config.getBoolean("useDioriteStoneTools", "GENERAL", true, "If true, cobblestone cannot be used to create stone tools,\ninstead diorite is used. This prolongs the life of wood tools so it isn't \"make a wood pickaxe to\nmine 3 stone and upgrade.\"");
 		if(stoneTools) {
-			RecipesUtils.RemoveRecipe(Items.STONE_AXE, 1, 0, "Hard Ores");
-			RecipesUtils.RemoveRecipe(Items.STONE_PICKAXE, 1, 0, "Hard Ores");
-			RecipesUtils.RemoveRecipe(Items.STONE_SHOVEL, 1, 0, "Hard Ores");
-			RecipesUtils.RemoveRecipe(Items.STONE_HOE, 1, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.STONE_AXE, 1, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.STONE_PICKAXE, 1, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.STONE_SHOVEL, 1, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.STONE_HOE, 1, 0, "Hard Ores");
 			
 			ItemStack toolmat = new ItemStack(Blocks.STONE, 1, BlockStone.EnumType.DIORITE.getMetadata());
-			GameRegistry.addRecipe(new ItemStack(Items.STONE_PICKAXE), new Object[] {"III", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-			GameRegistry.addRecipe(new ItemStack(Items.STONE_AXE), new Object[] {"II ", "Is ", " s ", 's', Items.STICK, 'I', toolmat});
-			GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-			GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
-		}
+			[✓]GameRegistry.addRecipe(new ItemStack(Items.STONE_PICKAXE), new Object[] {"III", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+			[✓]GameRegistry.addRecipe(new ItemStack(Items.STONE_AXE), new Object[] {"II ", "Is ", " s ", 's', Items.STICK, 'I', toolmat});
+			[✓]GameRegistry.addRecipe(new ItemStack(Items.STONE_SHOVEL), new Object[] {" I ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+			[✓]GameRegistry.addRecipe(new ItemStack(Items.STONE_HOE), new Object[] {"II ", " s ", " s ", 's', Items.STICK, 'I', toolmat});
+		}*/
 		useSounds = config.getBoolean("Use Sounds", "GENERAL", true, "If true, then the millstone will make noise.");
 		/*Sluicing*/
 		sluiceAllowDirt = config.getBoolean("sluiceAllowsDirt","SLUICE", false, "Set to true to allow dirt to be used in the sluice.");
@@ -454,9 +480,6 @@ public class OresBase {
 		//TileEntitySluice.cycleLength = cycle * 15;
 		TileEntityBasicSluice.cycleLength = cycle * 15;
 		
-		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
-		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
-		//HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		if(config.get("SLUICE", "canFindIron", true).getBoolean()) {
 			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
 			HardLibAPI.oreMachines.addSluiceRecipe(oreIron);
@@ -485,25 +508,30 @@ public class OresBase {
 
 		String oreIn = "dustFlour";
 		if(hardOption) {
-			RecipesUtils.RemoveRecipe(Items.BREAD, 1, 0, "Hard Ores");
-			RecipesUtils.RemoveRecipe(Items.COOKIE, 8, 0, "Hard Ores");
-			RecipesUtils.RemoveRecipe(Items.CAKE, 1, 0, "Hard Ores");
-			
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.BREAD, 3), "www", 'w', oreIn)); //works out to 1:1 vanilla
 			//hard: wheat is ground to "4/9th flour"
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.WHEAT), new ItemStack(smallDust, 4, EnumOreType.FLOUR.meta));
 			//hard: seeds are ground to "1/9ths flour"
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.WHEAT_SEEDS), new ItemStack(smallDust, 1, EnumOreType.FLOUR.meta));
 		}
 		else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.BREAD), "www", 'w', oreIn));
 			//easy: wheat is ground to "2 flour"
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.WHEAT), new ItemStack(smallDust, 18, EnumOreType.FLOUR.meta));
 			//easy: seeds are ground to "2/9ths flour"
 			HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.WHEAT_SEEDS), new ItemStack(smallDust, 2, EnumOreType.FLOUR.meta));
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.COOKIE, 8), "wcw", 'w', oreIn, 'c', new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage())));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.CAKE), "mmm", "ses", "www", 'w', oreIn, 's', Items.SUGAR, 'e', Items.EGG, 'm', Items.MILK_BUCKET));
+		//completed: recipe removal
+		/*if(hardOption) {
+			[✓]RecipesUtils.RemoveRecipe(Items.BREAD, 1, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.COOKIE, 8, 0, "Hard Ores");
+			[✓]RecipesUtils.RemoveRecipe(Items.CAKE, 1, 0, "Hard Ores");
+			
+			[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.BREAD, 3), "www", 'w', oreIn)); //works out to 1:1 vanilla
+		}
+		else {
+			[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.BREAD), "www", 'w', oreIn));
+		}
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.COOKIE, 8), "wcw", 'w', oreIn, 'c', new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage())));
+		[✓]GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Items.CAKE), "mmm", "ses", "www", 'w', oreIn, 's', Items.SUGAR, 'e', Items.EGG, 'm', Items.MILK_BUCKET));*/
 		
 		hardOption = config.getBoolean("RequireMillingSugar", "MILLING", false, "If enabled, sugarcane cannot be crafted into sugar");
 		int sugarMulti = config.getInt("MillingMultiplierSugar", "MILLING", 6, 1, 12, "Sugar is a easy-to-get resource and rare-to-use, so it may be desirable to reduce the production.\nOutput of milling sugar (in tiny piles) is this value in hard-milling and 2x this value in\neasy-milling.\nVanilla Equivalence is 9.");
@@ -567,12 +595,15 @@ public class OresBase {
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
+		/*Advancements*/
+		MILL_BUILT = (MillstoneTrigger) EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
+		
 		config.save();
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		OresAchievements.addCoreAchievements();
+		//OresAchievements.addCoreAchievements();
 		if(stoneTools) {
 			OresAchievements.addStoneTools();
 		}
@@ -635,6 +666,11 @@ public class OresBase {
 			HardLibAPI.oreMachines.addSluiceRecipe(Blocks.GRAVEL);
 		}
 	}
+
+	@EventHandler
+	public void serverStarted(FMLServerStartedEvent event) {
+		AdvancementUtils.reparentAdvancement(new ResourceLocation("minecraft:story/upgrade_tools"), new ResourceLocation("harderores:alternate_stone"), "Harder Ores", true);
+	}
 	
 	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, Block dummyOre, int sluiceWeight, boolean canFindDefault) {
 		if(!oreType.set) {
@@ -649,10 +685,11 @@ public class OresBase {
 			List<ItemStack> tinyDusktStack = OreDictionary.getOres(oreIn);
 			List<ItemStack> nuggetStack = OreDictionary.getOres("nugget"+oreName);
 			if(dustStack.size() > 0 && tinyDusktStack.size() > 0) {
-				GameRegistry.addRecipe(new ShapelessOreRecipe(dustStack.get(0),
+				//completed:
+				/*GameRegistry.addRecipe(new ShapelessOreRecipe(dustStack.get(0),
 						oreIn, oreIn, oreIn,
 						oreIn, oreIn, oreIn,
-						oreIn, oreIn, oreIn));
+						oreIn, oreIn, oreIn));*/
 				ItemStack instk = tinyDusktStack.get(0).copy();
 				if(nuggetStack.size() > 0) {
 					GameRegistry.addSmelting(instk, nuggetStack.get(0), 0.1f);

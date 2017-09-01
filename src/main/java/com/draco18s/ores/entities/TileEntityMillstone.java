@@ -56,7 +56,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 
 	@Override
 	public void update() {
-		if(world.isRemote) return;
+		//if(world.isRemote) return;
 		if(world.getBlockState(pos).getBlock() != this.getBlockType()) return;
 		MillstoneOrientation millpos = world.getBlockState(pos).getValue(Props.MILL_ORIENTATION);
 		if(millpos == MillstoneOrientation.CENTER) {
@@ -70,18 +70,21 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 					grindItem(millpos);
 					
 					if(!outputSlot.getStackInSlot(0).isEmpty() && (outputSlot.getStackInSlot(0).getCount() >= 8 || inputSlot.getStackInSlot(0).isEmpty())) {
-						if(!world.isRemote) {	
-							Random rand = world.rand;
-							float rx = rand.nextFloat() * 0.6F + 0.2F;
-							float ry = rand.nextFloat() * 0.2F + 0.6F - 1;
-							float rz = rand.nextFloat() * 0.6F + 0.2F;
-							EntityItem entityItem = new EntityItem(world,
-									pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
-									outputSlot.extractItem(0, 64, false));
-							world.spawnEntity(entityItem);
-							entityItem.motionX = 0;
-							entityItem.motionY = -0.2F;
-							entityItem.motionZ = 0;
+						if(!world.isRemote) {
+							IBlockState s = world.getBlockState(pos.down());
+							if(s.getBlock().isAir(s, world, pos)) {
+								Random rand = world.rand;
+								float rx = rand.nextFloat() * 0.6F + 0.2F;
+								float ry = rand.nextFloat() * 0.2F + 0.6F - 1;
+								float rz = rand.nextFloat() * 0.6F + 0.2F;
+								EntityItem entityItem = new EntityItem(world,
+										pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
+										outputSlot.extractItem(0, 64, false));
+								world.spawnEntity(entityItem);
+								entityItem.motionX = 0;
+								entityItem.motionY = -0.2F;
+								entityItem.motionZ = 0;
+							}
 						}
 					}
 				}
@@ -101,7 +104,7 @@ public class TileEntityMillstone extends TileEntity implements ITickable {
 				IItemHandler inven = centerTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.EAST);
 				ItemStack stack = inputSlot.getStackInSlot(0).copy();
 				stack.setCount(1);
-				if(inven.insertItem(0, stack, true).isEmpty()) {
+				if(inven != null && inven.insertItem(0, stack, true).isEmpty()) {
 					inputSlot.setStackInSlot(0, inven.insertItem(0, inputSlot.getStackInSlot(0), false));
 				}
 			}

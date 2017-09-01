@@ -223,11 +223,12 @@ public class TileEntityTanner extends TileEntity implements ITickable {
 		saltTime = compound.getInteger("harderfarming:saltTime");
 	}
 
-	public float getTime() {
-		return 0;
-		//return tanningTime;
+	public float getTime(int slot) {
+		if(slot >= tanningTime.length) return 0;
+		return tanningTime[slot];
 	}
-	
+
+	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
 		return oldState.getBlock() != newState.getBlock();
 	}

@@ -63,6 +63,7 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	@Override
 	public void update() {
 		if(world.getBlockState(pos).getBlock() != this.getBlockType()) return;
+		
 		if(packTime > 0) {
 			float pow = calcAndGetPower()/timeMod;
 			packTime -= pow;
@@ -165,10 +166,10 @@ public class TileEntityPackager extends TileEntity implements ITickable {
 	}
 
 	private boolean canPackage(int slot) {
-		if(inputSlot.getStackInSlot(slot) == null) return false;
+		if(inputSlot.getStackInSlot(slot).isEmpty()) return false;
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(inputSlot.getStackInSlot(slot), true);
 		if(result.isEmpty()) return false;
-		if(outputSlot.insertItem(0, result, true) != null) return false;
+		if(!outputSlot.insertItem(0, result, true).isEmpty()) return false;
 		return true;
 	}
 

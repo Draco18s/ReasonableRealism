@@ -1,0 +1,5 @@
+{
+    "recipes": {
+        "tool_mold": "com.draco18s.hardlib.api.recipes.RecipeToolMold$Factory"
+    }
+}

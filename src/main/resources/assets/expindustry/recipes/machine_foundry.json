@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "expindustry:machine_foundry"
+  },
+  "pattern": [
+    "sbs",
+    "s s",
+    "sfs"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "b": {
+      "ore": "bucket",
+      "type": "forge:ore_dict"
+    },
+    "s": {
+      "ore": "stoneAny",
+      "type": "forge:ore_dict"
+    },
+    "f": {
+      "item": "minecraft:furnace"
+    }
+  }
+}

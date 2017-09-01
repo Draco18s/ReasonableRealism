@@ -3,14 +3,18 @@ package com.draco18s.hardlib.api.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.ExpandedIndustryBase;
+import com.draco18s.industry.item.ItemCastingMold;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
@@ -21,17 +25,24 @@ import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.IRecipeFactory;
+import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class RecipeToolMold implements IRecipe {
+public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 	private static final List<RecipeSubItem> allMoldItems = new ArrayList<RecipeSubItem>();
 	protected Item output;
 	protected ItemStack input;
 	protected ItemStack mold;
 	protected String resourceDomain;
+	protected ResourceLocation resourceLocation;
 
 	/**
 	 * See {@link #RecipeToolMold(Item, ItemStack, Item, String)
@@ -74,14 +85,14 @@ public class RecipeToolMold implements IRecipe {
 		this.mold = new ItemStack(mold, 1, 0);
 		this.resourceDomain = resourceDomain!=null?resourceDomain.toLowerCase():resourceDomain;
 		
-		if(output instanceof IItemWithMeshDefinition) {
+		/*if(output instanceof IItemWithMeshDefinition) {
 			ItemStack tempResult = new ItemStack(output);
 			addImprint(itemStack, tempResult, resourceDomain);
 			EasyRegistry.registerSpecificItemVariantsWithBakery(typCast(output), tempResult);
 			if(output == HardLibAPI.itemMold) {
 				allMoldItems.add(new RecipeSubItem(this.input, resourceDomain));
 			}
-		}
+		}*/
 	}
 
 	public static ImmutableList<RecipeSubItem> getAllmolditems() {
@@ -143,15 +154,7 @@ public class RecipeToolMold implements IRecipe {
 			for (int j = 0; j < inv.getWidth(); ++j) {
 				ItemStack itemstack = inv.getStackInRowAndColumn(j, i);
 				itemstack = getActualTool(itemstack, input);
-				if (itemstack != null && (itemstack.getItem() == input.getItem() && (input.getMetadata() == OreDictionary.WILDCARD_VALUE || itemstack.getMetadata() == input.getMetadata()))) {
-					/*NBTTagCompound nbt = new NBTTagCompound();
-					NBTTagCompound itemTag = new NBTTagCompound();
-					input.writeToNBT(itemTag);
-					nbt.setTag("expindustry:item_mold", itemTag);
-					out.setTagCompound(nbt);
-					if(resourceDomain != null) {
-						nbt.setString("expindustry:resourceDomain", resourceDomain);
-					}*/
+				if (!itemstack.isEmpty() && (itemstack.getItem() == input.getItem() && (input.getMetadata() == OreDictionary.WILDCARD_VALUE || itemstack.getMetadata() == input.getMetadata()))) {
 					out = addImprint(input,out,resourceDomain);
 				}
 			}
@@ -159,10 +162,10 @@ public class RecipeToolMold implements IRecipe {
 		return out;
 	}
 
-	@Override
+	/*@Override
 	public int getRecipeSize() {
 		return 2;
-	}
+	}*/
 
 	@Override
 	public ItemStack getRecipeOutput() {
@@ -214,5 +217,30 @@ public class RecipeToolMold implements IRecipe {
 			input = i;
 			resourceDomain = domain;
 		}
+	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		return width * height >= 2;
+	}
+	
+	public static class Factory implements IRecipeFactory {
+		@Override
+		public IRecipe parse(JsonContext context, JsonObject json) {
+			String domain = null;
+			if(JsonUtils.hasField(json, "domain")) {
+				domain = JsonUtils.getString(json, "domain", "");
+			}
+			//final NonNullList<Ingredient> ingredients = RecipesUtils.parseShapeless(context, json);
+			final ItemStack ingredients = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "ingredient"), context);
+			final ItemStack mold = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "mold"), context);
+			final ItemStack result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), context);
+
+			return new RecipeToolMold(result.getItem(), ingredients, mold.getItem(), domain);
+		}
+	}
+
+	public static void allMoldItem(RecipeSubItem recipeSubItem) {
+		allMoldItems.add(recipeSubItem);
 	}
 }

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -33,6 +34,7 @@ public class HardLib {
 		OreDictionary.registerOre("stoneAny", new ItemStack(Blocks.STONE, 1, 4));
 		OreDictionary.registerOre("stoneAny", new ItemStack(Blocks.STONE, 1, 5));
 		OreDictionary.registerOre("stoneAny", new ItemStack(Blocks.STONE, 1, 6));
+		MinecraftForge.EVENT_BUS.register(proxy);
 	}
 	
 	@EventHandler

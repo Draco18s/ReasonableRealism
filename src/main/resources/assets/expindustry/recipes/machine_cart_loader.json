@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "expindustry:machine_cart_loader"
+  },
+  "pattern": [
+    "i i",
+    "rhd",
+    " i "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "r": {
+      "item": "minecraft:redstone_block"
+    },
+    "d": {
+      "item": "minecraft:comparator"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "ore": "ingotIron",
+      "type": "forge:ore_dict"
+    }
+  }
+}

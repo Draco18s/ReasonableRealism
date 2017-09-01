@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "www",
+        "www",
+        "www"
+    ],
+    "key": {
+        "w": {
+            "type": "forge:ore_dict",
+            "ore": "dustTinyOsmium"
+        }
+    },
+    "result": {
+        "item": "harderores:tinydust",
+        "data": 24
+    }
+}

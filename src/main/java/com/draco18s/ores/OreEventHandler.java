@@ -1,17 +1,26 @@
 package com.draco18s.ores;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.networking.Packets;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
 import com.draco18s.ores.util.OresAchievements;
 
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementList;
+import net.minecraft.advancements.AdvancementManager;
+import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -26,19 +35,42 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
-import net.minecraft.stats.AchievementList;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class OreEventHandler {
+
+	@SubscribeEvent
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+		IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
+		boolean hardOption = OresBase.config.getBoolean("RequireMillingFlour", "MILLING", false, "");
+		if(hardOption) {
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:bread"), "Hard Ores");
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:cookie"), "Hard Ores");
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:cake"), "Hard Ores");
+		}
+		boolean stoneTools = OresBase.config.getBoolean("useDioriteStoneTools", "GENERAL", true, "If true, cobblestone cannot be used to create stone tools,\ninstead diorite is used. This prolongs the life of wood tools so it isn't \"make a wood pickaxe to\nmine 3 stone and upgrade.\"");
+		if(stoneTools) {
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:stone_axe"), "Harder Ores");
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:stone_pickaxe"), "Harder Ores");
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:stone_shovel"), "Harder Ores");
+			RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:stone_hoe"), "Harder Ores");
+		}
+	}
+	
 	@SubscribeEvent
 	public void breakSpeed(BreakSpeed event) {
 		if(event.getEntityPlayer() != null) {
@@ -178,10 +210,8 @@ public class OreEventHandler {
 	}
 	
 	@SubscribeEvent
-	//public void onPickup(PlayerEvent.ItemPickupEvent event) {
-	//}
 	public void onPickup(EntityItemPickupEvent event) {
-		Item item = event.getItem().getEntityItem().getItem();
+		/*Item item = event.getItem().getEntityItem().getItem();
 		int meta = event.getItem().getEntityItem().getItemDamage();
 		if(item == OresBase.rawOre && meta == EnumOreType.LIMONITE.meta) {
 			event.getEntityPlayer().addStat(OresAchievements.mineLimonite, 1);
@@ -201,12 +231,13 @@ public class OreEventHandler {
 		ItemStack s = HardLibAPI.oreMachines.getSiftResult(event.getItem().getEntityItem(), false);
 		if(!s.isEmpty() && item != Items.DYE) {
 			event.getEntityPlayer().addStat(OresAchievements.grindOre, 1);
-		}
+		}*/
+		//TODO: advancements
 	}
 	
 	@SubscribeEvent
 	public void onCrafting(PlayerEvent.ItemCraftedEvent event) {
-		Item item = event.crafting.getItem();
+		/*Item item = event.crafting.getItem();
 		if(item == Items.IRON_INGOT){
 			if(event.player instanceof EntityPlayerMP && ((EntityPlayerMP)event.player).getStatFile().canUnlockAchievement(AchievementList.ACQUIRE_IRON)) {
 				event.player.addStat(OresAchievements.fakeIronBar, 1);
@@ -241,12 +272,12 @@ public class OreEventHandler {
 		}
 		if(isNugget){
 			event.player.addStat(OresAchievements.acquireNuggets, 1);
-		}
+		}*/
 	}
 	
 	@SubscribeEvent
 	public void onSmelting(PlayerEvent.ItemSmeltedEvent event) {
-		Item item = event.smelting.getItem();
+		/*Item item = event.smelting.getItem();
 		if(item == OresBase.rawOre && event.smelting.getItemDamage() == EnumOreType.IRON.meta) {
 			event.player.addStat(OresAchievements.acquireIronChunk, 1);
 		}
@@ -263,10 +294,10 @@ public class OreEventHandler {
 		}
 		if(isNugget){
 			event.player.addStat(OresAchievements.acquireNuggets, 1);
-		}
+		}*/
 	}
 	
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onAchievement(AchievementEvent event) {
 		if(event.getAchievement() == AchievementList.ACQUIRE_IRON){
 			if(event.getEntityPlayer() instanceof EntityPlayerMP && ((EntityPlayerMP)event.getEntityPlayer()).getStatFile().canUnlockAchievement(OresAchievements.fakeIronBar)) {
@@ -276,7 +307,7 @@ public class OreEventHandler {
 				event.setCanceled(true);
 			}
 		}
-	}
+	}*/
 	
 	private void dropStack(World worldIn, BlockPos pos, ItemStack stack) {
 		float f = 0.7F;

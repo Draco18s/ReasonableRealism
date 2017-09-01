@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "expindustry:machine_wood_hopper"
+  },
+  "pattern": [
+    "p p",
+    "p p",
+    " p "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "ore": "plankWood",
+      "type": "forge:ore_dict"
+    }
+  }
+}

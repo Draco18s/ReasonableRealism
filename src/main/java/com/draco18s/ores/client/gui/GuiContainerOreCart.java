@@ -43,10 +43,10 @@ public class GuiContainerOreCart extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores:ore_cart", new Object[0]).getUnformattedText(), 8, 6, 4210752);
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+		this.fontRenderer.drawString(new TextComponentTranslation("container.harderores:ore_cart", new Object[0]).getUnformattedText(), 8, 6, 4210752);
+		this.fontRenderer.drawString(new TextComponentTranslation("container.inventory", new Object[0]).getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
 		
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.harderores:drop_side", new Object[0]).getUnformattedText(), 117, 52, 4210752);
+		this.fontRenderer.drawString(new TextComponentTranslation("container.harderores:drop_side", new Object[0]).getUnformattedText(), 117, 52, 4210752);
 		
 		Iterator<GuiButton> iterator = this.buttonList.iterator();
 
@@ -90,11 +90,12 @@ public class GuiContainerOreCart extends GuiContainer {
 			curState = dir;
 		}
 
-		public void drawButton(Minecraft p_146112_1_, int mouseX, int mouseY) {
+		@Override
+		public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 			int k = 176;
 			int short1 = 0;
 			
-			boolean flag = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+			boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			//mc.getTextureManager().bindTexture();
 			
@@ -109,7 +110,7 @@ public class GuiContainerOreCart extends GuiContainer {
 				short1 += 44;
 			}
 			
-			this.drawTexturedModalRect(this.xPosition, this.yPosition, k, short1, this.width, this.height);
+			this.drawTexturedModalRect(this.x, this.y, k, short1, this.width, this.height);
 		}
 	}
 }

@@ -2,12 +2,15 @@ package com.draco18s.industry.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,8 +35,8 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		ItemStack base = new ItemStack(itemIn);
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		ItemStack base = new ItemStack(this);
 		subItems.add(base);
 		boolean skip = false;
 		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.getAllmolditems()) {
@@ -42,7 +46,7 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null) {
 			NBTTagCompound itemTags = nbt.getCompoundTag("expindustry:item_mold");

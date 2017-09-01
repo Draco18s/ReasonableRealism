@@ -1,0 +1,31 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:stone",
+            "data": 3
+        },
+        "title": {
+            "translate": "achievement.mineDiorite"
+        },
+        "description": {
+            "translate": "achievement.mineDiorite.desc"
+        }
+    },
+    "parent": "minecraft:story/mine_stone",
+    "criteria": {
+        "craft_sifter": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:stone",
+                        "data": 3
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["craft_sifter"]
+    ]
+}

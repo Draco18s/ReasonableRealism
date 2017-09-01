@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "wcw"
+    ],
+    "key": {
+        "w": {
+            "type": "forge:ore_dict",
+            "ore": "dustFlour"
+        },
+        "c": {
+            "item": "minecraft:dye",
+            "data": 12
+        }
+    },
+    "result": {
+        "item": "minecraft:cookie",
+        "count": 8
+    }
+}

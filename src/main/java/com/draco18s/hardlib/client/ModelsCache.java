@@ -2,9 +2,10 @@ package com.draco18s.hardlib.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
+//import com.google.common.base.Optional;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -26,10 +27,10 @@ public enum ModelsCache implements IResourceManagerReloadListener {
 	INSTANCE;
 
 	public static final IModelState DEFAULTMODELSTATE = new IModelState() {
-		@Override
-		public Optional<TRSRTransformation> apply(Optional<? extends IModelPart> opt) {
-			return Optional.absent();
-		}
+	    @Override
+	    public Optional<TRSRTransformation> apply(Optional<? extends IModelPart> part) {
+	    	return Optional.empty();
+	    }
 	};
 	public static final VertexFormat DEFAULTVERTEXFORMAT = DefaultVertexFormats.BLOCK;
 	public static final Function<ResourceLocation, TextureAtlasSprite> DEFAULTTEXTUREGETTER = new Function<ResourceLocation, TextureAtlasSprite>() {

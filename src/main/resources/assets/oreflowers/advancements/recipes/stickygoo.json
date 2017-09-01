@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "oreflowers:gooblob"
+    ]
+  },
+  "criteria": {
+    "has_aveloz": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "oreflowers:oreflowersdesert1",
+            "data": 3
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "oreflowers:gooblob"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_aveloz",
+      "has_the_recipe"
+    ]
+  ]
+}

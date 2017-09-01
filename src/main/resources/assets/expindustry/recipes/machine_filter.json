@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "expindustry:machine_filter"
+  },
+  "pattern": [
+    "g g",
+    "ghg",
+    " g "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "g": {
+      "ore": "ingotGold",
+      "type": "forge:ore_dict"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    }
+  }
+}

@@ -113,13 +113,13 @@ public class TileEntitySifter extends TileEntity implements ITickable {
 			EntityItem ent;
 			for(int e = ents.size()-1; e >= 0; e--) {
 				ent = (EntityItem) ents.get(e);
-				stack = ent.getEntityItem().copy();
+				stack = ent.getItem().copy();
 				if(HardLibAPI.oreMachines.getSiftResult(stack, false) != null) {
 					stack = inputSlot.insertItem(0, stack, false);
 					if(!stack.isEmpty())
 						stack = inputSlot.insertItem(1, stack, false);
 					if(!stack.isEmpty())
-						ent.setEntityItemStack(stack);
+						ent.setItem(stack);
 					else
 						ent.setDead();
 					this.markDirty();

@@ -23,8 +23,8 @@ public class GuiContainerExtHopper extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		this.fontRendererObj.drawString(new TextComponentTranslation(tileEntity.getName()).getUnformattedText(), 8, 6, 4210752);
-		this.fontRendererObj.drawString(new TextComponentTranslation("container.inventory").getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+		this.fontRenderer.drawString(new TextComponentTranslation(tileEntity.getName()).getUnformattedText(), 8, 6, 4210752);
+		this.fontRenderer.drawString(new TextComponentTranslation("container.inventory").getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
 	}
 
 	@Override

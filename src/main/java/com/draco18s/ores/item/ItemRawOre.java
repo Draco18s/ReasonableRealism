@@ -52,21 +52,21 @@ public class ItemRawOre extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.GOLD.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.DIAMOND.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.LIMONITE.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.TIN.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.COPPER.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.LEAD.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.URANIUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.SILVER.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.NICKEL.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.ALUMINUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.PLATINUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.ZINC.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.OSMIUM.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.QUARTZ.meta));
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		subItems.add(new ItemStack(this, 1, EnumOreType.IRON.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.GOLD.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.DIAMOND.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.LIMONITE.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.TIN.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.COPPER.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.LEAD.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.URANIUM.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.SILVER.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.NICKEL.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.ALUMINUM.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.PLATINUM.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.ZINC.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.OSMIUM.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.QUARTZ.meta));
 	}
 }

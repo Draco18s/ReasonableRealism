@@ -16,7 +16,9 @@ import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -116,8 +118,8 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 			}
 			if(item == null) {
 				if (block instanceof BlockCrops){
-					String[] names = new String[]{ "func_149865_P", "getCrop" };
-					Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, names);
+					Method method = ReflectionHelper.findMethod(BlockCrops.class, "getCrop", "func_149865_P");
+					//Method method = ReflectionHelper.findMethod(BlockCrops.class, (BlockCrops)block, names);
 					try {
 						item = (Item)method.invoke(block, new Object[]{});
 					} catch (IllegalAccessException e) {
@@ -152,10 +154,11 @@ public class ItemThermometer extends Item implements IItemFrameOutput {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound tag = stack.getTagCompound();
-		Biome bio = player.getEntityWorld().getBiome(new BlockPos(player.posX, 0, player.posZ));
-		float t = bio.getTemperature();
+		//EntityPlayer player = Minecraft.getMinecraft().player;
+		//Biome bio = worldIn.getBiome(new BlockPos(player.posX, 0, player.posZ));
+		//float t = bio.getTemperature();
 		if(tag != null) {
 			tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip.harderfarming:linkedcrop.text") + " " + tag.getString("linkedCropName"));
 			//tooltip.add(tag.getFloat("tempflat") + "(" + t +")");

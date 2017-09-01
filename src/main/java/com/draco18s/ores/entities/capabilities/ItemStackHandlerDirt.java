@@ -27,7 +27,7 @@ public class ItemStackHandlerDirt extends ItemStackHandler {
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
 		if(stack != null && stack.getItem() instanceof ItemBlock) {
 			ItemBlock ib = (ItemBlock)stack.getItem();
-			if((OresBase.sluiceAllowDirt && ib.block == Blocks.DIRT) || ib.block == Blocks.SAND || ib.block == Blocks.GRAVEL) {
+			if((OresBase.sluiceAllowDirt && ib.getBlock() == Blocks.DIRT) || ib.getBlock() == Blocks.SAND || ib.getBlock() == Blocks.GRAVEL) {
 				return super.insertItem(slot, stack, simulate);
 			}
 		}

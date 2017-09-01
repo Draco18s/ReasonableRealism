@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "sss",
+        "ppp"
+    ],
+    "key": {
+        "s": {
+            "type": "forge:ore_dict",
+            "ore": "stickWood"
+        },
+        "p": {
+            "type": "forge:ore_dict",
+            "ore": "slabWood"
+        }
+    },
+    "result": {
+        "item": "harderores:basic_sluice"
+    }
+}

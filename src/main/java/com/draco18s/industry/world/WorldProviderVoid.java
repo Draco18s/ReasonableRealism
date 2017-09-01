@@ -9,9 +9,8 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeProviderSingle;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.end.DragonFightManager;
-import net.minecraft.world.gen.ChunkProviderEnd;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,8 +18,8 @@ public class WorldProviderVoid extends WorldProvider {
 	
 	public void createBiomeProvider() {
 		this.biomeProvider = new BiomeProviderSingle(Biomes.PLAINS);
-		this.hasNoSky = true;
-		NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.OVERWORLD);
+		this.hasSkyLight = true;
+		NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.OVERWORLD.getId());
 	}
 	
 	@Override

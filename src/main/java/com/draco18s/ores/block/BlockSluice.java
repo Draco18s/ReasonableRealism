@@ -163,7 +163,7 @@ public class BlockSluice extends Block {
 
 	public static float getFlowDirection(IBlockState blockState) {
 		Vec3d vec = getFlowVec(blockState);
-		return (float)(Math.atan2(vec.zCoord, vec.xCoord) - Math.PI / 2D);
+		return (float)(Math.atan2(vec.z, vec.x) - Math.PI / 2D);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class BlockSluice extends Block {
 	}
 
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isTopSolid(IBlockState state) {
 		return false;
 	}
 

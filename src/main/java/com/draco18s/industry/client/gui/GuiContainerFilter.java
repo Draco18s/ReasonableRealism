@@ -59,9 +59,9 @@ public class GuiContainerFilter extends GuiContainer {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		fontRendererObj.drawString(new TextComponentTranslation(te.getName()).getUnformattedText(), 8, 6, 4210752);
-		fontRendererObj.drawString(new TextComponentTranslation("container.inventory").getUnformattedText(), 8, this.ySize - 94, 4210752);
-		fontRendererObj.drawString(new TextComponentTranslation("gui.expindustry:rules_header").getUnformattedText(), 8, 37, 4210752);
+		fontRenderer.drawString(new TextComponentTranslation(te.getName()).getUnformattedText(), 8, 6, 4210752);
+		fontRenderer.drawString(new TextComponentTranslation("container.inventory").getUnformattedText(), 8, this.ySize - 94, 4210752);
+		fontRenderer.drawString(new TextComponentTranslation("gui.expindustry:rules_header").getUnformattedText(), 8, 37, 4210752);
 		if(!te.doIHaveFilters()) {
 			this.mc.renderEngine.bindTexture(texture);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -69,8 +69,8 @@ public class GuiContainerFilter extends GuiContainer {
 			for (int i = 0; i < te.getSizeInventory(); ++i) {
 				drawTexturedModalRect(8 + i * 18, 17, 176, 0, 16, 16);
 			}
-			fontRendererObj.drawString(new TextComponentTranslation("gui.expindustry:no_accept1").getUnformattedText(), 100, 17, 4210752);
-			fontRendererObj.drawString(new TextComponentTranslation("gui.expindustry:no_accept2").getUnformattedText(), 100, 26, 4210752);
+			fontRenderer.drawString(new TextComponentTranslation("gui.expindustry:no_accept1").getUnformattedText(), 100, 17, 4210752);
+			fontRenderer.drawString(new TextComponentTranslation("gui.expindustry:no_accept2").getUnformattedText(), 100, 26, 4210752);
 		}
 		Iterator<GuiButton> iterator = this.buttonList.iterator();
 
@@ -87,7 +87,7 @@ public class GuiContainerFilter extends GuiContainer {
 	}
 	
 	public void drawText(String p_146279_1_, int p_146279_2_, int p_146279_3_) {
-		this.drawCreativeTabHoveringText(p_146279_1_, p_146279_2_, p_146279_3_);
+		this.drawHoveringText(p_146279_1_, p_146279_2_, p_146279_3_);
 	}
 
 	public void drawText(List p_146279_1_, int p_146279_2_, int p_146279_3_) {
@@ -115,21 +115,22 @@ public class GuiContainerFilter extends GuiContainer {
 		/**
 		 * Draws this button to the screen.
 		 */
-		public void drawButton(Minecraft p_146112_1_, int mouseX, int mouseY) {
+		@Override
+		public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 			if (this.visible) {
-				p_146112_1_.getTextureManager().bindTexture(texture);
+				mc.getTextureManager().bindTexture(texture);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+				this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 				short short1 = 160;
 				int k = this.width * type.ordinal() + 48;
 				int h = this.getHoverState(this.hovered) - 1;
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, this.width*h, short1, this.width, this.height);
+				this.drawTexturedModalRect(this.x, this.y, this.width*h, short1, this.width, this.height);
 
 				/*if (!texture.equals(this.buttonTexture)) {
 					p_146112_1_.getTextureManager().bindTexture(this.buttonTexture);
 				}*/
 
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, k, short1, this.width, this.height);
+				this.drawTexturedModalRect(this.x, this.y, k, short1, this.width, this.height);
 			}
 		}
 
@@ -165,18 +166,19 @@ public class GuiContainerFilter extends GuiContainer {
 		/**
 		 * Draws this button to the screen.
 		 */
-		public void drawButton(Minecraft p_146112_1_, int mouseX, int mouseY) {
+		@Override
+		public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 			if (this.visible) {
-				p_146112_1_.getTextureManager().bindTexture(texture);
+				mc.getTextureManager().bindTexture(texture);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+				this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 				//short short1 = 160;
 				//int k = this.width;
 				//int h = this.getHoverState(this.field_146123_n) - 1;
 				//this.drawTexturedModalRect(this.xPosition, this.yPosition, this.width*h, short1, this.width, this.height);
 
 				//this.drawTexturedModalRect(this.xPosition, this.yPosition, k, short1, this.width, this.height);
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 182, this.width, this.height);
+				this.drawTexturedModalRect(this.x, this.y, 0, 182, this.width, this.height);
 			}
 		}
 

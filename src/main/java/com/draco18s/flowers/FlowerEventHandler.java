@@ -15,6 +15,7 @@ import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Tuple;
@@ -42,6 +43,7 @@ public class FlowerEventHandler {
 	@SubscribeEvent
 	public void onBonemeal(BonemealEvent event) {
 		if(event.isCanceled()) return;
+		if(event.getWorld().isRemote) return;
 		Block eventBlock = event.getBlock().getBlock();
 		if((eventBlock == Blocks.GRASS || eventBlock == Blocks.SAND) && (event.getEntityPlayer() != null || poopBonemealFlowers)) {
 			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
@@ -51,7 +53,8 @@ public class FlowerEventHandler {
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(8), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(16), ore) +
 				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(24), ore);
-				OreFlowersBase.logger.log(Level.WARN, ore.block.getRegistryName() + ": " + count);
+				//OreFlowersBase.logger.log(Level.WARN, ore.block.getRegistryName() + ": " + count);
+				int orCt = count;
 				if(count > 0) {
 					count = (int)Math.min(Math.round(Math.log(count)), 10);
 					entry = list.get(ore).getSecond();
@@ -66,9 +69,8 @@ public class FlowerEventHandler {
 							}
 						}
 					}
-
-					if(event.getEntityPlayer() != null) {
-						event.getEntityPlayer().addStat(FlowerAchievements.prospecting, 1);
+					if(event.getEntityPlayer() != null && event.getEntityPlayer() instanceof EntityPlayerMP) {
+						OreFlowersBase.FOUND_ORE.trigger((EntityPlayerMP) event.getEntityPlayer(), orCt);
 					}
 				}
 			}
@@ -88,41 +90,35 @@ public class FlowerEventHandler {
 	public void onChunkGen(CogOreGenEvent event) {
 		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() <= Integer.MIN_VALUE+5) return;
 		Chunk c = event.getWorld().getChunkFromBlockCoords(event.getPos());
-		int cx = c.xPosition;
-		int cz = c.zPosition;
+		int cx = c.x;
+		int cz = c.z;
 		OreFlowersBase.oreCounter.generate(cx, cz, event.getWorld());
 	}
 	
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onPickup(EntityItemPickupEvent event) {
-		Item item = event.getItem().getEntityItem().getItem();
+		Item item = event.getItem().getItem().getItem();
 		if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers3) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert3)) {
-			event.getEntityPlayer().addStat(FlowerAchievements.oreFlowers, 1);
+			//event.getEntityPlayer().addStat(FlowerAchievements.oreFlowers, 1);
 		}
-	}
-	//public void onPickup(PlayerEvent.ItemPickupEvent event) {
-		//Item item = event.pickedUp.getEntityItem().getItem();
-		//if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2)) {
-			//event.player.addStat(FlowerAchievements.oreFlowers, 1);
-		//}
-	//}
+	}*/
 	
 	@SubscribeEvent
 	public void chunkLoad(ChunkDataEvent.Load event) {
 		if(!event.getWorld().isRemote)
-			OreFlowersBase.dataHooks.readData(event.getWorld(), event.getChunk().xPosition, event.getChunk().zPosition, event.getData());
+			OreFlowersBase.dataHooks.readData(event.getWorld(), event.getChunk().x, event.getChunk().z, event.getData());
 	}
 	
 	@SubscribeEvent
 	public void chunkSave(ChunkDataEvent.Save event) {
 		if(!event.getWorld().isRemote)
-			OreFlowersBase.dataHooks.saveData(event.getWorld(), event.getChunk().xPosition, event.getChunk().zPosition, event.getData());
+			OreFlowersBase.dataHooks.saveData(event.getWorld(), event.getChunk().x, event.getChunk().z, event.getData());
 	}
 	
 	@SubscribeEvent
 	public void chunkUnload(ChunkEvent.Unload event) {
 		if(!event.getWorld().isRemote) {
-			OreFlowersBase.dataHooks.clearData(event.getWorld(), event.getChunk().xPosition, event.getChunk().zPosition);
+			OreFlowersBase.dataHooks.clearData(event.getWorld(), event.getChunk().x, event.getChunk().z);
 		}
 	}
 }

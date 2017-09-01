@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "mmm",
+        "ses",
+        "www"
+    ],
+    "key": {
+        "w": {
+            "type": "forge:ore_dict",
+            "ore": "dustFlour"
+        },
+        "s": {
+            "item": "minecraft:sugar"
+        },
+        "e": {
+            "item": "minecraft:egg"
+        },
+        "m": {
+            "item": "minecraft:milk_bucket"
+        }
+    },
+    "result": {
+        "item": "minecraft:cake"
+    }
+}

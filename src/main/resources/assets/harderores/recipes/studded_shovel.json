@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " d ",
+        " I ",
+        " s "
+    ],
+    "key": {
+        "d": {
+            "item": "harderores:orechunks",
+            "data": 10
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "s": {
+            "type": "forge:ore_dict",
+            "ore": "stickWood"
+        }
+    },
+    "result": {
+        "item": "harderores:diamondstud_shovel"
+    }
+}

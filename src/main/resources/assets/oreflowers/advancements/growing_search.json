@@ -1,0 +1,23 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:dye",
+            "data": 15
+        },
+        "title": {
+            "translate": "achievement.prospecting"
+        },
+        "description": {
+            "translate": "achievement.prospecting.desc"
+        }
+    },
+    "parent": "oreflowers:an_indication",
+    "criteria": {
+        "oreflowers1": {
+            "trigger": "oreflowers:found_ore",
+            "conditions": {
+                
+            }
+        }
+    }
+}

@@ -8,6 +8,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommonProxy {
 	public World getFilterWorld() {
-		return FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(FilterDimension.DIMENSION_ID);
+		return FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(FilterDimension.DIMENSION_ID);
 	}
 }

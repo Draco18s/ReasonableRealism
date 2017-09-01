@@ -84,7 +84,7 @@ public class EntityAIMilking extends EntityAIBase {
 		Vec3d animpos= new Vec3d((int)entity.posX, (int)entity.posY, (int)entity.posZ);
 		int d = 3;//(entity instanceof EntityGoat?9:3);
 		int e = 2;//(entity instanceof EntityGoat?4:2);
-		Block b = entity.world.getBlockState(new BlockPos(animpos.xCoord, animpos.yCoord-1, animpos.zCoord)).getBlock();
+		Block b = entity.world.getBlockState(new BlockPos(animpos.x, animpos.y-1, animpos.z)).getBlock();
 		if(checkBlock(b, moo)) {
 			close = animpos;
 			return true;

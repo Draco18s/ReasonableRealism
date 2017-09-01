@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "www",
+        "www",
+        "www"
+    ],
+    "key": {
+        "w": {
+            "type": "forge:ore_dict",
+            "ore": "dustTinySugar"
+        }
+    },
+    "result": {
+        "item": "minecraft:sugar"
+    }
+}

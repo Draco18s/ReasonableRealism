@@ -15,8 +15,8 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 
 public class VolatileChunkProvider implements IChunkProvider {
 	private Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
@@ -36,7 +36,8 @@ public class VolatileChunkProvider implements IChunkProvider {
 		Chunk chunk = id2ChunkMap.get(i);
 
 		if (chunk != null) {
-			chunk.unloaded = false;
+			chunk.unloadQueued = false;
+			//chunk.unloaded = false;
 		}
 
 		return chunk;
@@ -50,7 +51,7 @@ public class VolatileChunkProvider implements IChunkProvider {
 			long i = ChunkPos.asLong(x, z);
 
 			try {
-				chunk = chunkGenerator.provideChunk(x, z);
+				chunk = chunkGenerator.generateChunk(x, z);
 			}
 			catch (Throwable throwable) {
 				CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception generating new chunk");
@@ -63,7 +64,7 @@ public class VolatileChunkProvider implements IChunkProvider {
 			}
 
 			id2ChunkMap.put(i, chunk);
-			chunk.onChunkLoad();
+			chunk.onLoad();
 		}
 
 		return chunk;
@@ -126,8 +127,8 @@ public class VolatileChunkProvider implements IChunkProvider {
 
 				if (chunk != null) {
 					id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
-					chunk.onChunkLoad();
-					chunk.populateChunk(this, chunkGenerator);
+					chunk.onLoad();
+					chunk.populate(this, chunkGenerator);
 				}
 
 				loadingChunks.remove(pos);

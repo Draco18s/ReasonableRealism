@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "harderfarming:butcherknife"
+  },
+  "pattern": [
+    " s",
+    "i "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "s": {
+      "ore": "woodStick",
+      "type": "forge:ore_dict"
+    },
+    "i": {
+      "ore": "ingotIron",
+      "type": "forge:ore_dict"
+    }
+  }
+}

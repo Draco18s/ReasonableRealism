@@ -1,0 +1,26 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderfarming:achieve_icons",
+            "data": 0
+        },
+        "title": {
+            "translate": "achievement.killWeeds"
+        },
+        "description": {
+            "translate": "achievement.killWeeds.desc"
+        }
+    },
+    "parent": "minecraft:husbandry/plant_seed",
+    "criteria": {
+        "break_weeds": {
+            "trigger": "harderfarming:break_block",
+            "conditions": {
+                "block":"harderfarming:crop_weeds"
+            }
+        }
+    },
+    "requirements": [
+        ["break_weeds"]
+    ]
+}

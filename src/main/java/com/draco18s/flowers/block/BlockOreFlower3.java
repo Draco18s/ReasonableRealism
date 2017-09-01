@@ -73,18 +73,18 @@ public class BlockOreFlower3 extends BlockBush implements IBlockWithMapper, IShe
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs tab, NonNullList<ItemStack> list) {
-		list.add(new ItemStack(item, 1, 0));
+	public void getSubBlocks(CreativeTabs item, NonNullList<ItemStack> list) {
+		list.add(new ItemStack(this, 1, 0));
 		//list.add(new ItemStack(item, 1, 1));
 		Calendar date = Calendar.getInstance();
 		if(date.get(Calendar.DAY_OF_MONTH) == 1 && date.get(Calendar.MONTH) == 3){
-			list.add(new ItemStack(item, 1, 2));			
+			list.add(new ItemStack(this, 1, 2));			
 		}
-		//list.add(new ItemStack(item, 1, 3));
-		//list.add(new ItemStack(item, 1, 4));
-		//list.add(new ItemStack(item, 1, 5));
-		//list.add(new ItemStack(item, 1, 6));
-		//list.add(new ItemStack(item, 1, 7));
+		//list.add(new ItemStack(this, 1, 3));
+		//list.add(new ItemStack(this, 1, 4));
+		//list.add(new ItemStack(this, 1, 5));
+		//list.add(new ItemStack(this, 1, 6));
+		//list.add(new ItemStack(this, 1, 7));
 	}
 	
 	public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {

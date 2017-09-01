@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "sps",
+        "s s",
+        "sss"
+    ],
+    "key": {
+        "s": {
+            "type": "forge:ore_dict",
+            "ore": "stoneAny"
+        },
+        "p": {
+            "item": "minecraft:piston"
+        }
+    },
+    "result": {
+        "item": "harderores:packager"
+    }
+}

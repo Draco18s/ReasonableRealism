@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 import com.draco18s.farming.entities.ai.EntityAIAging;
+import com.draco18s.farming.entities.ai.EntityAIHarvestFarmlandSmart;
 import com.draco18s.farming.entities.ai.EntityAIMilking;
+import com.draco18s.farming.entities.ai.EntityAIWeedFarmland;
 import com.draco18s.farming.entities.ai.EntityAgeTracker;
 import com.draco18s.farming.entities.capabilities.CowStats;
 import com.draco18s.farming.entities.capabilities.IMilking;
@@ -15,6 +17,7 @@ import com.draco18s.farming.loot.KilledByWither;
 import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.capability.SimpleCapabilityProvider;
+import com.draco18s.hardlib.api.date.HardLibDate;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.LootUtils;
 import com.draco18s.hardlib.util.LootUtils.ICondition;
@@ -30,6 +33,9 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIHarvestFarmland;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
@@ -38,11 +44,14 @@ import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
@@ -57,9 +66,11 @@ import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
+import net.minecraft.world.storage.loot.RandomValueRange;
 import net.minecraft.world.storage.loot.conditions.EntityHasProperty;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.functions.LootFunction;
+import net.minecraft.world.storage.loot.functions.LootingEnchantBonus;
 import net.minecraft.world.storage.loot.functions.Smelt;
 import net.minecraft.world.storage.loot.properties.EntityOnFire;
 import net.minecraft.world.storage.loot.properties.EntityProperty;
@@ -72,13 +83,20 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+//import stellarapi.api.lib.math.Vector3;
+//import stellarium.stellars.StellarManager;
+//import stellarium.world.StellarDimensionManager;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class FarmingEventHandler {
 	public static boolean doSlowCrops;
@@ -88,6 +106,7 @@ public class FarmingEventHandler {
 	public static int cropsWorst;
 	
 	private HashMap<Biome,Float> biomeTemps = new HashMap<Biome,Float>();
+	private Item woolItem;
 	
 	public FarmingEventHandler() {
 		Iterator<ResourceLocation> it = Biome.REGISTRY.getKeys().iterator();
@@ -97,16 +116,66 @@ public class FarmingEventHandler {
 			biomeTemps.put(bio, bio.getTemperature());
 		}
 	}
+	
+	@SubscribeEvent
+	public void onLivingUpdateEvent(LivingUpdateEvent event) {
+		if(event.getEntityLiving() instanceof EntityVillager) {
+			EntityVillager villager = (EntityVillager)event.getEntityLiving();
+			if(villager.getProfession() == 0) {
+				villager.world.profiler.startSection("looting");
+
+		        if (!villager.world.isRemote && villager.canPickUpLoot() && !villager.isDead && villager.world.getGameRules().getBoolean("mobGriefing")) {
+		            for (EntityItem entityitem : villager.world.getEntitiesWithinAABB(EntityItem.class, villager.getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D))) {
+		                if (!entityitem.isDead && !entityitem.getItem().isEmpty() && !entityitem.cannotPickup()) {
+		                	ItemStack itemstack = entityitem.getItem();
+		                	if (itemstack.getItem() == Items.DYE && itemstack.getItemDamage() == EnumDyeColor.WHITE.getDyeDamage()) {
+		                        ItemStack itemstack1 = villager.getVillagerInventory().addItem(itemstack);
+
+		                        if (itemstack1.isEmpty()) {
+		                        	entityitem.setDead();
+		                        }
+		                        else {
+		                            itemstack.setCount(itemstack1.getCount());
+		                        }
+		                    }
+		                }
+		            }
+		        }
+
+		        villager.world.profiler.endSection();
+			}
+		}
+	}
 
 	@SubscribeEvent
-	public void onCropGrow(LivingDropsEvent event) {
+	public void onLivingDrops(LivingDropsEvent event) {
+		if(woolItem == null) {
+			woolItem = Item.getItemFromBlock(Blocks.WOOL);
+		}
 		if(event.getEntity() instanceof IShearable) {
 			List<EntityItem> list = event.getDrops();
 			for(EntityItem ent : list) {
-				//if(ent.getEntityItem().getItem() == Item.getItemFromBlock(Blocks.WOOL)) {
-					ent.getEntityItem().grow(1 + rand.nextInt(2));
-				//}
+				if(ent.getItem().getItem() == woolItem) {
+					ent.getItem().grow(1 + rand.nextInt(2));
+				}
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerTick(PlayerTickEvent event) {
+		if(event.phase == Phase.END && event.side == Side.SERVER) {
+			long time = event.player.world.getWorldTime();
+			if(time % 1000 == 0)
+				FarmingBase.WORLD_TIME.trigger((EntityPlayerMP)event.player, time);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onBlockBreak(BlockEvent.BreakEvent event) {
+		EntityPlayer player = event.getPlayer();
+		if(player instanceof EntityPlayerMP) {
+			FarmingBase.BLOCK_BREAK.trigger((EntityPlayerMP)player, event.getState());
 		}
 	}
 
@@ -187,11 +256,18 @@ public class FarmingEventHandler {
 		if(doBiomeCrops) {
 			float t = bio.getTemperature();
 			float r = bio.getRainfall();
+
+			float seasonalTempMod = HardLibDate.getSeasonTemp(world, world.getTotalWorldTime());
+			float seasonalRainMod = HardLibDate.getSeasonRain(world, world.getTotalWorldTime());
+			
 			if(BiomeDictionary.hasType(bio, Type.OCEAN) || BiomeDictionary.hasType(bio, Type.RIVER)) {
-				//TODO: figure out time offsets
-				//lesson the effects of temperature on Ocean and River biomes
-				//t += getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) * 0.333f;
+				seasonalTempMod *= 0.333f;
 			}
+			//System.out.println("bas: " + t + "," + r);
+			t = HardLibDate.modifySeasonTemp(bio, seasonalTempMod);
+			r = HardLibDate.modifySeasonRain(bio, seasonalRainMod);
+			//System.out.println("mod: " + seasonalTempMod + "," + seasonalRainMod);
+			//System.out.println("val: " + t + "," + r);
 			if(BiomeDictionary.hasType(bio, Type.NETHER) != world.getPrecipitationHeight(pos).getY() > pos.getY()) {
 				//if the crop is inside, halve the effects of climate.
 				//nether is treated in reverse
@@ -207,16 +283,19 @@ public class FarmingEventHandler {
 			
 			if(o != null) {
 				//TODO: Figure out time offsets without a clear idea of "year"
-				
-				/*if(o.temperatureTimeOffset != 0) {
-					if(doYearCycle)
-						t = t - getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) + getSeasonTemp(getLastWorldTime(world.provider.dimensionId) + o.temperatureTimeOffset);
-				}*/
+				//Stellar Sky?	https://minecraft.curseforge.com/projects/stellar-api
+				//				https://minecraft.curseforge.com/projects/stellar-sky
+				if(o.temperatureTimeOffset != 0) {
+					//if(doYearCycle)
+					int offset = (int) (HardLibDate.getYearLength(world) * o.temperatureTimeOffset);
+					t = t - HardLibDate.getSeasonTemp(world, world.getTotalWorldTime()) + HardLibDate.getSeasonTemp(world, world.getTotalWorldTime() + offset);
+				}
 				t += o.temperatureFlat;
-				/*if(o.rainfallTimeOffset != 0) {
-					if(doYearCycle)
-						r = r - getSeasonRain(getLastWorldTime(world.provider.dimensionId)) + getSeasonRain(getLastWorldTime(world.provider.dimensionId) + o.rainfallTimeOffset);
-				}*/
+				if(o.rainfallTimeOffset != 0) {
+					//if(doYearCycle)
+					int offset = (int) (HardLibDate.getYearLength(world) * o.temperatureTimeOffset);
+					r = r - HardLibDate.getSeasonRain(world, world.getTotalWorldTime()) + HardLibDate.getSeasonRain(world, world.getTotalWorldTime() + offset);
+				}
 				r += o.rainfallFlat;
 				if(block == Blocks.NETHER_WART) {
 					//handle alterations to the nether's temperature
@@ -255,7 +334,7 @@ public class FarmingEventHandler {
 	public void onEntityAttack(LivingHurtEvent event) {
 		Entity enthurt = event.getEntity();
 		if(enthurt != null) {
-			Entity _hurtby = event.getSource().getEntity();
+			Entity _hurtby = event.getSource().getTrueSource();
 			
 			if(enthurt instanceof EntityLivingBase && _hurtby instanceof EntityLivingBase) {
 				EntityLivingBase livinghurt = (EntityLivingBase)enthurt;
@@ -265,7 +344,8 @@ public class FarmingEventHandler {
 					float amt = event.getAmount();
 					
 					ItemTool tool = (ItemTool)item.getItem();
-					float base = (tool.getToolMaterial().getDamageVsEntity() / 2f)-1;
+					float base = (Item.ToolMaterial.valueOf(tool.getToolMaterialName()).getDamageVsEntity() / 2) - 1;
+					//float base = (tool.getToolMaterial().getDamageVsEntity() / 2f)-1;
 					float add = 10f/base*amt;
 					
 					event.setAmount(amt + add);
@@ -276,12 +356,27 @@ public class FarmingEventHandler {
 
 	@SubscribeEvent
 	public void onEntityAdded(EntityJoinWorldEvent event) {
-		if(event.getEntity() instanceof EntityAnimal && !event.getEntity().world.isRemote && !(event.getEntity() instanceof EntityWolf)) {
-			EntityAnimal animal = (EntityAnimal)event.getEntity();
-			EntityAgeTracker t = new EntityAgeTracker();
-			animal.tasks.addTask(8, new EntityAIAging(new Random(), animal, t));
-			if(animal instanceof EntityCow) {
-				animal.tasks.addTask(100, new EntityAIMilking(animal));
+		if(!event.getEntity().world.isRemote) {
+			if(event.getEntity() instanceof EntityAnimal && !(event.getEntity() instanceof EntityWolf)) {
+				EntityAnimal animal = (EntityAnimal)event.getEntity();
+				EntityAgeTracker t = new EntityAgeTracker();
+				animal.tasks.addTask(8, new EntityAIAging(new Random(), animal, t));
+				if(animal instanceof EntityCow) {
+					animal.tasks.addTask(100, new EntityAIMilking(animal));
+				}
+			}
+			else if(event.getEntity() instanceof EntityVillager) {
+				EntityVillager villager = (EntityVillager)event.getEntity();
+				if (villager.getProfession() == 0) {
+					villager.tasks.addTask(6, new EntityAIWeedFarmland(villager, 0.6D));
+					for(EntityAITaskEntry task : villager.tasks.taskEntries) {
+						if(task.action instanceof EntityAIHarvestFarmland) {
+							villager.tasks.removeTask(task.action);
+							break;
+						}
+					}
+					villager.tasks.addTask(6, new EntityAIHarvestFarmlandSmart(villager, 0.6D));
+	            }
 			}
 		}
 	}
@@ -299,6 +394,13 @@ public class FarmingEventHandler {
 			LootUtils.removeLootFromTable(loot, Items.LEATHER);
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -308,6 +410,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -323,6 +432,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -337,6 +448,13 @@ public class FarmingEventHandler {
 			LootUtils.removeLootFromTable(loot, Items.LEATHER);
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -346,6 +464,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -361,6 +486,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -374,6 +501,13 @@ public class FarmingEventHandler {
 			LootTable loot = event.getTable();
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -383,6 +517,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 1, 1, 2, 4, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -398,6 +539,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -420,6 +563,8 @@ public class FarmingEventHandler {
 					LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 					LootFunction cooked =  new Smelt(condition);
 					lootfuncs.add(cooked);
+					LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+					lootfuncs.add(looting);
 				}
 			},
 			new ICondition() {
@@ -433,15 +578,39 @@ public class FarmingEventHandler {
 			LootTable loot = event.getTable();
 			
 			LootUtils.removeLootFromTable(loot, Items.STRING);
-			LootUtils.addItemToTable(loot, Items.STRING, 1, 1, 1, 2, 4, 0, 1, "minecraft:string");
+			LootUtils.addItemToTable(loot, Items.STRING, 1, 1, 1, 2, 4, 0, 1, "minecraft:string",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(0,1), 0);
+						lootfuncs.add(looting);
+					}
+				}			
+			);
 		}
 		if(event.getName().getResourcePath().equals("entities/skeleton")) {
 			LootTable loot = event.getTable();
 			
 			LootUtils.removeLootFromTable(loot, Items.BONE);
-			LootUtils.addItemToTable(loot, Items.BONE, 1, 1, 1, 1, 3, 0, 1, "minecraft:bone");
+			LootUtils.addItemToTable(loot, Items.BONE, 1, 1, 1, 1, 3, 0, 1, "minecraft:bone",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(0,1), 0);
+						lootfuncs.add(looting);
+					}
+				}
+			);
 			LootUtils.removeLootFromTable(loot, Items.ARROW);
-			LootUtils.addItemToTable(loot, Items.ARROW, 1, 1, 1, 2, 5, 0, 1, "minecraft:arrow");
+			LootUtils.addItemToTable(loot, Items.ARROW, 1, 1, 1, 2, 5, 0, 1, "minecraft:arrow",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
+					}
+				}		
+			);
 		}
 	}
 	
@@ -455,18 +624,16 @@ public class FarmingEventHandler {
 		}
 	}
 	
-	@SubscribeEvent
+	//TODO: advancements
+	/*@SubscribeEvent
 	public void onPickup(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemPickupEvent event) {
-		Item item = event.pickedUp.getEntityItem().getItem();
+		Item item = event.pickedUp.getItem().getItem();
 		if(item == FarmingBase.rawLeather) {
 			event.player.addStat(FarmingAchievements.collectRawhide, 1);
 		}
 		if(item == FarmingBase.winterWheatSeeds) {
 			event.player.addStat(FarmingAchievements.collectWinterWheat, 1);
 		}
-		/*if(item == Item.getItemFromBlock(WildlifeBase.rottingWood)) {
-			event.player.addStat(StatsAchievements.collectCompost, 1);
-		}*/
 	}
 	
 	@SubscribeEvent
@@ -478,7 +645,7 @@ public class FarmingEventHandler {
 		if(item == FarmingBase.thermometer || item == FarmingBase.rainmeter) {
 			event.player.addStat(FarmingAchievements.craftThermometer, 1);
 		}
-	}
+	}*/
 	
 	@SubscribeEvent
 	public void harvestGrass(BlockEvent.HarvestDropsEvent event) {
@@ -520,14 +687,15 @@ public class FarmingEventHandler {
 				boolean flag2 = bl == world.getBlockState(event.getPos().east()).getBlock() && bl == world.getBlockState(event.getPos().west()).getBlock();
 				if(flag1 ^ flag2) {
 					EntityPlayer p = world.getClosestPlayer(event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), 5, false);
-					if(p != null)
-						p.addStat(FarmingAchievements.cropRotation, 1);
+					//TODO: advancements
+					//if(p != null)
+					//	p.addStat(FarmingAchievements.cropRotation, 1);
 				}
 			}
 			else if(anyCarpet) {
 				EntityPlayer p = world.getClosestPlayer(event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), 5, false);
-				if(p != null)
-					p.addStat(FarmingAchievements.weedSuppressor, 1);
+				//if(p != null)
+				//	p.addStat(FarmingAchievements.weedSuppressor, 1);
 			}
 		}
 	}

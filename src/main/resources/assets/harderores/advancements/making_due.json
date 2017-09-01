@@ -1,0 +1,59 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderores:diamondstud_axe"
+        },
+        "title": {
+            "translate": "achievement.craftDiamondStud"
+        },
+        "description": {
+            "translate": "achievement.craftDiamondStud.desc"
+        }
+    },
+    "parent": "minecraft:story/iron_tools",
+    "criteria": {
+        "craft_stud_pick": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:diamondstud_pickaxe"
+                    }
+                ]
+            }
+        },
+        "craft_stud_axe": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:diamondstud_axe"
+                    }
+                ]
+            }
+        },
+        "craft_stud_shovel": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:diamondstud_shovel"
+                    }
+                ]
+            }
+        },
+        "craft_stud_hoe": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:diamondstud_hoe"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["craft_stud_pick","craft_stud_axe","craft_stud_shovel","craft_stud_hoe"]
+    ]
+}

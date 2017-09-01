@@ -25,7 +25,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.AchievementList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -124,7 +123,8 @@ public class BlockTanner extends Block {
 				if(!heldItem.isEmpty()) {
 					ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
 					if(side == EnumFacing.UP && (remain.isEmpty() || remain.getCount() < heldItem.getCount())) {
-						player.addStat(FarmingAchievements.saltedHide, 1);
+						//TODO: advancements
+						//player.addStat(FarmingAchievements.saltedHide, 1);
 					}
 					
 					if(remain.isEmpty()) {
@@ -141,8 +141,9 @@ public class BlockTanner extends Block {
 					player.inventory.addItemStackToInventory(item);
 					
 					if(!item.isEmpty() && item.getItem() == Items.LEATHER) {
-						player.addStat(FarmingAchievements.getLeather, 1);
-						player.addStat(AchievementList.KILL_COW, 1);
+						//TODO: advancements
+						//player.addStat(FarmingAchievements.getLeather, 1);
+						//player.addStat(AchievementList.KILL_COW, 1);
 					}
 				}
 			}

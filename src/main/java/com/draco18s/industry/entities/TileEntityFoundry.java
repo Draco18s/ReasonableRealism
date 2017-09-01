@@ -14,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -101,9 +102,8 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 		boolean cannotCraft = false;
 		
 		//count sticks and ingots
-		if(recipe instanceof ShapedRecipes) {
-			ShapedRecipes r = (ShapedRecipes)recipe;
-			for(ItemStack s : r.recipeItems) {
+		for(Ingredient ingred : recipe.getIngredients()) {
+			for(ItemStack s : ingred.getMatchingStacks()) {
 				int[] IDs = OreDictionary.getOreIDs(s);
 				boolean foundMatch = false;
 				for(int id : IDs) {
@@ -124,59 +124,8 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 				}
 			}
 		}
-		else if(recipe instanceof ShapedOreRecipe) {
-			Object[] inputs = ((ShapedOreRecipe)recipe).getInput();
-			for(Object o : inputs) {
-				if(o instanceof ItemStack) {
-					int[] IDs = OreDictionary.getOreIDs((ItemStack)o);
-					boolean foundMatch = false;
-					for(int id : IDs) {
-						String name = OreDictionary.getOreName(id);
-						if(name.contains("stick")) {
-							numSticks++;
-							foundMatch = true;
-							break;
-						}
-						else if(name.contains("ingot")) {
-							numIngots++;
-							foundMatch = true;
-							break;
-						}
-					}
-					if(!foundMatch) {
-						cannotCraft = true;
-					}
-				}
-				else if(o instanceof List) {
-					List<ItemStack> list = (List<ItemStack>)o;
-					boolean foundMatchAll = false;
-					for(ItemStack it : list) {
-						int[] IDs = OreDictionary.getOreIDs(it);
-						boolean foundMatch = false;
-						for(int id : IDs) {
-							String name = OreDictionary.getOreName(id);
-							if(name.contains("stick")) {
-								numSticks++;
-								foundMatch = true;
-								break;
-							}
-							else if(name.contains("ingot")) {
-								numIngots++;
-								foundMatch = true;
-								break;
-							}
-						}
-						if(foundMatch) {
-							foundMatchAll = true;
-							break;
-						}
-					}
-					if(!foundMatchAll) {
-						cannotCraft = true;
-					}
-				}
-			}
-		}
+		
+		
 		if(cannotCraft) return false;
 		if(inputSlot.getStackInSlot(0).isEmpty())
 			lastCheckSticks = null;
@@ -208,7 +157,7 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 		//damage mold
 		ItemStack template = templateSlot.getStackInSlot(0); 
 		//template.damageItem(1, null);
-		if(template.attemptDamageItem(1, rand)) {
+		if(template.attemptDamageItem(1, rand, null)) {
 			templateSlot.extractItem(0, 1, false);
 		}
 		//produce output

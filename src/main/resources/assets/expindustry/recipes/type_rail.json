@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "expindustry:type_rail",
+    "count": 6
+  },
+  "pattern": [
+    "i i",
+    "ipi",
+    "iqi"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "item": "minecraft:stone_pressure_plate"
+    },
+    "q": {
+      "item": "minecraft:quartz"
+    },
+    "i": {
+      "ore": "ingotIron",
+      "type": "forge:ore_dict"
+    }
+  }
+}

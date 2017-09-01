@@ -104,12 +104,12 @@ public class TileEntityCartLoader extends TileEntityHopper {
 						if(carts.containsKey(cart)) {
 							Vec3d v = carts.get(cart);
 							if(!hasItems) {
-								cart.motionX = v.xCoord;
-								cart.motionY = v.yCoord;
-								cart.motionZ = v.zCoord;
+								cart.motionX = v.x;
+								cart.motionY = v.y;
+								cart.motionZ = v.z;
 								if(cart.motionX == 0 && cart.motionZ == 0) {
-									cart.motionX = ((getXPos()+0.5)-v.xCoord)*0.2;
-									cart.motionZ = ((getZPos()+0.5)-v.zCoord)*0.2;
+									cart.motionX = ((getXPos()+0.5)-v.x)*0.2;
+									cart.motionZ = ((getZPos()+0.5)-v.z)*0.2;
 									if(cart.motionX != 0) {
 										cart.motionX = 0.5;
 									}
@@ -148,9 +148,9 @@ public class TileEntityCartLoader extends TileEntityHopper {
 			compound.setLong("cart_mb"+i, cart.getPersistentID().getMostSignificantBits());
 			compound.setLong("cart_lb"+i, cart.getPersistentID().getLeastSignificantBits());
 			Vec3d v = carts.get(cart);
-			compound.setDouble("cart_x"+i, v.xCoord);
-			compound.setDouble("cart_y"+i, v.yCoord);
-			compound.setDouble("cart_z"+i, v.zCoord);
+			compound.setDouble("cart_x"+i, v.x);
+			compound.setDouble("cart_y"+i, v.y);
+			compound.setDouble("cart_z"+i, v.z);
 			i++;
 		}
 		compound.setInteger("totalCarts", i);

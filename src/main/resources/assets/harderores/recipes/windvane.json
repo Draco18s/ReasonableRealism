@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SW",
+        "SW",
+        "SW"
+    ],
+    "key": {
+        "S": {
+            "type": "forge:ore_dict",
+            "ore": "stickWood"
+        },
+        "W": {
+            "item": "minecraft:wool",
+            "data": 32767
+        }
+    },
+    "result": {
+        "item": "harderores:windvane",
+        "count": 2
+    }
+}

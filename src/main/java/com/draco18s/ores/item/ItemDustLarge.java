@@ -40,9 +40,9 @@ public class ItemDustLarge extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.IRON.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.GOLD.meta));
-		subItems.add(new ItemStack(itemIn, 1, EnumOreType.FLOUR.meta));
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+		subItems.add(new ItemStack(this, 1, EnumOreType.IRON.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.GOLD.meta));
+		subItems.add(new ItemStack(this, 1, EnumOreType.FLOUR.meta));
 	}
 }

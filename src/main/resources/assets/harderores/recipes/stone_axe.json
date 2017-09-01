@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XX",
+    "X#",
+    " #"
+  ],
+  "key": {
+    "#": {
+            "type": "forge:ore_dict",
+            "ore": "stickWood"
+    },
+    "X": {
+      "item": "minecraft:stone",
+      "data": 3
+    }
+  },
+  "result": {
+    "item": "minecraft:stone_axe"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "expindustry:machine_distributor"
+  },
+  "pattern": [
+    " h ",
+    " i ",
+    "ppp"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "ore": "plankWood",
+      "type": "forge:ore_dict"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "ore": "ingotIron",
+      "type": "forge:ore_dict"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+    "display": {
+        "icon": {
+            "item": "oreflowers:oreflowers1",
+            "data": 4
+        },
+        "title": {
+            "translate": "achievement.oreFlowers"
+        },
+        "description": {
+            "translate": "achievement.oreFlowers.desc"
+        }
+    },
+    "parent": "minecraft:adventure/root",
+    "criteria": {
+        "oreflowers1": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowers1"
+                    }
+                ]
+            }
+        },
+        "oreflowers2": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowers2"
+                    }
+                ]
+            }
+        },
+        "oreflowers3": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowers3"
+                    }
+                ]
+            }
+        },
+        "oreflowersdesert1": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowersdesert1"
+                    }
+                ]
+            }
+        },
+        "oreflowersdesert2": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowersdesert2"
+                    }
+                ]
+            }
+        },
+        "oreflowersdesert3": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "oreflowers:oreflowersdesert3"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["oreflowers1", "oreflowers2", "oreflowers3", "oreflowersdesert1", "oreflowersdesert2", "oreflowersdesert3"]
+    ]
+}

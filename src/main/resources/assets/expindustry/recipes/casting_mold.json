@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "expindustry:casting_mold",
+    "count": 2
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:clay"
+    },
+    {
+      "item": "minecraft:sand",
+      "data": 32767
+    }
+  ],
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,6 +1,5 @@
 package com.draco18s.industry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
+import com.draco18s.hardlib.api.recipes.RecipeToolMold.RecipeSubItem;
+import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.block.BlockCartLoader;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
@@ -29,18 +30,18 @@ import com.draco18s.industry.network.PacketHandlerServer;
 import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSand;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -55,7 +56,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="expindustry", name="ExpandedIndustry", version="{@version:ind}", dependencies = "required-after:hardlib")
 public class ExpandedIndustryBase {
@@ -83,10 +83,12 @@ public class ExpandedIndustryBase {
 	public static HashMap<ChunkPos, Integer> ticketList;
 	private static Ticket chunkLoaderTicket;
 
+	private Configuration config;
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
-		
+		config = new Configuration(event.getSuggestedConfigurationFile());
 		blockWoodHopper = new BlockWoodenHopper();
 		EasyRegistry.registerBlockWithItem(blockWoodHopper, "machine_wood_hopper");
 		blockDistributor = new BlockDistributor();
@@ -111,42 +113,53 @@ public class ExpandedIndustryBase {
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "expindustry:machine_filter");
 		GameRegistry.registerTileEntity(TileEntityFoundry.class, "expindustry:machine_foundry");
 		
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_AXE), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SHOVEL), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_PICKAXE), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HOE), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SWORD), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HELMET), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_CHESTPLATE), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_LEGGINGS), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_BOOTS), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.SHEARS), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.BUCKET), (String)null));
+		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Blocks.RAIL, 16), (String)null));
+		
 		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
 		//EasyRegistry.registerItem(itemMold, "casting_mold");
 		EasyRegistry.registerItemWithCustomMeshDefinition((ItemCastingMold)itemMold, "casting_mold");
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new IndustryGuiHandler());
 		FilterDimension.mainRegistry();
+		MinecraftForge.EVENT_BUS.register(new IndustryEventHandler());
 	}
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		OreDictionary.registerOre("bucket", Items.BUCKET);
+		
 		RecipeSorter.register("sand_mold", RecipeToolMold.class, Category.SHAPELESS, "");
+		//TODO: recipes
+		RecipesUtils.setupDir(config);
+		/*RecipesUtils.addShapedRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood");
+		RecipesUtils.addShapedRecipe(blockDistributor, " h ", " i ", "ppp", 'p', "plankWood", 'i', "ingotIron", 'h', Blocks.HOPPER);
+		RecipesUtils.addShapedRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.COMPARATOR);
+		RecipesUtils.addShapedRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood");
+		RecipesUtils.addShapedRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood");
+		RecipesUtils.addShapedRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ);
+		//if(OreDictionary.doesOreNameExist("stoneAny")) {
+		RecipesUtils.addShapedRecipe(blockFoundry, "sbs","s s","sfs", 's', "stoneAny", 'f', Blocks.FURNACE, 'b', "bucket");
+		//}
+		//else {
+			//GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
+		//}
+		RecipesUtils.addShapedRecipe(blockFilter, "g g", "ghg", " g ", 'g', "ingotGold", 'h', Blocks.HOPPER);
+		RecipesUtils.addShapelessRecipe(new ItemStack(itemMold, 2), new ItemStack(Blocks.CLAY), new ItemStack(Blocks.SAND));
+		RecipesUtils.addShapelessRecipe(new ItemStack(itemMold, 2), new ItemStack(Blocks.CLAY), new ItemStack(Blocks.SAND, 1, BlockSand.EnumType.RED_SAND.getMetadata()));*/
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood"));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockDistributor, " h ", " i ", "ppp", 'p', "plankWood", 'i', "ingotIron", 'h', Blocks.HOPPER));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.REPEATER));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood"));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood"));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ));
-		if(OreDictionary.doesOreNameExist("stoneAny")) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stoneAny", 'f', Blocks.FURNACE, 'b', "bucket"));
-		}
-		else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
-		}
-		
-		List<ItemStack> list = new ArrayList<ItemStack>();
-		list.add(new ItemStack(Blocks.CLAY));
-		list.add(new ItemStack(Blocks.SAND));
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(itemMold, 2), list));
-		list = new ArrayList<ItemStack>();
-		list.add(new ItemStack(Blocks.CLAY));
-		list.add(new ItemStack(Blocks.SAND, 1, BlockSand.EnumType.RED_SAND.getMetadata()));
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(itemMold, 2), list));
-		
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_AXE, itemMold));
+		//TODO: recipe event
+		/*GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_AXE, itemMold));
 		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_SHOVEL, itemMold));
 		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_PICKAXE, itemMold));
 		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_HOE, itemMold));
@@ -159,7 +172,7 @@ public class ExpandedIndustryBase {
 
 		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.SHEARS, itemMold));
 		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.BUCKET, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, new ItemStack(Blocks.RAIL, 16), itemMold));
+		GameRegistry.addRecipe(new RecipeToolMold(itemMold, new ItemStack(Blocks.RAIL, 16), itemMold));*/
 	}
 
 	@EventHandler

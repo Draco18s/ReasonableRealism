@@ -8,12 +8,11 @@ import com.draco18s.farming.FarmingEventHandler;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.Achievement;
-import net.minecraft.stats.AchievementList;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class FarmingAchievements {
-	public static Achievement collectWinterWheat;
+	//TODO: advancements
+	/*public static Achievement collectWinterWheat;
 	public static Achievement craftThermometer;
 	public static Achievement collectRawhide;
 	public static Achievement craftTanner;
@@ -69,5 +68,5 @@ public class FarmingAchievements {
 		craftThermometer = new Achievement("craftThermometer", "craftThermometer", 4, -7, new ItemStack(FarmingBase.itemAchievementIcons, 1, EnumFarmAchieves.THERMOMETER.meta), AchievementList.BUILD_HOE).registerStat();
 		cropRotation = new Achievement("cropRotation", "cropRotation", -1, -4, new ItemStack(FarmingBase.itemAchievementIcons, 1, EnumFarmAchieves.CROP_ROTATION.meta), killWeeds).registerStat();
 		weedSuppressor = new Achievement("weedSuppressor", "weedSuppressor", -2, -3, new ItemStack(Blocks.CARPET, 1, 12), killWeeds).registerStat();
-	}
+	}*/
 }

@@ -26,13 +26,15 @@ achievement.collectRawhide=Rawhide!
 achievement.craftTanner=Tanned Hide
 achievement.getLeather=Leather Goods
 achievement.saltedHide=Salted Cure
+achievement.playAYear=One Year Later
 
 achievement.collectWinterWheat.desc=Find a cold biome and reap the rewards
 achievement.cropRotation.desc=Plant rows of alternating crops
 achievement.killWeeds.desc=Break a Weed block
 achievement.weedSuppressor.desc=Put down some ground cloth to keep weeds down
-achievement.craftThermometer.desc=Craft a Thermometer or Hydrometer
+achievement.craftThermometer.desc=Craft a Thermometer or Hydrometer and visit someplace cold
 achievement.collectRawhide.desc=Kill a cow, pig, or horse
 achievement.craftTanner.desc=Rawhide isn't good for anything, craft a Tanning Rack
 achievement.getLeather.desc=Just leave it there in the sun
 achievement.saltedHide.desc=Use salt to speed the curing process
+achievement.playAYear.desc=Play for a full year

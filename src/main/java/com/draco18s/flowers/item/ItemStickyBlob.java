@@ -7,16 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.IFuelHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class ItemStickyBlob extends Item implements IFuelHandler {
+public class ItemStickyBlob extends Item {
 	public ItemStickyBlob() {
 		this.setHasSubtypes(false);
 		this.setMaxDamage(0);
 		this.setCreativeTab(CreativeTabs.MATERIALS);
-		GameRegistry.registerFuelHandler(this);
 	}
 
 	@Override
-	public int getBurnTime(ItemStack fuel) {
+	public int getItemBurnTime(ItemStack fuel) {
 		if(fuel.getItem() == this) {
 			return 150;
 		}
