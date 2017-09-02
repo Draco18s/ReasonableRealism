@@ -1,0 +1,29 @@
+{
+    "display": {
+        "icon": {
+            "item": "expindustry:machine_distributor"
+        },
+        "title": {
+            "translate": "achievement.largescale"
+        },
+        "description": {
+            "translate": "achievement.largescale.desc"
+        }
+    },
+    "parent": "expindustry:budding_industrialist",
+    "criteria": {
+        "craft_hopper": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "expindustry:machine_distributor"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["craft_hopper"]
+    ]
+}

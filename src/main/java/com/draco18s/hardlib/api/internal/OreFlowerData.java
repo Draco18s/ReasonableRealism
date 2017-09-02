@@ -5,6 +5,11 @@ import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
+/**
+ * Data neccessary to grow ore indicator plants
+ * @author Draco18s
+ *
+ */
 public class OreFlowerData {
 	public final IBlockState flower;
 	public final int clusterNum;

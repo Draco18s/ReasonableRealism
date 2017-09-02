@@ -2,8 +2,6 @@ package com.draco18s.farming;
 
 import org.apache.logging.log4j.Logger;
 
-import com.draco18s.farming.advancement.BreakBlockTrigger;
-import com.draco18s.farming.advancement.WorldTimeTrigger;
 import com.draco18s.farming.block.BlockCropWeeds;
 import com.draco18s.farming.block.BlockCropWinterWheat;
 import com.draco18s.farming.block.BlockSaltOre;
@@ -24,29 +22,23 @@ import com.draco18s.farming.loot.KilledByWither;
 import com.draco18s.farming.util.AnimalUtil;
 import com.draco18s.farming.util.CropManager;
 import com.draco18s.farming.util.EnumFarmAchieves;
-import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.farming.world.WorldGenerator;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
+import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
+import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.CapabilityUtils;
-import com.draco18s.hardlib.util.RecipesUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -61,10 +53,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.ExistingSubstitutionException;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 @Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib;after:expindustry;after:stellarsky")
 public class FarmingBase {
@@ -92,10 +82,6 @@ public class FarmingBase {
 	public static Item itemAchievementIcons;
 
 	public static Configuration config;
-
-	public static BreakBlockTrigger BLOCK_BREAK;
-	public static WorldTimeTrigger WORLD_TIME;
-
 	
 	@CapabilityInject(IMilking.class)
 	public static final Capability<IMilking> MILKING_CAPABILITY = null;
@@ -142,24 +128,12 @@ public class FarmingBase {
 		EasyRegistry.registerItem(butcherKnife, "butcherknife");
 		
 		itemFrameReplacement = new ItemNewFrame(EntityItemFrameReplacement.class);
-		//itemFrameReplacement.setRegistryName(new ResourceLocation("minecraft","item_frame"));
-		//itemFrameReplacement.setUnlocalizedName("frame");
 		EasyRegistry.registerItem(itemFrameReplacement, new ResourceLocation("minecraft","item_frame"), "frame");
-		//TODO: item frame replacement
-		/*try {
-			GameRegistry.addSubstitutionAlias("minecraft:item_frame", Type.ITEM, itemFrameReplacement);
-		} catch (ExistingSubstitutionException e) {
-			e.printStackTrace();
-		}*/
+		
 		EntityRegistry.registerModEntity(new ResourceLocation("harderfarming:item_frame_rep"), EntityItemFrameReplacement.class, "harderfarming:item_frame_rep", 0, this, 48, 10, false);
 		
 		itemAchievementIcons = new ItemAchieves();
 		EasyRegistry.registerItemWithVariants(itemAchievementIcons, "achieve_icons", EnumFarmAchieves.KILL_WEEDS);
-		
-		BLOCK_BREAK = new BreakBlockTrigger();
-		EasyRegistry.registerAdvancementTrigger(BLOCK_BREAK);
-		WORLD_TIME = new WorldTimeTrigger();
-		EasyRegistry.registerAdvancementTrigger(WORLD_TIME);
 		
 		((AnimalUtil) HardLibAPI.animalManager).parseConfig(config);
 		
@@ -208,30 +182,6 @@ public class FarmingBase {
 		if(Loader.isModLoaded("harvestcraft")) {
 			IntegrationHarvestcraft.registerCrops();
 		}
-		
-		ItemStack glass = new ItemStack(Blocks.GLASS_PANE);
-		
-		RecipesUtils.setupDir(config);
-
-		/*//RecipesUtils.addShapedRecipe(result, components);
-		//completed: recipes
-		//if(OreDictionary.getOres("nuggetIron").size() > 0) {
-			RecipesUtils.addShapedRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"nuggetGold");
-			RecipesUtils.addShapedRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"nuggetIron");
-		//}
-		//else {
-		//	RecipesUtils.addShapedRecipe(new ItemStack(rainmeter), "ggg","gig","ggg",'g',glass,'i',"ingotGold");
-		//	RecipesUtils.addShapedRecipe(new ItemStack(thermometer), "ggg","gig","ggg",'g',glass,'i',"ingotIron");
-		//}
-		//if(FarmingEventHandler.doRawLeather) {
-			RecipesUtils.addShapedRecipe(new ItemStack(tanningRack), "sss","sts","s s",'s',"stickWood",'t',Items.STRING);
-		//}
-		//if(config.getBoolean("altKnifeRecipe", "GENERAL", false, "if the butcher's knife recipe conflicts with another repcie, toggle this.")) {
-			RecipesUtils.addShapedRecipe(new ItemStack(butcherKnife), " s","i ",'s',"stickWood",'i',Items.IRON_INGOT);
-		//}
-		//else {
-		//	RecipesUtils.addShapedRecipe(new ItemStack(butcherKnife), "s "," i",'s',"stickWood",'i',Items.IRON_INGOT);
-		//}*/
 	}
 
 	@EventHandler

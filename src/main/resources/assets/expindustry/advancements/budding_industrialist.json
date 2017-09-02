@@ -1,0 +1,29 @@
+{
+    "display": {
+        "icon": {
+            "item": "expindustry:machine_cart_loader"
+        },
+        "title": {
+            "translate": "achievement.buddingindustrialist"
+        },
+        "description": {
+            "translate": "achievement.buddingindustrialist.desc"
+        }
+    },
+    "parent": "expindustry:root",
+    "criteria": {
+        "craft_hopper": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "expindustry:machine_cart_loader"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["craft_hopper"]
+    ]
+}

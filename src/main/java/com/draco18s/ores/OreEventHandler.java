@@ -1,40 +1,25 @@
 package com.draco18s.ores;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
-import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.ores.block.ore.BlockHardOreBase;
 import com.draco18s.ores.networking.Packets;
 import com.draco18s.ores.networking.ToClientMessageOreParticles;
-import com.draco18s.ores.util.OresAchievements;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementList;
-import net.minecraft.advancements.AdvancementManager;
-import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.block.BlockStone;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -43,12 +28,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class OreEventHandler {
@@ -208,106 +190,6 @@ public class OreEventHandler {
 			}
 		}
 	}
-	
-	@SubscribeEvent
-	public void onPickup(EntityItemPickupEvent event) {
-		/*Item item = event.getItem().getEntityItem().getItem();
-		int meta = event.getItem().getEntityItem().getItemDamage();
-		if(item == OresBase.rawOre && meta == EnumOreType.LIMONITE.meta) {
-			event.getEntityPlayer().addStat(OresAchievements.mineLimonite, 1);
-		}
-		if(item == OresBase.rawOre && meta == EnumOreType.IRON.meta) {
-			event.getEntityPlayer().addStat(OresAchievements.acquireIronChunk, 1);
-		}
-		if(item == Item.getItemFromBlock(OresBase.millstone)) {
-			event.getEntityPlayer().addStat(OresAchievements.craftMill, 1);
-		}
-		if(item == Item.getItemFromBlock(Blocks.STONE) && meta == BlockStone.EnumType.DIORITE.getMetadata()) {
-			event.getEntityPlayer().addStat(OresAchievements.mineDiorite, 1);
-		}
-		if(item == OresBase.rawOre && meta == EnumOreType.DIAMOND.meta){
-			event.getEntityPlayer().addStat(AchievementList.DIAMONDS, 1);
-		}
-		ItemStack s = HardLibAPI.oreMachines.getSiftResult(event.getItem().getEntityItem(), false);
-		if(!s.isEmpty() && item != Items.DYE) {
-			event.getEntityPlayer().addStat(OresAchievements.grindOre, 1);
-		}*/
-		//TODO: advancements
-	}
-	
-	@SubscribeEvent
-	public void onCrafting(PlayerEvent.ItemCraftedEvent event) {
-		/*Item item = event.crafting.getItem();
-		if(item == Items.IRON_INGOT){
-			if(event.player instanceof EntityPlayerMP && ((EntityPlayerMP)event.player).getStatFile().canUnlockAchievement(AchievementList.ACQUIRE_IRON)) {
-				event.player.addStat(OresAchievements.fakeIronBar, 1);
-				event.player.addStat(AchievementList.ACQUIRE_IRON, 1);
-			}
-		}
-		if(item == Item.getItemFromBlock(OresBase.sluice)){
-			event.player.addStat(OresAchievements.craftSluice, 1);
-		}
-		if(item == Item.getItemFromBlock(OresBase.sifter)){
-			event.player.addStat(OresAchievements.craftSifter, 1);
-		}
-		if(item == Item.getItemFromBlock(OresBase.millstone)){
-			event.player.addStat(OresAchievements.craftMill, 1);
-		}
-		if(item instanceof ItemTool){
-			ItemTool tool = (ItemTool)item;
-			if(tool.getToolMaterialName().equals(OresBase.toolMaterialDiamondStud.name())) {
-				event.player.addStat(OresAchievements.craftDiamondStud, 1);
-			}
-		}
-		if(item instanceof ItemHoe){
-			ItemHoe tool = (ItemHoe)item;
-			if(tool.getMaterialName().equals(OresBase.toolMaterialDiamondStud.name())) {
-				event.player.addStat(OresAchievements.craftDiamondStud, 1);
-			}
-		}
-		List<ItemStack> items = OreDictionary.getOres("nuggetIron");
-		boolean isNugget = false;
-		for(ItemStack s : items) {
-			isNugget = isNugget || OreDictionary.itemMatches(s, event.crafting, false);
-		}
-		if(isNugget){
-			event.player.addStat(OresAchievements.acquireNuggets, 1);
-		}*/
-	}
-	
-	@SubscribeEvent
-	public void onSmelting(PlayerEvent.ItemSmeltedEvent event) {
-		/*Item item = event.smelting.getItem();
-		if(item == OresBase.rawOre && event.smelting.getItemDamage() == EnumOreType.IRON.meta) {
-			event.player.addStat(OresAchievements.acquireIronChunk, 1);
-		}
-		if(item == Items.IRON_INGOT){
-			if(event.player instanceof EntityPlayerMP && ((EntityPlayerMP)event.player).getStatFile().canUnlockAchievement(AchievementList.ACQUIRE_IRON)) {
-				event.player.addStat(OresAchievements.fakeIronBar, 1);
-				event.player.addStat(AchievementList.ACQUIRE_IRON, 1);
-			}
-		}
-		List<ItemStack> items = OreDictionary.getOres("nuggetIron");
-		boolean isNugget = false;
-		for(ItemStack s : items) {
-			isNugget = isNugget | OreDictionary.itemMatches(s, event.smelting, false);
-		}
-		if(isNugget){
-			event.player.addStat(OresAchievements.acquireNuggets, 1);
-		}*/
-	}
-	
-	/*@SubscribeEvent
-	public void onAchievement(AchievementEvent event) {
-		if(event.getAchievement() == AchievementList.ACQUIRE_IRON){
-			if(event.getEntityPlayer() instanceof EntityPlayerMP && ((EntityPlayerMP)event.getEntityPlayer()).getStatFile().canUnlockAchievement(OresAchievements.fakeIronBar)) {
-				event.getEntityPlayer().addStat(OresAchievements.fakeIronBar, 1);
-			}
-			else {
-				event.setCanceled(true);
-			}
-		}
-	}*/
 	
 	private void dropStack(World worldIn, BlockPos pos, ItemStack stack) {
 		float f = 0.7F;

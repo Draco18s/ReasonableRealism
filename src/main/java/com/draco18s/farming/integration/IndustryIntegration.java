@@ -9,6 +9,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 //import com.draco18s.industry.ExpandedIndustryBase;
+import com.draco18s.hardlib.api.recipes.RecipeToolMold.RecipeSubItem;
 
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -20,9 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class IndustryIntegration {
 	public static void addMoldRecipes() {
 		if(HardLibAPI.itemMold != null) {
-			ItemStack knife = new ItemStack(FarmingBase.butcherKnife);
-			//TODO: knife recipe
-			//GameRegistry.addRecipe(new RecipeToolMold(HardLibAPI.itemMold, knife, HardLibAPI.itemMold, "harderfarming"));
+			RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(FarmingBase.butcherKnife), "harderfarming"));
 		}
 	}
 }

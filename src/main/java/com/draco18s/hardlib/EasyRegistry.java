@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.draco18s.flowers.advancement.FoundOreTrigger;
+import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
+import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
@@ -19,15 +21,23 @@ import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
+import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class EasyRegistry {
@@ -204,5 +214,41 @@ public class EasyRegistry {
 			e.printStackTrace();
 		}
 		return trigger;
+	}
+	
+	@SubscribeEvent
+	public void onLivingUpdateEvent(PlayerTickEvent event) {
+		if(event.phase == Phase.END && event.player instanceof EntityPlayerMP) {
+			StatisticsManagerServer stats = ((EntityPlayerMP) event.player).getStatFile();
+			int dist = stats.readStat(StatList.MINECART_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.RAIL);
+			dist = stats.readStat(StatList.BOAT_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.BOAT);
+			dist = stats.readStat(StatList.HORSE_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.HORSE);
+			dist = stats.readStat(StatList.PIG_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.PIG);
+			dist = stats.readStat(StatList.WALK_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.WALK);
+			dist = stats.readStat(StatList.FLY_ONE_CM);
+			HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((EntityPlayerMP) event.player, dist/100f, TravelType.FLY);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerTick(PlayerTickEvent event) {
+		if(event.phase == Phase.END && event.side == Side.SERVER) {
+			long time = event.player.world.getWorldTime();
+			if(time % 1000 == 0)
+				HardLibAPI.Advancements.WORLD_TIME.trigger((EntityPlayerMP)event.player, time);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onBlockBreak(BlockEvent.BreakEvent event) {
+		EntityPlayer player = event.getPlayer();
+		if(player instanceof EntityPlayerMP) {
+			HardLibAPI.Advancements.BLOCK_BREAK.trigger((EntityPlayerMP)player, event.getState());
+		}
 	}
 }

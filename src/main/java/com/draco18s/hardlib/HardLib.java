@@ -2,6 +2,13 @@ package com.draco18s.hardlib;
 
 import org.apache.logging.log4j.Logger;
 
+import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
+import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
+import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
+import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
+import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,6 +42,12 @@ public class HardLib {
 		OreDictionary.registerOre("stoneAny", new ItemStack(Blocks.STONE, 1, 5));
 		OreDictionary.registerOre("stoneAny", new ItemStack(Blocks.STONE, 1, 6));
 		MinecraftForge.EVENT_BUS.register(proxy);
+		
+		HardLibAPI.Advancements.MILL_BUILT = (MillstoneTrigger) EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
+		HardLibAPI.Advancements.FOUND_ORE = (FoundOreTrigger) EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
+		HardLibAPI.Advancements.BLOCK_BREAK = (BreakBlockTrigger) EasyRegistry.registerAdvancementTrigger(new BreakBlockTrigger());
+		HardLibAPI.Advancements.WORLD_TIME = (WorldTimeTrigger) EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
+		HardLibAPI.Advancements.DISTANCE_TRAVELED = (DistanceTraveledTrigger) EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
 	}
 	
 	@EventHandler

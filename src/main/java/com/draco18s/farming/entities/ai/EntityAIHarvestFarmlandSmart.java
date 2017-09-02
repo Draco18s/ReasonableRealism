@@ -104,7 +104,7 @@ public class EntityAIHarvestFarmlandSmart extends EntityAIMoveToBlock {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void updateTask() {
-		super.updateTask();		
+		super.updateTask();
 		
 		this.villager.getLookHelper().setLookPosition((double) this.destinationBlock.getX() + 0.5D, (double) (this.destinationBlock.getY() + 1), (double) this.destinationBlock.getZ() + 0.5D, 10.0F, (float) this.villager.getVerticalFaceSpeed());
 

@@ -1,0 +1,26 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:minecart"
+        },
+        "title": {
+            "translate": "achievement.1000blocks"
+        },
+        "description": {
+            "translate": "achievement.1000blocks.desc"
+        }
+    },
+    "parent": "expindustry:root",
+    "criteria": {
+         "1000blocks": {
+            "trigger": "expindustry:distance_traveled",
+            "conditions": {
+                "travel_type": "RAIL",
+                "distance": 1000
+            }
+        }
+    },
+    "requirements": [
+        ["1000blocks"]
+    ]
+}

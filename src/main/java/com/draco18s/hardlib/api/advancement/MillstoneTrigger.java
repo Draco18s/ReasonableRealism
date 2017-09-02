@@ -1,4 +1,4 @@
-package com.draco18s.flowers.advancement;
+package com.draco18s.hardlib.api.advancement;
 
 import java.util.List;
 import java.util.Map;
@@ -30,9 +30,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 
-public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instance> {
-    private static final ResourceLocation ID = new ResourceLocation("oreflowers","found_ore");
-    private final Map<PlayerAdvancements, FoundOreTrigger.Listeners> listeners = Maps.<PlayerAdvancements, FoundOreTrigger.Listeners>newHashMap();
+public class MillstoneTrigger implements ICriterionTrigger<MillstoneTrigger.Instance> {
+    private static final ResourceLocation ID = new ResourceLocation("harderores","millstone_grind");
+    private final Map<PlayerAdvancements, MillstoneTrigger.Listeners> listeners = Maps.<PlayerAdvancements, MillstoneTrigger.Listeners>newHashMap();
 
 	@Override
 	public ResourceLocation getId() {
@@ -40,13 +40,13 @@ public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instan
 	}
 
 	@Override
-	public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
+	public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener)
     {
-		FoundOreTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
+		MillstoneTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
         if (consumeitemtrigger$listeners == null)
         {
-            consumeitemtrigger$listeners = new FoundOreTrigger.Listeners(playerAdvancementsIn);
+            consumeitemtrigger$listeners = new MillstoneTrigger.Listeners(playerAdvancementsIn);
             this.listeners.put(playerAdvancementsIn, consumeitemtrigger$listeners);
         }
 
@@ -54,9 +54,9 @@ public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instan
     }
 
 	@Override
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
+    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener)
     {
-		FoundOreTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
+		MillstoneTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
         if (consumeitemtrigger$listeners != null)
         {
@@ -76,35 +76,35 @@ public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instan
     }
 
 	@Override
-	public FoundOreTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
-		return new FoundOreTrigger.Instance();
+	public MillstoneTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
+		return new MillstoneTrigger.Instance();
 	}
 	
 	public static class Instance extends AbstractCriterionInstance {
 		public Instance()
         {
-            super(FoundOreTrigger.ID);
+            super(MillstoneTrigger.ID);
         }
 
-		public boolean test(int count)
+		public boolean test(float power)
         {
-            return count > 0;
+            return power > 0;
         }
 	}
 	
-	public void trigger(EntityPlayerMP player, int count) {
-		FoundOreTrigger.Listeners enterblocktrigger$listeners = this.listeners.get(player.getAdvancements());
+	public void trigger(EntityPlayerMP player, float f) {
+		MillstoneTrigger.Listeners enterblocktrigger$listeners = this.listeners.get(player.getAdvancements());
 
         if (enterblocktrigger$listeners != null)
         {
-            enterblocktrigger$listeners.trigger(count);
+            enterblocktrigger$listeners.trigger(f);
         }
 	}
 	
 	static class Listeners
     {
         private final PlayerAdvancements playerAdvancements;
-        private final Set<ICriterionTrigger.Listener<FoundOreTrigger.Instance>> listeners = Sets.<ICriterionTrigger.Listener<FoundOreTrigger.Instance>>newHashSet();
+        private final Set<ICriterionTrigger.Listener<MillstoneTrigger.Instance>> listeners = Sets.<ICriterionTrigger.Listener<MillstoneTrigger.Instance>>newHashSet();
 
         public Listeners(PlayerAdvancements playerAdvancementsIn)
         {
@@ -116,27 +116,27 @@ public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instan
             return this.listeners.isEmpty();
         }
 
-        public void add(ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
+        public void add(ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener)
         {
             this.listeners.add(listener);
         }
 
-        public void remove(ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
+        public void remove(ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener)
         {
             this.listeners.remove(listener);
         }
 
-        public void trigger(int oreCount)
+        public void trigger(float power)
         {
-            List<ICriterionTrigger.Listener<FoundOreTrigger.Instance>> list = null;
+            List<ICriterionTrigger.Listener<MillstoneTrigger.Instance>> list = null;
 
-            for (ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener : this.listeners)
+            for (ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener : this.listeners)
             {
-                if (((FoundOreTrigger.Instance)listener.getCriterionInstance()).test(oreCount))
+                if (((MillstoneTrigger.Instance)listener.getCriterionInstance()).test(power))
                 {
                     if (list == null)
                     {
-                        list = Lists.<ICriterionTrigger.Listener<FoundOreTrigger.Instance>>newArrayList();
+                        list = Lists.<ICriterionTrigger.Listener<MillstoneTrigger.Instance>>newArrayList();
                     }
 
                     list.add(listener);
@@ -145,7 +145,7 @@ public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instan
 
             if (list != null)
             {
-                for (ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener1 : list)
+                for (ICriterionTrigger.Listener<MillstoneTrigger.Instance> listener1 : list)
                 {
                     listener1.grantCriterion(this.playerAdvancements);
                 }

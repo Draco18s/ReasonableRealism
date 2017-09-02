@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold.RecipeSubItem;
 import com.draco18s.hardlib.util.RecipesUtils;
@@ -113,18 +114,18 @@ public class ExpandedIndustryBase {
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "expindustry:machine_filter");
 		GameRegistry.registerTileEntity(TileEntityFoundry.class, "expindustry:machine_foundry");
 		
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_AXE), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SHOVEL), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_PICKAXE), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HOE), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SWORD), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HELMET), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_CHESTPLATE), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_LEGGINGS), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_BOOTS), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.SHEARS), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Items.BUCKET), (String)null));
-		RecipeToolMold.allMoldItem(new RecipeSubItem(new ItemStack(Blocks.RAIL, 16), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_AXE), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SHOVEL), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_PICKAXE), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HOE), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SWORD), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_HELMET), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_CHESTPLATE), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_LEGGINGS), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_BOOTS), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.SHEARS), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.BUCKET), (String)null));
+		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Blocks.RAIL, 16), (String)null));
 		
 		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
 		//EasyRegistry.registerItem(itemMold, "casting_mold");
@@ -140,39 +141,6 @@ public class ExpandedIndustryBase {
 		OreDictionary.registerOre("bucket", Items.BUCKET);
 		
 		RecipeSorter.register("sand_mold", RecipeToolMold.class, Category.SHAPELESS, "");
-		//TODO: recipes
-		RecipesUtils.setupDir(config);
-		/*RecipesUtils.addShapedRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood");
-		RecipesUtils.addShapedRecipe(blockDistributor, " h ", " i ", "ppp", 'p', "plankWood", 'i', "ingotIron", 'h', Blocks.HOPPER);
-		RecipesUtils.addShapedRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.COMPARATOR);
-		RecipesUtils.addShapedRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood");
-		RecipesUtils.addShapedRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood");
-		RecipesUtils.addShapedRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ);
-		//if(OreDictionary.doesOreNameExist("stoneAny")) {
-		RecipesUtils.addShapedRecipe(blockFoundry, "sbs","s s","sfs", 's', "stoneAny", 'f', Blocks.FURNACE, 'b', "bucket");
-		//}
-		//else {
-			//GameRegistry.addRecipe(new ShapedOreRecipe(blockFoundry, "sbs","s s","sfs", 's', "stone", 'f', Blocks.FURNACE, 'b', "bucket"));
-		//}
-		RecipesUtils.addShapedRecipe(blockFilter, "g g", "ghg", " g ", 'g', "ingotGold", 'h', Blocks.HOPPER);
-		RecipesUtils.addShapelessRecipe(new ItemStack(itemMold, 2), new ItemStack(Blocks.CLAY), new ItemStack(Blocks.SAND));
-		RecipesUtils.addShapelessRecipe(new ItemStack(itemMold, 2), new ItemStack(Blocks.CLAY), new ItemStack(Blocks.SAND, 1, BlockSand.EnumType.RED_SAND.getMetadata()));*/
-		
-		//TODO: recipe event
-		/*GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_AXE, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_SHOVEL, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_PICKAXE, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_HOE, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_SWORD, itemMold));
-		
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_HELMET, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_CHESTPLATE, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_LEGGINGS, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.IRON_BOOTS, itemMold));
-
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.SHEARS, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, Items.BUCKET, itemMold));
-		GameRegistry.addRecipe(new RecipeToolMold(itemMold, new ItemStack(Blocks.RAIL, 16), itemMold));*/
 	}
 
 	@EventHandler

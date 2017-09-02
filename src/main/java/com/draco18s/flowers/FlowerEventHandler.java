@@ -6,7 +6,6 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Level;
 
-import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
@@ -70,7 +69,7 @@ public class FlowerEventHandler {
 						}
 					}
 					if(event.getEntityPlayer() != null && event.getEntityPlayer() instanceof EntityPlayerMP) {
-						OreFlowersBase.FOUND_ORE.trigger((EntityPlayerMP) event.getEntityPlayer(), orCt);
+						HardLibAPI.Advancements.FOUND_ORE.trigger((EntityPlayerMP) event.getEntityPlayer(), orCt);
 					}
 				}
 			}
@@ -94,14 +93,6 @@ public class FlowerEventHandler {
 		int cz = c.z;
 		OreFlowersBase.oreCounter.generate(cx, cz, event.getWorld());
 	}
-	
-	/*@SubscribeEvent
-	public void onPickup(EntityItemPickupEvent event) {
-		Item item = event.getItem().getItem().getItem();
-		if(item == Item.getItemFromBlock(OreFlowersBase.oreFlowers1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowers3) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert1) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert2) || item == Item.getItemFromBlock(OreFlowersBase.oreFlowersDesert3)) {
-			//event.getEntityPlayer().addStat(FlowerAchievements.oreFlowers, 1);
-		}
-	}*/
 	
 	@SubscribeEvent
 	public void chunkLoad(ChunkDataEvent.Load event) {

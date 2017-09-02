@@ -45,23 +45,34 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 	protected ResourceLocation resourceLocation;
 
 	/**
+	 * Makes sure that a given Casting Mold crafting result is known by the model system and creative inventory.
+	 * @param recipeSubItem
+	 */
+	public static void addMoldItem(RecipeSubItem recipeSubItem) {
+		allMoldItems.add(recipeSubItem);
+	}
+
+	/**
 	 * See {@link #RecipeToolMold(Item, ItemStack, Item, String)
 	 */
-	public RecipeToolMold(Item output, Item tool, Item mold) {
+	@Deprecated
+	protected RecipeToolMold(Item output, Item tool, Item mold) {
 		this(output, new ItemStack(tool, 1, 0), mold);
 	}
 
 	/**
 	 * See {@link #RecipeToolMold(Item, ItemStack, Item, String)
 	 */
-	public RecipeToolMold(Item output, ItemStack itemStack, Item mold) {
+	@Deprecated
+	protected RecipeToolMold(Item output, ItemStack itemStack, Item mold) {
 		this(output, itemStack, mold, null);
 	}
 	
 	/**
 	 * See {@link #RecipeToolMold(Item, ItemStack, Item, String)
 	 */
-	public RecipeToolMold(Item output, Item tool, Item mold, String resourceDomain) {
+	@Deprecated
+	protected RecipeToolMold(Item output, Item tool, Item mold, String resourceDomain) {
 		this(output, new ItemStack(tool, 1, 0), mold, resourceDomain);
 	}
 
@@ -78,8 +89,10 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 	 * @param itemStack - the ItemStack to make a mold of
 	 * @param mold - the unmolded mold item, probably also an ItemCastingMold
 	 * @param resourceDomain - where to look for a json file describing the item mesh, if using ItemCastingMold
+	 * @deprecated - Use JSON recipes, see {@link Factory}
 	 */
-	public RecipeToolMold(Item output, ItemStack itemStack, Item mold, String resourceDomain) {
+	@Deprecated
+	protected RecipeToolMold(Item output, ItemStack itemStack, Item mold, String resourceDomain) {
 		this.output = output;
 		this.input = itemStack;
 		this.mold = new ItemStack(mold, 1, 0);
@@ -224,6 +237,23 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 		return width * height >= 2;
 	}
 	
+	/**
+	 * Example JSON recipe:<br>
+	 * {<br>
+	 * &emsp;"type": "hardlib:tool_mold",<br>
+	 * &emsp;"ingredient": {<br>
+	 * &emsp; &emsp;"item": "minecraft:iron_helmet"<br>
+	 * &emsp;},<br>
+	 * &emsp;"mold": {<br>
+	 * &emsp; &emsp;"item": "expindustry:casting_mold"<br>
+	 * &emsp;},<br>
+	 * &emsp;"result": {<br>
+	 * &emsp; &emsp;"item": "expindustry:casting_mold"<br>
+	 * &emsp;}<br>
+	 * }<br>
+	 * @author Draco18s
+	 *
+	 */
 	public static class Factory implements IRecipeFactory {
 		@Override
 		public IRecipe parse(JsonContext context, JsonObject json) {
@@ -238,9 +268,5 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 
 			return new RecipeToolMold(result.getItem(), ingredients, mold.getItem(), domain);
 		}
-	}
-
-	public static void allMoldItem(RecipeSubItem recipeSubItem) {
-		allMoldItems.add(recipeSubItem);
 	}
 }

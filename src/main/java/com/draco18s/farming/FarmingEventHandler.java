@@ -8,13 +8,13 @@ import java.util.Random;
 
 import com.draco18s.farming.entities.ai.EntityAIAging;
 import com.draco18s.farming.entities.ai.EntityAIHarvestFarmlandSmart;
+import com.draco18s.farming.entities.ai.EntityAIMakeRoomForSeeds;
 import com.draco18s.farming.entities.ai.EntityAIMilking;
 import com.draco18s.farming.entities.ai.EntityAIWeedFarmland;
 import com.draco18s.farming.entities.ai.EntityAgeTracker;
 import com.draco18s.farming.entities.capabilities.CowStats;
 import com.draco18s.farming.entities.capabilities.IMilking;
 import com.draco18s.farming.loot.KilledByWither;
-import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.capability.SimpleCapabilityProvider;
 import com.draco18s.hardlib.api.date.HardLibDate;
@@ -33,7 +33,6 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIHarvestFarmland;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.item.EntityItem;
@@ -161,23 +160,6 @@ public class FarmingEventHandler {
 			}
 		}
 	}
-	
-	@SubscribeEvent
-	public void onPlayerTick(PlayerTickEvent event) {
-		if(event.phase == Phase.END && event.side == Side.SERVER) {
-			long time = event.player.world.getWorldTime();
-			if(time % 1000 == 0)
-				FarmingBase.WORLD_TIME.trigger((EntityPlayerMP)event.player, time);
-		}
-	}
-	
-	@SubscribeEvent
-	public void onBlockBreak(BlockEvent.BreakEvent event) {
-		EntityPlayer player = event.getPlayer();
-		if(player instanceof EntityPlayerMP) {
-			FarmingBase.BLOCK_BREAK.trigger((EntityPlayerMP)player, event.getState());
-		}
-	}
 
 	@SubscribeEvent
 	public void onCropGrow(BlockEvent.CropGrowEvent.Pre event) {
@@ -194,19 +176,6 @@ public class FarmingEventHandler {
 					value = handleCrops(world, pos, state, bio, (PropertyInteger)p);
 				}
 			}
-			
-			/*if(state.getProperties().containsKey(BlockCrops.AGE)) {
-				value = handleCrops(world, pos, state, bio, BlockCrops.AGE);
-			}
-			if(state.getProperties().containsKey(BlockStem.AGE)) {
-				value = handleCrops(world, pos, state, bio, BlockStem.AGE);
-			}
-			if(state.getProperties().containsKey(BlockReed.AGE)) {
-				value = handleCrops(world, pos, state, bio, BlockReed.AGE);
-			}
-			if(state.getProperties().containsKey(BlockCocoa.AGE)) {
-				value = handleCrops(world, pos, state, bio, BlockCocoa.AGE);
-			}*/
 			event.setResult(value);
 		}
 	}
@@ -376,6 +345,7 @@ public class FarmingEventHandler {
 						}
 					}
 					villager.tasks.addTask(6, new EntityAIHarvestFarmlandSmart(villager, 0.6D));
+					villager.tasks.addTask(5, new EntityAIMakeRoomForSeeds(villager));
 	            }
 			}
 		}

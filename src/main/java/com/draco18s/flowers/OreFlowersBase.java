@@ -1,16 +1,12 @@
 package com.draco18s.flowers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
-import com.draco18s.flowers.advancement.FoundOreTrigger;
 import com.draco18s.flowers.block.BlockOreFlower1;
 import com.draco18s.flowers.block.BlockOreFlower2;
 import com.draco18s.flowers.block.BlockOreFlower3;
@@ -21,10 +17,10 @@ import com.draco18s.flowers.item.ItemOreFlower1;
 import com.draco18s.flowers.item.ItemOreManipulator;
 import com.draco18s.flowers.item.ItemStickyBlob;
 import com.draco18s.flowers.util.ChunkOreCounter;
-import com.draco18s.flowers.util.FlowerAchievements;
 import com.draco18s.flowers.util.OreDataHooks;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower1;
 import com.draco18s.hardlib.api.blockproperties.flowers.EnumOreFlower2;
@@ -37,8 +33,6 @@ import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -46,8 +40,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -56,8 +48,6 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 @Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")
@@ -86,7 +76,6 @@ public class OreFlowersBase {
 
 	public static ChunkOreCounter oreCounter;
 	protected static OreDataHooks dataHooks;
-	public static FoundOreTrigger FOUND_ORE;
 	
 	public static Configuration config;
 	public static boolean configProcessOreDictLatest = true;
@@ -161,8 +150,6 @@ public class OreFlowersBase {
 		FlowerEventHandler handler = new FlowerEventHandler();
 		MinecraftForge.ORE_GEN_BUS.register(handler);
 		MinecraftForge.EVENT_BUS.register(handler);
-		
-		FOUND_ORE = (FoundOreTrigger) EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
 		
 		configProcessOreDictLatest = config.getBoolean("processOreDictLatest", "GENERAL", true,
 				"Process the OreDictionary list as late as possible?\n" +

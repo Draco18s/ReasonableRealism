@@ -1,0 +1,44 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:hopper"
+        },
+        "title": {
+            "translate": "achievement.industry.root"
+        },
+        "description": {
+            "translate": "achievement.industry.root.desc"
+        },
+        "background": "expindustry:textures/gui/advancements/backgrounds/industry.png",
+        "show_toast": false,
+        "announce_to_chat": false
+    },
+    "criteria": {
+        "crafted_item1": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:hopper"
+                    }
+                ]
+            }
+        },
+        "crafted_item2": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "expindustry:machine_wood_hopper"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "crafted_item1",
+            "crafted_item2"
+        ]
+    ]
+}

@@ -9,6 +9,12 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+/**
+ * No-nonsense container class that does all the thigns a container needs to do.<br>
+ * Every "container" TE can create a subclass of this to use for a GUI.
+ * @author Draco18s
+ *
+ */
 public class CommonContainer extends Container {
 	protected final int invenSize;
 	

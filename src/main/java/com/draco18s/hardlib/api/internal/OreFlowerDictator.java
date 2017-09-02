@@ -2,6 +2,7 @@ package com.draco18s.hardlib.api.internal;
 
 /**
  * Static dictators available for ease of use.  Most things use default, redstone uses close.
+ * @author Draco18s
  *
  */
 public class OreFlowerDictator {

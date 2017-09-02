@@ -1,4 +1,4 @@
-package com.draco18s.farming.advancement;
+package com.draco18s.hardlib.api.advancement;
 
 import java.util.List;
 import java.util.Map;
@@ -30,9 +30,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 
-public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Instance> {
-    private static final ResourceLocation ID = new ResourceLocation("harderfarming","total_world_time");
-    private final Map<PlayerAdvancements, WorldTimeTrigger.Listeners> listeners = Maps.<PlayerAdvancements, WorldTimeTrigger.Listeners>newHashMap();
+public class FoundOreTrigger implements ICriterionTrigger<FoundOreTrigger.Instance> {
+    private static final ResourceLocation ID = new ResourceLocation("oreflowers","found_ore");
+    private final Map<PlayerAdvancements, FoundOreTrigger.Listeners> listeners = Maps.<PlayerAdvancements, FoundOreTrigger.Listeners>newHashMap();
 
 	@Override
 	public ResourceLocation getId() {
@@ -40,13 +40,13 @@ public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Inst
 	}
 
 	@Override
-	public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener)
+	public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
     {
-		WorldTimeTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
+		FoundOreTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
         if (consumeitemtrigger$listeners == null)
         {
-            consumeitemtrigger$listeners = new WorldTimeTrigger.Listeners(playerAdvancementsIn);
+            consumeitemtrigger$listeners = new FoundOreTrigger.Listeners(playerAdvancementsIn);
             this.listeners.put(playerAdvancementsIn, consumeitemtrigger$listeners);
         }
 
@@ -54,9 +54,9 @@ public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Inst
     }
 
 	@Override
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener)
+    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
     {
-		WorldTimeTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
+		FoundOreTrigger.Listeners consumeitemtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
         if (consumeitemtrigger$listeners != null)
         {
@@ -76,40 +76,35 @@ public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Inst
     }
 
 	@Override
-	public WorldTimeTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
-		long duration = Long.parseLong(JsonUtils.getString(json, "duration"));
-		
-		return new WorldTimeTrigger.Instance(duration);
+	public FoundOreTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
+		return new FoundOreTrigger.Instance();
 	}
 	
 	public static class Instance extends AbstractCriterionInstance {
-        private final long duration;
-        
-		public Instance(long dur)
+		public Instance()
         {
-            super(WorldTimeTrigger.ID);
-            this.duration = dur;
+            super(FoundOreTrigger.ID);
         }
 
-		public boolean test(long time)
+		public boolean test(int count)
         {
-			return time >= duration;
+            return count > 0;
         }
 	}
 	
-	public void trigger(EntityPlayerMP player, long f) {
-		WorldTimeTrigger.Listeners enterblocktrigger$listeners = this.listeners.get(player.getAdvancements());
+	public void trigger(EntityPlayerMP player, int count) {
+		FoundOreTrigger.Listeners enterblocktrigger$listeners = this.listeners.get(player.getAdvancements());
 
         if (enterblocktrigger$listeners != null)
         {
-            enterblocktrigger$listeners.trigger(f);
+            enterblocktrigger$listeners.trigger(count);
         }
 	}
 	
 	static class Listeners
     {
         private final PlayerAdvancements playerAdvancements;
-        private final Set<ICriterionTrigger.Listener<WorldTimeTrigger.Instance>> listeners = Sets.<ICriterionTrigger.Listener<WorldTimeTrigger.Instance>>newHashSet();
+        private final Set<ICriterionTrigger.Listener<FoundOreTrigger.Instance>> listeners = Sets.<ICriterionTrigger.Listener<FoundOreTrigger.Instance>>newHashSet();
 
         public Listeners(PlayerAdvancements playerAdvancementsIn)
         {
@@ -121,27 +116,27 @@ public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Inst
             return this.listeners.isEmpty();
         }
 
-        public void add(ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener)
+        public void add(ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
         {
             this.listeners.add(listener);
         }
 
-        public void remove(ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener)
+        public void remove(ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener)
         {
             this.listeners.remove(listener);
         }
 
-        public void trigger(Long time)
+        public void trigger(int oreCount)
         {
-            List<ICriterionTrigger.Listener<WorldTimeTrigger.Instance>> list = null;
+            List<ICriterionTrigger.Listener<FoundOreTrigger.Instance>> list = null;
 
-            for (ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener : this.listeners)
+            for (ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener : this.listeners)
             {
-                if (((WorldTimeTrigger.Instance)listener.getCriterionInstance()).test(time))
+                if (((FoundOreTrigger.Instance)listener.getCriterionInstance()).test(oreCount))
                 {
                     if (list == null)
                     {
-                        list = Lists.<ICriterionTrigger.Listener<WorldTimeTrigger.Instance>>newArrayList();
+                        list = Lists.<ICriterionTrigger.Listener<FoundOreTrigger.Instance>>newArrayList();
                     }
 
                     list.add(listener);
@@ -150,7 +145,7 @@ public class WorldTimeTrigger implements ICriterionTrigger<WorldTimeTrigger.Inst
 
             if (list != null)
             {
-                for (ICriterionTrigger.Listener<WorldTimeTrigger.Instance> listener1 : list)
+                for (ICriterionTrigger.Listener<FoundOreTrigger.Instance> listener1 : list)
                 {
                     listener1.grantCriterion(this.playerAdvancements);
                 }

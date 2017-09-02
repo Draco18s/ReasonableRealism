@@ -43,7 +43,9 @@ public class EntityAIWeedFarmland extends EntityAIMoveToBlock
             this.currentTask = -1;
         }
 
-        return super.shouldExecute();
+        boolean ret = super.shouldExecute();
+        runDelay /= 5;
+        return ret;
     }
 
     /**
