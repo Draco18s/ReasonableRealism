@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
@@ -114,19 +116,14 @@ public class ClientEasyRegistry extends EasyRegistry {
 	public <T extends Item & IItemWithMeshDefinition> void _registerItemWithCustomMeshDefinition(T item, String registryname) {
 		super._registerItemWithCustomMeshDefinition(item, registryname);
 		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
-		NonNullList<ItemStack> subItems = NonNullList.create();
-		item.getSubItems(CreativeTabs.SEARCH, subItems);
-		for(ItemStack stack : subItems) {
-			ModelBakery.registerItemVariants(item, def.getModelLocation(stack));
-		}
-		
-		//TODO: May not work
-		ModelLoader.setCustomMeshDefinition(item, def);
+		//delay baking until the model registry event
+		modelsToBake.add(new ModelBakeObj(item, null, def));
 	}
 	
 	@Override
 	public <T extends Item & IItemWithMeshDefinition> void _registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
 		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
+		//TODO: delay?
 		ModelBakery.registerItemVariants(item, def.getModelLocation(variantStack));
 		ModelLoader.setCustomMeshDefinition(item, def);
 	}
@@ -167,7 +164,6 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 
 	private void _registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation) {
-		//ModelLoader.setCustomModelResourceLocation(item, metadata, modelResourceLocation);
 		modelsToReg.add(new ModelRegistryObj(item, metadata, modelResourceLocation));
 	}
 	
@@ -177,8 +173,17 @@ public class ClientEasyRegistry extends EasyRegistry {
 	    	ModelLoader.setCustomStateMapper(obj.block, obj.map);
 	    }
 		for(ModelBakeObj obj : modelsToBake) {
-			ModelBakery.registerItemVariants(obj.item, obj.resource); // Ensure the custom model is loaded and prevent the default model from being loaded
 			ModelLoader.setCustomMeshDefinition(obj.item, obj.meshDefinition);
+			if(obj.resource == null) {
+				NonNullList<ItemStack> subItems = NonNullList.create();
+				obj.item.getSubItems(CreativeTabs.SEARCH, subItems);
+				for(ItemStack stack : subItems) {
+					ModelBakery.registerItemVariants(obj.item, obj.meshDefinition.getModelLocation(stack));
+				}
+			}
+			else {
+				ModelBakery.registerItemVariants(obj.item, obj.resource); // Ensure the custom model is loaded and prevent the default model from being loaded
+			}
 		}
 	    for(ModelRegistryObj obj : modelsToReg) {
 	    	ModelLoader.setCustomModelResourceLocation(obj.item, obj.meta, obj.resource);
@@ -186,9 +191,9 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 	
 	protected static class ModelRegistryObj {
-		public Item item;
-		public int meta;
-		public ModelResourceLocation resource;
+		final Item item;
+		final int meta;
+		final ModelResourceLocation resource;
 		
 		public ModelRegistryObj(Item i, int m, ModelResourceLocation loc) {
 			item = i;
@@ -198,10 +203,10 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 	
 	protected static class ModelBakeObj {
-		Item item;
-		ModelResourceLocation resource;
-		ItemMeshDefinition meshDefinition;
-		public ModelBakeObj(Item i, ModelResourceLocation location, ItemMeshDefinition itemMeshDefinition) {
+		final Item item;
+		final ModelResourceLocation resource;
+		final ItemMeshDefinition meshDefinition;
+		public ModelBakeObj(Item i, @Nullable ModelResourceLocation location, ItemMeshDefinition itemMeshDefinition) {
 			item = i;
 			resource = location;
 			meshDefinition = itemMeshDefinition;
@@ -209,8 +214,8 @@ public class ClientEasyRegistry extends EasyRegistry {
 	}
 	
 	protected static class StateMapObj {
-		Block block;
-		StateMapperBase map;
+		final Block block;
+		final StateMapperBase map;
 		public StateMapObj(Block b, StateMapperBase mapper) {
 			block = b;
 			map = mapper;

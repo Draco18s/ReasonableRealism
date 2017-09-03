@@ -1,0 +1,12 @@
+{
+    "type": "hardlib:tool_mold",
+    "ingredient": {
+        "item": "minecraft:iron_sword"
+    },
+    "mold": {
+        "item": "expindustry:casting_mold"
+    },
+    "result": {
+        "item": "expindustry:casting_mold"
+    }
+}

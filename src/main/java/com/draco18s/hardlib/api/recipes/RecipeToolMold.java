@@ -16,6 +16,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -97,15 +99,6 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 		this.input = itemStack;
 		this.mold = new ItemStack(mold, 1, 0);
 		this.resourceDomain = resourceDomain!=null?resourceDomain.toLowerCase():resourceDomain;
-		
-		/*if(output instanceof IItemWithMeshDefinition) {
-			ItemStack tempResult = new ItemStack(output);
-			addImprint(itemStack, tempResult, resourceDomain);
-			EasyRegistry.registerSpecificItemVariantsWithBakery(typCast(output), tempResult);
-			if(output == HardLibAPI.itemMold) {
-				allMoldItems.add(new RecipeSubItem(this.input, resourceDomain));
-			}
-		}*/
 	}
 
 	public static ImmutableList<RecipeSubItem> getAllmolditems() {
@@ -174,11 +167,6 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 		}
 		return out;
 	}
-
-	/*@Override
-	public int getRecipeSize() {
-		return 2;
-	}*/
 
 	@Override
 	public ItemStack getRecipeOutput() {

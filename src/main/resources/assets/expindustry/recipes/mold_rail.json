@@ -1,0 +1,13 @@
+{
+    "type": "hardlib:tool_mold",
+    "ingredient": {
+        "item": "minecraft:rail",
+        "count": 16
+    },
+    "mold": {
+        "item": "expindustry:casting_mold"
+    },
+    "result": {
+        "item": "expindustry:casting_mold"
+    }
+}

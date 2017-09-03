@@ -113,7 +113,8 @@ public class ExpandedIndustryBase {
 		GameRegistry.registerTileEntity(TileEntityCartLoader.class, "expindustry:machine_cart_loader");
 		GameRegistry.registerTileEntity(TileEntityFilter.class, "expindustry:machine_filter");
 		GameRegistry.registerTileEntity(TileEntityFoundry.class, "expindustry:machine_foundry");
-		
+
+		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_AXE), (String)null));
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_SHOVEL), (String)null));
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.IRON_PICKAXE), (String)null));
@@ -126,8 +127,6 @@ public class ExpandedIndustryBase {
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.SHEARS), (String)null));
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Items.BUCKET), (String)null));
 		RecipeToolMold.addMoldItem(new RecipeSubItem(new ItemStack(Blocks.RAIL, 16), (String)null));
-		
-		HardLibAPI.itemMold = itemMold = new ItemCastingMold();
 		//EasyRegistry.registerItem(itemMold, "casting_mold");
 		EasyRegistry.registerItemWithCustomMeshDefinition((ItemCastingMold)itemMold, "casting_mold");
 		
