@@ -15,6 +15,7 @@ import com.draco18s.farming.loot.KilledByWither;
 import com.draco18s.farming.util.FarmingAchievements;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.capability.SimpleCapabilityProvider;
+import com.draco18s.hardlib.api.date.HardLibDate;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.LootUtils;
 import com.draco18s.hardlib.util.LootUtils.ICondition;
@@ -57,9 +58,11 @@ import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
+import net.minecraft.world.storage.loot.RandomValueRange;
 import net.minecraft.world.storage.loot.conditions.EntityHasProperty;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.functions.LootFunction;
+import net.minecraft.world.storage.loot.functions.LootingEnchantBonus;
 import net.minecraft.world.storage.loot.functions.Smelt;
 import net.minecraft.world.storage.loot.properties.EntityOnFire;
 import net.minecraft.world.storage.loot.properties.EntityProperty;
@@ -78,7 +81,12 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+//import stellarapi.api.lib.math.Vector3;
+//import stellarium.stellars.StellarManager;
+//import stellarium.world.StellarDimensionManager;
 
 public class FarmingEventHandler {
 	public static boolean doSlowCrops;
@@ -88,6 +96,7 @@ public class FarmingEventHandler {
 	public static int cropsWorst;
 	
 	private HashMap<Biome,Float> biomeTemps = new HashMap<Biome,Float>();
+	private Item woolItem;
 	
 	public FarmingEventHandler() {
 		Iterator<ResourceLocation> it = Biome.REGISTRY.getKeys().iterator();
@@ -99,13 +108,16 @@ public class FarmingEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onCropGrow(LivingDropsEvent event) {
+	public void onLivingDrops(LivingDropsEvent event) {
+		if(woolItem == null) {
+			woolItem = Item.getItemFromBlock(Blocks.WOOL);
+		}
 		if(event.getEntity() instanceof IShearable) {
 			List<EntityItem> list = event.getDrops();
 			for(EntityItem ent : list) {
-				//if(ent.getEntityItem().getItem() == Item.getItemFromBlock(Blocks.WOOL)) {
+				if(ent.getEntityItem().getItem() == woolItem) {
 					ent.getEntityItem().grow(1 + rand.nextInt(2));
-				//}
+				}
 			}
 		}
 	}
@@ -187,11 +199,18 @@ public class FarmingEventHandler {
 		if(doBiomeCrops) {
 			float t = bio.getTemperature();
 			float r = bio.getRainfall();
+
+			float seasonalTempMod = HardLibDate.getSeasonTemp(world, world.getTotalWorldTime());
+			float seasonalRainMod = HardLibDate.getSeasonRain(world, world.getTotalWorldTime());
+			
 			if(BiomeDictionary.hasType(bio, Type.OCEAN) || BiomeDictionary.hasType(bio, Type.RIVER)) {
-				//TODO: figure out time offsets
-				//lesson the effects of temperature on Ocean and River biomes
-				//t += getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) * 0.333f;
+				seasonalTempMod *= 0.333f;
 			}
+			//System.out.println("bas: " + t + "," + r);
+			t = HardLibDate.modifySeasonTemp(bio, seasonalTempMod);
+			r = HardLibDate.modifySeasonRain(bio, seasonalRainMod);
+			//System.out.println("mod: " + seasonalTempMod + "," + seasonalRainMod);
+			//System.out.println("val: " + t + "," + r);
 			if(BiomeDictionary.hasType(bio, Type.NETHER) != world.getPrecipitationHeight(pos).getY() > pos.getY()) {
 				//if the crop is inside, halve the effects of climate.
 				//nether is treated in reverse
@@ -207,16 +226,19 @@ public class FarmingEventHandler {
 			
 			if(o != null) {
 				//TODO: Figure out time offsets without a clear idea of "year"
-				
-				/*if(o.temperatureTimeOffset != 0) {
-					if(doYearCycle)
-						t = t - getSeasonTemp(getLastWorldTime(world.provider.dimensionId)) + getSeasonTemp(getLastWorldTime(world.provider.dimensionId) + o.temperatureTimeOffset);
-				}*/
+				//Stellar Sky?	https://minecraft.curseforge.com/projects/stellar-api
+				//				https://minecraft.curseforge.com/projects/stellar-sky
+				if(o.temperatureTimeOffset != 0) {
+					//if(doYearCycle)
+					int offset = (int) (HardLibDate.getYearLength(world) * o.temperatureTimeOffset);
+					t = t - HardLibDate.getSeasonTemp(world, world.getTotalWorldTime()) + HardLibDate.getSeasonTemp(world, world.getTotalWorldTime() + offset);
+				}
 				t += o.temperatureFlat;
-				/*if(o.rainfallTimeOffset != 0) {
-					if(doYearCycle)
-						r = r - getSeasonRain(getLastWorldTime(world.provider.dimensionId)) + getSeasonRain(getLastWorldTime(world.provider.dimensionId) + o.rainfallTimeOffset);
-				}*/
+				if(o.rainfallTimeOffset != 0) {
+					//if(doYearCycle)
+					int offset = (int) (HardLibDate.getYearLength(world) * o.temperatureTimeOffset);
+					r = r - HardLibDate.getSeasonRain(world, world.getTotalWorldTime()) + HardLibDate.getSeasonRain(world, world.getTotalWorldTime() + offset);
+				}
 				r += o.rainfallFlat;
 				if(block == Blocks.NETHER_WART) {
 					//handle alterations to the nether's temperature
@@ -299,6 +321,13 @@ public class FarmingEventHandler {
 			LootUtils.removeLootFromTable(loot, Items.LEATHER);
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -308,6 +337,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -323,6 +359,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -337,6 +375,13 @@ public class FarmingEventHandler {
 			LootUtils.removeLootFromTable(loot, Items.LEATHER);
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -346,6 +391,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -361,6 +413,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -374,6 +428,13 @@ public class FarmingEventHandler {
 			LootTable loot = event.getTable();
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -383,6 +444,13 @@ public class FarmingEventHandler {
 			}
 			else {
 				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 1, 1, 2, 4, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
 					new ICondition() {
 						@Override
 						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
@@ -398,6 +466,8 @@ public class FarmingEventHandler {
 						LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 						LootFunction cooked =  new Smelt(condition);
 						lootfuncs.add(cooked);
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
 					}
 				},
 				new ICondition() {
@@ -420,6 +490,8 @@ public class FarmingEventHandler {
 					LootCondition[] condition = {new EntityHasProperty(new EntityProperty[]{new EntityOnFire(true)}, EntityTarget.THIS)};
 					LootFunction cooked =  new Smelt(condition);
 					lootfuncs.add(cooked);
+					LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+					lootfuncs.add(looting);
 				}
 			},
 			new ICondition() {
@@ -433,15 +505,39 @@ public class FarmingEventHandler {
 			LootTable loot = event.getTable();
 			
 			LootUtils.removeLootFromTable(loot, Items.STRING);
-			LootUtils.addItemToTable(loot, Items.STRING, 1, 1, 1, 2, 4, 0, 1, "minecraft:string");
+			LootUtils.addItemToTable(loot, Items.STRING, 1, 1, 1, 2, 4, 0, 1, "minecraft:string",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(0,1), 0);
+						lootfuncs.add(looting);
+					}
+				}			
+			);
 		}
 		if(event.getName().getResourcePath().equals("entities/skeleton")) {
 			LootTable loot = event.getTable();
 			
 			LootUtils.removeLootFromTable(loot, Items.BONE);
-			LootUtils.addItemToTable(loot, Items.BONE, 1, 1, 1, 1, 3, 0, 1, "minecraft:bone");
+			LootUtils.addItemToTable(loot, Items.BONE, 1, 1, 1, 1, 3, 0, 1, "minecraft:bone",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(0,1), 0);
+						lootfuncs.add(looting);
+					}
+				}
+			);
 			LootUtils.removeLootFromTable(loot, Items.ARROW);
-			LootUtils.addItemToTable(loot, Items.ARROW, 1, 1, 1, 2, 5, 0, 1, "minecraft:arrow");
+			LootUtils.addItemToTable(loot, Items.ARROW, 1, 1, 1, 2, 5, 0, 1, "minecraft:arrow",
+				new IMethod() {
+					@Override
+					public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+						LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+						lootfuncs.add(looting);
+					}
+				}		
+			);
 		}
 	}
 	

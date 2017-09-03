@@ -64,7 +64,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.Type;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-@Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib;after:expindustry")
+@Mod(modid="harderfarming", name="HardFarming", version="{@version:farm}", dependencies = "required-after:hardlib;after:expindustry;after:stellarsky")
 public class FarmingBase {
 	@Instance("harderfarming")
 	public static FarmingBase instance;

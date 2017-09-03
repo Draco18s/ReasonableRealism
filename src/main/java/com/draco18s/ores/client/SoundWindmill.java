@@ -2,8 +2,10 @@ package com.draco18s.ores.client;
 
 import com.draco18s.hardlib.api.blockproperties.Props;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.ores.OresBase;
 import com.draco18s.ores.entities.TileEntityMillstone;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.tileentity.TileEntity;
@@ -29,10 +31,16 @@ public class SoundWindmill extends PositionedSound implements ITickableSound {
 	@Override
 	public void update() {
 		TileEntity te = millstone.getWorld().getTileEntity(position);
-		MillstoneOrientation orient = millstone.getWorld().getBlockState(position).getValue(Props.MILL_ORIENTATION);
-        if (!(te != null && te instanceof TileEntityMillstone) || !millstone.canGrind(orient) || millstone.getGrindTime() <= 0) {
-        	donePlaying = true;
-        }
+		IBlockState st = millstone.getWorld().getBlockState(position);
+		if(st.getBlock() == OresBase.millstone) {
+			MillstoneOrientation orient = st.getValue(Props.MILL_ORIENTATION);
+	        if (!(te != null && te instanceof TileEntityMillstone) || !millstone.canGrind(orient) || millstone.getGrindTime() <= 0) {
+	        	donePlaying = true;
+	        }
+		}
+		else {
+			donePlaying = true;
+		}
 	}
 
 	@Override

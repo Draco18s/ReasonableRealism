@@ -126,7 +126,8 @@ public class ExpandedIndustryBase {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockWoodHopper, "p p", "p p", " p ", 'p', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockDistributor, " h ", " i ", "ppp", 'p', "plankWood", 'i', "ingotIron", 'h', Blocks.HOPPER));
-		GameRegistry.addRecipe(new ShapedOreRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.REPEATER));
+		GameRegistry.addRecipe(new ShapedOreRecipe(blockCartLoader, "i i", "rhd", " i ", 'i', "ingotIron", 'h', Blocks.HOPPER, 'r', Blocks.REDSTONE_BLOCK, 'd', Items.COMPARATOR));
+		GameRegistry.addRecipe(new ShapedOreRecipe(blockFilter, "g g", "ghg", " g ", 'g', "ingotGold",'h',Blocks.HOPPER));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridge, "R", "P", 'R', Blocks.RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(blockRailBridgePowered, "R", "P", 'R', Blocks.GOLDEN_RAIL, 'P', "plankWood"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockTypeRail,6), "i i", "ipi", "iqi", 'p', Blocks.STONE_PRESSURE_PLATE, 'i', "ingotIron", 'q', Items.QUARTZ));

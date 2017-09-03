@@ -34,6 +34,7 @@ import com.draco18s.ores.entities.TileEntityMillstone;
 import com.draco18s.ores.entities.TileEntityPackager;
 import com.draco18s.ores.entities.TileEntitySifter;
 import com.draco18s.ores.integration.FlowerIntegration;
+import com.draco18s.ores.item.ItemDiamondStudAxe;
 import com.draco18s.ores.item.ItemDiamondStudHoe;
 import com.draco18s.ores.item.ItemDiamondStudPickaxe;
 import com.draco18s.ores.item.ItemDiamondStudShovel;
@@ -295,7 +296,7 @@ public class OresBase {
 		EasyRegistry.registerItem(diaStudShovel, "diamondstud_shovel");
 		diaStudHoe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudHoe, "diamondstud_hoe");
-		diaStudAxe = new ItemDiamondStudHoe(toolMaterialDiamondStud);
+		diaStudAxe = new ItemDiamondStudAxe(toolMaterialDiamondStud);
 		EasyRegistry.registerItem(diaStudAxe, "diamondstud_axe");
 		oreMinecart = new ItemEntityOreCart(oreCartEnum);
 		EasyRegistry.registerItem(oreMinecart, "orecart");

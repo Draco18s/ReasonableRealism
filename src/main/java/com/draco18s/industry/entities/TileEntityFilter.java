@@ -134,7 +134,7 @@ public class TileEntityFilter extends TileEntityHopper {
 
 	public boolean doIHaveFilters() {
 		for (ItemStack ii : filters) {
-			if (ii != null) {
+			if (!ii.isEmpty()) {
 				return true;
 			}
 		}
@@ -368,17 +368,17 @@ public class TileEntityFilter extends TileEntityHopper {
 			world.setBlockState(pos, state, 2);
 			IBlockState somestate = world.getBlockState(pos);
 			TileEntity te = world.getTileEntity(pos);
-			if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+			EnumFacing side = getFacingForSlot(slot);
+			if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
 				filterStates[slot] = state;
 				return true;
 			}
 			else if (ib.getMetadata(stack) == 0) {
 				BlockStateContainer bsc = ib.block.getBlockState();
 				ImmutableList<IBlockState> values = bsc.getValidStates();
-				EnumFacing side = getFacingForSlot(slot);
 				for (IBlockState s : values) {
 					world.setBlockState(pos, s, 2);
-					System.out.println(world.getBlockState(pos));
+					//System.out.println(world.getBlockState(pos));
 					te = world.getTileEntity(pos);
 					if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
 						filterStates[slot] = s;
