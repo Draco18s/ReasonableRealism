@@ -17,10 +17,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class AdvancementUtils {
-	private static Field listField = ReflectionHelper.findField(AdvancementManager.class, "ADVANCEMENT_LIST");
-	private static Field allAdvField = ReflectionHelper.findField(AdvancementList.class, "advancements");
-	private static Field nonRootsField = ReflectionHelper.findField(AdvancementList.class, "nonRoots");
-	private static Field parentField = ReflectionHelper.findField(Advancement.class, "parent");
+	private static Field listField = ReflectionHelper.findField(AdvancementManager.class, "ADVANCEMENT_LIST","field_192784_c");
+	private static Field allAdvField = ReflectionHelper.findField(AdvancementList.class, "advancements","field_192092_b");
+	private static Field nonRootsField = ReflectionHelper.findField(AdvancementList.class, "nonRoots","field_192094_d");
+	private static Field parentField = ReflectionHelper.findField(Advancement.class, "parent","field_192076_a");
 	/**
 	 * Will asign a given target advancement a new parent and rebuild the layout.<br>
 	 * Note: not intended to result in advancements changing to a new root.

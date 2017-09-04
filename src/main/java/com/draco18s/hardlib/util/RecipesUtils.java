@@ -100,7 +100,7 @@ public class RecipesUtils {
 		modRegistry.remove(recipe);
 		HardLib.instance.logger.log(Level.INFO, modID + " Removed Recipe: " + recipe);
 		//This was a nice try, but Advancements are loaded when the world loads.
-		if(recipe.getResourceDomain().equals("minecraft")) {
+		/*if(recipe.getResourceDomain().equals("minecraft")) {
 			AdvancementUtils.removeAdvancement(new ResourceLocation(recipe.getResourceDomain(),"recipes/" + recipe.getResourcePath()), modID);			
 		}
 		else {
@@ -108,7 +108,7 @@ public class RecipesUtils {
 			AdvancementUtils.removeAdvancement(recipe, modID);
 			AdvancementUtils.removeAdvancement(new ResourceLocation(recipe.getResourceDomain(),"recipe/" + recipe.getResourcePath()), modID);
 			AdvancementUtils.removeAdvancement(new ResourceLocation(recipe.getResourceDomain(),"recipes/" + recipe.getResourcePath()), modID);
-		}
+		}*/
 	}
 
 	/**
