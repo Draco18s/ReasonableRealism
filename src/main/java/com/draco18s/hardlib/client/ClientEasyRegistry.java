@@ -30,10 +30,19 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
+/**
+ * This code is lisenced under a "feel free to take this class and use it" license. The only 
+ * provisions are that the package declaration is different as to not cause conflicts in the JVM
+ * and that I retain authorship.<br>
+ * EasyRegistry and ClientEasyRegistry are both proxy and event handlers. HardLib may be replaced as
+ * the reference to any main mod class that treats these two classes as required in order to work:
+ * you do not need to replicate the entirety of the HardLib package.<br>
+ * Alternatively, you can take HardLib as a dependency. https://minecraft.curseforge.com/projects/hardlib/
+ * @author Draco18s
+ *
+ */
 public class ClientEasyRegistry extends EasyRegistry {
 	protected List<ModelRegistryObj> modelsToReg = new ArrayList<ModelRegistryObj>();
 	protected List<ModelBakeObj> modelsToBake = new ArrayList<ModelBakeObj>();

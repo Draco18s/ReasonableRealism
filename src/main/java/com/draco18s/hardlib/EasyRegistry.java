@@ -7,10 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
-import com.draco18s.hardlib.api.blockproperties.Props;
-import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
 import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.api.internal.IMetaLookup;
@@ -19,7 +16,6 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.ICriterionInstance;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,17 +25,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
+/**
+ * This code is lisenced under a "feel free to take this class and use it" license. The only 
+ * provisions are that the package declaration is different as to not cause conflicts in the JVM
+ * and that I retain authorship.<br>
+ * EasyRegistry and ClientEasyRegistry are both proxy and event handlers. HardLib may be replaced as
+ * the reference to any main mod class that treats these two classes as required in order to work:
+ * you do not need to replicate the entirety of the HardLib package.<br>
+ * Alternatively, you can take HardLib as a dependency. https://minecraft.curseforge.com/projects/hardlib/
+ * @author Draco18s
+ *
+ */
 public class EasyRegistry {
 	private List<Block> blocksToReg = new ArrayList<Block>();
 	private List<Item>  itemsToReg  = new ArrayList<Item>();
