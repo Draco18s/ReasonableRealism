@@ -20,6 +20,12 @@ public class GuiContainerExtHopper extends GuiContainer {
 		WOODEN_HOPPER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/hopper.png");
 		this.ySize = 133;
 	}
+	
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {

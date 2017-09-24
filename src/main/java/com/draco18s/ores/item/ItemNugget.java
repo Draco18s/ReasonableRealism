@@ -39,7 +39,9 @@ public class ItemNugget extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		OresBase.logger.log(Level.DEBUG, "Adding 1 nugget");
-		subItems.add(new ItemStack(this, 1, EnumOreType.IRON.meta));
+		if (this.isInCreativeTab(tab)) {
+			//OresBase.logger.log(Level.DEBUG, "Adding 1 nugget");
+			subItems.add(new ItemStack(this, 1, EnumOreType.IRON.meta));
+		}
 	}
 }

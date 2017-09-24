@@ -94,7 +94,7 @@ public class EntityAIAging extends EntityAIBase {
 			}
 			else if(age.entityAge % (150) == 0) {
 				List ents = entity.get().world.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
-				String bioName = entity.get().world.getBiomeForCoordsBody(new BlockPos(entity.get().posX, entity.get().posY, entity.get().posZ)).getBiomeName().toLowerCase();
+				String bioName = entity.get().world.getBiomeForCoordsBody(new BlockPos(entity.get().posX, entity.get().posY, entity.get().posZ)).getRegistryName().toString();
 				int extraCountAllowed = 0;
 				if(bioName.contains("rainbow") && bioName.contains("forest")) {
 					extraCountAllowed = 25;

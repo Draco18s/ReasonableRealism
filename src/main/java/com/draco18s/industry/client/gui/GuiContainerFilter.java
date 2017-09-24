@@ -48,6 +48,12 @@ public class GuiContainerFilter extends GuiContainer {
 		buttonList.add(new LogicButton(0, this.guiLeft + 142, this.guiTop + 45, te.getEnumType()));
 		buttonList.add(new HintButton(1, this.guiLeft + 157, this.guiTop + 3));
 	}
+	
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {

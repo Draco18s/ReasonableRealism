@@ -18,6 +18,12 @@ public class GuiContainerFoundry extends GuiContainer {
 		tileEntity = tileEntity2;
 		FOUNDRY_GUI_TEXTURE = new ResourceLocation("expindustry:textures/gui/foundry.png");
 	}
+	
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {

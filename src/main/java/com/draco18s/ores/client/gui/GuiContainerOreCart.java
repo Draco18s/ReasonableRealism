@@ -40,6 +40,12 @@ public class GuiContainerOreCart extends GuiContainer {
 		buttonList.add(new DropSideButton(0, this.guiLeft + 123, this.guiTop + 69));
 		buttonList.add(new DropSideButton(1, this.guiLeft + 145, this.guiTop + 69));
 	}
+	
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {

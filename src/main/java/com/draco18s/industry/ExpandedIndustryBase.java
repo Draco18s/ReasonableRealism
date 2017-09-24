@@ -31,10 +31,13 @@ import com.draco18s.industry.network.PacketHandlerServer;
 import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -54,6 +57,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -70,7 +74,6 @@ public class ExpandedIndustryBase {
 	public static Block blockRailBridge;
 	public static Block blockTypeRail;
 	public static Block blockRailBridgePowered;
-
 	public static Block blockFoundry;
 	
 	public static Item itemMold;
@@ -83,6 +86,32 @@ public class ExpandedIndustryBase {
 	public static SimpleNetworkWrapper networkWrapper;
 	public static HashMap<ChunkPos, Integer> ticketList;
 	private static Ticket chunkLoaderTicket;
+    public static final CreativeTabs TAB_INDUSTRY = new CreativeTabs(CreativeTabs.CREATIVE_TAB_ARRAY.length, "industry")
+    {
+        @SideOnly(Side.CLIENT)
+        public ItemStack getTabIconItem()
+        {
+            return new ItemStack(blockDistributor);
+        }
+        
+        @SideOnly(Side.CLIENT)
+        public void displayAllRelevantItems(NonNullList<ItemStack> p_78018_1_)
+        {
+            p_78018_1_.add(new ItemStack(Blocks.DROPPER));
+            p_78018_1_.add(new ItemStack(Blocks.DISPENSER));
+            p_78018_1_.add(new ItemStack(Blocks.OBSERVER));
+            p_78018_1_.add(new ItemStack(Blocks.HOPPER));
+            p_78018_1_.add(new ItemStack(blockWoodHopper));
+            p_78018_1_.add(new ItemStack(blockDistributor));
+            p_78018_1_.add(new ItemStack(blockCartLoader));
+            p_78018_1_.add(new ItemStack(blockFilter));
+            p_78018_1_.add(new ItemStack(blockFoundry));
+            for (Item item : Item.REGISTRY)
+            {
+                item.getSubItems(this, p_78018_1_);
+            }
+        }
+    };
 
 	private Configuration config;
 

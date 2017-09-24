@@ -49,6 +49,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.oredict.OreDictionary;
+import scala.Int;
 
 @Mod(modid="oreflowers", name="OreFlowers", version="{@version:flowers}", dependencies = "required-after:hardlib;required-after:customoregen")
 public class OreFlowersBase {
@@ -79,11 +80,20 @@ public class OreFlowersBase {
 	
 	public static Configuration config;
 	public static boolean configProcessOreDictLatest = true;
+	public static int configScanDepth = 4;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile());
+		
+		OreFlowerDictator.defaultDictator = createDictator("default", 200, 30);
+		OreFlowerDictator.closeDictator = createDictator("close", 200, 15);
+		OreFlowerDictator.rareDictator = createDictator("rare", 400, 30);
+		OreFlowerDictator.closeRareDictator = createDictator("closeRare", 400, 15);
+		OreFlowerDictator.commonDictator = createDictator("common", 100, 30);
+		OreFlowerDictator.closeCommonDictator = createDictator("closeCommon", 100, 15);
+		
 		oreCounter = new ChunkOreCounter();
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = dataHooks = new OreDataHooks();
@@ -160,6 +170,19 @@ public class OreFlowersBase {
 		config.save();
 	}
 	
+	/**
+	 * Creates a new OreFlowerDictator by referencing the values in the Ore Flowers config file
+	 * @param name - used to create the config entry
+	 * @param chance - the default chance
+	 * @param distance - the default distance
+	 * @return
+	 */
+	private OreFlowerDictator createDictator(String name, int chance, int distance) {
+		chance =   config.getInt(name+"_chance",   "DICTATORS", chance,   0, Int.MaxValue(), "Chance of spawning flowers: 1/chance");
+		distance = config.getInt(name+"_distance", "DICTATORS", distance, 0, 160, "Flower spawn range (in blocks)");
+		return new OreFlowerDictator(chance, distance);
+	}
+
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 
@@ -169,6 +192,14 @@ public class OreFlowersBase {
 	public void postInit(FMLPostInitializationEvent event) {
 		if(!configProcessOreDictLatest)
 			addAllOres();
+		configScanDepth = config.getInt("scanDepthSlices", "GENERAL", configScanDepth, 0, 32,
+			"Specify bonemeal scan depth in 8-block slices\n" +
+				"When using bonemeal on grass, the chunk is scanned this many 8-block slices down to determine\n" +
+				"the ore yield. The default of " + configScanDepth + " for example will scan " + (configScanDepth * 8) + " blocks down. Note that ores in slices\n" +
+				"which are closer to the surface will have a greater weight on the chances for their associated\n"+
+				"flower to appear. This means that higher scan ranges could dilute the indicator results for\n" +
+				"chunks that have significant ore diversity.\n"
+			);
 	}
 	
 	public void addAllOres() {

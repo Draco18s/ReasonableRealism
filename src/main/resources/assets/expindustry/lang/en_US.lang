@@ -24,6 +24,8 @@ container.expindustry:cart_loader=Cart Loader
 container.expindustry:filter=Filtering Hopper
 container.expindustry:foundry=Foundry
 
+itemGroup.industry=Industry
+
 gui.expindustry:rules_header=Item Acceptance Rules
 gui.expindustry:no_accept1=No Container
 gui.expindustry:no_accept2=in Rules

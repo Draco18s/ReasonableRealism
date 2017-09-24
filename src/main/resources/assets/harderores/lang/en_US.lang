@@ -14,8 +14,8 @@ item.harderores:zinc_ore.name=Raw Zinc Ore
 item.harderores:osmium_ore.name=Raw Osmium Ore
 item.harderores:quartz_ore.name=Blue Quartz
 
-item.harderores:small_iron_dust.name=Tiny Iron Dust
-item.harderores:small_gold_dust.name=Tiny Gold Dust
+item.harderores:small_iron_dust.name=Tiny Iron Pile
+item.harderores:small_gold_dust.name=Tiny Gold Pile
 item.harderores:small_flour_dust.name=Tiny Flour Pile
 item.harderores:small_sugar_dust.name=Tiny Sugar Pile
 item.harderores:small_tin_dust.name=Tiny Tin Pile

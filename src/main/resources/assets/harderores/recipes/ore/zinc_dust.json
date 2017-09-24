@@ -1,5 +1,5 @@
 {
-    "type": "minecraft:crafting_shaped",
+    "type": "hardlib:ore_shaped_ore_out",
     "pattern": [
         "www",
         "www",
@@ -12,7 +12,6 @@
         }
     },
     "result": {
-        "item": "harderores:tinydust",
-        "data": 20
+        "ore": "dustZinc"
     }
 }

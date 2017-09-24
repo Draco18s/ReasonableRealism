@@ -8,6 +8,7 @@ import com.draco18s.industry.entities.TileEntityCartLoader;
 
 import net.minecraft.block.BlockHopper;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

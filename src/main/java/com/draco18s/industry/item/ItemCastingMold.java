@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
+import com.draco18s.industry.ExpandedIndustryBase;
 
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -30,17 +31,19 @@ public class ItemCastingMold extends Item implements IItemWithMeshDefinition {
 		//setHasSubtypes(true);
 		setMaxDamage(32);
 		setNoRepair();
-		setCreativeTab(CreativeTabs.MATERIALS);
+		setCreativeTab(ExpandedIndustryBase.TAB_INDUSTRY);
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		ItemStack base = new ItemStack(this);
-		subItems.add(base);
-		boolean skip = false;
-		for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.getAllmolditems()) {
-			subItems.add(RecipeToolMold.addImprint(stack.input, base.copy(), stack.resourceDomain));
+		if (this.isInCreativeTab(tab)) {
+			ItemStack base = new ItemStack(this);
+			subItems.add(base);
+			boolean skip = false;
+			for(RecipeToolMold.RecipeSubItem stack : RecipeToolMold.getAllmolditems()) {
+				subItems.add(RecipeToolMold.addImprint(stack.input, base.copy(), stack.resourceDomain));
+			}
 		}
 	}
 

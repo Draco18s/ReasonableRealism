@@ -1,5 +1,6 @@
 {
     "recipes": {
-        "tool_mold": "com.draco18s.hardlib.api.recipes.RecipeToolMold$Factory"
+        "tool_mold": "com.draco18s.hardlib.api.recipes.RecipeToolMold$Factory",
+        "ore_shaped_ore_out": "com.draco18s.hardlib.api.recipes.RecipeOreDictOutput$Factory"
     }
 }

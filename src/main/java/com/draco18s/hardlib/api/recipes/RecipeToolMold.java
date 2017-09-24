@@ -130,7 +130,7 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 							list.remove(itemstack1);
 							break;
 						}
-						else if(itemstack.getItem() != ExpandedIndustryBase.itemMold) {
+						else if(flag && itemstack.getItem() != ExpandedIndustryBase.itemMold) {
 							IRecipe tr = RecipesUtils.getSimilarRecipeWithGivenInput(RecipesUtils.getRecipeWithOutput(itemstack),new ItemStack(Items.IRON_INGOT));
 							if(tr != null) {
 								ItemStack test = tr.getRecipeOutput();

@@ -28,9 +28,11 @@ public class ItemAchieves extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		subItems.add(new ItemStack(this, 1, EnumFarmAchieves.KILL_WEEDS.meta));//0
-		subItems.add(new ItemStack(this, 1, EnumFarmAchieves.CROP_ROTATION.meta));//1
-		subItems.add(new ItemStack(this, 1, EnumFarmAchieves.THERMOMETER.meta));//2
+		if (this.isInCreativeTab(tab) || tab == CreativeTabs.SEARCH) {
+			subItems.add(new ItemStack(this, 1, EnumFarmAchieves.KILL_WEEDS.meta));//0
+			subItems.add(new ItemStack(this, 1, EnumFarmAchieves.CROP_ROTATION.meta));//1
+			subItems.add(new ItemStack(this, 1, EnumFarmAchieves.THERMOMETER.meta));//2
+		}
 	}
 
 	@Override

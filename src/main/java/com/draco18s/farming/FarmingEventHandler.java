@@ -36,6 +36,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHarvestFarmland;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
@@ -326,8 +327,11 @@ public class FarmingEventHandler {
 	@SubscribeEvent
 	public void onEntityAdded(EntityJoinWorldEvent event) {
 		if(!event.getEntity().world.isRemote) {
-			if(event.getEntity() instanceof EntityAnimal && !(event.getEntity() instanceof EntityWolf)) {
+			if(event.getEntity() instanceof EntityAnimal && !(event.getEntity() instanceof EntityWolf) && !(event.getEntity() instanceof IMob)) {
 				EntityAnimal animal = (EntityAnimal)event.getEntity();
+				if(!HardLibAPI.animalManager.isUnaging(animal.getClass()) && animal.getClass().getName().toLowerCase().contains("zombie")) {
+					HardLibAPI.animalManager.addUnaging(animal.getClass());
+				}
 				EntityAgeTracker t = new EntityAgeTracker();
 				animal.tasks.addTask(8, new EntityAIAging(new Random(), animal, t));
 				if(animal instanceof EntityCow) {

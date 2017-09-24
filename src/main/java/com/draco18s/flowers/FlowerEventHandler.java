@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -48,11 +49,12 @@ public class FlowerEventHandler {
 			Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
 			List<OreFlowerData> entry;
 			for(BlockWrapper ore : list.keySet()) {
-				int count = HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos(), ore) +
-				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(8), ore) +
-				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(16), ore) +
-				HardLibAPI.oreData.getOreData(event.getWorld(), event.getPos().down(24), ore);
-				//OreFlowersBase.logger.log(Level.WARN, ore.block.getRegistryName() + ": " + count);
+				int count = 0;
+				for (int scanLevel = 0; scanLevel < OreFlowersBase.configScanDepth; scanLevel++) {
+					BlockPos pos = event.getPos();
+					pos.down(scanLevel * 8);
+					count += HardLibAPI.oreData.getOreData(event.getWorld(), pos, ore);
+				}
 				int orCt = count;
 				if(count > 0) {
 					count = (int)Math.min(Math.round(Math.log(count)), 10);
