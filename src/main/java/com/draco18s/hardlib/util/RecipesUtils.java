@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.Level;
 
 import com.draco18s.hardlib.HardLib;
+import com.draco18s.hardlib.api.recipes.DummyRecipe;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -97,7 +98,12 @@ public class RecipesUtils {
 	 * @param modID - the mod doing the removing (for logging)
 	 */
 	public static void RemoveRecipe(IForgeRegistryModifiable modRegistry, ResourceLocation recipe, String modID) {
+		IRecipe p = (IRecipe)modRegistry.getValue(recipe);
+		
 		modRegistry.remove(recipe);
+		modRegistry.register(DummyRecipe.from(p));
+		
+		
 		HardLib.instance.logger.log(Level.INFO, modID + " Removed Recipe: " + recipe);
 		//This was a nice try, but Advancements are loaded when the world loads.
 		/*if(recipe.getResourceDomain().equals("minecraft")) {

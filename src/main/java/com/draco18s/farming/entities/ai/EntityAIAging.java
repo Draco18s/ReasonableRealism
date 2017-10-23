@@ -1,18 +1,18 @@
 package com.draco18s.farming.entities.ai;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.Level;
-
-import com.draco18s.farming.FarmingBase;
 import com.draco18s.farming.util.AnimalUtil;
 import com.draco18s.hardlib.api.HardLibAPI;
 
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIMate;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,12 +20,16 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class EntityAIAging extends EntityAIBase {
 	private final WeakReference<EntityAnimal> entity;
+	private final WeakReference<EntityAIMate> breedTask;
 	private final EntityAgeTracker age;
 	private final Class species;
 	private final Random rand;
+	
+	//private static Field targetMate = ReflectionHelper.findField(EntityAIMate.class, "targetMate","field_75391_e");
 	
 	public EntityAIAging(Random random, EntityAnimal ent, EntityAgeTracker ageTracker) {
 		rand = random;
@@ -33,6 +37,19 @@ public class EntityAIAging extends EntityAIBase {
 		species = ent.getClass();
 		age = ageTracker;
 		age.ageFactor = HardLibAPI.animalManager.getAgeSpeed(species);
+		EntityAIMate t = null;
+		for(EntityAITaskEntry a : entity.get().tasks.taskEntries) {
+			if(a.action instanceof EntityAIMate) {
+				t = (EntityAIMate) a.action;
+				break;
+			}
+		}
+		if(t != null) {
+			breedTask = new WeakReference<EntityAIMate>(t);
+		}
+		else {
+			breedTask = null;
+		}
 	}
 
 	@Override
@@ -72,7 +89,7 @@ public class EntityAIAging extends EntityAIBase {
 			}
 		}
 		
-		if(HardLibAPI.animalManager.isUnaging(species)) {
+		if(HardLibAPI.animalManager.isUnaging(species) || breedTask == null) {
 			/*Unaging animals do not age, do not die, and do not procreate*/
 			return;
 		}
@@ -146,17 +163,22 @@ public class EntityAIAging extends EntityAIBase {
 					}
 				}
 			}
-			else if(this.entity.get().getAttackTarget() == null) {
+			//this sort of mucking about with other AI classes
+			//to get entities to move towards each other and clump up
+			//just causes things to crash :(
+			/*else if(ReflectionHelper.getPrivateValue(EntityAIMate.class, breedTask.get(), "targetMate","field_75391_e") == null) {
 				if(rand.nextInt(200) == 0) {
 					List ents = entity.get().world.getEntitiesWithinAABB(species, getAABB(entity.get().posX, entity.get().posY, entity.get().posZ));
 					if(ents.size() > 0) {
 						EntityAnimal animal = (EntityAnimal) ents.get(rand.nextInt(ents.size()));
-						this.entity.get().setAttackTarget(animal);
+						
+						ReflectionHelper.setPrivateValue(EntityAIMate.class, breedTask.get(), animal, "targetMate","field_75391_e");
+						//this.entity.get().setAttackTarget(animal);
 					}
 				}
 			}
-			else if(entity.get().getAttackTarget() instanceof EntityAnimal) {
-				EntityAnimal animal = (EntityAnimal) entity.get().getAttackTarget();
+			else if(ReflectionHelper.getPrivateValue(EntityAIMate.class, breedTask.get(), "targetMate","field_75391_e") instanceof EntityAnimal) {
+				EntityAnimal animal = ReflectionHelper.getPrivateValue(EntityAIMate.class, breedTask.get(), "targetMate","field_75391_e");
 				double dx = entity.get().posX - animal.posX;
 				double dy = entity.get().posY - animal.posY;
 				double dz = entity.get().posZ - animal.posZ;
@@ -165,9 +187,10 @@ public class EntityAIAging extends EntityAIBase {
 				dz *= dz;
 				dx += dy + dz;
 				if(dx < 100) {
-					this.entity.get().setAttackTarget(null);
+					//this.entity.get().setAttackTarget(null);
+					ReflectionHelper.setPrivateValue(EntityAIMate.class, breedTask.get(), null, "targetMate","field_75391_e");
 				}
-			}
+			}*/
 		}
 	}
 

@@ -24,7 +24,7 @@
         </OptionDisplayGroup>
 		<OptionChoice name='forceExtraOres' default='false' displayState='shown_dynamic' displayGroup='groupHardExtras'>
             <Description>
-                Forces the other ores (copper, tin, lead, uranium, silver, and nickel) to spawn even if IC2, ThermalFoundation, or Metallurgy is not installed.
+                Forces the other ores (copper, tin, lead, uranium, silver, and nickel) to spawn even if IC2, thermalfoundation, or Metallurgy is not installed.
 				Note: these ores may not be usable, but will be placed into the world.
             </Description>
             <DisplayName>Forced Spawn</DisplayName>
@@ -38,8 +38,8 @@
             <OptionChoice name='hic2CopperDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Copper is generated </Description>
                 <DisplayName>Copper Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("oreCopper")|isModInstalled("ThermalFoundation"),"layeredVeins","disabled")</Default>
-            	<DisplayState>:= if(?forceExtraOres|blockExists("oreCopper")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
+                <Default>:= if(?forceExtraOres|blockExists("oreCopper")|isModInstalled("thermalfoundation"),"layeredVeins","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("oreCopper")|isModInstalled("thermalfoundation"),"shown","hidden")</DisplayState>
                 <Choice value='layeredVeins' displayValue='Veins'>
                     <Description>
                         Groups of long narrow veins found about one third of the way down to bedrock.  Especially common in jungles.  
@@ -74,8 +74,8 @@
             <OptionChoice name='hic2TinDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Tin is generated </Description>
                 <DisplayName>Tin Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("oreTin")|isModInstalled("ThermalFoundation"),"strategicClouds","disabled")</Default>
-            	<DisplayState>:= if(?forceExtraOres|blockExists("oreTin")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
+                <Default>:= if(?forceExtraOres|blockExists("oreTin")|isModInstalled("thermalfoundation"),"strategicClouds","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("oreTin")|isModInstalled("thermalfoundation"),"shown","hidden")</DisplayState>
                 <Choice value='layeredVeins' displayValue='Veins'>
                     <Description>
                         Groups of long narrow veins found about halfway down to bedrock.  More frequent in flat grassy plains.
@@ -152,8 +152,8 @@
             <OptionChoice name='hic2LeadDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Lead is generated </Description>
                 <DisplayName>Lead Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("ThermalFoundation"),"layeredVeins","disabled")</Default>
-            	<DisplayState>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
+                <Default>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("thermalfoundation"),"layeredVeins","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("oreLead")|isModInstalled("thermalfoundation"),"shown","hidden")</DisplayState>
                 <Choice value='layeredVeins' displayValue='Veins'>4
                     <Description>
                         Groups of long narrow veins found about one third of the way down to bedrock.  Especially common in jungles.
@@ -191,8 +191,8 @@
             <OptionChoice name='hardSilverDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Silver is generated </Description>
                 <DisplayName>Silver Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("oreSilver")|isModInstalled("ThermalFoundation"),"layeredVeins","disabled")</Default>
-            	<DisplayState>:= if(?forceExtraOres|blockExists("oreSilver")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
+                <Default>:= if(?forceExtraOres|blockExists("oreSilver")|isModInstalled("thermalfoundation"),"layeredVeins","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("oreSilver")|isModInstalled("thermalfoundation"),"shown","hidden")</DisplayState>
                 <Choice value='layeredVeins' displayValue='Veins'>
                     <Description>
                         Isolated veins found about two thirds of the way down to bedrock.  Unusually common in mountains.
@@ -233,8 +233,8 @@
             <OptionChoice name='hardNickelDist' displayGroup='groupHardExtras'>
                 <Description>Controls how Nickel Ore is generated </Description>
                 <DisplayName>Nickel Ore Type</DisplayName>
-                <Default>:= if(?forceExtraOres|blockExists("oreNickel")|blockExists("oreFerrous")|isModInstalled("ThermalFoundation"),"layeredVeins","disabled")</Default>
-            	<DisplayState>:= if(?forceExtraOres|blockExists("oreNickel")|blockExists("oreFerrous")|isModInstalled("ThermalFoundation"),"shown","hidden")</DisplayState>
+                <Default>:= if(?forceExtraOres|blockExists("oreNickel")|blockExists("oreFerrous")|isModInstalled("thermalfoundation"),"layeredVeins","disabled")</Default>
+            	<DisplayState>:= if(?forceExtraOres|blockExists("oreNickel")|blockExists("oreFerrous")|isModInstalled("thermalfoundation"),"shown","hidden")</DisplayState>
                 <Choice value='layeredVeins' displayValue='Veins'>
                     <Description>
                         Groups of long narrow veins found near bedrock.  Especially common in swamps.  
