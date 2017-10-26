@@ -582,6 +582,19 @@ public class OresBase {
 	@EventHandler
 	public void serverStarted(FMLServerStartedEvent event) {
 		AdvancementUtils.reparentAdvancement(new ResourceLocation("minecraft:story/upgrade_tools"), new ResourceLocation("harderores:alternate_stone"), "Harder Ores", true);
+		
+		
+		boolean hardOption = OresBase.config.getBoolean("RequireMillingFlour", "MILLING", false, "");
+		if(hardOption) {
+
+		}
+		boolean stoneTools = OresBase.config.getBoolean("useDioriteStoneTools", "GENERAL", true, "If true, cobblestone cannot be used to create stone tools,\ninstead diorite is used. This prolongs the life of wood tools so it isn't \"make a wood pickaxe to\nmine 3 stone and upgrade.\"");
+		if(stoneTools) {
+			AdvancementUtils.removeAdvancement(new ResourceLocation("minecraft:recipes/tools/stone_axe"), "Harder Ores");
+			AdvancementUtils.removeAdvancement(new ResourceLocation("minecraft:recipes/tools/stone_pickaxe"), "Harder Ores");
+			AdvancementUtils.removeAdvancement(new ResourceLocation("minecraft:recipes/tools/stone_shovel"), "Harder Ores");
+			AdvancementUtils.removeAdvancement(new ResourceLocation("minecraft:recipes/tools/stone_hoe"), "Harder Ores");
+		}
 	}
 	
 	private void addExtraOre(String oreName, EnumOreType oreType, Block oreBlock, Block dummyOre, int sluiceWeight, boolean canFindDefault) {

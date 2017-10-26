@@ -12,7 +12,6 @@
         }
     },
     "result": {
-        "item": "harderores:largedust",
-        "data": 13
+        "ore": "dustCopper"
     }
 }
