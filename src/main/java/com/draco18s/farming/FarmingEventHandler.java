@@ -1,5 +1,6 @@
 package com.draco18s.farming;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,6 +109,11 @@ public class FarmingEventHandler {
 	public static boolean doBiomeCrops;
 	private Random rand = new Random();
 	public static int cropsWorst;
+
+	private boolean checkTAN = true;
+	private boolean tanInstalled = false;
+	private static Class class_SeasonASMHelper = null;
+	private static Method method_getFloatTemperature = null;
 	
 	private HashMap<Biome,Float> biomeTemps = new HashMap<Biome,Float>();
 	private Item woolItem;
@@ -139,7 +145,7 @@ public class FarmingEventHandler {
 		                        	entityitem.setDead();
 		                        }
 		                        else {
-		                            itemstack.setCount(itemstack1.getCount());
+		                            //itemstack.setCount(itemstack1.getCount());
 		                        }
 		                    }
 		                }
@@ -227,8 +233,8 @@ public class FarmingEventHandler {
 			//end [grow nearby crops instead of this, if nearby crops are younger]
 		}
 		int rr = 0;
-		if(doBiomeCrops) {
-			float t = bio.getTemperature();
+		if(doBiomeCrops) {			
+			float t = getTemperature(bio,pos);
 			float r = bio.getRainfall();
 
 			float seasonalTempMod = HardLibDate.getSeasonTemp(world, world.getTotalWorldTime());
@@ -304,6 +310,39 @@ public class FarmingEventHandler {
 		return Result.DEFAULT;
 	}
 
+	private float getTemperature(Biome biome, BlockPos pos) {
+		if (isTANInstalled()) {
+			try {
+				if (method_getFloatTemperature == null) {
+					method_getFloatTemperature = class_SeasonASMHelper.getDeclaredMethod("getFloatTemperature", Biome.class, BlockPos.class);
+				}
+				return (float)method_getFloatTemperature.invoke(null, biome, pos);
+			} catch (Exception ex) {
+				tanInstalled = false;
+				//ex.printStackTrace();
+				return biome.getFloatTemperature(pos);
+			}
+		} else {
+			return biome.getFloatTemperature(pos);
+		}
+	}
+
+	private boolean isTANInstalled() {
+		if (checkTAN) {
+            try {
+                checkTAN = false;
+                class_SeasonASMHelper = Class.forName("toughasnails.season.SeasonASMHelper");
+                if (class_SeasonASMHelper != null) {
+                    tanInstalled = true;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+		return tanInstalled;
+	}
+
 	@SubscribeEvent
 	public void onEntityAttack(LivingHurtEvent event) {
 		Entity enthurt = event.getEntity();
@@ -367,41 +406,8 @@ public class FarmingEventHandler {
 		LootFunction[] count;
 		LootEntryItem[] item;
 		LootPool newPool;
+		LootTable loot = event.getTable();
 		if(event.getName().getResourcePath().equals("entities/cow")) {
-			LootTable loot = event.getTable();
-			LootUtils.removeLootFromTable(loot, Items.LEATHER);
-			if(doRawLeather) {
-				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
-					new IMethod() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
-							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
-							lootfuncs.add(looting);
-						}
-					},
-					new ICondition() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
-							lootconds.add(new KilledByWither(true));
-						}
-					});
-			}
-			else {
-				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
-					new IMethod() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
-							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
-							lootfuncs.add(looting);
-						}
-					},
-					new ICondition() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
-							lootconds.add(new KilledByWither(true));
-						}
-					});
-			}
 			LootUtils.removeLootFromTable(loot, Items.BEEF);
 			LootUtils.addItemToTable(loot, Items.BEEF, 1, 2, 1, 2, 5, 0, 1, "minecraft:beef",
 				new IMethod() {
@@ -421,41 +427,9 @@ public class FarmingEventHandler {
 					}
 				});
 		}
+		
 		if(event.getName().getResourcePath().equals("entities/mushroom_cow")) {
-			LootTable loot = event.getTable();
-			LootUtils.removeLootFromTable(loot, Items.LEATHER);
-			if(doRawLeather) {
-				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
-					new IMethod() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
-							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
-							lootfuncs.add(looting);
-						}
-					},
-					new ICondition() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
-							lootconds.add(new KilledByWither(true));
-						}
-					});
-			}
-			else {
-				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
-					new IMethod() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
-							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
-							lootfuncs.add(looting);
-						}
-					},
-					new ICondition() {
-						@Override
-						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
-							lootconds.add(new KilledByWither(true));
-						}
-					});
-			}
+			
 			LootUtils.removeLootFromTable(loot, Items.BEEF);
 			LootUtils.addItemToTable(loot, Items.BEEF, 1, 2, 1, 2, 5, 0, 1, "minecraft:beef",
 				new IMethod() {
@@ -476,7 +450,6 @@ public class FarmingEventHandler {
 				});
 		}
 		if(event.getName().getResourcePath().equals("entities/pig")) {
-			LootTable loot = event.getTable();
 			if(doRawLeather) {
 				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
 					new IMethod() {
@@ -532,8 +505,6 @@ public class FarmingEventHandler {
 			String table = gson.toJson(loot);
 		}
 		if(event.getName().getResourcePath().equals("entities/sheep")) {
-			LootTable loot = event.getTable();
-			
 			LootUtils.removeLootFromTable(loot, Items.MUTTON);
 			LootUtils.addItemToTable(loot, Items.MUTTON, 1, 1, 1, 2, 5, 0, 1, "minecraft:mutton", new IMethod() {
 				@Override
@@ -553,8 +524,6 @@ public class FarmingEventHandler {
 			} );
 		}
 		if(event.getName().getResourcePath().equals("entities/spider")) {
-			LootTable loot = event.getTable();
-			
 			LootUtils.removeLootFromTable(loot, Items.STRING);
 			LootUtils.addItemToTable(loot, Items.STRING, 1, 1, 1, 2, 4, 0, 1, "minecraft:string",
 				new IMethod() {
@@ -567,8 +536,6 @@ public class FarmingEventHandler {
 			);
 		}
 		if(event.getName().getResourcePath().equals("entities/skeleton")) {
-			LootTable loot = event.getTable();
-			
 			LootUtils.removeLootFromTable(loot, Items.BONE);
 			LootUtils.addItemToTable(loot, Items.BONE, 1, 1, 1, 1, 3, 0, 1, "minecraft:bone",
 				new IMethod() {
@@ -589,6 +556,41 @@ public class FarmingEventHandler {
 					}
 				}		
 			);
+		}
+		
+		if(LootUtils.removeLootFromTable(loot, Items.LEATHER)) {
+			if(doRawLeather) {
+				LootUtils.addItemToTable(loot, FarmingBase.rawLeather, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
+					new ICondition() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
+							lootconds.add(new KilledByWither(true));
+						}
+					});
+			}
+			else {
+				LootUtils.addItemToTable(loot, Items.LEATHER, 1, 2, 1, 3, 5, 0, 1, "minecraft:leather",
+					new IMethod() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootFunction> lootfuncs) {
+							LootFunction looting = new LootingEnchantBonus(null, new RandomValueRange(1,3), 0);
+							lootfuncs.add(looting);
+						}
+					},
+					new ICondition() {
+						@Override
+						public void FunctionsCallback(ArrayList<LootCondition> lootconds) {
+							lootconds.add(new KilledByWither(true));
+						}
+					});
+			}
 		}
 	}
 	

@@ -38,6 +38,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -168,6 +169,63 @@ public class RecipesUtils {
 			}
 		}
 		return null;
+	}
+	public static List<IRecipe> getAllStorageRecipes() {
+		List<IRecipe> results = new ArrayList<IRecipe>();
+		ItemStack recipeResult = null;
+		RegistryNamespaced<ResourceLocation, IRecipe> recipes = CraftingManager.REGISTRY;
+		Iterator<IRecipe> iterator = recipes.iterator();
+		outer:
+		while(iterator.hasNext()) {
+			IRecipe tmpRecipe = iterator.next();
+			if(tmpRecipe instanceof ShapedRecipes) {
+				ShapedRecipes shp = (ShapedRecipes)tmpRecipe;
+				if(shp.canFit(1, 1) || shp.getWidth() != shp.getHeight()) continue;
+				Ingredient obj = null;
+				int numIngreds = 0;
+				for(Ingredient s : tmpRecipe.getIngredients()) {
+					if(s != Ingredient.EMPTY) {
+						if(obj == null) obj = s;
+						else if(!obj.equals(s)) continue outer;
+						numIngreds++;
+					}
+				}
+				if(numIngreds == 4 || numIngreds == 9)
+					results.add(tmpRecipe);
+			}
+		}
+		return results;
+	}
+	
+	public static List<IRecipe> getAllStorageRecipes2() {
+		List<IRecipe> results = new ArrayList<IRecipe>();
+		ItemStack recipeResult = null;
+		RegistryNamespaced<ResourceLocation, IRecipe> recipes = CraftingManager.REGISTRY;
+		Iterator<IRecipe> iterator = recipes.iterator();
+		outer:
+		while(iterator.hasNext()) {
+			IRecipe tmpRecipe = iterator.next();
+			recipeResult = tmpRecipe.getRecipeOutput();
+			
+			if (recipeResult.getCount() == 4 || recipeResult.getCount() == 9) {
+				if(tmpRecipe instanceof ShapedRecipes) {
+					ShapedRecipes shp = (ShapedRecipes)tmpRecipe;
+					if(!shp.canFit(1, 1)) continue outer;
+				}
+				Ingredient obj = null;
+				for(Ingredient s : tmpRecipe.getIngredients()) {
+					if(s != Ingredient.EMPTY) {
+						if(obj == null) obj = s;
+						else if(!obj.equals(s)) continue outer;
+					}
+				}
+				IRecipe craftRecip = getRecipeWithOutput(obj.getMatchingStacks()[0]);
+				if(craftRecip != null) {
+					results.add(tmpRecipe);
+				}
+			}
+		}
+		return results;
 	}
 
 	/**

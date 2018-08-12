@@ -41,6 +41,7 @@ public class FlowerDataHandler implements IFlowerData {
 		} while(!checkMaterial(world, pos) && world.getLightFor(EnumSkyBlock.SKY, pos) < 8);
 		if(pos.getY() >= 256) return;
 		
+		//MathHelper.getPositionRandom
 		Random r = new Random(pos.toLong());
 		if(r.nextInt(dictator.spawnChance) != 0) return;
 		

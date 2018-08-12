@@ -42,6 +42,10 @@ public class AdvancementUtils {
 			nonRoots = (Set<Advancement>) nonRootsField.get(theList);
 			target = allAdv.get(targetRL);
 			targParent = allAdv.get(newParentRL);
+			if(targParent == null) {
+				HardLib.logger.log(Level.INFO, modID + ": failed to reparent achievements!"); 
+				return;
+			}
 			boolean didAnything = false;
 			for(Advancement obj : nonRoots) {
 				if(obj != null && obj.getId().equals(targetRL)) {

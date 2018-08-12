@@ -16,9 +16,9 @@ public class ItemStickyBlob extends Item {
 
 	@Override
 	public int getItemBurnTime(ItemStack fuel) {
-		if(fuel.getItem() == this) {
+		//if(fuel.getItem() == this) {
 			return 150;
-		}
-		return 0;
+		//}
+		//return 0;
 	}
 }

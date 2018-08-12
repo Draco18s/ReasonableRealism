@@ -36,6 +36,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IRecipeFactory;
 import net.minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
@@ -245,6 +246,9 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 	public static class Factory implements IRecipeFactory {
 		@Override
 		public IRecipe parse(JsonContext context, JsonObject json) {
+			if(!Loader.isModLoaded("expindustry")) {
+				return new DummyRecipe(ItemStack.EMPTY);
+			}
 			String domain = null;
 			if(JsonUtils.hasField(json, "domain")) {
 				domain = JsonUtils.getString(json, "domain", "");

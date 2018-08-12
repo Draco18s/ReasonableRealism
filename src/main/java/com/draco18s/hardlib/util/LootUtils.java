@@ -31,7 +31,13 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
  *
  */
 public class LootUtils {
-	public static void removeLootFromTable(LootTable table, Item toRemove) {
+	/***
+	 * Removes the specified item from the indicated loot table
+	 * @param table
+	 * @param toRemove
+	 * @return returns if any entries were removed
+	 */
+	public static boolean removeLootFromTable(LootTable table, Item toRemove) {
 		List<LootPool> pools = ReflectionHelper.getPrivateValue(LootTable.class, table, "pools", "field_186466_c");
 		for(LootPool pool : pools) {
 			List<LootEntry> entries = ReflectionHelper.getPrivateValue(LootPool.class, pool, "lootEntries", "field_186453_a");
@@ -43,11 +49,12 @@ public class LootUtils {
 					Item i = ReflectionHelper.getPrivateValue(LootEntryItem.class, lei, "item", "field_186368_a");
 					if(i == toRemove) {
 						it.remove();
-						break;
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
 	
 	public static void addItemToTable(LootTable table, Item item, int weight, float numRolls, float probability, int minQuantity, int maxQuantity, float minLootBonus, float maxLootBonus, String name) {

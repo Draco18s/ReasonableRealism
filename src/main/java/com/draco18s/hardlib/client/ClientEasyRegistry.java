@@ -76,7 +76,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 		super._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
 		BlockStateContainer bsc = block.getBlockState();
 		ImmutableList<IBlockState> values = bsc.getValidStates();
-		StateMapperBase mapper = ((IBlockWithMapper)block).getStateMapper();
+		StateMapperBase mapper = block.getStateMapper();
 		//ModelLoader.setCustomStateMapper(block, mapper);
 		statesToMap.add(new StateMapObj(block, mapper));
 		
@@ -124,7 +124,7 @@ public class ClientEasyRegistry extends EasyRegistry {
 	@Override
 	public <T extends Item & IItemWithMeshDefinition> void _registerItemWithCustomMeshDefinition(T item, String registryname) {
 		super._registerItemWithCustomMeshDefinition(item, registryname);
-		ItemMeshDefinition def = ((IItemWithMeshDefinition)item).getMeshDefinition();
+		ItemMeshDefinition def = item.getMeshDefinition();
 		//delay baking until the model registry event
 		modelsToBake.add(new ModelBakeObj(item, null, def));
 	}

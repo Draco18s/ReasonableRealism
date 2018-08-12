@@ -7,10 +7,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold;
 import com.draco18s.hardlib.api.recipes.RecipeToolMold.RecipeSubItem;
-import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.industry.block.BlockCartLoader;
 import com.draco18s.industry.block.BlockDistributor;
 import com.draco18s.industry.block.BlockFilter;
@@ -31,7 +29,6 @@ import com.draco18s.industry.network.PacketHandlerServer;
 import com.draco18s.industry.world.FilterDimension;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;

@@ -195,7 +195,7 @@ public class EntityAIAging extends EntityAIBase {
 	}
 
 	private AxisAlignedBB getAABB(double x, double y, double z) {
-		return new AxisAlignedBB(x, y, z, x+1, y+1, z+1).expand(48, 16, 48);
+		return new AxisAlignedBB(x, y, z, x+1, y+1, z+1).grow(48, 16, 48);
 	}
 	
 	private void procreate() {

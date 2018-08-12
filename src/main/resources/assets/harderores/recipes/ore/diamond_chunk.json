@@ -1,5 +1,5 @@
 {
-    "type": "hardlib:ore_shaped_ore_out",
+    "type": "minecraft:crafting_shaped",
     "pattern": [
         "www",
         "www",
@@ -8,10 +8,10 @@
     "key": {
         "w": {
             "type": "forge:ore_dict",
-            "ore": "dustTinyTin"
+            "ore": "rawOreChunkDiamond"
         }
     },
     "result": {
-        "ore": "dustTin"
+        "item": "minecraft:diamond"
     }
 }
