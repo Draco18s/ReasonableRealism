@@ -23,6 +23,7 @@ import com.draco18s.hardlib.api.capability.SimpleCapabilityProvider;
 import com.draco18s.hardlib.api.date.HardLibDate;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.draco18s.hardlib.util.LootUtils;
+import com.draco18s.hardlib.util.RecipesUtils;
 import com.draco18s.hardlib.util.LootUtils.ICondition;
 import com.draco18s.hardlib.util.LootUtils.IMethod;
 import com.google.gson.Gson;
@@ -60,6 +61,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -85,6 +87,7 @@ import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -102,6 +105,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 //import stellarium.stellars.StellarManager;
 //import stellarium.world.StellarDimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class FarmingEventHandler {
 	public static boolean doSlowCrops;
@@ -125,6 +129,12 @@ public class FarmingEventHandler {
 			Biome bio = Biome.REGISTRY.getObject(bioName);
 			biomeTemps.put(bio, bio.getTemperature());
 		}
+	}
+	
+	@SubscribeEvent
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+		IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
+		RecipesUtils.RemoveRecipe(modRegistry, new ResourceLocation("minecraft:leather"), "harderfarming");
 	}
 	
 	@SubscribeEvent

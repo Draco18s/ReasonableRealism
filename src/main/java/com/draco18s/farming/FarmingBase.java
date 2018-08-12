@@ -90,6 +90,7 @@ public class FarmingBase {
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new FarmingEventHandler());
 		config = new Configuration(event.getSuggestedConfigurationFile());
 		logger = event.getModLog();
 		HardLibAPI.hardCrops = new CropManager();
@@ -144,7 +145,6 @@ public class FarmingBase {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new FarmingEventHandler());
 		FarmingEventHandler.doRawLeather = config.getBoolean("doRawLeather", "ANIMALS", true, "Raw leather (rawhide) requires curing on a tanning rack before it can be used.\n");
 		config.save();
 		
