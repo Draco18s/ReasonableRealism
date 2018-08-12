@@ -497,7 +497,6 @@ public class OresBase {
 
 	private void addPressurePackRecipes() {
 		List<IRecipe> allStacks = RecipesUtils.getAllStorageRecipes();
-		logger.log(Level.WARN, "allStacks size: " + allStacks.size());
 		
 		for(IRecipe recip : allStacks) {
 			if(!HardLibAPI.oreMachines.getSiftResult(recip.getRecipeOutput(), false).isEmpty()) continue;
@@ -512,9 +511,6 @@ public class OresBase {
 
 			if(!HardLibAPI.oreMachines.getPressurePackResult(stacks[0], false).isEmpty()) continue;
 			if(recip.getRecipeOutput().getItem() == Items.LEATHER) continue;
-			
-			logger.log(Level.WARN, "    " + recip.getRecipeOutput().getDisplayName());
-			logger.log(Level.WARN, "    " + stacks.length + ", [" + stacks[0].getDisplayName() + "]");
 			
 			HardLibAPI.oreMachines.addPressurePackRecipe(recip.getRecipeOutput(), stacks[0]);
 		}
