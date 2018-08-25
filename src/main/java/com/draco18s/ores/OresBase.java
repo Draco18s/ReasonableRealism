@@ -489,6 +489,9 @@ public class OresBase {
 		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(rawOre, 9, EnumOreType.DIAMOND.meta), new ItemStack(dummyOreDiamond));
 		//Mod ores handled by addExtraOre()
 		addPressurePackRecipes();
+		//1.13 adds this:
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.ICE, 9), new ItemStack(Blocks.PACKED_ICE));
+		HardLibAPI.oreMachines.addPressurePackRecipe(new ItemStack(Blocks.SNOW, 9), new ItemStack(Blocks.ICE));
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OreGuiHandler());
 		
@@ -507,12 +510,18 @@ public class OresBase {
 					ingred = s;
 				}
 			}
-			ItemStack[] stacks = ingred.getMatchingStacks();
-
-			if(!HardLibAPI.oreMachines.getPressurePackResult(stacks[0], false).isEmpty()) continue;
-			if(recip.getRecipeOutput().getItem() == Items.LEATHER) continue;
-			
-			HardLibAPI.oreMachines.addPressurePackRecipe(recip.getRecipeOutput(), stacks[0]);
+			for(ItemStack stack : ingred.getMatchingStacks()) {
+				if(recip.getRecipeOutput().isEmpty()) continue;
+				if(!HardLibAPI.oreMachines.getPressurePackResult(stack, false).isEmpty()) continue;
+				if(stack.getItem() == Items.RABBIT_HIDE) continue;
+				if(recip.getRecipeOutput().getItem() == Item.getItemFromBlock(Blocks.TRAPDOOR)) continue;
+				if(recip.getRecipeOutput().getItem() == Item.getItemFromBlock(Blocks.IRON_TRAPDOOR)) continue;
+				if(recip.getRecipeOutput().getItem() == Item.getItemFromBlock(Blocks.CRAFTING_TABLE)) continue;
+				if(recip.getRecipeOutput().getCount() == recip.getIngredients().size()) continue;
+				ItemStack stack2 = stack.copy();
+				stack2.setCount(recip.getIngredients().size());
+				HardLibAPI.oreMachines.addPressurePackRecipe(stack2,recip.getRecipeOutput());
+			}
 		}
 	}
 

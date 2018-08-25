@@ -97,6 +97,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -123,7 +124,11 @@ public class FarmingEventHandler {
 	private Item woolItem;
 	
 	public FarmingEventHandler() {
-		Iterator<ResourceLocation> it = Biome.REGISTRY.getKeys().iterator();
+	}
+	
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void registerBiomes(RegistryEvent.Register<Biome> event) {
+		Iterator<ResourceLocation> it = event.getRegistry().getKeys().iterator();
 		while(it.hasNext()) {
 			ResourceLocation bioName = it.next();
 			Biome bio = Biome.REGISTRY.getObject(bioName);
@@ -346,7 +351,7 @@ public class FarmingEventHandler {
                     tanInstalled = true;
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
         }
 

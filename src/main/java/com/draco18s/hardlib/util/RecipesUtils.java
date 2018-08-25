@@ -178,21 +178,34 @@ public class RecipesUtils {
 		outer:
 		while(iterator.hasNext()) {
 			IRecipe tmpRecipe = iterator.next();
+			if(tmpRecipe.canFit(1, 1)) continue;
 			if(tmpRecipe instanceof ShapedRecipes) {
 				ShapedRecipes shp = (ShapedRecipes)tmpRecipe;
-				if(shp.canFit(1, 1) || shp.getWidth() != shp.getHeight()) continue;
-				Ingredient obj = null;
-				int numIngreds = 0;
-				for(Ingredient s : tmpRecipe.getIngredients()) {
-					if(s != Ingredient.EMPTY) {
-						if(obj == null) obj = s;
-						else if(!obj.equals(s)) continue outer;
-						numIngreds++;
-					}
-				}
-				if(numIngreds == 4 || numIngreds == 9)
-					results.add(tmpRecipe);
+				if(shp.getWidth() != shp.getHeight()) continue;
 			}
+			Ingredient obj = null;
+			int numIngreds = 0;
+			for(Ingredient s : tmpRecipe.getIngredients()) {
+				if(s != Ingredient.EMPTY) {
+					if(obj == null) obj = s;
+					else if(!obj.equals(s)) {
+						if(obj.getMatchingStacks().length == s.getMatchingStacks().length) {
+							ItemStack[] s1 = obj.getMatchingStacks();
+							ItemStack[] s2 = s.getMatchingStacks();
+							for(int i = 0; i < s1.length; i++) {
+								if(!ItemStack.areItemStacksEqual(s1[i], s2[i]))
+									continue outer;
+							}
+						}
+						else {
+							continue outer;
+						}
+					}
+					numIngreds++;
+				}
+			}
+			if(numIngreds == 4 || numIngreds == 9)
+				results.add(tmpRecipe);
 		}
 		return results;
 	}
