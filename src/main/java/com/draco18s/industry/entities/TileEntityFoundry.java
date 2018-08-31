@@ -150,7 +150,7 @@ public class TileEntityFoundry extends TileEntity implements ITickable {
 	private void castItem() {
 		boolean qwert = false;
 		IRecipe matching = RecipesUtils.getSimilarRecipeWithGivenInput(getRecipeForTemplate(templateSlot.getStackInSlot(0)), inputSlot.getStackInSlot(1).copy());
-		
+		if(matching == null) return;
 		//subtract ingredients
 		inputSlot.extractItem(0, this.lastCheckNumSticks, false);
 		inputSlot.extractItem(1, this.lastCheckNumIngots, false);

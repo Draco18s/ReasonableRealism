@@ -123,30 +123,32 @@ public class RecipeToolMold extends net.minecraftforge.registries.IForgeRegistry
 				ItemStack itemstack = inv.getStackInRowAndColumn(j, i);
 
 				if (itemstack != ItemStack.EMPTY) {
-					boolean flag = false;
+					//boolean flag = false;
 
 					for (ItemStack itemstack1 : list) {
-						if (!itemstack.hasTagCompound() && itemstack.getItem() == itemstack1.getItem() && (itemstack1.getMetadata() == OreDictionary.WILDCARD_VALUE || itemstack.getMetadata() == itemstack1.getMetadata())) {
-							flag = true;
+						
+						if (!itemstack.hasTagCompound() && itemstack.getItem() == ExpandedIndustryBase.itemMold && (itemstack1.getMetadata() == OreDictionary.WILDCARD_VALUE || itemstack.getMetadata() == itemstack1.getMetadata())) {
+							//flag = true;
 							list.remove(itemstack1);
 							break;
 						}
-						else if(flag && itemstack.getItem() != ExpandedIndustryBase.itemMold) {
+						else if(itemstack.getItem() != ExpandedIndustryBase.itemMold) {
 							IRecipe tr = RecipesUtils.getSimilarRecipeWithGivenInput(RecipesUtils.getRecipeWithOutput(itemstack),new ItemStack(Items.IRON_INGOT));
 							if(tr != null) {
 								ItemStack test = tr.getRecipeOutput();
 								if (!test.hasTagCompound() && test.getItem() == itemstack1.getItem() && (itemstack1.getMetadata() == OreDictionary.WILDCARD_VALUE || test.getMetadata() == itemstack1.getMetadata())) {
-									flag = true;
+									//flag = true;
 									list.remove(itemstack1);
+									//list.clear();
 									break;
 								}
 							}
 						}
 					}
 
-					if (!flag) {
-						return false;
-					}
+					/*if (!flag) {
+						return list.isEmpty();
+					}*/
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Level;
 
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.recipes.DummyRecipe;
+import com.draco18s.industry.ExpandedIndustryBase;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -32,6 +33,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -46,6 +49,7 @@ import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
@@ -158,12 +162,14 @@ public class RecipesUtils {
 	 */
 	@Nullable
 	public static IRecipe getRecipeWithOutput(ItemStack resultStack) {
+		resultStack = resultStack.copy();
 		ItemStack recipeResult = null;
 		RegistryNamespaced<ResourceLocation, IRecipe> recipes = CraftingManager.REGISTRY;
 		Iterator<IRecipe> iterator = recipes.iterator();
 		while(iterator.hasNext()) {
 			IRecipe tmpRecipe = iterator.next();
 			recipeResult = tmpRecipe.getRecipeOutput();
+			resultStack.setCount(Math.max(recipeResult.getCount(),1));
 			if (ItemStack.areItemStacksEqual(resultStack, recipeResult)) {
 				return tmpRecipe;
 			}
@@ -244,218 +250,134 @@ public class RecipesUtils {
 	/**
 	 * Attempts to locate a similar recipe using a different material.<br>
 	 * Largely speaking this will only ever match tools and armor (picks, swords, armor, etc.) 
-	 * @param toMatch - an existing recipe
-	 * @param material - the variant to search for
+	 * @param template - an existing recipe to match against
+	 * @param desiredMaterial - the variant to search for
 	 * @return
 	 */
 	@Nullable
-	public static IRecipe getSimilarRecipeWithGivenInput(IRecipe toMatch, ItemStack material) {
-		if(toMatch == null) return null;
-		material.setCount(1);
+	public static IRecipe getSimilarRecipeWithGivenInput(IRecipe template, ItemStack desiredMaterial) {
+		if(template == null) return null;
+		if(template.getRecipeOutput().isEmpty())
+			return null;
+		desiredMaterial.setCount(1);
 		ItemStack recipeResult = null;
-		
-		for(Ingredient ingred : toMatch.getIngredients()) {
-			if(ingred.test(material)) {
-				return toMatch;
+		for(Ingredient ingred : template.getIngredients()) {
+			//if the thing we're trying to match accepts the material we want, its correct
+			if(ingred.test(desiredMaterial)) {
+				return template;
 			}
 		}
-
-		//check toMatch against material first
-		//e.g. toMatch is an iron pick and we're looking for a pick shape in material iron
-		/*if(toMatch instanceof ShapedRecipes) {
-			ShapedRecipes template = (ShapedRecipes)toMatch;
-			boolean anySingleMatch = false;
-			for(int i = 0; i < template.recipeItems.length; i++) {
-				if(template.recipeItems[i] != null) {
-					if(template.recipeItems[i].isItemEqual(material)) {
-						//we only need one match because we already know that the metal is the important part 
-						//there won't be other discontinuities
-						anySingleMatch = true;
-						break;
-					}
-				}
-			}
-			if(anySingleMatch)
-				return toMatch;
-		}
-		else if(toMatch instanceof ShapedOreRecipe) {
-			ShapedOreRecipe template = (ShapedOreRecipe)toMatch;
-			Object[] templateIn = template.getInput();
-			boolean anySingleMatch = false;
-			for(int i = 0; i < templateIn.length; i++) {
-				if(templateIn[i] instanceof ItemStack) {
-					ItemStack testItem = (ItemStack)templateIn[i];
-					if(testItem.isItemEqual(material)) {
-						anySingleMatch = true;
-						break;
-					}
-				}
-				else if(templateIn[i] instanceof List) {
-					List<ItemStack> templateList = (List<ItemStack>)templateIn[i];
-					boolean didAnyMatch = false;
-					for(ItemStack templateItem : templateList) {
-						if(templateItem.isItemEqual(material)) {
-							didAnyMatch = true;
-							break;
-						}
-					}
-					if(didAnyMatch) {
-						anySingleMatch = true;
-						break;
-					}
-				}
-			}
-			if(anySingleMatch)
-				return toMatch;
-		}*/
-
+		HardLib.logger.log(Level.WARN, template.getRecipeOutput().getDisplayName());
 		RegistryNamespaced<ResourceLocation, IRecipe> recipes = CraftingManager.REGISTRY;
 		Iterator<IRecipe> iterator = recipes.iterator();
 		while(iterator.hasNext()) {
-			IRecipe tmpRecipe = iterator.next();
-			if(tmpRecipe == toMatch) {
+			IRecipe itrRecipe = iterator.next();
+			//itrRecipe = RecipesUtils.getRecipeWithOutput(new ItemStack(Items.IRON_SHOVEL));
+			if(itrRecipe == template) {
 				//we already know the material doesn't match toMatch
 				//not skipping would inadvertently return a bad recipe
 				continue;
 			}
-			NonNullList<Ingredient> test = toMatch.getIngredients();
-			NonNullList<Ingredient> testAgainst = tmpRecipe.getIngredients();
+			NonNullList<Ingredient> templateIngreds = template.getIngredients();
+			NonNullList<Ingredient> itrRecipeIngreds = itrRecipe.getIngredients();
 			boolean doesNotMatch = false;
-			if(test.size() == testAgainst.size()) {
-				for(int i = 0; i < test.size(); i++) {
-					if(!(test.get(i).test(material) || test.get(i).equals(testAgainst.get(i)))) {
+			//HardLib.logger.log(Level.WARN, templateIngreds.size() + " ?= " + itrRecipeIngreds.size());
+			int twidth = getRecipeWidth(template);
+			int theight = getRecipeHeight(template);
+			int iwidth = getRecipeWidth(itrRecipe);
+			int iheight = getRecipeHeight(itrRecipe);
+			
+			if(twidth == iwidth && theight == iheight) {
+				HardLib.logger.log(Level.WARN, itrRecipe.getRecipeOutput().getDisplayName());
+				//HardLib.logger.log(Level.WARN, twidth + "," + theight + ":" + templateIngreds.size() + "|" + itrRecipeIngreds.size());
+				for (int x = 0; x < twidth && !doesNotMatch; x++) {
+					for (int y = 0; y < theight && !doesNotMatch; ++y) {
+						//HardLib.logger.log(Level.WARN, (x + y * twidth));
+						Ingredient templateIng = templateIngreds.get(x + y * twidth);
+						Ingredient iteratorIng = itrRecipeIngreds.get(x + y * twidth);
+						
+						HardLib.logger.log(Level.WARN, iteratorIng.test(desiredMaterial) + " || " + Compare(templateIng,iteratorIng));
+						if(!(iteratorIng.test(desiredMaterial) || Compare(templateIng,iteratorIng))) {
+							doesNotMatch = true;
+						}
+						else {
+							HardLib.logger.log(Level.WARN, "ASDF");
+							if(IsIngredientIngot(templateIng) != IsIngredientIngot(iteratorIng)) {
+								doesNotMatch = true;
+							}
+						}
+					}
+				}
+				/*for(int i = 0; i < templateIngreds.size(); i++) {
+					if(!(itrRecipeIngreds.get(i).test(desiredMaterial) || Compare(templateIngreds.get(i),itrRecipeIngreds.get(i)))) {
 						doesNotMatch = true;
 						break;
 					}
-				}
+				}*/
 				if(doesNotMatch) {
 					continue;
 				}
-				return toMatch;
+				return itrRecipe;
 			}
-			
-			/*if(tmpRecipe instanceof ShapedRecipes && toMatch instanceof ShapedRecipes) {
-				ShapedRecipes test = (ShapedRecipes)tmpRecipe;
-				ShapedRecipes template = (ShapedRecipes)toMatch;
-				if(test.recipeItems.length == template.recipeItems.length) {
-					boolean doesNotMatch = false;
-					for(int i = 0; i < test.recipeItems.length; i++) {
-						if(test.recipeItems[i] != null && template.recipeItems[i] != null) {
-							if(!(test.recipeItems[i].isItemEqual(material) || test.recipeItems[i].isItemEqual(template.recipeItems[i]))) {
-								doesNotMatch = true;
-								break;
-							}
-						}
-						else {
-							doesNotMatch = true;
-							break;
-						}
-					}
-					if(doesNotMatch) {
-						continue;
-					}
-					return test;
-				}
-			}
-			else if(tmpRecipe instanceof ShapedOreRecipe && toMatch instanceof ShapedOreRecipe) {
-				ShapedOreRecipe test = (ShapedOreRecipe)tmpRecipe;
-				ShapedOreRecipe template = (ShapedOreRecipe)toMatch;
-				if(test.getRecipeSize() == template.getRecipeSize()) {
-					boolean doesNotMatch = false;
-					Object[] testIn = test.getInput();
-					Object[] templateIn = template.getInput();
-					for(int i = 0; i < testIn.length; i++) {
-						if(testIn[i] instanceof ItemStack && templateIn[i] instanceof ItemStack) {
-							ItemStack testItem = (ItemStack)testIn[i];
-							if(!(testItem.isItemEqual(material) || testItem.isItemEqual((ItemStack)templateIn[i]))) {
-								doesNotMatch = true;
-								break;
-							}
-						}
-						else if(testIn[i] instanceof List && templateIn[i] instanceof List) {
-							List<ItemStack> testList = (List<ItemStack>)testIn[i];
-							List<ItemStack> templateList = (List<ItemStack>)templateIn[i];
-							if(testList.size() == templateList.size()) {
-								boolean didAnyMatch = false;
-								for(ItemStack testItem : testList) {
-									for(ItemStack templateItem : templateList) {
-										if(testItem.isItemEqual(material) || testItem.isItemEqual(templateItem)) {
-											didAnyMatch = true;
-											break;
-										}
-									}
-									if(didAnyMatch) {
-										break;
-									}
-								}
-								if(!didAnyMatch) {
-									doesNotMatch = true;
-								}
-								if(doesNotMatch) {
-									break;
-								}
-							}
-							else {
-								doesNotMatch = true;
-								break;
-							}
-						}
-						else if(testIn[i] == null && templateIn[i] == null) { }
-						else {
-							doesNotMatch = true;
-							break;
-						}
-					}
-					if(doesNotMatch) {
-						continue;
-					}
-					return test;
-				}
-			}
-			else if(tmpRecipe instanceof ShapedOreRecipe && toMatch instanceof ShapedRecipes) {
-				ShapedOreRecipe test = (ShapedOreRecipe)tmpRecipe;
-				ShapedRecipes template = (ShapedRecipes)toMatch;
-				if(test.getRecipeSize() == template.getRecipeSize()) {
-					Object[] testIn = test.getInput();
-					boolean doesNotMatch = false;
-					for(int i = 0; i < template.recipeItems.length; i++) {
-						ItemStack templateItem = template.recipeItems[i];
-						Object ti = testIn[i];
-						if(ti instanceof ItemStack) {
-							ItemStack testItem = (ItemStack)testIn[i];
-							if(!(testItem.isItemEqual(material) || testItem.isItemEqual(templateItem))) {
-								doesNotMatch = true;
-								break;
-							}
-						}
-						else if(testIn[i] instanceof List) {
-							List<ItemStack> testList = (List<ItemStack>)testIn[i];
-							boolean didAnyMatch = false;
-							for(int j = 0; j < testList.size(); j++) {
-								ItemStack testItem = testList.get(j);
-								if(testItem.isItemEqual(material) || testItem.isItemEqual(templateItem)) {
-									didAnyMatch = true;
-									break;
-								}
-							}
-							if(!didAnyMatch) {
-								doesNotMatch = true;
-							}
-							if(doesNotMatch) {
-								break;
-							}
-						}
-					}
-					if(doesNotMatch) {
-						continue;
-					}
-					return test;
-				}
-			}*/
 		}
 		return null;
 	}
 
+	private static boolean IsIngredientIngot(Ingredient ingred) {
+		for(ItemStack stack : ingred.getMatchingStacks()) {
+			int[] ids = OreDictionary.getOreIDs(stack);
+			for(int id : ids) {
+				if(OreDictionary.getOreName(id).contains("ingot")) {
+					return true;
+				}
+				if(OreDictionary.getOreName(id).contains("plank")) {
+					return true;
+				}
+				if(OreDictionary.getOreName(id).contains("leather")) {
+					return true;
+				}
+				if(OreDictionary.getOreName(id).contains("gem")) {
+					return true;
+				}
+				if(OreDictionary.getOreName(id).contains("stone")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private static int getRecipeWidth(IRecipe template) {
+		if(template instanceof ShapedRecipes) {
+			return ((ShapedRecipes)template).getWidth();
+		}
+		if(template instanceof ShapedOreRecipe) {
+			return ((ShapedOreRecipe)template).getWidth();
+		}
+		return 0;
+	}
+
+	private static int getRecipeHeight(IRecipe template) {
+		if(template instanceof ShapedRecipes) {
+			return ((ShapedRecipes)template).getHeight();
+		}
+		if(template instanceof ShapedOreRecipe) {
+			return ((ShapedOreRecipe)template).getHeight();
+		}
+		return 0;
+	}
+	
+	private static boolean Compare(Ingredient a, Ingredient b) {
+		ItemStack[] ss1 = a.getMatchingStacks();
+		ItemStack[] ss2 = b.getMatchingStacks();
+		if(ss1.length == 0 && ss2.length == 0) return true;
+		for(ItemStack s1 : ss1) {
+			for(ItemStack s2 : ss2) {
+				if(ItemStack.areItemStacksEqual(s1, s2)) return true;
+			}
+		}
+		return false;
+	}
 	public static void craftNineOf(ItemStack input, ItemStack output) {
 		/*GameRegistry.addRecipe(output,"xxx","xxx","xxx",'x',input);*/
 	}
@@ -736,7 +658,7 @@ public class RecipesUtils {
 	 * Adapted from {@link ShapedOreRecipe#factory}.
 	 *
 	 * @param context The parsing context
-	 * @param json    The recipe's JSON object
+	 * @param json	The recipe's JSON object
 	 * @return A ShapedPrimer containing the input specified in the JSON object
 	 */
 	public static CraftingHelper.ShapedPrimer parseShaped(final JsonContext context, final JsonObject json) {
@@ -797,7 +719,7 @@ public class RecipesUtils {
 	 * Adapted from {@link ShapelessOreRecipe#factory}.
 	 *
 	 * @param context The parsing context
-	 * @param json    The recipe's JSON object
+	 * @param json	The recipe's JSON object
 	 * @return A NonNullList containing the ingredients specified in the JSON object
 	 */
 	public static NonNullList<Ingredient> parseShapeless(final JsonContext context, final JsonObject json) {
