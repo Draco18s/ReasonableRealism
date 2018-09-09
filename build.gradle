@@ -10,7 +10,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-def libVersion      = "4"
+def libVersion      = "7"
 def majorVersion    = "0"
 def minorVersion    = "0"
 //bugpatch or testing versions

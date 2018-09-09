@@ -42,7 +42,7 @@ public class RecipeOreDictOutput extends ShapedOreRecipe {
     public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1){
     	NonNullList<ItemStack> list = OreDictionary.getOres(resultName);
 		if(list.size() > 0) {
-			return list.get(0);
+			return list.get(0).copy();
 		}
 		return ItemStack.EMPTY;
     }
