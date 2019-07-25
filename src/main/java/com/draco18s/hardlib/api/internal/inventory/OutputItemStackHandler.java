@@ -1,8 +1,15 @@
 package com.draco18s.hardlib.api.internal.inventory;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 
+/**
+ * ItemStackHandler wrapper that allows for all the usual inventory item manipulation except
+ * that when exposed externally (GUI, hopper, etc.), items may not be inserted, only extracted.
+ * @author Draco18s
+ *
+ */
 public class OutputItemStackHandler extends ItemStackHandler {
 	private final ItemStackHandler internalSlot;
 
@@ -13,7 +20,7 @@ public class OutputItemStackHandler extends ItemStackHandler {
 
 	@Override
 	public void setSize(int size) {
-		stacks = new ItemStack[size];
+		stacks = NonNullList.<ItemStack>withSize(size, ItemStack.EMPTY);
 	}
 
 	@Override

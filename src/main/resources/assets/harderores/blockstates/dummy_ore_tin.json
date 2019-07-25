@@ -5,11 +5,11 @@
             "ore": "harderores:items/tinchunk",
             "particle": "harderores:items/tinchunk"
         },
-        "model": "harderores:dummy_ore",
+        "model": "harderores:block/dummy_ore",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

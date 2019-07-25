@@ -5,11 +5,11 @@
             "ore": "harderores:items/quartzchunk",
             "particle": "harderores:items/quartzchunk"
         },
-        "model": "harderores:dummy_ore",
+        "model": "harderores:block/dummy_ore",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

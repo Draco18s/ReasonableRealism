@@ -2,11 +2,15 @@ package com.draco18s.hardlib.api.internal;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
+/**
+ * Data neccessary to grow ore indicator plants
+ * @author Draco18s
+ *
+ */
 public class OreFlowerData {
-	public final IBlockState flower;
+	public final BlockState flower;
 	public final int clusterNum;
 	public final int clusterSize;
 	public final int highConcentrationThreshold;
@@ -19,7 +23,7 @@ public class OreFlowerData {
 	 * @param clusterRadius - radius of the cluster
 	 * @param threshold - high concentration threshold, for bonemeal (spawns an extra, guaranteed plants)
 	 */
-	public OreFlowerData(@Nonnull IBlockState plant, int clusterQuantity, int clusterRadius, int threshold) {
+	public OreFlowerData(@Nonnull BlockState plant, int clusterQuantity, int clusterRadius, int threshold) {
 		flower = plant;
 		highConcentrationThreshold = threshold;
 		clusterNum = clusterQuantity;
@@ -27,7 +31,7 @@ public class OreFlowerData {
 		twoBlockChance = 0;
 	}
 
-	public OreFlowerData(@Nonnull IBlockState plant, int clusterQuantity, int clusterRadius, int threshold, int twoTallWeight) {
+	public OreFlowerData(@Nonnull BlockState plant, int clusterQuantity, int clusterRadius, int threshold, int twoTallWeight) {
 		flower = plant;
 		highConcentrationThreshold = threshold;
 		clusterNum = clusterQuantity;

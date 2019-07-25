@@ -1,101 +1,55 @@
 {
     "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "all": "harderores:blocks/ore/quartz_ore",
-            "overlay": "harderores:blocks/ore/overlay_0",
-            "particle": "harderores:blocks/ore/quartz_ore"
-        },
-        "model": "harderores:hardore",
-        "uvlock": true
-    },
+    "uvlock": true,
     "variants": {
-        "normal": [{
-
-        }],
-        "inventory": [{
-
-        }],
         "ore_density": {
             "1": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_0"
-                }
+                "model" : "harderores:block/ore_hardquartz_0"
             },
             "2": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_1"
-                }
+                "model" : "harderores:block/ore_hardquartz_1"
             },
             "3": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_2"
-                }
+                "model" : "harderores:block/ore_hardquartz_2"
             },
             "4": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_3"
-                }
+                "model" : "harderores:block/ore_hardquartz_3"
             },
             "5": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_4"
-                }
+                "model" : "harderores:block/ore_hardquartz_4"
             },
             "6": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_5"
-                }
+                "model" : "harderores:block/ore_hardquartz_5"
             },
             "7": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_6"
-                }
+                "model" : "harderores:block/ore_hardquartz_6"
             },
             "8": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_7"
-                }
+                "model" : "harderores:block/ore_hardquartz_7"
             },
             "9": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_8"
-                }
+                "model" : "harderores:block/ore_hardquartz_8"
             },
             "10": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_9"
-                }
+                "model" : "harderores:block/ore_hardquartz_9"
             },
             "11": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_10"
-                }
+                "model" : "harderores:block/ore_hardquartz_10"
             },
             "12": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_11"
-                }
+                "model" : "harderores:block/ore_hardquartz_11"
             },
             "13": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_12"
-                }
+                "model" : "harderores:block/ore_hardquartz_12"
             },
             "14": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_13"
-                }
+                "model" : "harderores:block/ore_hardquartz_13"
             },
             "15": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_14"
-                }
+                "model" : "harderores:block/ore_hardquartz_14"
             },
             "16": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/overlay_15"
-                }
+                "model" : "harderores:block/ore_hardquartz_15"
             }
         }
     }

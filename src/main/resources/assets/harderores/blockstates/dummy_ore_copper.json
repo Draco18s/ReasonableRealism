@@ -5,11 +5,11 @@
             "ore": "harderores:items/copperchunk",
             "particle": "harderores:items/copperchunk"
         },
-        "model": "harderores:dummy_ore",
+        "model": "harderores:block/dummy_ore",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

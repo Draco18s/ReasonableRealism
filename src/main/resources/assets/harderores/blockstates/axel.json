@@ -4,18 +4,18 @@
         "textures": {
             "particle": "blocks/log_oak"
         },
-        "model": "harderores:axel",
+        "model": "harderores:block/axel",
         "uvlock": true
     },
     "variants": {
-        "normal": [{ }],
+        "": [{ }],
         "inventory": [{
             "y": 0
         }],
         "axel_orientation": {
             "none": { },
             "gears": {
-                "model": "harderores:frame"
+                "model": "harderores:block/frame"
             },
             "hub": { },
             "up": {

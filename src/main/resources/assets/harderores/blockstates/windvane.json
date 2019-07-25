@@ -2,13 +2,13 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "particle": "harderores:blocks/windvane-spar"
+            "particle": "harderores:block/windvane-spar"
         },
-        "model": "harderores:windvane",
+        "model": "harderores:block/windvane",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

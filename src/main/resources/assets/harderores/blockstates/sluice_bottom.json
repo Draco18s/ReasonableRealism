@@ -4,11 +4,11 @@
         "textures": {
             "particle": "blocks/planks_oak"
         },
-        "model": "harderores:sluice_bottom",
+        "model": "harderores:block/sluice_bottom",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

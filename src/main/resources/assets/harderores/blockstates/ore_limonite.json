@@ -1,18 +1,12 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "all": "harderores:blocks/ore/limonite"
-        },
-        "model": "cube_all",
-        "uvlock": true
-    },
-    "variants": {
-        "normal": [{
-
-        }],
-        "inventory": [{
-
-        }]
+	"forge_marker": 1,
+	"defaults": {
+		"model": "minecraft:block/andesite",
+		"textures": {
+			"all": "harderores:block/ore/limonite"
+		}
+	},
+	"variants": {
+        "": { "model": "harderores:block/ore_limonite" }
     }
 }

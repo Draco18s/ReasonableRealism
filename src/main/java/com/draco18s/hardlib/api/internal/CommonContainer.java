@@ -1,41 +1,49 @@
 package com.draco18s.hardlib.api.internal;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
+/**
+ * No-nonsense container class that does all the thigns a container needs to do.<br>
+ * Every "container" TE can create a subclass of this to use for a GUI.
+ * @author Draco18s
+ *
+ */
 public class CommonContainer extends Container {
 	protected final int invenSize;
 	
-	public CommonContainer(int size) {
+	protected CommonContainer(ContainerType<?> type, int id, int size) {
+		super(type, id);
 		invenSize = size;
 	}
 	
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return true;
 	}
 
-	protected void bindPlayerInventory(InventoryPlayer playerInventory) {
+	protected void bindPlayerInventory(PlayerInventory playerInventory) {
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
 		for (int k = 0; k < 9; ++k) {
-			this.addSlotToContainer(new Slot(playerInventory, k, 8 + k * 18, 142));
+			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
 		}
 	}
 
 	@Override
-	@Nullable
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-		ItemStack itemstack = null;
+	@Nonnull
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.inventorySlots.get(index);
 
 		if (slot != null && slot.getHasStack()) {
@@ -44,15 +52,15 @@ public class CommonContainer extends Container {
 
 			if (index <  invenSize) {
 				if (!this.mergeItemStack(itemstack1, invenSize, this.inventorySlots.size(), true)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
 			else if (!this.mergeItemStack(itemstack1, 0, invenSize, false)) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 
-			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack)null);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			}
 			else {
 				slot.onSlotChanged();
@@ -62,29 +70,29 @@ public class CommonContainer extends Container {
 		return itemstack;
 	}
 	
-	@Override
+	/*@Override
 	protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection){
 		boolean flag = false;
 		int i = startIndex;
 		if (reverseDirection) i = endIndex - 1;
 		
 		if (stack.isStackable()){
-			while (stack.stackSize > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)){
+			while (stack.getCount() > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)){
 				Slot slot = (Slot)this.inventorySlots.get(i);
 				ItemStack itemstack = slot.getStack();
 				int maxLimit = Math.min(stack.getMaxStackSize(), slot.getSlotStackLimit());
 				
-				if (itemstack != null && areItemStacksEqual(stack, itemstack)){
-					int j = itemstack.stackSize + stack.stackSize;
+				if (!itemstack.isEmpty() && areItemStacksEqual(stack, itemstack)){
+					int j = itemstack.getCount() + stack.getCount();
 					if (j <= maxLimit){
-						stack.stackSize = 0;
-						itemstack.stackSize = j;
+						stack.setCount(0);
+						itemstack.setCount(j);
 						slot.onSlotChanged();
 						flag = true;
 						
-					}else if (itemstack.stackSize < maxLimit){
-						stack.stackSize -= maxLimit - itemstack.stackSize;
-						itemstack.stackSize = maxLimit;
+					}else if (itemstack.getCount() < maxLimit){
+						stack.shrink(maxLimit - itemstack.getCount());
+						itemstack.setCount(maxLimit);
 						slot.onSlotChanged();
 						flag = true;
 					}
@@ -94,7 +102,7 @@ public class CommonContainer extends Container {
 				}else ++i;
 			}
 		}
-		if (stack.stackSize > 0){
+		if (stack.getCount() > 0){
 			if (reverseDirection){
 				i = endIndex - 1;
 			}else i = startIndex;
@@ -103,17 +111,17 @@ public class CommonContainer extends Container {
 				Slot slot1 = (Slot)this.inventorySlots.get(i);
 				ItemStack itemstack1 = slot1.getStack();
 
-				if (itemstack1 == null && slot1.isItemValid(stack)){ // Forge: Make sure to respect isItemValid in the slot.
-					if(stack.stackSize <= slot1.getSlotStackLimit()){
+				if (itemstack1.isEmpty() && slot1.isItemValid(stack)){ // Forge: Make sure to respect isItemValid in the slot.
+					if(stack.getCount() <= slot1.getSlotStackLimit()){
 						slot1.putStack(stack.copy());
 						slot1.onSlotChanged();
-						stack.stackSize = 0;
+						stack.setCount(0);
 						flag = true;
 						break;
 					}else{
 						itemstack1 = stack.copy();
-						stack.stackSize -= slot1.getSlotStackLimit();
-						itemstack1.stackSize = slot1.getSlotStackLimit();
+						stack.shrink(slot1.getSlotStackLimit());
+						itemstack1.setCount(slot1.getSlotStackLimit());
 						slot1.putStack(itemstack1);
 						slot1.onSlotChanged();
 						flag = true;
@@ -129,6 +137,6 @@ public class CommonContainer extends Container {
 	
 	private static boolean areItemStacksEqual(ItemStack stackA, ItemStack stackB)
 	{
-		return stackB.getItem() == stackA.getItem() && (!stackA.getHasSubtypes() || stackA.getMetadata() == stackB.getMetadata()) && ItemStack.areItemStackTagsEqual(stackA, stackB);
-	}
+		return stackB.getItem() == stackA.getItem() && (stackA.getDamage() == stackB.getDamage()) && ItemStack.areItemStackTagsEqual(stackA, stackB);
+	}*/
 }

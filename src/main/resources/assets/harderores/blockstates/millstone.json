@@ -8,12 +8,12 @@
             "south":"harderores:blocks/mill-side",
             "east":"harderores:blocks/mill-side",
             "west":"harderores:blocks/mill-side",
-            "particle": "harderores:blocks/mill-generic"
+            "particle": "harderores:block/mill-generic"
         },
-        "model": "cube"
+        "model": "harderores:block/millstone"
     },
     "variants": {
-        "normal": [{ }],
+        "": [{ }],
         "inventory": [{
             "textures": {
                 "up":"harderores:blocks/mill-top",

@@ -1,114 +1,144 @@
 package com.draco18s.hardlib;
 
-import com.draco18s.flowers.states.StateMapperFlowers;
-import com.draco18s.hardlib.api.blockproperties.Props;
-import com.draco18s.hardlib.api.blockproperties.ores.EnumOreType;
-import com.draco18s.hardlib.api.interfaces.IBlockWithMapper;
-import com.draco18s.hardlib.api.interfaces.IItemWithMeshDefinition;
-import com.draco18s.hardlib.api.internal.IMetaLookup;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.ICriterionInstance;
+import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.state.IProperty;
+import net.minecraft.item.BlockItem;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class EasyRegistry {
+	private static List<Block> blocksToReg = new ArrayList<Block>();
+	private static List<Item>  itemsToReg  = new ArrayList<Item>();
+	private static List<TileEntityType<?>> tilesToReg = new ArrayList<TileEntityType<?>>();
+	private static List<IForgeRegistryEntry<?>> otherItems = new ArrayList<IForgeRegistryEntry<?>>();
+	private static Method CriterionRegister;
 	
 	public static void registerBlock(Block block, String registryname) {
-		HardLib.proxy._registerBlock(block, registryname);
+		block.setRegistryName(registryname);
+		blocksToReg.add(block);
 	}
 	
-	public static void registerBlockWithItem(Block block, String registryname) {
-		HardLib.proxy._registerBlockWithItem(block, registryname);
+	public static void registerBlock(Block block, String registryname, Item.Properties props) {
+		BlockItem iBlock = new BlockItem(block, props);
+		block.setRegistryName(registryname);
+		iBlock.setRegistryName(block.getRegistryName());
+		
+		blocksToReg.add(block);
+		itemsToReg.add(iBlock);
 	}
 	
-	public static void registerBlockWithCustomItem(Block block, ItemBlock iBlock, String registryname) {
-		HardLib.proxy._registerBlockWithCustomItem(block, iBlock, registryname);
+	public static void registerBlockWithVariants(Block block, String registryname, IProperty<?> prop, Item.Properties props) {
+		block.setRegistryName(registryname);
+		blocksToReg.add(block);
+		Collection<?> col = prop.getAllowedValues();
+		for(Object o : col) {
+			BlockItem iBlock = new BlockItem(block, props);
+			iBlock.setRegistryName(block.getRegistryName().getNamespace(),block.getRegistryName().getPath()+"_"+o.toString());
+			itemsToReg.add(iBlock);
+		}
 	}
 	
-	public static <T extends Block & IBlockWithMapper> void registerBlockWithCustomItemAndMapper(T block, ItemBlock iBlock, String registryname) {
-		HardLib.proxy._registerBlockWithCustomItemAndMapper(block, iBlock, registryname);
+	public static void registerBlock(Block block, String registryname, BlockItem iBlock) {
+		block.setRegistryName(registryname);
+		iBlock.setRegistryName(block.getRegistryName());
+		blocksToReg.add(block);
+		itemsToReg.add(iBlock);
 	}
 
 	public static void registerItem(Item item, String registryname) {
-		HardLib.proxy._registerItem(item, registryname);
-	}
-
-	public static <T extends IMetaLookup> void registerItemWithVariants(Item item, String registryname, T variant) {
-		HardLib.proxy._registerItemWithVariants(item, registryname, variant);
-	}
-	
-	/**
-	 * Registers an item and loads/registers models based on the item's SubItems.
-	 * @param item - Must implement IItemWithMeshDefinition
-	 * @param registryname
-	 */
-	public static <T extends Item & IItemWithMeshDefinition> void registerItemWithCustomMeshDefinition(T item, String registryname) {
-		HardLib.proxy._registerItemWithCustomMeshDefinition(item, registryname);
-	}
-	
-	/**
-	 * Registers a specific model for variant item stack.
-	 * @param item - Must implement IItemWithMeshDefinition
-	 * @param variantStack
-	 */
-	public static <T extends Item & IItemWithMeshDefinition> void registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
-		HardLib.proxy._registerSpecificItemVariantsWithBakery(item, variantStack);
-	}
-	
-	public void _registerBlock(Block block, String registryname) {
-		block.setRegistryName(registryname);
-		block.setUnlocalizedName(block.getRegistryName().toString());
-		GameRegistry.register(block);
-	}
-
-	public void _registerBlockWithItem(Block block, String registryname) {
-		block.setRegistryName(registryname);
-		block.setUnlocalizedName(block.getRegistryName().toString());
-		ItemBlock ib = new ItemBlock(block);
-		ib.setRegistryName(registryname);
-		GameRegistry.register(block);
-		GameRegistry.register(ib);
-	}
-
-	public void _registerBlockWithCustomItem(Block block, ItemBlock iBlock, String registryname) {
-		block.setRegistryName(registryname);
-		block.setUnlocalizedName(block.getRegistryName().toString());
-		iBlock.setRegistryName(registryname);
-		GameRegistry.register(block);
-		GameRegistry.register(iBlock);
-	}
-
-	public <T extends Block & IBlockWithMapper> void _registerBlockWithCustomItemAndMapper(T block, ItemBlock iBlock, String registryname) {
-		block.setRegistryName(registryname);
-		block.setUnlocalizedName(block.getRegistryName().toString());
-		iBlock.setRegistryName(registryname);
-		GameRegistry.register(block);
-		GameRegistry.register(iBlock);
-	}
-
-	public void _registerItem(Item item, String registryname) {
 		item.setRegistryName(registryname);
-		item.setUnlocalizedName(item.getRegistryName().toString());
-		GameRegistry.register(item);
+		itemsToReg.add(item);
 	}
 
-	public <T extends Item & IItemWithMeshDefinition> void _registerItemWithCustomMeshDefinition(T item, String registryname) {
-		item.setRegistryName(registryname);
-		item.setUnlocalizedName(item.getRegistryName().toString());
-		GameRegistry.register(item);
+	public static void registerTileEntity(TileEntityType<?> teType, String registryname) {
+		teType.setRegistryName(registryname);
+		tilesToReg.add(teType);
 	}
 	
-	public <T extends IItemWithMeshDefinition> void _registerSpecificItemVariantsWithBakery(T item, ItemStack variantStack) {
+	public static <K extends IForgeRegistryEntry<K>> void registerOther(K object) {
+		otherItems.add(object);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends ICriterionInstance> ICriterionTrigger<T> registerAdvancementTrigger(ICriterionTrigger<T> trigger) {
+		if(CriterionRegister == null) {
+			CriterionRegister = ObfuscationReflectionHelper.findMethod(CriteriaTriggers.class, "register", ICriterionTrigger.class);
+			CriterionRegister.setAccessible(true);
+		}
+		try {
+			trigger = (ICriterionTrigger<T>) CriterionRegister.invoke(null, trigger);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			System.out.println("Failed to register trigger " + trigger.getId() + "!");
+			e.printStackTrace();
+		}
+		return trigger;
+	}
+	
+	@EventBusSubscriber(modid = HardLib.MODID, bus = EventBusSubscriber.Bus.MOD)
+	private static class Registration {
+		@SubscribeEvent
+		public static void onRegisterBlocks(final RegistryEvent.Register<Block> event) {
+			// Register all your blocks inside this registerAll call
+			event.getRegistry().registerAll(
+				blocksToReg.toArray(new Block[0])
+			);
+			HardLib.LOGGER.debug("Registered Blocks");
+		}
+	
+		@SubscribeEvent
+		public static void onModConfigEvent(final ModConfig.ModConfigEvent event) {
+			//final ModConfig config = event.getConfig();
+			// Rebake the configs when they change
+			//if (config.getSpec() == ConfigHolder.CLIENT_SPEC) {
+			//	ConfigHelper.bakeClient(config);
+			//} else if (config.getSpec() == ConfigHolder.SERVER_SPEC) {
+			//	ConfigHelper.bakeServer(config);
+			//}
+		}
+	
+		@SubscribeEvent
+		public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
+			final IForgeRegistry<Item> registry = event.getRegistry();
+			registry.registerAll(
+				itemsToReg.toArray(new Item[0])
+			);
+			HardLib.LOGGER.debug("Registered Items");
+		}
+	
+		@SubscribeEvent
+		public static void onRegister(@Nonnull final RegistryEvent.Register<TileEntityType<?>> event) {
+			// Register your TileEntities here if you have them
+			event.getRegistry().registerAll(
+				tilesToReg.toArray(new TileEntityType<?>[0])
+			);
+			HardLib.LOGGER.debug("Registered TileEntitys");
+		}
 		
-	}
-
-	public <T extends IMetaLookup> void _registerItemWithVariants(Item item, String registryname, T variant) {
-		item.setRegistryName(registryname);
-		item.setUnlocalizedName(item.getRegistryName().toString());
-		GameRegistry.register(item);
+		@SubscribeEvent
+		public static void registerEnchantments(RegistryEvent.Register<Enchantment> event) {
+			for(IForgeRegistryEntry<?> e : otherItems) {
+				if(e instanceof Enchantment)
+					event.getRegistry().register((Enchantment)e);
+			}
+		}
 	}
 }

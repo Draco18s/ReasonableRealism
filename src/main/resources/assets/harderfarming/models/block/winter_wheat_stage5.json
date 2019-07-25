@@ -1,6 +1,0 @@
-{
-    "parent": "block/crop",
-    "textures": {
-        "crop": "harderfarming:blocks/winter_wheat_stage_5"
-    }
-}

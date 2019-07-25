@@ -4,15 +4,10 @@
         "textures": {
             "particle": "blocks/planks_oak"
         },
-        "model": "harderores:sifter",
+        "model": "harderores:block/sifter",
         "uvlock": false
     },
     "variants": {
-        "normal": [{
-
-        }],
-        "inventory": [{
-            
-        }]
+        "": [{ }]
     }
 }

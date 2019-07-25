@@ -1,7 +1,7 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "harderores:items/ore_cart"
+        "layer0": "harderores:item/ore_cart"
     },
     "variants": {
         "normal": [{

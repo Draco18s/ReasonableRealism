@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "harderores:items/diamond_stud_axe"
+        "layer0": "harderores:item/diamond_stud_axe"
     }
 }

@@ -1,6 +1,0 @@
-{
-    "parent": "item/handheld",
-    "textures": {
-        "layer0": "harderfarming:items/seeds_winter_wheat"
-    }
-}

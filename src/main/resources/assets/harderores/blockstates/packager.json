@@ -5,11 +5,11 @@
             "side": "harderores:blocks/packager-side",
             "top": "harderores:blocks/packager-top"
         },
-        "model": "cube_top",
+        "model": "harderores:block/packager",
         "uvlock": true
     },
     "variants": {
-        "normal": [{
+        "": [{
 
         }],
         "inventory": [{

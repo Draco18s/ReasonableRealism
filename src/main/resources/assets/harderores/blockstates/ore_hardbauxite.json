@@ -1,101 +1,55 @@
 {
     "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "all": "harderores:blocks/ore/bauxite_ore",
-            "overlay": "harderores:blocks/ore/hard_clay/overlay_0",
-            "particle": "harderores:blocks/ore/bauxite_ore"
-        },
-        "model": "harderores:hardore",
-        "uvlock": true
-    },
+    "uvlock": true,
     "variants": {
-        "normal": [{
-
-        }],
-        "inventory": [{
-
-        }],
         "ore_density": {
             "1": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_0"
-                }
+                "model" : "harderores:block/ore_hardbauxite_0"
             },
             "2": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_1"
-                }
+                "model" : "harderores:block/ore_hardbauxite_1"
             },
             "3": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_2"
-                }
+                "model" : "harderores:block/ore_hardbauxite_2"
             },
             "4": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_3"
-                }
+                "model" : "harderores:block/ore_hardbauxite_3"
             },
             "5": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_4"
-                }
+                "model" : "harderores:block/ore_hardbauxite_4"
             },
             "6": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_5"
-                }
+                "model" : "harderores:block/ore_hardbauxite_5"
             },
             "7": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_6"
-                }
+                "model" : "harderores:block/ore_hardbauxite_6"
             },
             "8": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_7"
-                }
+                "model" : "harderores:block/ore_hardbauxite_7"
             },
             "9": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_8"
-                }
+                "model" : "harderores:block/ore_hardbauxite_8"
             },
             "10": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_9"
-                }
+                "model" : "harderores:block/ore_hardbauxite_9"
             },
             "11": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_10"
-                }
+                "model" : "harderores:block/ore_hardbauxite_10"
             },
             "12": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_11"
-                }
+                "model" : "harderores:block/ore_hardbauxite_11"
             },
             "13": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_12"
-                }
+                "model" : "harderores:block/ore_hardbauxite_12"
             },
             "14": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_13"
-                }
+                "model" : "harderores:block/ore_hardbauxite_13"
             },
             "15": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_14"
-                }
+                "model" : "harderores:block/ore_hardbauxite_14"
             },
             "16": {
-                "textures": {
-                    "overlay": "harderores:blocks/ore/hard_clay/overlay_15"
-                }
+                "model" : "harderores:block/ore_hardbauxite_15"
             }
         }
     }
