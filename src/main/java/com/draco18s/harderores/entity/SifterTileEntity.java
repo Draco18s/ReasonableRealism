@@ -2,11 +2,12 @@ package com.draco18s.harderores.entity;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.entity.capability.SiftableItemsHandler;
 import com.draco18s.harderores.inventory.SifterContainer;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.block.state.BlockProperties;
-import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.api.interfaces.ICustomContainer;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
@@ -17,6 +18,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -42,7 +45,7 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 
 	public SifterTileEntity() {
 		super(HarderOres.ModTileEntities.sifter);
-		inputSlot = new ItemStackHandler();//TODO: SiftableItemsHandler();
+		inputSlot = new SiftableItemsHandler();
 		outputSlot = new ItemStackHandler();
 		outputSlotWrapper = new OutputItemStackHandler(outputSlot);
 	}
@@ -67,24 +70,30 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 			}
 			if(!canAnySift) {
 				siftTime = 0;
+				world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 3);
+				markDirty();
 			}
 			else if (siftTime <= 0) {
 				siftItem();
+				world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 3);
+				markDirty();
 			}
 		}
 		else {
 			activeSlot = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
 				if(canSift(s)) {
-					siftTime = 40;
+					siftTime = 140;
 					activeSlot = s;
+					world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 3);
+					markDirty();
 				}
 			}
 		}
 	}
-	
+
 	private boolean canSift(int slot) {
-		if(inputSlot.getStackInSlot(slot) == null) return false;
+		if(inputSlot.getStackInSlot(slot).isEmpty()) return false;
 		ItemStack result = HardLibAPI.oreMachines.getSiftResult(inputSlot.getStackInSlot(slot), true);
 		if(result.isEmpty()) return false;
 		if(!outputSlot.insertItem(0, result, true).isEmpty()) return false;
@@ -102,7 +111,7 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 			outputSlot.insertItem(0, result.copy(), false);
 		}
 	}
-	
+
 	private void suckItems() {
 		List<ItemEntity> ents = world.getEntitiesWithinAABB(ItemEntity.class, getAABB(pos));
 		if(ents.size() > 0) {
@@ -124,11 +133,11 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 			}
 		}
 	}
-	
+
 	private AxisAlignedBB getAABB(BlockPos p) {
 		return new AxisAlignedBB(p.getX(), p.getY(), p.getZ(), p.getX()+1, p.getY()+1.25, p.getZ()+1);
 	}
-	
+
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -148,29 +157,36 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 				}
 				return super.getCapability(capability, facing);
 			}
-			MillstoneOrientation millpos = world.getBlockState(pos).get(BlockProperties.MILL_ORIENTATION);
-			if(millpos.canAcceptInput && facing == Direction.UP) {
+			if(facing == Direction.UP) {
 				return inputSlotholder.cast();
 			}
-			if(millpos.canAcceptOutput && facing == Direction.DOWN) {
+			if(facing == Direction.DOWN) {
 				return outputSlotWrapperholder.cast();
-			}
-			if(millpos == MillstoneOrientation.CENTER && facing == Direction.EAST) {
-				return inputSlotholder.cast();
 			}
 		}
 		return super.getCapability(capability, facing);
 	}
-	
+
 	public float getTime() {
 		return siftTime;
 	}
-	
+
+	@Override
+	@Nullable
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
+	}
+
 	@Override
 	public CompoundNBT getUpdateTag() {
 		return this.write(new CompoundNBT());
 	}
-	
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
+		read(pkt.getNbtCompound());
+	}
+
 	@Override
 	public CompoundNBT write(CompoundNBT tag) {
 		tag = super.write(tag);
@@ -179,7 +195,7 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 		tag.putFloat("harderores:siftTime", siftTime);
 		return tag;
 	}
-	
+
 	@Override
 	public void read(CompoundNBT tag) {
 		super.read(tag);

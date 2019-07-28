@@ -3,7 +3,8 @@
     "parent": "block/block",
     "textures": {
         "0": "block/oak_planks",
-        "1": "harderores:block/sifter-grid"
+        "1": "harderores:block/sifter-grid",
+        "particle": "block/oak_planks"
     },
     "elements": [
         {

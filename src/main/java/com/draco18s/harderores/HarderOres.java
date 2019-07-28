@@ -39,6 +39,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -99,7 +100,7 @@ public class HarderOres {
 		EasyRegistry.registerItem(itemPile, "largedust_iron");
 		ORE_ITEMS.add(new OreItems(itemChunk,itemTiny,itemPile));
 		
-		EasyRegistry.registerOther(new ContainerType<>(SifterContainer::new), new ResourceLocation(HarderOres.MODID,"sifter"));
+		EasyRegistry.registerOther(IForgeContainerType.create(SifterContainer::new), new ResourceLocation(HarderOres.MODID,"sifter"));
 	}
 
 	//@EventBusSubscriber(modid = HarderOres.MODID, bus = EventBusSubscriber.Bus.MOD)

@@ -14,10 +14,6 @@ import net.minecraftforge.items.ItemStackHandler;
 public class SifterContainer extends CommonContainer {
 	public SifterTileEntity tileEntity;
 	
-	public SifterContainer(int windowID, PlayerInventory playerInventory) {
-		this(windowID, playerInventory, new ItemStackHandler(3), null);
-	}
-	
 	public SifterContainer(int windowID, PlayerInventory playerInventory, PacketBuffer extraData) {
 		this(windowID, playerInventory, new ItemStackHandler(3), (SifterTileEntity)Minecraft.getInstance().world.getTileEntity(extraData.readBlockPos()));
 	}
