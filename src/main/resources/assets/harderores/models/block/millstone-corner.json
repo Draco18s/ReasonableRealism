@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/cube_column",
+    "textures": {
+        "side": "harderores:block/mill-side",
+        "end": "harderores:block/mill-corner",
+        "particle": "harderores:block/mill-generic"
+    }
+}

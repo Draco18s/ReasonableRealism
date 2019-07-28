@@ -2,8 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "parent": "block/block",
     "textures": {
-        "0": "blocks/planks_oak",
-        "1": "harderores:blocks/sifter-grid"
+        "0": "block/oak_planks",
+        "1": "harderores:block/sifter-grid"
     },
     "elements": [
         {

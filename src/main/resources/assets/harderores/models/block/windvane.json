@@ -14,8 +14,9 @@
         }
     },
     "textures": {
-        "0": "harderores:blocks/windvane-sail",
-        "1": "harderores:blocks/windvane-spar"
+        "0": "harderores:block/windvane-sail",
+        "1": "harderores:block/windvane-spar",
+        "particle": "harderores:block/windvane-spar"
     },
     "elements": [
         {

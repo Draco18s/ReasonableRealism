@@ -17,7 +17,6 @@ import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraft.world.storage.loot.RandomRanges;
 import net.minecraft.world.storage.loot.RandomValueRange;
 import net.minecraft.world.storage.loot.conditions.ILootCondition;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class HarderSetCount extends LootFunction {
 	private final IRandomRange countRange;

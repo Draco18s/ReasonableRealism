@@ -2,93 +2,52 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "up":"harderores:blocks/mill-top",
-            "down":"harderores:blocks/mill-top",
-            "north":"harderores:blocks/mill-side",
-            "south":"harderores:blocks/mill-side",
-            "east":"harderores:blocks/mill-side",
-            "west":"harderores:blocks/mill-side",
+            "up":"harderores:block/mill-top",
+            "down":"harderores:block/mill-top",
+            "north":"harderores:block/mill-side",
+            "south":"harderores:block/mill-side",
+            "east":"harderores:block/mill-side",
+            "west":"harderores:block/mill-side",
             "particle": "harderores:block/mill-generic"
         },
         "model": "harderores:block/millstone"
     },
     "variants": {
-        "": [{ }],
-        "inventory": [{
-            "textures": {
-                "up":"harderores:blocks/mill-top",
-                "down":"harderores:blocks/mill-top",
-                "north":"harderores:blocks/mill-side",
-                "south":"harderores:blocks/mill-side",
-                "east":"harderores:blocks/mill-side",
-                "west":"harderores:blocks/mill-side"
-            }
-        }],
         "mill_orientation": {
             "none": {
-                "textures": {
-                    "up":"harderores:blocks/mill-generic",
-                    "down":"harderores:blocks/mill-generic"
-                }
+              "model": "harderores:block/millstone"
             },
             "center": {
-                "textures": {
-                    "up":"harderores:blocks/mill-center",
-                    "down":"harderores:blocks/mill-center"
-                }
+              "model": "harderores:block/millstone-center"
             },
             "east": {
-                "textures": {
-                    "up":"harderores:blocks/mill-edge",
-                    "down":"harderores:blocks/mill-edge"
-                }
+              "model": "harderores:block/millstone-edge"
             },
             "north": {
-                "textures": {
-                    "up":"harderores:blocks/mill-edge",
-                    "down":"harderores:blocks/mill-edge"
-                },
+              "model": "harderores:block/millstone-edge",
                 "y": 90
             },
             "west": {
-                "textures": {
-                    "up":"harderores:blocks/mill-edge",
-                    "down":"harderores:blocks/mill-edge"
-                },
+              "model": "harderores:block/millstone-edge",
                 "y": 180
             },
             "south": {
-                "textures": {
-                    "up":"harderores:blocks/mill-edge",
-                    "down":"harderores:blocks/mill-edge"
-                },
+              "model": "harderores:block/millstone-edge",
                 "y": 270
             },
             "north_east": {
-                "textures": {
-                    "up":"harderores:blocks/mill-corner",
-                    "down":"harderores:blocks/mill-corner"
-                }
+              "model": "harderores:block/millstone-corner"
             },
             "north_west": {
-                "textures": {
-                    "up":"harderores:blocks/mill-corner",
-                    "down":"harderores:blocks/mill-corner"
-                },
+              "model": "harderores:block/millstone-corner",
                 "y": 270
             },
             "south_west": {
-                "textures": {
-                    "up":"harderores:blocks/mill-corner",
-                    "down":"harderores:blocks/mill-corner"
-                },
+              "model": "harderores:block/millstone-corner",
                 "y": 180
             },
             "south_east": {
-                "textures": {
-                    "up":"harderores:blocks/mill-corner",
-                    "down":"harderores:blocks/mill-corner"
-                },
+              "model": "harderores:block/millstone-corner",
                 "y": 90
             }
         }

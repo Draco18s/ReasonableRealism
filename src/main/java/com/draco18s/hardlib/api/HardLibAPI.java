@@ -5,8 +5,10 @@ import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
+import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 
 public class HardLibAPI {
+	public static IHardOreProcessing oreMachines;
 	/**
 	 * Advancement triggers. Some are specific to a given mod, others are fired by HardLib.
 	 * @author Draco18s

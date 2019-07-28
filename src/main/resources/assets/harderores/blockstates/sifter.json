@@ -2,7 +2,7 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "particle": "blocks/planks_oak"
+            "particle": "block/oak_planks"
         },
         "model": "harderores:block/sifter",
         "uvlock": false

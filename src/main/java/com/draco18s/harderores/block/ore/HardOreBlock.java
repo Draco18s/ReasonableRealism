@@ -1,7 +1,10 @@
 package com.draco18s.harderores.block.ore;
 
+import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 
+import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 
 import net.minecraft.block.Block;
@@ -13,6 +16,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
@@ -58,10 +62,12 @@ public class HardOreBlock extends Block {
 
 	@Override
 	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+		Item test = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+1));
+		if(items.stream().anyMatch(x -> x.getItem() == test)) return;
 		for(int i = 1; i <= 16; i++) {
 			ItemStack it = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+i)));
 			//ItemStack it = new ItemStack(this);
-			it.getOrCreateTag().putInt("harderores:density", Math.max(0, i));
+			//it.getOrCreateTag().putInt("harderores:density", Math.max(0, i));
 			if(!items.contains(it))
 				items.add(it);
 		}
@@ -72,14 +78,19 @@ public class HardOreBlock extends Block {
 	{
 		int density = state.get(BlockProperties.ORE_DENSITY);
 		ItemStack it = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+density)));
-		it.getOrCreateTag().putInt("harderores:density", Math.max(0, density));
+		//it.getOrCreateTag().putInt("harderores:density", Math.max(0, density));
 		return it;
 	}
 
 	@Override
 	@Nullable
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		return this.getDefaultState().with(BlockProperties.ORE_DENSITY, context.getItem().getOrCreateTag().getInt("harderores:density"));
+		int density = 16;
+		Item item = context.getItem().getItem();
+		if(item instanceof HardOreItem) {
+			density = ((HardOreItem)item).getDensity();
+		}
+		return this.getDefaultState().with(BlockProperties.ORE_DENSITY, density);
 	}
 
 	@Override

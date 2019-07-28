@@ -8,10 +8,6 @@
         "uvlock": true
     },
     "variants": {
-        "": [{ }],
-        "inventory": [{
-            "y": 0
-        }],
         "axel_orientation": {
             "none": { },
             "gears": {

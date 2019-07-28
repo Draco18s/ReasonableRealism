@@ -14,9 +14,10 @@
         }
     },
     "textures": {
-        "0": "harderores:blocks/axel-face",
-        "1": "blocks/log_oak",
-        "2": "harderores:blocks/axel-face"
+        "0": "harderores:block/axel-face",
+        "1": "block/oak_log",
+        "2": "harderores:block/axel-face",
+        "particle": "block/oak_log"
     },
     "elements": [
         {
