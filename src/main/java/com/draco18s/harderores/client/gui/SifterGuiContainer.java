@@ -43,7 +43,7 @@ public class SifterGuiContainer extends ContainerScreen<SifterContainer> {
 		int y = (height - ySize) / 2;
 		this.blit(x, y, 0, 0, xSize, ySize);
 		if(tileEntity != null) {
-			int progress = Math.round(24 * (140 - tileEntity.getTime()) / 140.0f);
+			int progress = Math.round(24 * (40 - tileEntity.getTime()) / 40.0f);
 			if(tileEntity.getTime() == 0) {
 				progress = 0;
 			}

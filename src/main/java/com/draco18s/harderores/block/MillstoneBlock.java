@@ -7,6 +7,7 @@ import com.draco18s.harderores.entity.MillstoneTileEntity;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -97,7 +98,7 @@ public class MillstoneBlock extends Block {
 		if(iworld instanceof World) {
 			World world = (World)iworld;
 			BlockState state;// = this.getDefaultState();
-	
+
 			List<BlockPos> list = BlockPos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1)).map(BlockPos::toImmutable).collect(Collectors.toList());
 			int count = 0;
 			for(BlockPos p : list) {
@@ -120,7 +121,7 @@ public class MillstoneBlock extends Block {
 		}
 		return false;
 	}
-	
+
 	@Override
 	@Deprecated
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
@@ -136,6 +137,16 @@ public class MillstoneBlock extends Block {
 					}
 				}
 			}
+		}
+	}
+
+	@Override
+	@Deprecated
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock()) {
+			TileEntity tileEntity = world.getTileEntity(pos);
+			InventoryUtils.dropItemHandlerContents(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null), world, pos);
+			super.onReplaced(state, world, pos, newState, isMoving);
 		}
 	}
 }

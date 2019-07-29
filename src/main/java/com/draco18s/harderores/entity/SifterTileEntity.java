@@ -64,9 +64,11 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 					resetTime = s;
 				}
 			}
-			if(resetTime != activeSlot) {
+			if(resetTime != activeSlot && !this.getWorld().isRemote) {
 				activeSlot = resetTime;
 				siftTime = 100;
+				world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 3);
+				markDirty();
 			}
 			if(!canAnySift) {
 				siftTime = 0;
@@ -83,7 +85,7 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 			activeSlot = -1;
 			for(int s = 0; s < inputSlot.getSlots(); s++) {
 				if(canSift(s)) {
-					siftTime = 140;
+					siftTime = 40;
 					activeSlot = s;
 					world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 3);
 					markDirty();

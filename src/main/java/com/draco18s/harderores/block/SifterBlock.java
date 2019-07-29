@@ -1,6 +1,7 @@
 package com.draco18s.harderores.block;
 
 import com.draco18s.harderores.entity.SifterTileEntity;
+import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class SifterBlock extends Block {
 
@@ -50,22 +52,13 @@ public class SifterBlock extends Block {
 		return true;
 	}
 
-	/*@Override
-	public boolean removedByPlayer(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, boolean willHarvest) {
-		if(!worldIn.isRemote) {
-			TileEntity tileentity = worldIn.getTileEntity(pos);
-
-			IItemHandler inventory = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
-			for (int i = 0; i < inventory.getSlots(); i++) {
-				ItemStack stack = inventory.getStackInSlot(i);
-				ItemEntity entityIn;
-				if (stack != null) {
-					entityIn = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack);
-					entityIn.setDefaultPickupDelay();
-					worldIn.spawnEntity(entityIn);
-				}
-			}
+	@Override
+	@Deprecated
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock()) {
+			TileEntity tileEntity = world.getTileEntity(pos);
+			InventoryUtils.dropItemHandlerContents(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null), world, pos);
+			super.onReplaced(state, world, pos, newState, isMoving);
 		}
-		return super.removedByPlayer(state, worldIn, pos, player, willHarvest);
-	}*/
+	}
 }
