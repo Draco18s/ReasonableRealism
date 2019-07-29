@@ -1,11 +1,12 @@
 package com.draco18s.harderores.block.ore;
 
-import java.util.stream.Stream;
+import java.awt.Color;
 
 import javax.annotation.Nullable;
 
 import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,17 +33,19 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class HardOreBlock extends Block {
-	public final int metaChange;
+public class HardOreBlock extends Block implements IBlockMultiBreak{
+	private final int metaChange;
+	private final Color particleColor;
 
-	public HardOreBlock(int metaDecrement, Properties properties) {
+	public HardOreBlock(int metaDecrement, Color particleColorIn, Properties properties) {
 		super(properties);
 		metaChange = metaDecrement;
-		this.setDefaultState(this.stateContainer.getBaseState().with(BlockProperties.ORE_DENSITY, 16));
+		particleColor = particleColorIn;
+		setDefaultState(stateContainer.getBaseState().with(BlockProperties.ORE_DENSITY, 16));
 	}
 
 	@Override
@@ -179,5 +182,15 @@ public class HardOreBlock extends Block {
 				}
 			}
 		}
+	}
+
+	@Override
+	public int getDensityChangeOnBreak(IBlockReader worldIn, BlockPos pos, BlockState state) {
+		return metaChange;
+	}
+
+	@Override
+	public Color getProspectorParticleColor(IBlockReader worldIn, BlockPos pos, BlockState state) {
+		return particleColor;
 	}
 }

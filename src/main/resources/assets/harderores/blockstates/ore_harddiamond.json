@@ -4,52 +4,52 @@
     "variants": {
         "ore_density": {
             "1": {
-                "model" : "harderores:block/ore_harddiamond_0"
-            },
-            "2": {
                 "model" : "harderores:block/ore_harddiamond_1"
             },
-            "3": {
+            "2": {
                 "model" : "harderores:block/ore_harddiamond_2"
             },
-            "4": {
+            "3": {
                 "model" : "harderores:block/ore_harddiamond_3"
             },
-            "5": {
+            "4": {
                 "model" : "harderores:block/ore_harddiamond_4"
             },
-            "6": {
+            "5": {
                 "model" : "harderores:block/ore_harddiamond_5"
             },
-            "7": {
+            "6": {
                 "model" : "harderores:block/ore_harddiamond_6"
             },
-            "8": {
+            "7": {
                 "model" : "harderores:block/ore_harddiamond_7"
             },
-            "9": {
+            "8": {
                 "model" : "harderores:block/ore_harddiamond_8"
             },
-            "10": {
+            "9": {
                 "model" : "harderores:block/ore_harddiamond_9"
             },
-            "11": {
+            "10": {
                 "model" : "harderores:block/ore_harddiamond_10"
             },
-            "12": {
+            "11": {
                 "model" : "harderores:block/ore_harddiamond_11"
             },
-            "13": {
+            "12": {
                 "model" : "harderores:block/ore_harddiamond_12"
             },
-            "14": {
+            "13": {
                 "model" : "harderores:block/ore_harddiamond_13"
             },
-            "15": {
+            "14": {
                 "model" : "harderores:block/ore_harddiamond_14"
             },
-            "16": {
+            "15": {
                 "model" : "harderores:block/ore_harddiamond_15"
+            },
+            "16": {
+                "model" : "harderores:block/ore_harddiamond_16"
             }
         }
     }

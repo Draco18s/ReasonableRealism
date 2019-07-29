@@ -19,7 +19,7 @@ public class SifterContainer extends CommonContainer {
 	}
 
 	public SifterContainer(int windowID, PlayerInventory playerInventory, IItemHandler inven, SifterTileEntity te) {
-		super(HarderOres.ModContainerTypes.SIFTER, windowID, 3);
+		super(HarderOres.ModContainerTypes.sifter, windowID, 3);
 
 		addSlot(new SlotDust(inven, 0, 71, 13));
 		addSlot(new SlotDust(inven, 1, 89, 13));

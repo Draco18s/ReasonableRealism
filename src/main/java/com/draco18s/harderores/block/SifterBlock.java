@@ -1,6 +1,7 @@
 package com.draco18s.harderores.block;
 
 import com.draco18s.harderores.entity.SifterTileEntity;
+import com.draco18s.hardlib.api.interfaces.ICustomContainer;
 import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.block.Block;
@@ -43,7 +44,7 @@ public class SifterBlock extends Block {
 	@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 		if (!world.isRemote) {
-			final SifterTileEntity tileEntity = (SifterTileEntity)world.getTileEntity(pos);
+			final ICustomContainer tileEntity = (ICustomContainer)world.getTileEntity(pos);
 			if (tileEntity != null) {
 				tileEntity.openGUI((ServerPlayerEntity) player);
 			}

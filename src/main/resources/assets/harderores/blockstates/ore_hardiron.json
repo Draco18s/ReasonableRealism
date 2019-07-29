@@ -4,52 +4,52 @@
     "variants": {
         "ore_density": {
             "1": {
-                "model" : "harderores:block/ore_hardiron_0"
-            },
-            "2": {
                 "model" : "harderores:block/ore_hardiron_1"
             },
-            "3": {
+            "2": {
                 "model" : "harderores:block/ore_hardiron_2"
             },
-            "4": {
+            "3": {
                 "model" : "harderores:block/ore_hardiron_3"
             },
-            "5": {
+            "4": {
                 "model" : "harderores:block/ore_hardiron_4"
             },
-            "6": {
+            "5": {
                 "model" : "harderores:block/ore_hardiron_5"
             },
-            "7": {
+            "6": {
                 "model" : "harderores:block/ore_hardiron_6"
             },
-            "8": {
+            "7": {
                 "model" : "harderores:block/ore_hardiron_7"
             },
-            "9": {
+            "8": {
                 "model" : "harderores:block/ore_hardiron_8"
             },
-            "10": {
+            "9": {
                 "model" : "harderores:block/ore_hardiron_9"
             },
-            "11": {
+            "10": {
                 "model" : "harderores:block/ore_hardiron_10"
             },
-            "12": {
+            "11": {
                 "model" : "harderores:block/ore_hardiron_11"
             },
-            "13": {
+            "12": {
                 "model" : "harderores:block/ore_hardiron_12"
             },
-            "14": {
+            "13": {
                 "model" : "harderores:block/ore_hardiron_13"
             },
-            "15": {
+            "14": {
                 "model" : "harderores:block/ore_hardiron_14"
             },
-            "16": {
+            "15": {
                 "model" : "harderores:block/ore_hardiron_15"
+            },
+            "16": {
+                "model" : "harderores:block/ore_hardiron_16"
             }
         }
     }

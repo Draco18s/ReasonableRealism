@@ -1,6 +1,7 @@
 package com.draco18s.harderores.client;
 
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.client.gui.PackagerGuiContainer;
 import com.draco18s.harderores.client.gui.SifterGuiContainer;
 
 import net.minecraft.client.gui.ScreenManager;
@@ -14,7 +15,8 @@ public class ClientEventHandler {
 	private static class EventHandlers {
 		@SubscribeEvent
 		public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
-			ScreenManager.registerFactory(HarderOres.ModContainerTypes.SIFTER, SifterGuiContainer::new);
+			ScreenManager.registerFactory(HarderOres.ModContainerTypes.sifter, SifterGuiContainer::new);
+			ScreenManager.registerFactory(HarderOres.ModContainerTypes.packager, PackagerGuiContainer::new);
 		}
 	}
 }
