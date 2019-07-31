@@ -267,7 +267,6 @@ public class RecipesUtils {
 				return template;
 			}
 		}
-		HardLib.logger.log(Level.WARN, template.getRecipeOutput().getDisplayName());
 		RegistryNamespaced<ResourceLocation, IRecipe> recipes = CraftingManager.REGISTRY;
 		Iterator<IRecipe> iterator = recipes.iterator();
 		while(iterator.hasNext()) {
@@ -288,20 +287,16 @@ public class RecipesUtils {
 			int iheight = getRecipeHeight(itrRecipe);
 			
 			if(twidth == iwidth && theight == iheight) {
-				HardLib.logger.log(Level.WARN, itrRecipe.getRecipeOutput().getDisplayName());
-				//HardLib.logger.log(Level.WARN, twidth + "," + theight + ":" + templateIngreds.size() + "|" + itrRecipeIngreds.size());
 				for (int x = 0; x < twidth && !doesNotMatch; x++) {
 					for (int y = 0; y < theight && !doesNotMatch; ++y) {
 						//HardLib.logger.log(Level.WARN, (x + y * twidth));
 						Ingredient templateIng = templateIngreds.get(x + y * twidth);
 						Ingredient iteratorIng = itrRecipeIngreds.get(x + y * twidth);
-						
-						HardLib.logger.log(Level.WARN, iteratorIng.test(desiredMaterial) + " || " + Compare(templateIng,iteratorIng));
+
 						if(!(iteratorIng.test(desiredMaterial) || Compare(templateIng,iteratorIng))) {
 							doesNotMatch = true;
 						}
 						else {
-							HardLib.logger.log(Level.WARN, "ASDF");
 							if(IsIngredientIngot(templateIng) != IsIngredientIngot(iteratorIng)) {
 								doesNotMatch = true;
 							}
