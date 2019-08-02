@@ -1,5 +1,9 @@
 package com.draco18s.hardlib.proxy;
 
-public interface IProxy {
+import java.util.function.Supplier;
 
+import net.minecraftforge.fml.network.NetworkEvent.Context;
+
+public interface IProxy {
+	<MSG> void spawnParticles(MSG message, Supplier<Context> ctx);
 }

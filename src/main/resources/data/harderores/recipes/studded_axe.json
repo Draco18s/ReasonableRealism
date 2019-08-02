@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "dI ",
+        "Is ",
+        " s "
+    ],
+    "key": {
+        "d": {
+            "item": "harderores:orechunk_diamond"
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "s": {
+            "tag": "forge:rods/wooden"
+        }
+    },
+    "result": {
+        "item": "harderores:diamondstud_axe"
+    }
+}

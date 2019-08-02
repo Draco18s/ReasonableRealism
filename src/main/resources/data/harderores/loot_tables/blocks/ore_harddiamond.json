@@ -36,11 +36,7 @@
               "functions": [
                 {
                   "function": "harderores:set_count",
-                  "count": {
-                    "min": 4.0,
-                    "max": 5.0,
-                    "type": "minecraft:uniform"
-                  }
+                  "divisor" : 5.0
                 },
                 {
                   "function": "minecraft:explosion_decay"

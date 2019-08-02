@@ -9,19 +9,17 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
-import net.minecraftforge.common.IExtensibleEnum;
 import net.minecraftforge.common.ToolType;
 
 public class PulverizeEnchantment extends Enchantment {
 
-	//new EntityEquipmentSlot[] {EntityEquipmentSlot.MAINHAND}
 	public PulverizeEnchantment(EquipmentSlotType[] slots) {
 		super(Enchantment.Rarity.UNCOMMON,EnchantmentType.DIGGER, slots);
 	}
 	
 	@Override
 	public int getMinEnchantability(int par1) {
-		return 10 + 5 * par1;
+		return 10 + 5 * par1 * 3;
 	}
 	
 	@Override
@@ -31,7 +29,7 @@ public class PulverizeEnchantment extends Enchantment {
 	
 	@Override
 	public int getMaxLevel() {
-		return 5;
+		return 1;
 	}
 
 	@Override

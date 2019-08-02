@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "harderores:{BLOCK}"
+          "name": "harderores:windvane"
         }
       ],
       "conditions": [

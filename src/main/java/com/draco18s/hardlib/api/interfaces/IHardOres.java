@@ -3,6 +3,7 @@ package com.draco18s.hardlib.api.interfaces;
 import java.util.List;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,7 +25,7 @@ public interface IHardOres {
 	 * @param replacement (optional) - The blockstate to place if completely mined.  Default: air
 	 * @return drops
 	 */
-	public List<ItemStack> mineHardOreOnce(World world, BlockPos pos, ItemStack stack, BlockState replacement);
+	public List<ItemStack> mineHardOreOnce(World world, ServerPlayerEntity entityPlayer, BlockPos pos, ItemStack stack, BlockState replacement);
 	
 	/**
 	 * Mines the hard ore block at (x,y,z) and returns the resulting ArrayList<ItemStack> drops.<br/>
@@ -35,7 +36,7 @@ public interface IHardOres {
 	 * @param replacement (optional) - The blockstate to place if completely mined.  Default: air
 	 * @return drops
 	 */
-	public List<ItemStack> mineHardOreOnce(World world, BlockPos pos, ItemStack stack);
+	public List<ItemStack> mineHardOreOnce(World world, ServerPlayerEntity entityPlayer, BlockPos pos, ItemStack stack);
 
 	/**
 	 * Gets the drops for the block as if it was mined once.

@@ -8,12 +8,14 @@ import com.draco18s.hardlib.api.interfaces.IHardOres;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraftforge.common.ForgeHooks;
 
 public class OreBlockInfo implements IHardOres {
 	@Override
@@ -22,16 +24,19 @@ public class OreBlockInfo implements IHardOres {
 	}
 
 	@Override
-	public List<ItemStack> mineHardOreOnce(World world, BlockPos pos, ItemStack stack) {
-		return this.mineHardOreOnce(world, pos, stack, Blocks.AIR.getDefaultState());
+	public List<ItemStack> mineHardOreOnce(World world, ServerPlayerEntity entityPlayer, BlockPos pos, ItemStack stack) {
+		return this.mineHardOreOnce(world, entityPlayer, pos, stack, Blocks.AIR.getDefaultState());
 	}
 
 	@Override
-	public List<ItemStack> mineHardOreOnce(World world, BlockPos pos, ItemStack stack, BlockState replacement) {
+	public List<ItemStack> mineHardOreOnce(World world, ServerPlayerEntity entityPlayer, BlockPos pos, ItemStack stack, BlockState replacement) {
 		BlockState state = world.getBlockState(pos);
 		if(isHardOre(state)) {
 			int val = state.get(BlockProperties.ORE_DENSITY);
 			int change = ((IBlockMultiBreak)state.getBlock()).getDensityChangeOnBreak(world, pos, state);
+
+			if(!ForgeHooks.canHarvestBlock(state, entityPlayer, world, pos)) return null;
+
 			if(val > change) {
 				world.setBlockState(pos, state.with(BlockProperties.ORE_DENSITY, val-change));	
 			}

@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PBP",
+        "PbP"
+    ],
+    "key": {
+        "P": {
+            "tag": "minecraft:planks"
+        },
+        "B": {
+            "item": "minecraft:bucket"
+        },
+        "b": {
+            "item": "minecraft:iron_bars"
+        }
+    },
+    "result": {
+        "item": "harderores:sifter"
+    }
+}

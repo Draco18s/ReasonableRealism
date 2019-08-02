@@ -35,10 +35,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
@@ -46,8 +48,9 @@ public class PackagerTileEntity extends TileEntity implements ITickableTileEntit
 	protected ItemStackHandler inputSlot;
 	protected ItemStackHandler outputSlot;
 	private ItemStackHandler outputSlotWrapper;
-	private LazyOptional<ItemStackHandler> inputSlotholder = LazyOptional.of(() -> inputSlot);
-	private LazyOptional<ItemStackHandler> outputSlotWrapperholder = LazyOptional.of(() -> inputSlot);
+	private final LazyOptional<IItemHandler> inputSlotholder = LazyOptional.of(() -> inputSlot);
+	private final LazyOptional<IItemHandler> outputSlotWrapperholder = LazyOptional.of(() -> inputSlot);
+	private final LazyOptional<IItemHandler> everything = LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlot));
 	private float packTime;
 	private float timeMod;
 	protected RawMechanicalPowerHandler powerUser;
@@ -106,7 +109,7 @@ public class PackagerTileEntity extends TileEntity implements ITickableTileEntit
 							BlockState state;
 							state = block.getDefaultState().getStateForPlacement(Direction.DOWN, Blocks.AIR.getDefaultState(), world, BlockPos.ZERO, BlockPos.ZERO, Hand.MAIN_HAND);
 							inMod = state.getBlockHardness(null, BlockPos.ZERO) * 2;
-							if(block.getHarvestTool(state).equals("pickaxe") && block.getHarvestLevel(state) >= 0) {
+							if(block.getHarvestTool(state).equals(ToolType.PICKAXE) && block.getHarvestLevel(state) >= 0) {
 								inMod *= (block.getHarvestLevel(state) + 2);
 							}
 						}
@@ -121,7 +124,7 @@ public class PackagerTileEntity extends TileEntity implements ITickableTileEntit
 							BlockState state;
 							state = block.getDefaultState().getStateForPlacement(Direction.DOWN, Blocks.AIR.getDefaultState(), world, BlockPos.ZERO, BlockPos.ZERO, Hand.MAIN_HAND);
 							outMod = state.getBlockHardness(null, BlockPos.ZERO);
-							if(block.getHarvestTool(state).equals("shovel") && block.getHarvestLevel(state) >= 0) {
+							if(block.getHarvestTool(state).equals(ToolType.SHOVEL) && block.getHarvestLevel(state) >= 0) {
 								outMod *= 2;
 							}
 						}
@@ -200,10 +203,10 @@ public class PackagerTileEntity extends TileEntity implements ITickableTileEntit
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
 			if(world != null && world.getBlockState(pos).getBlock() != getBlockState().getBlock()) {//if the block at myself isn't myself, allow full access (Block Broken)
-				return LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlotWrapper)).cast();
+				return everything.cast();
 			}
 			if(facing == null) {
-				return LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlotWrapper)).cast();
+				return everything.cast();
 			}
 			if(facing == Direction.UP) {
 				return inputSlotholder.cast();

@@ -31,6 +31,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
@@ -38,8 +39,9 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 	protected ItemStackHandler inputSlot;
 	protected ItemStackHandler outputSlot;
 	private ItemStackHandler outputSlotWrapper;
-	private final LazyOptional<ItemStackHandler> inputSlotholder = LazyOptional.of(() -> inputSlot);
-	private final LazyOptional<ItemStackHandler> outputSlotWrapperholder = LazyOptional.of(() -> outputSlotWrapper);
+	private final LazyOptional<IItemHandler> inputSlotholder = LazyOptional.of(() -> inputSlot);
+	private final LazyOptional<IItemHandler> outputSlotWrapperholder = LazyOptional.of(() -> outputSlotWrapper);
+	private final LazyOptional<IItemHandler> everything = LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlot));
 	private float siftTime;
 	private int activeSlot = -1;
 
@@ -145,10 +147,10 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			this.markDirty();
 			if(world != null && world.getBlockState(pos).getBlock() != this.getBlockState().getBlock()) {//if the block at myself isn't myself, allow full access (Block Broken)
-				return LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlotWrapper)).cast();
+				return everything.cast();
 			}
 			if(facing == null) {
-				return LazyOptional.of(() -> new CombinedInvWrapper(inputSlot, outputSlot)).cast();
+				return everything.cast();
 			}
 			if(world == null) {
 				if(facing == Direction.UP) {

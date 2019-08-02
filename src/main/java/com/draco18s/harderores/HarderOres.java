@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,13 +30,14 @@ import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.harderores.item.ModItemTier;
 import com.draco18s.harderores.loot.function.BlockItemFunction;
 import com.draco18s.harderores.loot.function.HarderSetCount;
+import com.draco18s.harderores.network.PacketHandler;
+import com.draco18s.harderores.proxy.ClientProxy;
+import com.draco18s.harderores.proxy.ServerProxy;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
-import com.draco18s.hardlib.proxy.ClientProxy;
 import com.draco18s.hardlib.proxy.IProxy;
-import com.draco18s.hardlib.proxy.ServerProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -49,8 +51,11 @@ import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ShovelItem;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
@@ -83,10 +88,10 @@ public class HarderOres {
 				HardLibAPI.oreMachines.addMillRecipe(new ItemStack(ores.chunk,1), new ItemStack(ores.tiny,2));
 				HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(ores.tiny,8), new ItemStack(ores.pile,1));
 			}
-			//HardLibAPI.oreMachines.addMillRecipe(new ItemStack(HarderOres.ModItems.orechunk_iron,1), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
 		});
+		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
-		//TODO: remove this dependency
+		//TODO: remove or relocate this dependency
 		HardLibAPI.hardOres = new OreBlockInfo();
 
 		Block block = new LimoniteBlock(Block.Properties.create(Material.EARTH).hardnessAndResistance(3, 1).harvestTool(ToolType.SHOVEL).harvestLevel(0).sound(SoundType.WET_GRASS));
@@ -162,6 +167,7 @@ public class HarderOres {
 		ench = new PulverizeEnchantment(slots);
 		EasyRegistry.registerOther(ench, new ResourceLocation(HarderOres.MODID,"pulverize"));
 		
+		
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -207,5 +213,9 @@ public class HarderOres {
 			tiny = itemTiny;
 			pile = itemPile;
 		}
+	}
+	
+	public static class ModItemTags {
+		public static final Tag<Item> STONE_ANY = new ItemTags.Wrapper(new ResourceLocation("forge", "stoneany"));
 	}
 }
