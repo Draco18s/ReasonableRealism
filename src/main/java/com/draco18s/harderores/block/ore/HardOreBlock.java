@@ -37,7 +37,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class HardOreBlock extends Block implements IBlockMultiBreak{
+public class HardOreBlock extends Block implements IBlockMultiBreak {
 	private final int metaChange;
 	private final Color particleColor;
 

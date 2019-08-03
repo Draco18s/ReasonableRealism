@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +50,6 @@ import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.tags.ItemTags;
@@ -99,7 +97,6 @@ public class HarderOres {
 		block = new MillstoneBlock();
 		EasyRegistry.registerBlock(block, "millstone", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(MillstoneTileEntity::new, block), HarderOres.MODID, "millstone");
-		//ModTileEntities.millstone = (TileEntityType<MillstoneTileEntity>) type;
 		block = new AxelBlock();
 		EasyRegistry.registerBlock(block, "axel", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(AxelTileEntity::new, block), HarderOres.MODID, "axel");

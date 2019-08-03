@@ -220,6 +220,15 @@ public class PackagerTileEntity extends TileEntity implements ITickableTileEntit
 		}
 		return super.getCapability(capability, facing);
 	}
+	
+	@Override
+	public void remove() {
+		super.remove();
+		inputSlotholder.invalidate();
+		outputSlotWrapperholder.invalidate();
+		everything.invalidate();
+		powerUserholder.invalidate();
+	}
 
 	@Override
 	@Nullable

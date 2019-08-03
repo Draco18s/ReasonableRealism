@@ -202,6 +202,15 @@ public class MillstoneTileEntity extends TileEntity implements ITickableTileEnti
 		}
 		return super.getCapability(capability, facing);
 	}
+	
+	@Override
+	public void remove() {
+		super.remove();
+		inputSlotholder.invalidate();
+		outputSlotWrapperholder.invalidate();
+		everything.invalidate();
+		powerUserholder.invalidate();
+	}
 
 	public float getGrindTime() {
 		return grindTime;

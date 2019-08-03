@@ -1,0 +1,16 @@
+{
+    "type": "hardlib:tag_output",
+    "pattern": [
+        "www",
+        "www",
+        "www"
+    ],
+    "key": {
+        "w": {
+            "tag": "harderores:dusts/tiny/iron"
+        }
+    },
+    "result": {
+        "tag": "harderores:dusts/iron"
+    }
+}

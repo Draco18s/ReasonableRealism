@@ -7,6 +7,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
+import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.stats.ServerStatisticsManager;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -45,6 +47,8 @@ public class HardLib {
 			HardLibAPI.Advancements.WORLD_TIME = (WorldTimeTrigger) EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
 			HardLibAPI.Advancements.DISTANCE_TRAVELED = (DistanceTraveledTrigger) EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
 		});
+		
+		EasyRegistry.registerOther(new RecipeTagOutput.Serializer(), new ResourceLocation(HardLib.MODID, "tag_output"));
 	}
 	
 	@EventBusSubscriber(modid = HardLib.MODID, bus = EventBusSubscriber.Bus.MOD)

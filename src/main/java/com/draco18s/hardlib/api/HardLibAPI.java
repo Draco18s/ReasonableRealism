@@ -1,5 +1,6 @@
 package com.draco18s.hardlib.api;
 
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
@@ -7,6 +8,10 @@ import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.api.interfaces.IHardOres;
+import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
+
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraftforge.registries.ObjectHolder;
 
 public class HardLibAPI {
 	public static IHardOres hardOres;
@@ -65,5 +70,10 @@ public class HardLibAPI {
 		 *  <b>RAIL</b>
 		 */
 		public static DistanceTraveledTrigger DISTANCE_TRAVELED;
+	}
+
+	@ObjectHolder(HardLib.MODID)
+	public static class RecipeSerializers {
+		public static final IRecipeSerializer<RecipeTagOutput> TAG_OUTPUT = null;
 	}
 }

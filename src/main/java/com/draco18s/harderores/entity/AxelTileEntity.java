@@ -84,6 +84,12 @@ public class AxelTileEntity extends TileEntity implements ITickableTileEntity {
 	}
 	
 	@Override
+	public void remove() {
+		super.remove();
+		powerSupplyholder.invalidate();
+	}
+	
+	@Override
 	@Nullable
 	public SUpdateTileEntityPacket getUpdatePacket() {
 		return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());

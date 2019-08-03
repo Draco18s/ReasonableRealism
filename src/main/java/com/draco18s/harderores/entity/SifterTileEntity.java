@@ -170,6 +170,14 @@ public class SifterTileEntity extends TileEntity implements ITickableTileEntity,
 		}
 		return super.getCapability(capability, facing);
 	}
+	
+	@Override
+	public void remove() {
+		super.remove();
+		inputSlotholder.invalidate();
+		outputSlotWrapperholder.invalidate();
+		everything.invalidate();
+	}
 
 	public float getTime() {
 		return siftTime;
