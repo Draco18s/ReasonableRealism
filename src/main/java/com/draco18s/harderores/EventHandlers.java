@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = HarderOres.MODID)
 public class EventHandlers {
+	
 	@SubscribeEvent
 	public static void harvest(BlockEvent.BreakEvent event) {
 		BlockState state = event.getState();
