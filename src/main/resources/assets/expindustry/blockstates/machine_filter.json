@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=down": { "model": "expindustry:block/filter" },
+        "facing=north": { "model": "expindustry:block/filter_side" },
+        "facing=south": { "model": "expindustry:block/filter_side", "y": 180 },
+        "facing=west": { "model": "expindustry:block/filter_side", "y": 270 },
+        "facing=east": { "model": "expindustry:block/filter_side", "y": 90 }
+    }
+}

@@ -22,8 +22,7 @@ public final class PacketHandler
 			.networkProtocolVersion(() -> PROTOCOL_VERSION)
 			.simpleChannel();
 
-	public static void register()
-	{
+	public static void register() {
 		int disc = 0;
 
 		HANDLER.registerMessage(disc++, ToClientMessageOreParticles.class, ToClientMessageOreParticles::encode, ToClientMessageOreParticles::decode, ToClientMessageOreParticles.Handler::handle);

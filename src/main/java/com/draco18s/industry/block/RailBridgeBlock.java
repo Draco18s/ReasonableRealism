@@ -6,12 +6,14 @@ import net.minecraft.block.RailBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class RailBridgeBlock extends RailBlock {
@@ -32,24 +34,24 @@ public class RailBridgeBlock extends RailBlock {
 		return false;
 	}
 
-	/*@Override
-	public boolean canPlaceBlockAt(World world, BlockPos pos) {
-		if(world.getBlockState(pos.down()).isSideSolid(world, pos.down(), Direction.UP) ||
-				this.isRailBlock(world, pos.down()) || this.isRailBlock(world, pos.up())) {
-			return false;
-		}
-		return true;
-	}*/
+	@Deprecated
+	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
+		BlockPos blockpos = pos.offset(Direction.DOWN);
+		BlockState blockstate = world.getBlockState(blockpos);
+		return !blockstate.func_224755_d(world, blockpos, Direction.UP) || isRail(blockstate) || isRail( world.getBlockState(pos.offset(Direction.UP)));
+	}
 
 	@Override
 	@Deprecated
 	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
 		if (!world.isRemote) {
-			//TODO
-			//if(!canPlaceBlockAt(world, pos)) {
-			//this.dropBlockAsItem(world, pos, state, 0);
-			world.destroyBlock(pos, true);
-			//}
+			if(!isValidPosition(state, world, pos)) {
+				//this.dropBlockAsItem(world, pos, state, 0);
+				world.destroyBlock(pos, true);
+			}
+			else {
+				this.updateState(state, world, pos, blockIn);
+			}
 		}
 	}
 

@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = HarderOres.MODID)
 public class EventHandlers {
 	
+	//can go back to HarvestDropsEvent
 	@SubscribeEvent
 	public static void harvest(BlockEvent.BreakEvent event) {
 		BlockState state = event.getState();

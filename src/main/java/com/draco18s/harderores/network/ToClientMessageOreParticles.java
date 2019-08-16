@@ -25,8 +25,7 @@ public class ToClientMessageOreParticles {
 		oresAt = ore;
 	}
 	
-	public static void encode(ToClientMessageOreParticles msg, PacketBuffer buf)
-	{
+	public static void encode(ToClientMessageOreParticles msg, PacketBuffer buf) {
 		buf.writeInt(msg.effectID);
 		buf.writeInt(msg.eventAt.getX());
 		buf.writeInt(msg.eventAt.getY());
@@ -37,8 +36,7 @@ public class ToClientMessageOreParticles {
 		}
 	}
 
-	public static ToClientMessageOreParticles decode(PacketBuffer buf)
-	{
+	public static ToClientMessageOreParticles decode(PacketBuffer buf) {
 		int effectID = buf.readInt();
 		BlockPos eventAt = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
 		int num = buf.readInt();
@@ -50,10 +48,8 @@ public class ToClientMessageOreParticles {
 		return new ToClientMessageOreParticles(effectID, oresAt, eventAt);
 	}
 	
-	public static class Handler
-	{
-		public static void handle(final ToClientMessageOreParticles message, Supplier<NetworkEvent.Context> ctx)
-		{
+	public static class Handler {
+		public static void handle(final ToClientMessageOreParticles message, Supplier<NetworkEvent.Context> ctx) {
 			ctx.get().enqueueWork(() -> {
 				HarderOres.PROXY.spawnParticles(message, ctx);
 			});

@@ -1,3 +1,6 @@
 {
-    "parent": "expindustry:block/machine_wood_hopper"
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "expindustry:item/wood_hopper"
+    }
 }

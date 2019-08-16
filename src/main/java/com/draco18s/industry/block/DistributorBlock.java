@@ -2,6 +2,7 @@ package com.draco18s.industry.block;
 
 import com.draco18s.hardlib.api.interfaces.ICustomContainer;
 import com.draco18s.hardlib.util.InventoryUtils;
+import com.draco18s.industry.entity.DistributorTileEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HopperBlock;
@@ -20,8 +21,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 public class DistributorBlock extends HopperBlock {
 
-	public DistributorBlock(Properties properties) {
-		super(Properties.create(Material.WOOD).hardnessAndResistance(3, 8).harvestTool(ToolType.AXE).harvestLevel(0).sound(SoundType.WOOD));
+	public DistributorBlock() {
+		super(Properties.create(Material.IRON).hardnessAndResistance(3, 8).harvestTool(ToolType.PICKAXE).harvestLevel(0).sound(SoundType.METAL));
 		
 	}
 	
@@ -32,7 +33,7 @@ public class DistributorBlock extends HopperBlock {
 
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return null;//return new DistributorTileEntity();
+		return new DistributorTileEntity();
 	}
 	
 	@Override

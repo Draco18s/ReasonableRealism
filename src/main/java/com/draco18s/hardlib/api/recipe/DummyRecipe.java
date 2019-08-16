@@ -49,4 +49,9 @@ public class DummyRecipe implements ICraftingRecipe {
 	public IRecipeSerializer<?> getSerializer() {
 		return null;
 	}
+
+	@Override
+	public boolean canFit(int width, int height) {
+		return true;
+	}
 }

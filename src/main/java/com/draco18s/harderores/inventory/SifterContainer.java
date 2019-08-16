@@ -8,12 +8,15 @@ import com.draco18s.hardlib.api.internal.inventory.SlotOutput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class SifterContainer extends CommonContainer {
 	public SifterTileEntity tileEntity;
-	
+
+	@OnlyIn(Dist.CLIENT)
 	public SifterContainer(int windowID, PlayerInventory playerInventory, PacketBuffer extraData) {
 		this(windowID, playerInventory, new ItemStackHandler(3), (SifterTileEntity)Minecraft.getInstance().world.getTileEntity(extraData.readBlockPos()));
 	}

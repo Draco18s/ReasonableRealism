@@ -37,7 +37,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public abstract class AbstractHopper extends TileEntity implements ICustomContainer, ITickableTileEntity {
 	protected ItemStackHandler inventory;
-	private final LazyOptional<IItemHandler> inventoryHolder = LazyOptional.of(() -> inventory);
+	protected final LazyOptional<IItemHandler> inventoryHolder = LazyOptional.of(() -> inventory);
 	private int transferCooldown = -1;
 
 	public AbstractHopper(TileEntityType<?> tileEntityTypeIn) {
@@ -81,8 +81,34 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 	}
 
 	private boolean transferItemsOut() {
-
+		IItemHandler iinventory = getInventoryForHopperTransfer();
+		if (iinventory == null) {
+			return false;
+		} else {
+			//Direction direction = this.getBlockState().get(HopperBlock.FACING).getOpposite();
+			if (isInventoryFull(iinventory)) {
+				return false;
+			}
+			else {
+				for(int i = 0; i < inventory.getSlots(); ++i) {
+					if (!inventory.getStackInSlot(i).isEmpty()) {
+						ItemStack itemstack = inventory.extractItem(i, 1, false);
+						itemstack = insertIntoAnySlot(iinventory, itemstack);
+						if(itemstack.isEmpty()) {
+							return true;
+						}
+						inventory.insertItem(i, itemstack, false);
+					}
+				}
+			}
+		}
 		return false;
+	}
+
+	@Nullable
+	private IItemHandler getInventoryForHopperTransfer() {
+		Direction direction = this.getBlockState().get(HopperBlock.FACING);
+		return getInventoryAtPosition(this.getWorld(), this.pos.offset(direction), direction.getOpposite());
 	}
 
 	protected static boolean pullItems(AbstractHopper hopper) {
@@ -95,7 +121,7 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 			});
 		}
 		else {
-			if (suckItems(hopper.getWorld(), hopper.getPos(), hopper.inventory)) {
+			if (suckItems(hopper.getWorld(), hopper.getPos(), hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,Direction.DOWN).orElse(null))) {
 				return true;
 			}
 
@@ -107,6 +133,7 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 		ItemStack itemstack = sourceInven.extractItem(slot, 1, false);
 		if (!itemstack.isEmpty()) {
 			insertIntoAnySlot(hopperInven, itemstack);
+			return true;
 		}
 		return false;
 	}
@@ -118,18 +145,18 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 	protected static boolean isInventoryEmpty(IItemHandler inven) {
 		for(int i = 0; i < inven.getSlots() ; i++) {
 			if(!inven.getStackInSlot(i).isEmpty())
-				return true;
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	protected static boolean isInventoryFull(IItemHandler inven) {
 		for(int i = 0; i < inven.getSlots() ; i++) {
 			ItemStack stack = inven.getStackInSlot(i);
 			if(stack.getCount() < Math.min(stack.getMaxStackSize(), inven.getSlotLimit(i)))
-				return true;
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	@Nullable
@@ -191,8 +218,8 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 	protected static ItemStack insertIntoAnySlot(IItemHandler inventory2, ItemStack stack) {
 		ItemStack stack2 = stack.copy();
 		for(int i = 0; i < inventory2.getSlots() && !stack2.isEmpty(); i++) {
-			if(inventory2.insertItem(i, stack2, true).getCount() < stack2.getCount()) {
-				stack2 = inventory2.insertItem(i, stack2, true);
+			if(inventory2.isItemValid(i, stack2) && inventory2.insertItem(i, stack2, true).getCount() < stack2.getCount()) {
+				stack2 = inventory2.insertItem(i, stack2, false);
 			}
 		}
 		return stack2;

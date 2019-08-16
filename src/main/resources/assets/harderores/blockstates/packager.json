@@ -2,8 +2,8 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "side": "harderores:blocks/packager-side",
-            "top": "harderores:blocks/packager-top"
+            "side": "harderores:block/packager-side",
+            "top": "harderores:block/packager-top"
         },
         "model": "harderores:block/packager",
         "uvlock": true

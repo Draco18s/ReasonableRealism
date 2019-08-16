@@ -8,11 +8,15 @@ import com.draco18s.hardlib.api.internal.inventory.SlotOutput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class PackagerContainer extends CommonContainer {
 	public PackagerTileEntity tileEntity;
+
+	@OnlyIn(Dist.CLIENT)
 	public PackagerContainer(int windowID, PlayerInventory playerInventory, PacketBuffer extraData) {
 		this(windowID, playerInventory, new ItemStackHandler(3), (PackagerTileEntity)Minecraft.getInstance().world.getTileEntity(extraData.readBlockPos()));
 	}
