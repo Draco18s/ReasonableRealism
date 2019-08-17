@@ -1,5 +1,8 @@
 package com.draco18s.industry.proxy;
 
+import com.draco18s.industry.ExpandedIndustry;
+import com.draco18s.industry.world.FakeWorld;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 
@@ -15,6 +18,8 @@ public class ClientProxy implements IProxy {
 			}
 			return clientFilterWorld;
 		}
-		return null;
+		else {
+			return world.getServer().getWorld(ExpandedIndustry.ModDimensionType.FILTER_DIMENSION);
+		}
 	}
 }

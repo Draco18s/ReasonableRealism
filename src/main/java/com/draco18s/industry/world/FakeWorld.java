@@ -1,4 +1,4 @@
-package com.draco18s.industry.proxy;
+package com.draco18s.industry.world;
 
 import java.util.List;
 
@@ -10,8 +10,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientChunkProvider;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -31,10 +29,10 @@ import net.minecraft.world.storage.WorldInfo;
 public class FakeWorld extends World {
 	private static final List<PlayerEntity> EMPTY_LIST = Lists.newArrayList();
 
-	protected FakeWorld(WorldInfo info, IProfiler profilerIn) {
+	public FakeWorld(WorldInfo info, IProfiler profilerIn) {
 		super(info, ExpandedIndustry.ModDimensionType.FILTER_DIMENSION, (worldIn, dimensionIn) -> {
-			return new VoidProvider((FakeWorld)worldIn, 1, worldIn.getWorldType().createChunkGenerator(worldIn));
-		}, profilerIn, true);
+			return new FakeChunkProvider(worldIn);//, 1, worldIn.getWorldType().createChunkGenerator(worldIn));
+		}, profilerIn, false);
 		
 	}
 

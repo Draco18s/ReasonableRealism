@@ -21,7 +21,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
+import net.minecraft.tileentity.BlastFurnaceTileEntity;
 import net.minecraft.tileentity.FurnaceTileEntity;
+import net.minecraft.tileentity.SmokerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -102,7 +104,7 @@ public class FilterTileEntity extends AbstractHopper {
 		BlockState state = ib.getBlock().getStateForPlacement(ib.getBlock().getDefaultState(), Direction.NORTH, Blocks.AIR.getDefaultState(), w, pos, BlockPos.ZERO, Hand.MAIN_HAND);
 		Direction side = getFacingForSlot(slot);
 		if (state.hasTileEntity()) {
-			w.setBlockState(pos, state, 2);
+			w.setBlockState(pos, state, 0);
 			TileEntity te = w.getTileEntity(pos);
 			IItemHandler cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side).orElse(null);
 			if (cap != null) {
@@ -217,7 +219,17 @@ public class FilterTileEntity extends AbstractHopper {
 			else if (/* slot == 0 && */(filterSlot == 0 || filterSlot == 1)) {
 				AbstractFurnaceTileEntity furn = (AbstractFurnaceTileEntity)te;
 				furn.setInventorySlotContents(0, stack.copy());
-				IRecipe<?> recipeIn = this.world.getRecipeManager().getRecipe(IRecipeType.SMELTING, furn, this.world).orElse(null);
+				IRecipe<?> recipeIn = null;
+				if(furn instanceof BlastFurnaceTileEntity) {
+					recipeIn = this.world.getRecipeManager().getRecipe(IRecipeType.BLASTING, furn, this.world).orElse(null);
+				}
+				else if(furn instanceof FurnaceTileEntity) {
+					recipeIn = this.world.getRecipeManager().getRecipe(IRecipeType.SMELTING, furn, this.world).orElse(null);
+				}
+				else if(furn instanceof SmokerTileEntity) {
+					recipeIn = this.world.getRecipeManager().getRecipe(IRecipeType.SMOKING, furn, this.world).orElse(null);
+				}
+				else return false;
 	            return (recipeIn != null && !recipeIn.getRecipeOutput().isEmpty());
 			}
 			return false;

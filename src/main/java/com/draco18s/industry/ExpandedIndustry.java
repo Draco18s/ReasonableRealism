@@ -172,9 +172,7 @@ public class ExpandedIndustry {
 	private static class RegistrationForge {
 		@SubscribeEvent
 		public static void onRegisterDim(@Nonnull final RegisterDimensionsEvent event) {
-			//LOGGER.log(Level.DEBUG, "ModDims: " + ModDims.FILTER_DIMENSION);
 			if(!DimensionManager.getRegistry().containsKey(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension")))
-			//if(ModDimensionType.FILTER_DIMENSION == null)
 				ModDimensionType.FILTER_DIMENSION = DimensionManager.registerDimension(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension"), ModDims.FILTER_DIMENSION, null, false);
 			else
 				ModDimensionType.FILTER_DIMENSION = DimensionManager.getRegistry().getValue(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension")).orElse(null);
