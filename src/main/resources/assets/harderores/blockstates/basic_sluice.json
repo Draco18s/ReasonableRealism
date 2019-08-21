@@ -2,16 +2,13 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "particle": "blocks/planks_oak"
+            "particle": "block/oak_planks"
         },
         "model": "forge:fluid",
         "uvlock": false
     },
     "variants": {
         "": [{
-
-        }],
-        "inventory": [{
 
         }],
         "facing": {

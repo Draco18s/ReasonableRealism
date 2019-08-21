@@ -12,6 +12,7 @@ import com.draco18s.harderores.block.AxelBlock;
 import com.draco18s.harderores.block.MillstoneBlock;
 import com.draco18s.harderores.block.PackagerBlock;
 import com.draco18s.harderores.block.SifterBlock;
+import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.block.WindvaneBlock;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.block.ore.LimoniteBlock;
@@ -23,6 +24,7 @@ import com.draco18s.harderores.entity.AxelTileEntity;
 import com.draco18s.harderores.entity.MillstoneTileEntity;
 import com.draco18s.harderores.entity.PackagerTileEntity;
 import com.draco18s.harderores.entity.SifterTileEntity;
+import com.draco18s.harderores.entity.SluiceTileEntity;
 import com.draco18s.harderores.inventory.PackagerContainer;
 import com.draco18s.harderores.inventory.SifterContainer;
 import com.draco18s.harderores.item.HardOreItem;
@@ -102,6 +104,9 @@ public class HarderOres {
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(AxelTileEntity::new, block), HarderOres.MODID, "axel");
 		block = new WindvaneBlock();
 		EasyRegistry.registerBlock(block, "windvane", new Item.Properties().group(ItemGroup.DECORATIONS));
+		block = new SluiceBlock();
+		EasyRegistry.registerBlock(block, "sluice", new Item.Properties().group(ItemGroup.DECORATIONS));
+		//EasyRegistry.registerTileEntity(TileEntityType.Builder.create(SluiceTileEntity::new, block), HarderOres.MODID, "sluice");
 		
 		block = new HardOreBlock(1, new Color(0xd8af93), Block.Properties.create(Material.ROCK).hardnessAndResistance(Blocks.IRON_ORE.getDefaultState().getBlockHardness(null, null)*2, 5).harvestTool(ToolType.PICKAXE).harvestLevel(1).sound(SoundType.STONE));
 		EasyRegistry.registerBlockWithVariants(block, "ore_hardiron", BlockProperties.ORE_DENSITY, HardOreItem::new, new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
@@ -172,6 +177,7 @@ public class HarderOres {
 		public static final Block axel = null;
 		public static final Block millstone = null;
 		public static final Block windvane = null;
+		public static final Block sluice = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -185,6 +191,7 @@ public class HarderOres {
 		public static final TileEntityType<AxelTileEntity> axel = null;
 		public static final TileEntityType<SifterTileEntity> sifter = null;
 		public static final TileEntityType<SifterTileEntity> packager = null;
+		public static final TileEntityType<SluiceTileEntity> sluice = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)

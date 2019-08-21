@@ -4,15 +4,12 @@
         "textures": {
             "particle": "blocks/planks_oak"
         },
-        "model": "harderores:block/sluice_bottom",
+        "model": "harderores:sluice_bottom",
         "uvlock": false
     },
     "variants": {
         "": [{
 
-        }],
-        "inventory": [{
-            
         }]
     }
 }

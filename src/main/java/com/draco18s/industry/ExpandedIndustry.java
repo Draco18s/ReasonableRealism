@@ -170,6 +170,7 @@ public class ExpandedIndustry {
 	
 	@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.FORGE)
 	private static class RegistrationForge {
+		@SuppressWarnings("deprecation")
 		@SubscribeEvent
 		public static void onRegisterDim(@Nonnull final RegisterDimensionsEvent event) {
 			if(!DimensionManager.getRegistry().containsKey(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension")))

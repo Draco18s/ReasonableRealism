@@ -69,7 +69,6 @@ public class RailBridgeBlock extends RailBlock {
 	@Override
 	@Deprecated
 	public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
-		//TODO validate this
 		if(reader instanceof IWorld) {
 			IWorld iworld = (IWorld)reader;
 			PlayerEntity p = iworld.getClosestPlayer(pos.getX()+0.5, pos.getY(), pos.getZ()+0.5, 1.5, false);
