@@ -1,27 +1,44 @@
 package com.draco18s.harderores.entity;
 
-import com.draco18s.harderores.HarderOres;
+import javax.annotation.Nullable;
 
+import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.block.SluiceBlock;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelDataMap.Builder;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class SluiceTileEntity extends TileEntity implements ITickable {
-	private static final ModelProperty<Integer> WATER = new ModelProperty<Integer>();
-	private int waterAmount;
+public class SluiceTileEntity extends TileEntity implements ITickableTileEntity {
+	//public static final ModelProperty<Integer> WATER = new ModelProperty<Integer>();
+	private int waterAmount = -1;
+	private int downstreamWaterAmount = -1;
+	private int upstreamWaterAmount = -1;
 	protected ItemStackHandler inputSlot;
 	protected LazyOptional<ItemStackHandler> inputHandler = LazyOptional.of(() -> inputSlot);
+	public static ModelProperty<Float> LEVEL_CORNERS_0 = new ModelProperty<Float>();
+	public static ModelProperty<Float> LEVEL_CORNERS_1 = new ModelProperty<Float>();
+	public static ModelProperty<Float> LEVEL_CORNERS_2 = new ModelProperty<Float>();
+	public static ModelProperty<Float> LEVEL_CORNERS_3 = new ModelProperty<Float>();
+	public static ModelProperty<Integer> WATER_COLOR = new ModelProperty<Integer>();
+	public static ModelProperty<Float> FLOW_DIRECTION = new ModelProperty<Float>();
 
 	public SluiceTileEntity() {
 		super(HarderOres.ModTileEntities.sluice);
@@ -41,8 +58,11 @@ public class SluiceTileEntity extends TileEntity implements ITickable {
 
 	private void updateWater() {
 		int prevWater = waterAmount;
+		int prevDownStream = downstreamWaterAmount;
+		int prevUpStream = upstreamWaterAmount;
+		waterAmount = 0;
 		Direction dir = this.getBlockState().get(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
-
+		
 		BlockState source = this.world.getBlockState(pos.offset(dir));
 
 		if (source.getFluidState().getFluid() == Fluids.WATER || source.getFluidState().getFluid() == Fluids.FLOWING_WATER) {
@@ -57,10 +77,35 @@ public class SluiceTileEntity extends TileEntity implements ITickable {
 		if (left == Material.AIR || left == Material.EARTH || left == Material.ORGANIC || left == Material.SAND || right == Material.AIR || right == Material.EARTH || right == Material.ORGANIC || right == Material.SAND) {
 			waterAmount = 0;
 		}
-		if (prevWater != waterAmount) {
-			ModelDataManager.requestModelDataRefresh(this);
-			//world.markBlockRangeForRenderUpdate(pos, pos);
+		dir = this.getBlockState().get(BlockStateProperties.HORIZONTAL_FACING);//.getOpposite();
+		pos = getPos();
+		TileEntity dstate = world.getTileEntity(pos.offset(dir));
+		if(dstate instanceof SluiceTileEntity) {
+			downstreamWaterAmount = ((SluiceTileEntity)dstate).getWaterAmount();
 		}
+		else {
+			downstreamWaterAmount = -1;
+		}
+		TileEntity ustate = world.getTileEntity(pos.offset(dir.getOpposite()));
+		if(ustate instanceof SluiceTileEntity) {
+			upstreamWaterAmount = ((SluiceTileEntity)ustate).getWaterAmount();
+		}
+		else {
+			upstreamWaterAmount = -1;
+		}
+		//if (prevWater != waterAmount || prevDownStream != downstreamWaterAmount || prevUpStream != upstreamWaterAmount || getWorld().getGameTime() % (2) == 0) {
+			if(world.isRemote)
+				ModelDataManager.requestModelDataRefresh(this);
+			world.func_225319_b(pos, this.getBlockState(), this.getBlockState());
+			world.setBlockState(pos, getBlockState().with(SluiceBlock.FLOWING, waterAmount > 0));
+			//world.markBlockRangeForRenderUpdate(pos, pos);
+		//}
+	}
+	
+	public void updateNeighborChanged() {
+		if(world.isRemote)
+			ModelDataManager.requestModelDataRefresh(this);
+		world.func_225319_b(pos, this.getBlockState(), this.getBlockState());
 	}
 
 	protected int getWaterAmount() {
@@ -69,6 +114,111 @@ public class SluiceTileEntity extends TileEntity implements ITickable {
 
 	@Override
     public IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(WATER, this.waterAmount).build();
+		Builder state = new ModelDataMap.Builder();
+		//boolean hasWater = this.getWaterAmount() > 0;
+		float dir = 0;//(float) getFlowDirection(oldState);
+		state = state.withInitial(FLOW_DIRECTION, dir);
+		//float waterHeight = getWaterAmount() * 14f / 16;
+
+		float[][] corner = new float[2][2];
+		corner[0][0] = getCorner(getBlockState(), world,pos,Direction.NORTH, Direction.WEST);
+		corner[0][1] = getCorner(getBlockState(), world,pos,Direction.SOUTH, Direction.WEST);
+		corner[1][1] = getCorner(getBlockState(), world,pos,Direction.SOUTH, Direction.EAST);
+		corner[1][0] = getCorner(getBlockState(), world,pos,Direction.NORTH, Direction.EAST);
+		
+		boolean anyZero = false;
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 2; j++) {
+				if(corner[i][j] == 0) {
+					anyZero = true;
+				}
+			}
+		}
+		if(anyZero) {
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < 2; j++) {
+					if(corner[i][j] == 0) {
+						corner[i][j] = 0;
+					}
+				}
+			}
+		}
+		
+		state = state.withInitial(LEVEL_CORNERS_0, corner[0][0]);
+		state = state.withInitial(LEVEL_CORNERS_1, corner[0][1]);
+		state = state.withInitial(LEVEL_CORNERS_2, corner[1][1]);
+		state = state.withInitial(LEVEL_CORNERS_3, corner[1][0]);
+		state = state.withInitial(WATER_COLOR, world.getBiome(pos).getWaterColor());
+		return state.build();
+        //return new ModelDataMap.Builder().withInitial(WATER, this.waterAmount).build();
     }
+
+	private static float getCorner(BlockState state, World world, BlockPos pos, Direction NS, Direction EW) {
+		Direction dir = state.get(BlockStateProperties.HORIZONTAL_FACING);
+		SluiceTileEntity teSelf = (SluiceTileEntity)world.getTileEntity(pos);
+		if(teSelf.getWaterAmount() <= 0) return 0.001f;
+		if(dir != NS && dir != EW) {
+			BlockState upstream = world.getBlockState(pos.offset(dir.getOpposite(), 1));
+			if(upstream.getBlock() == HarderOres.ModBlocks.sluice) {
+				SluiceTileEntity teUp = (SluiceTileEntity) world.getTileEntity(pos.offset(dir.getOpposite(),1));
+				//if(teUp.getWaterAmount()-1 <= 0) return 0;
+				return ((teUp.getWaterAmount()-1) * 3f/32f);
+			}
+			else if(upstream.getFluidState().getFluid() == Fluids.WATER) {
+				return 0.885f;
+			}
+			else if(upstream.getFluidState().getFluid() == Fluids.FLOWING_WATER) {
+				return upstream.getFluidState().getLevel() * 2f/16f * 0.885f;
+			}
+		}
+		else {
+			BlockState downstream = world.getBlockState(pos.offset(dir, 1));
+			if(downstream.getBlock() == HarderOres.ModBlocks.sluice) {
+				SluiceTileEntity teDown = (SluiceTileEntity) world.getTileEntity(pos.offset(dir, 1));
+				if(teDown.getWaterAmount() == 0) return 2f/16f;
+				
+				return ((teDown.getWaterAmount()+1) * 3f/32f);
+			}
+			else if(Block.hasSolidSide(downstream, world, pos, dir)) {
+				return 2f/16f;
+			}
+			else if(!Block.hasSolidSide(downstream, world, pos, dir.getOpposite())) {
+				return 2f/16f;
+			}
+		}
+		return 0;
+	}
+	
+	@Override
+	@Nullable
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
+	}
+
+	@Override
+	public CompoundNBT getUpdateTag() {
+		return this.write(new CompoundNBT());
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
+		read(pkt.getNbtCompound());
+	}
+
+	@Override
+	public CompoundNBT write(CompoundNBT tag) {
+		tag = super.write(tag);
+		tag.put("harderores:inputslot", inputSlot.serializeNBT());
+		tag.putInt("harderores:waterAmount", waterAmount);
+		//tag.putFloat("harderores:siftTime", siftTime);
+		return tag;
+	}
+
+	@Override
+	public void read(CompoundNBT tag) {
+		super.read(tag);
+		inputSlot.deserializeNBT(tag.getCompound("harderores:inputslot"));
+		waterAmount = tag.getInt("harderores:waterAmount");
+		//siftTime = tag.getFloat("harderores:siftTime");
+	}
 }

@@ -4,18 +4,19 @@
         "textures": {
             "particle": "block/oak_planks"
         },
-        "model": "forge:fluid",
+        "model": "harderores:block/sluice",
         "uvlock": false
     },
     "variants": {
-        "": [{
-
-        }],
         "facing": {
             "north": { },
             "south": { },
             "east": { },
             "west": { }
+        },
+        "flowing": {
+            "true": { },
+            "false": { }
         }
     }
 }

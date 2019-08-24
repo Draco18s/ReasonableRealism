@@ -108,7 +108,6 @@ public class ExpandedIndustry {
 		block = new PoweredRailBridgeBlock();
 		EasyRegistry.registerBlock(block, "powered_rail_bridge", new Item.Properties().group(ItemGroup.DECORATIONS));
 		
-		
 		//EasyRegistry.registerOther(IForgeContainerType.create(ExtHopperContainer::new), new ResourceLocation(ExpandedIndustry.MODID,"machine_wood_hopper"));
 
 	}

@@ -106,7 +106,7 @@ public class HarderOres {
 		EasyRegistry.registerBlock(block, "windvane", new Item.Properties().group(ItemGroup.DECORATIONS));
 		block = new SluiceBlock();
 		EasyRegistry.registerBlock(block, "sluice", new Item.Properties().group(ItemGroup.DECORATIONS));
-		//EasyRegistry.registerTileEntity(TileEntityType.Builder.create(SluiceTileEntity::new, block), HarderOres.MODID, "sluice");
+		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(SluiceTileEntity::new, block), HarderOres.MODID, "sluice");
 		
 		block = new HardOreBlock(1, new Color(0xd8af93), Block.Properties.create(Material.ROCK).hardnessAndResistance(Blocks.IRON_ORE.getDefaultState().getBlockHardness(null, null)*2, 5).harvestTool(ToolType.PICKAXE).harvestLevel(1).sound(SoundType.STONE));
 		EasyRegistry.registerBlockWithVariants(block, "ore_hardiron", BlockProperties.ORE_DENSITY, HardOreItem::new, new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
