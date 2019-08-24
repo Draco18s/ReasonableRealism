@@ -6,7 +6,6 @@ import java.util.Random;
 
 import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.entity.SluiceTileEntity;
-import com.draco18s.hardlib.client.ModelsCache;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,44 +13,33 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.BlockFaceUV;
-import net.minecraft.client.renderer.model.BlockPartFace;
-import net.minecraft.client.renderer.model.BlockPartRotation;
-import net.minecraft.client.renderer.model.FaceBakery;
 import net.minecraft.client.renderer.model.IBakedModel;
 //import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Direction.Axis;
-import net.minecraftforge.client.model.BasicState;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 
 public class BakedModelBasicSluice implements IDynamicBakedModel {
 	IBakedModel waterFlow;
 	IBakedModel basePlate;
-	private final TextureAtlasSprite[] atlasSpritesWater = new TextureAtlasSprite[2];
+	private final TextureAtlasSprite[] atlasSpritesWater = new TextureAtlasSprite[3];
 
+	@SuppressWarnings("deprecation")
 	public BakedModelBasicSluice(IBakedModel water, IBakedModel base) {
 		waterFlow = water;
 		basePlate = base;
 		AtlasTexture atlastexture = Minecraft.getInstance().getTextureMap();
 		this.atlasSpritesWater[0] = Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(Blocks.WATER.getDefaultState()).getParticleTexture();
 		this.atlasSpritesWater[1] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_FLOW);
+		this.atlasSpritesWater[2] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_OVERLAY);
 	}
-
-	/*@Override
-	public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand) {
-		ArrayList<BakedQuad> list = new ArrayList<BakedQuad>();
-		list.addAll(waterFlow.getQuads(state, side, rand, null));
-		list.addAll(basePlate.getQuads(state, side, rand, null));
-		return list;
-	}*/
 
 	@Override
 	public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
@@ -69,7 +57,7 @@ public class BakedModelBasicSluice implements IDynamicBakedModel {
 			int blue = color & 0x0000FF;
 			Direction dir = state.get(BlockStateProperties.HORIZONTAL_FACING);
 			color = (0xC0000000) | ((blue) << 16) | ((green) << 8) | (red);
-			FaceBakery faceBakery = new FaceBakery();
+			//FaceBakery faceBakery = new FaceBakery();
 			BlockFaceUV uvs;// = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
 			Vector3f[] verts = new Vector3f[] {
 					new Vector3f(0,corners[0],0),
@@ -108,119 +96,124 @@ public class BakedModelBasicSluice implements IDynamicBakedModel {
 					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
 					break;
 			}
-			BlockPartFace partFace = new BlockPartFace(Direction.UP,0,"",uvs);
-			ISprite isprite = new BasicState(ModelsCache.DEFAULTMODELSTATE,true);
+			//BlockPartFace partFace = new BlockPartFace(Direction.UP,0,"",uvs);
+			//ISprite isprite = new BasicState(ModelsCache.DEFAULTMODELSTATE,true);
 
-			BlockPartRotation rotation = new BlockPartRotation(new Vector3f(0.5f,0,0.5f), Direction.Axis.Y, 0, false);
-			boolean diffuseLight = false;
-			BakedQuad q0 = faceBakery.makeBakedQuad(new Vector3f(0,corners[1]*16,0), new Vector3f(16,corners[1]*16,16), partFace, 
-					atlasSpritesWater[1], Direction.UP, isprite, rotation, diffuseLight);
+			//BlockPartRotation rotation = new BlockPartRotation(new Vector3f(0.5f,0,0.5f), Direction.Axis.Y, 0, false);
+			boolean diffuseLight = true;
+			BakedQuad q0;
+			//q0 = faceBakery.makeBakedQuad(new Vector3f(0,corners[1]*16,0), new Vector3f(16,corners[1]*16,16), partFace, 
+			//		atlasSpritesWater[1], Direction.UP, isprite, rotation, diffuseLight);
 			//list.addAll(waterFlow.getQuads(state, side, rand, null));
 			int[] data = new int[28];
-			bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
-			/*int[] data = new int[]{
-			0, 1063423836, 0, -1, 1023434916, 960579630, 32512, 
-			0, 1063423836, 1065353216, -1, 1023434916, 1031749304, 32512,
-			1065353216, 1063423836, 1065353216, -1, 1031774044, 1031749304, 32512,
-			1065353216, 1063423836, 0, -1, 1031774044, 960579630, 32512};*/
-			q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
-			list.add(q0);
-			
+			if(side == null || side == Direction.UP) {
+				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				data = new int[28];
+				verts = new Vector3f[] {verts[3],verts[2],verts[1],verts[0]};
+				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+			}
 			Direction sideFace = dir.rotateAround(Axis.Y);
 			data = new int[28];
-			switch(sideFace) {
-				case NORTH:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(1,2f/16,     1),//bottom
-							new Vector3f(1,corners[2],1),//NW
-							new Vector3f(0,corners[0],1),//NE
-							new Vector3f(0,2f/16,     1)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case SOUTH:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(0,2f/16,     0),//bottom
-							new Vector3f(0,corners[1],0),//NE
-							new Vector3f(1,corners[3],0),//NW
-							new Vector3f(1,2f/16,     0)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case EAST:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(0,2f/16,     1),//bottom
-							new Vector3f(0,corners[2],1),//NW
-							new Vector3f(0,corners[3],0),//NE
-							new Vector3f(0,2f/16,     0)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case WEST:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(1,2f/16,     0),//bottom
-							new Vector3f(1,corners[3],0),//NE
-							new Vector3f(1,corners[2],1),//NW
-							new Vector3f(1,2f/16,     1)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				default:
-					verts = new Vector3f[] {
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0)};
-					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-					break;
+			if(side == null || side == sideFace) {
+				switch(sideFace) {
+					case NORTH:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(1,2f/16,     1),//bottom
+								new Vector3f(1,corners[2],1),//NW
+								new Vector3f(0,corners[0],1),//NE
+								new Vector3f(0,2f/16,     1)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case SOUTH:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(0,2f/16,     0),//bottom
+								new Vector3f(0,corners[1],0),//NE
+								new Vector3f(1,corners[3],0),//NW
+								new Vector3f(1,2f/16,     0)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case EAST:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(0,2f/16,     1),//bottom
+								new Vector3f(0,corners[2],1),//NW
+								new Vector3f(0,corners[3],0),//NE
+								new Vector3f(0,2f/16,     0)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case WEST:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(1,2f/16,     0),//bottom
+								new Vector3f(1,corners[3],0),//NE
+								new Vector3f(1,corners[2],1),//NW
+								new Vector3f(1,2f/16,     1)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					default:
+						verts = new Vector3f[] {
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0)};
+						uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
+						break;
+				}
+				bakeQuad(data, verts, atlasSpritesWater[2], uvs, color);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[2], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
 			}
-			bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
-			q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
-			list.add(q0);
-			
 			sideFace = sideFace.getOpposite();
 			data = new int[28];
-			switch(sideFace) {
-				case NORTH:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(1,2f/16,     1),//bottom
-							new Vector3f(1,corners[2],1),//NW
-							new Vector3f(0,corners[0],1),//NE
-							new Vector3f(0,2f/16,     1)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case SOUTH:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(0,2f/16,     0),//bottom
-							new Vector3f(0,corners[1],0),//NE
-							new Vector3f(1,corners[3],0),//NW
-							new Vector3f(1,2f/16,     0)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case EAST:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(0,2f/16,     1),//bottom
-							new Vector3f(0,corners[2],1),//NW
-							new Vector3f(0,corners[3],0),//NE
-							new Vector3f(0,2f/16,     0)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case WEST:
-					verts = new Vector3f[] { //[0],[2]
-							new Vector3f(1,2f/16,     0),//bottom
-							new Vector3f(1,corners[3],0),//NE
-							new Vector3f(1,corners[2],1),//NW
-							new Vector3f(1,2f/16,     1)};//bottom
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				default:
-					verts = new Vector3f[] {
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0)};
-					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-					break;
+			if(side == null || side == sideFace) {
+				switch(sideFace) {
+					case NORTH:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(1,2f/16,     1),//bottom
+								new Vector3f(1,corners[2],1),//NW
+								new Vector3f(0,corners[0],1),//NE
+								new Vector3f(0,2f/16,     1)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case SOUTH:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(0,2f/16,     0),//bottom
+								new Vector3f(0,corners[1],0),//NE
+								new Vector3f(1,corners[3],0),//NW
+								new Vector3f(1,2f/16,     0)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case EAST:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(0,2f/16,     1),//bottom
+								new Vector3f(0,corners[2],1),//NW
+								new Vector3f(0,corners[3],0),//NE
+								new Vector3f(0,2f/16,     0)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					case WEST:
+						verts = new Vector3f[] { //[0],[2]
+								new Vector3f(1,2f/16,     0),//bottom
+								new Vector3f(1,corners[3],0),//NE
+								new Vector3f(1,corners[2],1),//NW
+								new Vector3f(1,2f/16,     1)};//bottom
+						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
+						break;
+					default:
+						verts = new Vector3f[] {
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0),
+								new Vector3f(0,0,0)};
+						uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
+						break;
+				}
+				bakeQuad(data, verts, atlasSpritesWater[2], uvs, color);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[2], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
 			}
-			bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
-			q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
-			list.add(q0);
 		}
 		return list;
 	}
@@ -239,7 +232,7 @@ public class BakedModelBasicSluice implements IDynamicBakedModel {
 		faceData[i + 3] = shadeColor;
 		faceData[i + 4] = Float.floatToRawIntBits(sprite.getInterpolatedU((double)faceUV.getVertexU(vertexIndex) * .999 + faceUV.getVertexU((vertexIndex + 2) % 4) * .001));
 		faceData[i + 5] = Float.floatToRawIntBits(sprite.getInterpolatedV((double)faceUV.getVertexV(vertexIndex) * .999 + faceUV.getVertexV((vertexIndex + 2) % 4) * .001));
-		faceData[i + 6] = 0x7F00;
+		faceData[i + 6] = 0xFF00;
 	}
 
 	@Override

@@ -41,49 +41,6 @@ public class ClientProxy implements IProxy {
 		
 		@SubscribeEvent
 		public static void onModelBake(ModelBakeEvent ev) {
-			/*IDynamicBakedModel bakedModelLoader = new IDynamicBakedModel() {
-            @Override
-            public boolean isGui3d() {
-                return false;
-            }
-
-            @Override
-            public boolean isBuiltInRenderer() {
-                return false;
-            }
-
-            @Override
-            public boolean isAmbientOcclusion() {
-                return false;
-            }
-
-            @Override
-            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData modelData) {
-                IBakedModel model;
-                BlockState facadeState = Blocks.WATER.getDefaultState().with(BlockStateProperties.LEVEL_0_15, modelData.getData(SluiceTileEntity.WATER));
-                model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(facadeState);
-                return model.getQuads(facadeState, side, rand, null);
-
-            }
-
-            @Override
-            public TextureAtlasSprite getParticleTexture() {
-                return MissingTextureSprite.func_217790_a();
-            }
-
-            @Override
-            public ItemOverrideList getOverrides() {
-                return null;
-            }
-
-            @Override
-            @Nonnull
-            public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
-                return tileData;
-            }
-        };
-        ev.getModelRegistry().put(new ResourceLocation(HarderOres.MODID,"sluice"), bakedModelLoader);*/
-
 			ModelResourceLocation resLoc = new ModelResourceLocation(HarderOres.ModBlocks.sluice.getRegistryName(),"facing=north,flowing=true");
 			IBakedModel water = ev.getModelRegistry().get(resLoc);
 			ModelBakery bakery = ev.getModelLoader();

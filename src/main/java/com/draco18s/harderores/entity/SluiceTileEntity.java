@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
@@ -29,8 +30,8 @@ import net.minecraftforge.items.ItemStackHandler;
 public class SluiceTileEntity extends TileEntity implements ITickableTileEntity {
 	//public static final ModelProperty<Integer> WATER = new ModelProperty<Integer>();
 	private int waterAmount = -1;
-	private int downstreamWaterAmount = -1;
-	private int upstreamWaterAmount = -1;
+	//private int downstreamWaterAmount = -1;
+	//private int upstreamWaterAmount = -1;
 	protected ItemStackHandler inputSlot;
 	protected LazyOptional<ItemStackHandler> inputHandler = LazyOptional.of(() -> inputSlot);
 	public static ModelProperty<Float> LEVEL_CORNERS_0 = new ModelProperty<Float>();
@@ -57,9 +58,9 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 	}
 
 	private void updateWater() {
-		int prevWater = waterAmount;
-		int prevDownStream = downstreamWaterAmount;
-		int prevUpStream = upstreamWaterAmount;
+		//int prevWater = waterAmount;
+		//int prevDownStream = downstreamWaterAmount;
+		//int prevUpStream = upstreamWaterAmount;
 		waterAmount = 0;
 		Direction dir = this.getBlockState().get(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
 		
@@ -79,7 +80,7 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 		}
 		dir = this.getBlockState().get(BlockStateProperties.HORIZONTAL_FACING);//.getOpposite();
 		pos = getPos();
-		TileEntity dstate = world.getTileEntity(pos.offset(dir));
+		/*TileEntity dstate = world.getTileEntity(pos.offset(dir));
 		if(dstate instanceof SluiceTileEntity) {
 			downstreamWaterAmount = ((SluiceTileEntity)dstate).getWaterAmount();
 		}
@@ -92,7 +93,7 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 		}
 		else {
 			upstreamWaterAmount = -1;
-		}
+		}*/
 		//if (prevWater != waterAmount || prevDownStream != downstreamWaterAmount || prevUpStream != upstreamWaterAmount || getWorld().getGameTime() % (2) == 0) {
 			if(world.isRemote)
 				ModelDataManager.requestModelDataRefresh(this);
@@ -148,7 +149,8 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 		state = state.withInitial(LEVEL_CORNERS_1, corner[0][1]);
 		state = state.withInitial(LEVEL_CORNERS_2, corner[1][1]);
 		state = state.withInitial(LEVEL_CORNERS_3, corner[1][0]);
-		state = state.withInitial(WATER_COLOR, world.getBiome(pos).getWaterColor());
+		
+		state = state.withInitial(WATER_COLOR, BiomeColors.getWaterColor(world, pos));
 		return state.build();
         //return new ModelDataMap.Builder().withInitial(WATER, this.waterAmount).build();
     }
