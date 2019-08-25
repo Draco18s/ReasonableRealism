@@ -7,6 +7,7 @@ import com.draco18s.harderores.block.SluiceBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
@@ -101,6 +102,12 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 			world.setBlockState(pos, getBlockState().with(SluiceBlock.FLOWING, waterAmount > 0));
 			//world.markBlockRangeForRenderUpdate(pos, pos);
 		//}
+		if(waterAmount > 0 && !world.isRemote) {
+			Material mat = world.getBlockState(pos.offset(dir).down()).getMaterial();
+			if(mat == Material.AIR) {
+				world.setBlockState(pos.offset(dir).down(), HarderOres.ModBlocks.sluice_output.getDefaultState(), 3);
+			}
+		}
 	}
 	
 	public void updateNeighborChanged() {
@@ -179,7 +186,7 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 				SluiceTileEntity teDown = (SluiceTileEntity) world.getTileEntity(pos.offset(dir, 1));
 				if(teDown.getWaterAmount() == 0) return 2f/16f;
 				
-				return ((teDown.getWaterAmount()+1) * 3f/32f);
+				return (Math.min((teDown.getWaterAmount()+1),teSelf.getWaterAmount()+1) * 3f/32f);
 			}
 			else if(Block.hasSolidSide(downstream, world, pos, dir)) {
 				return 2f/16f;
@@ -222,5 +229,18 @@ public class SluiceTileEntity extends TileEntity implements ITickableTileEntity 
 		inputSlot.deserializeNBT(tag.getCompound("harderores:inputslot"));
 		waterAmount = tag.getInt("harderores:waterAmount");
 		//siftTime = tag.getFloat("harderores:siftTime");
+	}
+	
+	@Override
+	public void remove() {
+		super.remove();
+		inputHandler.invalidate();
+		if(waterAmount > 0 && !world.isRemote) {
+			Direction dir = this.getBlockState().get(BlockStateProperties.HORIZONTAL_FACING);
+			Block blk = world.getBlockState(pos.offset(dir).down()).getBlock();
+			if(blk == HarderOres.ModBlocks.sluice_output) {
+				world.setBlockState(pos.offset(dir).down(), Blocks.AIR.getDefaultState(), 3);
+			}
+		}
 	}
 }

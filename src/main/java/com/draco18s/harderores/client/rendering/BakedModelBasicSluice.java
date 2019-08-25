@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Direction.Axis;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -29,22 +30,29 @@ import net.minecraftforge.client.model.data.IModelData;
 public class BakedModelBasicSluice implements IDynamicBakedModel {
 	IBakedModel waterFlow;
 	IBakedModel basePlate;
-	private final TextureAtlasSprite[] atlasSpritesWater = new TextureAtlasSprite[3];
+	private final TextureAtlasSprite[] atlasSpritesWater = new TextureAtlasSprite[2];
+	private final TextureAtlasSprite atlasSpritePlanks_1;
+	private final TextureAtlasSprite atlasSpritePlanks_2;
 
-	@SuppressWarnings("deprecation")
 	public BakedModelBasicSluice(IBakedModel water, IBakedModel base) {
 		waterFlow = water;
 		basePlate = base;
 		AtlasTexture atlastexture = Minecraft.getInstance().getTextureMap();
-		this.atlasSpritesWater[0] = Minecraft.getInstance().getModelManager().getBlockModelShapes().getModel(Blocks.WATER.getDefaultState()).getParticleTexture();
-		this.atlasSpritesWater[1] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_FLOW);
-		this.atlasSpritesWater[2] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_OVERLAY);
+		this.atlasSpritesWater[0] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_FLOW);
+		this.atlasSpritesWater[1] = atlastexture.getSprite(ModelBakery.LOCATION_WATER_OVERLAY);
+		atlasSpritePlanks_1 = atlastexture.getSprite(new ResourceLocation("harderores:block/oak_planks"));
+		atlasSpritePlanks_2 = atlastexture.getSprite(new ResourceLocation("harderores:block/oak_planks_rotated"));
 	}
 
 	@Override
 	public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand, IModelData extraData) {
 		ArrayList<BakedQuad> list = new ArrayList<BakedQuad>();
-		list.addAll(basePlate.getQuads(state, side, rand, null));
+		BlockFaceUV uvs;
+		boolean diffuseLight = true;
+		BakedQuad q0;
+		int[] data;
+		Vector3f[] verts;
+		if(extraData == null || SluiceTileEntity.LEVEL_CORNERS_0 == null || !extraData.hasProperty(SluiceTileEntity.LEVEL_CORNERS_0)) return list;
 		if(state.get(SluiceBlock.FLOWING)) {
 			float[] corners = new float[4];
 			corners[0] = Math.max(extraData.getData(SluiceTileEntity.LEVEL_CORNERS_0), 1f/16);//NW
@@ -55,167 +63,275 @@ public class BakedModelBasicSluice implements IDynamicBakedModel {
 			int red = (color & 0xFF0000) >> 16;
 			int green = (color & 0x00FF00) >> 8;
 			int blue = color & 0x0000FF;
-			Direction dir = state.get(BlockStateProperties.HORIZONTAL_FACING);
+			Direction facingDir = state.get(BlockStateProperties.HORIZONTAL_FACING);
 			color = (0xC0000000) | ((blue) << 16) | ((green) << 8) | (red);
 			//FaceBakery faceBakery = new FaceBakery();
-			BlockFaceUV uvs;// = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-			Vector3f[] verts = new Vector3f[] {
-					new Vector3f(0,corners[0],0),
-					new Vector3f(0,corners[1],1),
-					new Vector3f(1,corners[2],1),
-					new Vector3f(1,corners[3],0)};
-			switch(dir) {
-				case NORTH:
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case SOUTH:
-					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-					break;
-				case EAST:
-					verts = new Vector3f[] {
-							new Vector3f(1,corners[3],0),
-							new Vector3f(0,corners[0],0),
-							new Vector3f(0,corners[1],1),
-							new Vector3f(1,corners[2],1)};
-					uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-					break;
-				case WEST:
-					verts = new Vector3f[] {
-							new Vector3f(1,corners[3],0),
-							new Vector3f(0,corners[0],0),
-							new Vector3f(0,corners[1],1),
-							new Vector3f(1,corners[2],1)};
-					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-					break;
-				default:
-					verts = new Vector3f[] {
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0),
-							new Vector3f(0,0,0)};
-					uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-					break;
-			}
-			//BlockPartFace partFace = new BlockPartFace(Direction.UP,0,"",uvs);
-			//ISprite isprite = new BasicState(ModelsCache.DEFAULTMODELSTATE,true);
-
-			//BlockPartRotation rotation = new BlockPartRotation(new Vector3f(0.5f,0,0.5f), Direction.Axis.Y, 0, false);
-			boolean diffuseLight = true;
-			BakedQuad q0;
-			//q0 = faceBakery.makeBakedQuad(new Vector3f(0,corners[1]*16,0), new Vector3f(16,corners[1]*16,16), partFace, 
-			//		atlasSpritesWater[1], Direction.UP, isprite, rotation, diffuseLight);
-			//list.addAll(waterFlow.getQuads(state, side, rand, null));
-			int[] data = new int[28];
-			if(side == null || side == Direction.UP) {
-				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
-				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
-				list.add(q0);
-				data = new int[28];
-				verts = new Vector3f[] {verts[3],verts[2],verts[1],verts[0]};
-				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
-				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
-				list.add(q0);
-			}
-			Direction sideFace = dir.rotateAround(Axis.Y);
 			data = new int[28];
-			if(side == null || side == sideFace) {
-				switch(sideFace) {
+			if(side == null || side == Direction.UP) {
+				verts = getTopVerts(corners, facingDir);
+				switch(facingDir) {
 					case NORTH:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(1,2f/16,     1),//bottom
-								new Vector3f(1,corners[2],1),//NW
-								new Vector3f(0,corners[0],1),//NE
-								new Vector3f(0,2f/16,     1)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					case SOUTH:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(0,2f/16,     0),//bottom
-								new Vector3f(0,corners[1],0),//NE
-								new Vector3f(1,corners[3],0),//NW
-								new Vector3f(1,2f/16,     0)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
 					case EAST:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(0,2f/16,     1),//bottom
-								new Vector3f(0,corners[2],1),//NW
-								new Vector3f(0,corners[3],0),//NE
-								new Vector3f(0,2f/16,     0)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					case WEST:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(1,2f/16,     0),//bottom
-								new Vector3f(1,corners[3],0),//NE
-								new Vector3f(1,corners[2],1),//NW
-								new Vector3f(1,2f/16,     1)};//bottom
 						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
 						break;
 					default:
-						verts = new Vector3f[] {
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0)};
 						uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
 						break;
 				}
-				bakeQuad(data, verts, atlasSpritesWater[2], uvs, color);
-				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[2], diffuseLight, DefaultVertexFormats.BLOCK);
+				bakeQuad(data, verts, atlasSpritesWater[0], uvs, color);
+				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[0], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				data = new int[28];
+				verts = new Vector3f[] {verts[3],verts[2],verts[1],verts[0]};
+				bakeQuad(data, verts, atlasSpritesWater[0], uvs, color);
+				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritesWater[0], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				
+				data = new int[28];
+				verts = getTopVerts(corners, facingDir);
+				verts[0].add(0, -2f/16, 0);
+				verts[1].add(0, -2f/16, 0);
+				verts[2].add(0, -2f/16, 0);
+				verts[3].add(0, -2f/16, 0);
+				uvs = new BlockFaceUV(new float[] {0, 0, 16, 16}, 0);
+				bakeQuad(data, verts, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, Direction.UP, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+			}
+			Direction sideFace = facingDir.rotateAround(Axis.Y);
+			data = new int[28];
+			if(side == null || side == sideFace) {
+				verts = getSideVerts(corners, sideFace);
+				verts[0].add(0, verts[1].getY()-2f/16, 0);
+				verts[3].add(0, verts[2].getY()-2f/16, 0);
+				uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
+				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				
+				data = new int[28];
+				verts = getSideVerts(corners, sideFace);
+				verts[1].add(0, -2f/16, 0);
+				verts[2].add(0, -2f/16, 0);
+				
+				float min = Math.min(verts[1].getY(), verts[2].getY());
+				float max = Math.max(verts[1].getY(), verts[2].getY());
+
+				Vector3f[] verts2 = new Vector3f[4];
+				verts2[1] = new Vector3f(verts[0].getX(),min,			 verts[0].getZ());
+				verts2[2] = new Vector3f(verts[1].getX(),verts[1].getY(),verts[1].getZ());
+				verts2[3] = new Vector3f(verts[2].getX(),verts[2].getY(),verts[2].getZ());
+				verts2[0] = new Vector3f(verts[3].getX(),min,			 verts[3].getZ());
+				
+				uvs = new BlockFaceUV(new float[] {min*16, 0, min*16+(max-min)*16, 16}, 0);
+				bakeQuad(data, verts2, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				
+				data = new int[28];
+				verts[1] = new Vector3f(verts[1].getX(),min,verts[1].getZ());
+				verts[2] = new Vector3f(verts[2].getX(),min,verts[2].getZ());
+				verts2[0] = verts[3];
+				verts2[1] = verts[0];
+				verts2[2] = verts[1];
+				verts2[3] = verts[2];
+				
+				uvs = new BlockFaceUV(new float[] {0, 0, min*16, 16}, 0);
+				bakeQuad(data, verts2, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
 				list.add(q0);
 			}
 			sideFace = sideFace.getOpposite();
 			data = new int[28];
 			if(side == null || side == sideFace) {
-				switch(sideFace) {
-					case NORTH:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(1,2f/16,     1),//bottom
-								new Vector3f(1,corners[2],1),//NW
-								new Vector3f(0,corners[0],1),//NE
-								new Vector3f(0,2f/16,     1)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					case SOUTH:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(0,2f/16,     0),//bottom
-								new Vector3f(0,corners[1],0),//NE
-								new Vector3f(1,corners[3],0),//NW
-								new Vector3f(1,2f/16,     0)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					case EAST:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(0,2f/16,     1),//bottom
-								new Vector3f(0,corners[2],1),//NW
-								new Vector3f(0,corners[3],0),//NE
-								new Vector3f(0,2f/16,     0)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					case WEST:
-						verts = new Vector3f[] { //[0],[2]
-								new Vector3f(1,2f/16,     0),//bottom
-								new Vector3f(1,corners[3],0),//NE
-								new Vector3f(1,corners[2],1),//NW
-								new Vector3f(1,2f/16,     1)};//bottom
-						uvs = new BlockFaceUV(new float[] {8, 8, 0, 0}, 0);
-						break;
-					default:
-						verts = new Vector3f[] {
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0),
-								new Vector3f(0,0,0)};
-						uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
-						break;
+				verts = getSideVerts(corners, sideFace);
+				verts[0].add(0, verts[1].getY()-2f/16, 0);
+				verts[3].add(0, verts[2].getY()-2f/16, 0);
+				uvs = new BlockFaceUV(new float[] {0, 0, 8, 8}, 0);
+				bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				
+				data = new int[28];
+				verts = getSideVerts(corners, sideFace);
+				verts[1].add(0, -2f/16, 0);
+				verts[2].add(0, -2f/16, 0);
+				float min = Math.min(verts[1].getY(), verts[2].getY());
+				float max = Math.max(verts[1].getY(), verts[2].getY());
+
+				Vector3f[] verts2 = new Vector3f[4];
+				verts2[0] = new Vector3f(verts[0].getX(),min,			 verts[0].getZ());
+				verts2[1] = new Vector3f(verts[1].getX(),verts[1].getY(),verts[1].getZ());
+				verts2[2] = new Vector3f(verts[2].getX(),verts[2].getY(),verts[2].getZ());
+				verts2[3] = new Vector3f(verts[3].getX(),min,			 verts[3].getZ());
+				
+				uvs = new BlockFaceUV(new float[] {0, min*16, 16, min*16+(max-min)*16}, 0);
+				bakeQuad(data, verts2, atlasSpritePlanks_2, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritePlanks_2, diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+				
+				data = new int[28];
+				verts[1] = new Vector3f(verts[1].getX(),min,verts[1].getZ());
+				verts[2] = new Vector3f(verts[2].getX(),min,verts[2].getZ());
+				verts2[0] = verts[3];
+				verts2[1] = verts[0];
+				verts2[2] = verts[1];
+				verts2[3] = verts[2];
+				
+				uvs = new BlockFaceUV(new float[] {0, 0, min*16, 16}, 0);
+				bakeQuad(data, verts2, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, sideFace, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+			}
+			if(side == null || side == Direction.DOWN) {
+				data = new int[28];
+				verts = new Vector3f[] {
+					new Vector3f(1,0,0),
+					new Vector3f(1,0,1),
+					new Vector3f(0,0,1),
+					new Vector3f(0,0,0)
+				};
+				uvs = new BlockFaceUV(new float[] {0, 0, 16, 16}, 0);
+				bakeQuad(data, verts, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, Direction.DOWN, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
+				list.add(q0);
+			}
+			if(side == null || side == facingDir.getOpposite()) {
+				verts = getSideVerts(corners, facingDir.getOpposite());	
+				float min = Math.min(verts[1].getY(), verts[2].getY());
+				if(min <= 2f/16) {
+					data = new int[28];			
+					//float max = Math.max(verts[1].getY(), verts[2].getY());
+					verts = new Vector3f[] {
+						new Vector3f(verts[0].getX(),0,verts[0].getZ()),
+						new Vector3f(verts[1].getX(),min,verts[1].getZ()),
+						new Vector3f(verts[2].getX(),min,verts[2].getZ()),
+						new Vector3f(verts[3].getX(),0,verts[3].getZ())
+					};
+					uvs = new BlockFaceUV(new float[] {0, 0, 16, min*16}, 0);
+					bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+					q0 = new BakedQuad(data, 0, Direction.DOWN, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+					list.add(q0);
+					
+					data = new int[28];
+					verts = new Vector3f[] {
+						new Vector3f(verts[3].getX(),0,verts[3].getZ()),
+						new Vector3f(verts[2].getX(),min,verts[2].getZ()),
+						new Vector3f(verts[1].getX(),min,verts[1].getZ()),
+						new Vector3f(verts[0].getX(),0,verts[0].getZ())
+					};
+					uvs = new BlockFaceUV(new float[] {0, 0, 16, min*16}, 0);
+					bakeQuad(data, verts, atlasSpritesWater[1], uvs, color);
+					q0 = new BakedQuad(data, 0, Direction.DOWN, atlasSpritesWater[1], diffuseLight, DefaultVertexFormats.BLOCK);
+					list.add(q0);
 				}
-				bakeQuad(data, verts, atlasSpritesWater[2], uvs, color);
-				q0 = new BakedQuad(data, 0, sideFace, atlasSpritesWater[2], diffuseLight, DefaultVertexFormats.BLOCK);
+			}
+			if(side == null || side == facingDir) {
+				data = new int[28];
+				verts = getSideVerts(corners, facingDir);				
+				//float min = Math.min(verts[1].getY(), verts[2].getY());
+				float max = Math.max(verts[1].getY(), verts[2].getY());
+				verts = new Vector3f[] {
+					new Vector3f(verts[0].getX(),0,verts[0].getZ()),
+					new Vector3f(verts[1].getX(),max-2f/16,verts[1].getZ()),
+					new Vector3f(verts[2].getX(),max-2f/16,verts[2].getZ()),
+					new Vector3f(verts[3].getX(),0,verts[3].getZ())
+				};
+				uvs = new BlockFaceUV(new float[] {0, 0, 16, max*16}, 0);
+				bakeQuad(data, verts, atlasSpritePlanks_1, uvs, 0xFFFFFFFF);
+				q0 = new BakedQuad(data, 0, Direction.DOWN, atlasSpritePlanks_1, diffuseLight, DefaultVertexFormats.BLOCK);
 				list.add(q0);
 			}
 		}
+		else {
+			list.addAll(basePlate.getQuads(state, side, rand, null));
+		}
 		return list;
+	}
+	
+	private Vector3f[] getSideVerts(float[] corners, Direction dir) {
+		Vector3f[] verts = new Vector3f[] {
+				new Vector3f(0,0,0),
+				new Vector3f(0,0,0),
+				new Vector3f(0,0,0),
+				new Vector3f(0,0,0)};
+		switch(dir) {
+			case NORTH:
+				verts = new Vector3f[] { //[0],[2]
+						new Vector3f(1,0,     1),//bottom
+						new Vector3f(1,corners[2],1),//NW
+						new Vector3f(0,corners[0],1),//NE
+						new Vector3f(0,0,     1)};//bottom
+				break;
+			case SOUTH:
+				verts = new Vector3f[] { //[0],[2]
+						new Vector3f(0,0,     0),//bottom
+						new Vector3f(0,corners[1],0),//NE
+						new Vector3f(1,corners[3],0),//NW
+						new Vector3f(1,0,     0)};//bottom
+				break;
+			case EAST:
+				verts = new Vector3f[] { //[0],[2]
+						new Vector3f(0,0,     1),//bottom
+						new Vector3f(0,corners[2],1),//NW
+						new Vector3f(0,corners[3],0),//NE
+						new Vector3f(0,0,     0)};//bottom
+				break;
+			case WEST:
+				verts = new Vector3f[] { //[0],[2]
+						new Vector3f(1,0,     0),//bottom
+						new Vector3f(1,corners[3],0),//NE
+						new Vector3f(1,corners[2],1),//NW
+						new Vector3f(1,0,     1)};//bottom
+				break;
+			default:
+				verts = new Vector3f[] {
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0)};
+				break;
+		}
+		return verts;
+	}
+	
+	private Vector3f[] getTopVerts(float[] corners, Direction dir) {
+		Vector3f[] verts = new Vector3f[] {
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0),
+						new Vector3f(0,0,0)};
+		switch(dir) {
+			case NORTH:verts = new Vector3f[] {
+					new Vector3f(0,corners[0],0),
+					new Vector3f(0,corners[1],1),
+					new Vector3f(1,corners[2],1),
+					new Vector3f(1,corners[3],0)};
+				break;
+			case SOUTH:verts = new Vector3f[] {
+					new Vector3f(0,corners[0],0),
+					new Vector3f(0,corners[1],1),
+					new Vector3f(1,corners[2],1),
+					new Vector3f(1,corners[3],0)};
+				break;
+			case EAST:
+				verts = new Vector3f[] {
+						new Vector3f(1,corners[3],0),
+						new Vector3f(0,corners[0],0),
+						new Vector3f(0,corners[1],1),
+						new Vector3f(1,corners[2],1)};
+				break;
+			case WEST:
+				verts = new Vector3f[] {
+						new Vector3f(1,corners[3],0),
+						new Vector3f(0,corners[0],0),
+						new Vector3f(0,corners[1],1),
+						new Vector3f(1,corners[2],1)};
+				break;
+			default:
+				break;
+		}
+		return verts;
 	}
 
 	private void bakeQuad(int[] dataOut, Vector3f[] verts, TextureAtlasSprite sprite, BlockFaceUV faceUV, int shadeColor) {

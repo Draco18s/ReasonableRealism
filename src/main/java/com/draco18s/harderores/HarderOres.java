@@ -13,6 +13,7 @@ import com.draco18s.harderores.block.MillstoneBlock;
 import com.draco18s.harderores.block.PackagerBlock;
 import com.draco18s.harderores.block.SifterBlock;
 import com.draco18s.harderores.block.SluiceBlock;
+import com.draco18s.harderores.block.SluiceOutput;
 import com.draco18s.harderores.block.WindvaneBlock;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.block.ore.LimoniteBlock;
@@ -115,6 +116,9 @@ public class HarderOres {
 		block = new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.create(Material.ROCK).hardnessAndResistance(Blocks.GOLD_ORE.getDefaultState().getBlockHardness(null, null)*2, 5).harvestTool(ToolType.PICKAXE).harvestLevel(2).sound(SoundType.STONE));
 		EasyRegistry.registerBlockWithVariants(block, "ore_hardgold", BlockProperties.ORE_DENSITY, HardOreItem::new, new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
 
+		block = new SluiceOutput();
+		EasyRegistry.registerBlock(block, "sluice_output");
+		
 		Item item = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(item, "orechunk_limonite");
 
@@ -178,6 +182,7 @@ public class HarderOres {
 		public static final Block millstone = null;
 		public static final Block windvane = null;
 		public static final Block sluice = null;
+		public static final Block sluice_output = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)

@@ -2,7 +2,8 @@
     "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
     "parent": "block/block",
     "textures": {
-        "0": "block/oak_planks",
+        "0": "harderores:block/oak_planks",
+        "1": "harderores:block/oak_planks_rotated",
         "particle": "block/oak_planks"
     },
     "elements": [
@@ -16,7 +17,7 @@
                 "south": { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 2.0 ] },
                 "west":  { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 2.0 ] },
                 "up":    { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
-                "down":  { "texture": "#0", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+                "down":  { "texture": "#1", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
             }
         }
     ]
