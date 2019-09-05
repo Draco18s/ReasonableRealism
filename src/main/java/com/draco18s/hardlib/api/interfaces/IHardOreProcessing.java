@@ -2,19 +2,32 @@ package com.draco18s.hardlib.api.interfaces;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.Tag;
 
 public interface IHardOreProcessing {
+	
 	/**
 	 * The sifter "autocrafts" tiny dust piles to large dust piles.  Typically the crafting table recipe will be a
 	 * full grid (9 tiny dusts) and craft into 1 large dust and the sifter will sift 8 to 1.
-	 * @param input ItemStack including metadata and size
-	 * @param output ItemStack including metadata and size
+	 * @param input - Supplier for an Item {@link net.minecraft.tags.Tag}, all items in this tag will be registered as inputs. See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
+	 * @param count - how many of the input is used
+	 * @param output ItemStack including size
+	 * @param registerOutput (optional) Pass true to register the output stack as a 1:1 sift (this prevents some items which
+	 *  can be created normally from clogging the sifter, such as bonemeal).
+	 */
+	public void addSiftRecipe(Supplier<Tag<Item>> input, int count, ItemStack output);
+	/**
+	 * The sifter "autocrafts" tiny dust piles to large dust piles.  Typically the crafting table recipe will be a
+	 * full grid (9 tiny dusts) and craft into 1 large dust and the sifter will sift 8 to 1.
+	 * @param input ItemStack including size
+	 * @param output ItemStack including size
 	 * @param registerOutput (optional) Pass true to register the output stack as a 1:1 sift (this prevents some items which
 	 *  can be created normally from clogging the sifter, such as bonemeal).
 	 */
@@ -43,7 +56,15 @@ public interface IHardOreProcessing {
 	
 	/**
 	 * The millstone will grind "raw" materials down into "dust" materials, typically tiny dust piles.
+	 * @param input - Supplier for an Item {@link net.minecraft.tags.Tag}, all items in this tag will be registered as inputs. See {@link IHardOreProcessing#addMillRecipe(ItemStack, ItemStack)}
+	 * @param output ItemStack including size
+	 */
+	public void addMillRecipe(Supplier<Tag<Item>> input, ItemStack output);
+	
+	/**
+	 * The millstone will grind "raw" materials down into "dust" materials, typically tiny dust piles.
 	 * @param input ItemStack to be ground
+	 * @param output ItemStack including size
 	 */
 	public void addMillRecipe(ItemStack input, ItemStack output);
 	
@@ -110,4 +131,9 @@ public interface IHardOreProcessing {
 	public int getPressurePackAmount(ItemStack stack);
 
 	public List<Block> getRandomSluiceResults(Random rand, Item item);
+	
+	/**
+	 * Internal use only
+	 */
+	public void setup();
 }

@@ -8,7 +8,6 @@ import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.entity.SluiceTileEntity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -22,8 +21,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Direction.Axis;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 

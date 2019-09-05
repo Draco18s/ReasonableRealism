@@ -68,4 +68,10 @@ public class SluiceOutput extends Block implements IWaterLoggable {
 	public Fluid pickupFluid(IWorld worldIn, BlockPos pos, BlockState state) {
 		return Fluids.EMPTY;
 	}
+
+	/*@Override
+	@Deprecated
+	public boolean isReplaceable(BlockState state, BlockItemUseContext useContext) {
+		return true;
+	}*/
 }

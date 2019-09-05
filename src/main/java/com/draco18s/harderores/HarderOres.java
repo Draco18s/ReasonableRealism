@@ -1,8 +1,6 @@
 package com.draco18s.harderores;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,8 +73,7 @@ public class HarderOres {
 	public static final String MODID = "harderores";
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
-	private static final List<OreItems> ORE_ITEMS = new ArrayList<>();
-
+	
 	public HarderOres() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
@@ -85,10 +82,11 @@ public class HarderOres {
 		});
 
 		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
-			for(OreItems ores : ORE_ITEMS) {
-				HardLibAPI.oreMachines.addMillRecipe(new ItemStack(ores.chunk,1), new ItemStack(ores.tiny,2));
-				HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(ores.tiny,8), new ItemStack(ores.pile,1));
-			}
+			HardLibAPI.oreMachines.addSiftRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("forge","dusts/tiny/iron")), 8, new ItemStack(HarderOres.ModItems.largedust_iron,1));
+			HardLibAPI.oreMachines.addSiftRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("forge","dusts/tiny/gold")), 8, new ItemStack(HarderOres.ModItems.largedust_gold,1));
+			
+			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/iron")), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
+			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/gold")), new ItemStack(HarderOres.ModItems.tinydust_gold,2));
 		});
 		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
@@ -128,7 +126,6 @@ public class HarderOres {
 		EasyRegistry.registerItem(itemTiny, "tinydust_iron");
 		Item itemPile = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemPile, "largedust_iron");
-		ORE_ITEMS.add(new OreItems(itemChunk,itemTiny,itemPile));
 		
 		itemChunk = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemChunk, "orechunk_gold");
@@ -136,7 +133,6 @@ public class HarderOres {
 		EasyRegistry.registerItem(itemTiny, "tinydust_gold");
 		itemPile = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemPile, "largedust_gold");
-		ORE_ITEMS.add(new OreItems(itemChunk,itemTiny,itemPile));
 
 		itemChunk = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemChunk, "orechunk_diamond");
@@ -173,7 +169,6 @@ public class HarderOres {
 		ench = new PulverizeEnchantment(slots);
 		EasyRegistry.registerOther(ench, new ResourceLocation(HarderOres.MODID,"pulverize"));
 		
-		
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -188,6 +183,10 @@ public class HarderOres {
 	@ObjectHolder(HarderOres.MODID)
 	public static class ModItems {
 		public static final Item orechunk_diamond = null;
+		public static final Item largedust_iron = null;
+		public static final Item largedust_gold = null;
+		public static final Item tinydust_iron = null;
+		public static final Item tinydust_gold = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -212,19 +211,9 @@ public class HarderOres {
 		public static final Enchantment pulverize = null;
 		public static final Enchantment cracker = null;
 	}
-
-	private static class OreItems {
-		protected final Item chunk;
-		protected final Item tiny;
-		protected final Item pile;
-		public OreItems(Item itemChunk, Item itemTiny, Item itemPile) {
-			chunk = itemChunk;
-			tiny = itemTiny;
-			pile = itemPile;
-		}
-	}
 	
 	public static class ModItemTags {
-		public static final Tag<Item> STONE_ANY = new ItemTags.Wrapper(new ResourceLocation("forge", "stoneany"));
+		//public static Tag<Item> TINY_IRON_DUST = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/iron"));
+		public static final Tag<Item> STONE_ANY = new ItemTags.Wrapper(new ResourceLocation("hardlib", "stoneany"));
 	}
 }

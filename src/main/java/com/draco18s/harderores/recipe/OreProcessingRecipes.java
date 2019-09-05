@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -16,12 +17,38 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.Tuple;
 
 public class OreProcessingRecipes implements IHardOreProcessing {
 	private static Map<ItemStack, ItemStack> millRecipes = Maps.<ItemStack, ItemStack>newHashMap();
+	private static Map<Supplier<Tag<Item>>, ItemStack> millRecipes2 = Maps.<Supplier<Tag<Item>>, ItemStack>newHashMap();
 	private static Map<ItemStack, ItemStack> siftRecipes = Maps.<ItemStack, ItemStack>newHashMap();
+	private static Map<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> siftRecipes2 = Maps.<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack>newHashMap();
 	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newHashMap();
 	private static List<Block> sluiceRecipes = new ArrayList<Block>();
+	
+	public void setup() {
+		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
+			Tag<Item> alltags = entry.getKey().getA().get();
+			for(Item item : alltags.getAllElements()) {
+				ItemStack stk = new ItemStack(item, entry.getKey().getB());
+				addSiftRecipe(stk, entry.getValue(), true);
+			}
+		}
+		for(Entry<Supplier<Tag<Item>>, ItemStack> entry : millRecipes2.entrySet()) {
+			Tag<Item> alltags = entry.getKey().get();
+			for(Item item : alltags.getAllElements()) {
+				ItemStack stk = new ItemStack(item);
+				addMillRecipe(stk, entry.getValue());
+			}
+		}
+	}
+	
+	@Override
+	public void addSiftRecipe(Supplier<Tag<Item>> input, int count, ItemStack output) {
+		siftRecipes2.put(new Tuple<Supplier<Tag<Item>>, Integer>(input, count), output);
+	}
 
 	@Override
 	public void addSiftRecipe(ItemStack input, ItemStack output, boolean registerOutput) {
@@ -53,6 +80,10 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	public void addSiftRecipe(String input, int stackSize, ItemStack output) {
 		addSiftRecipe(input, stackSize, output, true);
 	}
+	
+	public void addMillRecipe(Supplier<Tag<Item>> input, ItemStack output) {
+		millRecipes2.put(input, output);
+	}
 
 	@Override
 	public void addMillRecipe(ItemStack input, ItemStack output) {
@@ -71,7 +102,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 			entry = iterator.next();
 			//are we sure we don't have to compare size?
 		} while (!compareItemStacks(stack, (ItemStack)entry.getKey()));
-		return ((ItemStack)entry.getKey()).getCount();
+		return 8;//((ItemStack)entry.getKey()).getCount();
 	}
 
 	@Override
