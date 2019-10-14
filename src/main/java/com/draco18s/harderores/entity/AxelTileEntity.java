@@ -38,7 +38,7 @@ public class AxelTileEntity extends TileEntity implements ITickableTileEntity {
 		if(world.isRemote) {
 			//System.out.println(powerAmt + " " + powerScale(powerAmt));
 		}
-		else if(this.pos.getY() >= world.getWorldInfo().getGenerator().getHorizon(world)-4) {
+		else if(this.pos.getY() >= world.getSeaLevel()-4) {
 			if(world.getBlockState(pos).get(BlockProperties.AXEL_ORIENTATION) != AxelOrientation.HUB) return;
 			
 			int rawPower = checkAirVolumeFull(pos.down(2), this.world.getBlockState(this.pos).get(BlockStateProperties.HORIZONTAL_FACING));

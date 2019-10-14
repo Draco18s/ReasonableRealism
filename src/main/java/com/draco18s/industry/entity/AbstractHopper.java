@@ -116,12 +116,12 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 		if(sourceInven != null) {
 			Direction direction = Direction.DOWN;
 			return isInventoryEmpty(sourceInven) ? false : getSlotStream(sourceInven, direction).anyMatch((slot) -> {
-				IItemHandler hopperInven = hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+				IItemHandler hopperInven = hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(() -> new IllegalArgumentException("Invalid LazyOptional, must not be empty"));
 				return pullItemFromSlot(hopperInven, sourceInven, slot, direction);
 			});
 		}
 		else {
-			if (suckItems(hopper.getWorld(), hopper.getPos(), hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,Direction.DOWN).orElse(null))) {
+			if (suckItems(hopper.getWorld(), hopper.getPos(), hopper.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,Direction.DOWN).orElseThrow(() -> new IllegalArgumentException("Invalid LazyOptional, must not be empty")))) {
 				return true;
 			}
 
@@ -169,12 +169,12 @@ public abstract class AbstractHopper extends TileEntity implements ICustomContai
 		TileEntity tileentity = world.getTileEntity(pos);
 		IItemHandler handler = null;
 		if (tileentity != null) {
-			handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElse(null);
+			handler = tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction).orElseThrow(() -> new IllegalArgumentException("Invalid LazyOptional, must not be empty"));
 		}
 
 		List<Entity> list = world.getEntitiesInAABBexcluding((Entity)null, getAABB(pos), EntityPredicates.HAS_INVENTORY);
 		if (!list.isEmpty()) {
-			handler = list.get(world.rand.nextInt(list.size())).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+			handler = list.get(world.rand.nextInt(list.size())).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(() -> new IllegalArgumentException("Invalid LazyOptional, must not be empty"));
 		}
 
 		return handler;

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "harderfarming:hydrometer"
+  },
+  "pattern": [
+    "ggg",
+    "gig",
+    "ggg"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass_pane"
+    },
+    "i": {
+      "tag": "forge:nuggets/gold"
+    }
+  }
+}

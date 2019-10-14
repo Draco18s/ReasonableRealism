@@ -7,10 +7,10 @@
     ],
     "key": {
         "w": {
-            "tag": "harderores:dusts/tiny/iron"
+            "tag": "forge:dusts/tiny/iron"
         }
     },
     "result": {
-        "tag": "harderores:dusts/iron"
+        "tag": "forge:dusts/iron"
     }
 }

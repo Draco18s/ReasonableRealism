@@ -28,23 +28,6 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newHashMap();
 	private static List<Block> sluiceRecipes = new ArrayList<Block>();
 	
-	public void setup() {
-		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
-			Tag<Item> alltags = entry.getKey().getA().get();
-			for(Item item : alltags.getAllElements()) {
-				ItemStack stk = new ItemStack(item, entry.getKey().getB());
-				addSiftRecipe(stk, entry.getValue(), true);
-			}
-		}
-		for(Entry<Supplier<Tag<Item>>, ItemStack> entry : millRecipes2.entrySet()) {
-			Tag<Item> alltags = entry.getKey().get();
-			for(Item item : alltags.getAllElements()) {
-				ItemStack stk = new ItemStack(item);
-				addMillRecipe(stk, entry.getValue());
-			}
-		}
-	}
-	
 	@Override
 	public void addSiftRecipe(Supplier<Tag<Item>> input, int count, ItemStack output) {
 		siftRecipes2.put(new Tuple<Supplier<Tag<Item>>, Integer>(input, count), output);
@@ -59,27 +42,6 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 			siftRecipes.put(output, output);
 		}
 	}
-
-	@Override
-	public void addSiftRecipe(ItemStack input, ItemStack output) {
-		addSiftRecipe(input,output,true);
-	}
-
-	@Override
-	public void addSiftRecipe(String input, int stackSize, ItemStack output, boolean registerOutput) {
-		//TODO
-		/*List<ItemStack> stk = OreDictionary.getOres(input);
-		for(ItemStack stack : stk) {
-			ItemStack s = stack.copy();
-			s.setCount(stackSize);
-			addSiftRecipe(s,output,registerOutput);
-		}*/
-	}
-
-	@Override
-	public void addSiftRecipe(String input, int stackSize, ItemStack output) {
-		addSiftRecipe(input, stackSize, output, true);
-	}
 	
 	public void addMillRecipe(Supplier<Tag<Item>> input, ItemStack output) {
 		millRecipes2.put(input, output);
@@ -92,16 +54,18 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 
 	@Override
 	public int getSiftAmount(ItemStack stack) {
-		Iterator<Entry<ItemStack, ItemStack>> iterator = siftRecipes.entrySet().iterator();
-		Entry<ItemStack, ItemStack> entry;
-
-		do {
-			if (!iterator.hasNext()) {
-				return 0;
+		for (Entry<ItemStack, ItemStack> entry : siftRecipes.entrySet()) {
+			if (this.compareItemStacks(stack, entry.getKey(), false)) {
+				return entry.getValue().getCount();
 			}
-			entry = iterator.next();
-			//are we sure we don't have to compare size?
-		} while (!compareItemStacks(stack, (ItemStack)entry.getKey()));
+		}
+		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
+			Tag<Item> alltags = entry.getKey().getA().get();
+			if(alltags.contains(stack.getItem())) {
+				return entry.getValue().getCount();
+			}
+		}
+		
 		return 8;//((ItemStack)entry.getKey()).getCount();
 	}
 
@@ -110,7 +74,13 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize) {
 		for (Entry<ItemStack, ItemStack> entry : siftRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, entry.getKey(), checkStackSize)) {
-				return (ItemStack)entry.getValue();
+				return entry.getValue();
+			}
+		}
+		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
+			Tag<Item> alltags = entry.getKey().getA().get();
+			if(alltags.contains(stack.getItem()) && (!checkStackSize || stack.getCount() >= entry.getKey().getB())) {
+				return entry.getValue();
 			}
 		}
 		return ItemStack.EMPTY;
@@ -121,7 +91,13 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	public ItemStack getMillResult(ItemStack stack) {
 		for (Entry<ItemStack, ItemStack> entry : millRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, (ItemStack)entry.getKey())) {
-				return (ItemStack)entry.getValue();
+				return entry.getValue();
+			}
+		}
+		for(Entry<Supplier<Tag<Item>>, ItemStack> entry : millRecipes2.entrySet()) {
+			Tag<Item> alltags = entry.getKey().get();
+			if(alltags.contains(stack.getItem())) {
+				return entry.getValue();
 			}
 		}
 		return ItemStack.EMPTY;

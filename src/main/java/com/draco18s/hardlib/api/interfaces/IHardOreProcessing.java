@@ -38,21 +38,14 @@ public interface IHardOreProcessing {
 	 * @param input
 	 * @param output
 	 */
-	public void addSiftRecipe(ItemStack input, ItemStack output);
+	//public void addSiftRecipe(String input, int stackSize, ItemStack output, boolean registerOutput);
 	
 	/**
 	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
 	 * @param input
 	 * @param output
 	 */
-	public void addSiftRecipe(String input, int stackSize, ItemStack output, boolean registerOutput);
-	
-	/**
-	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
-	 * @param input
-	 * @param output
-	 */
-	public void addSiftRecipe(String input, int stackSize, ItemStack output);
+	//public void addSiftRecipe(String input, int stackSize, ItemStack output);
 	
 	/**
 	 * The millstone will grind "raw" materials down into "dust" materials, typically tiny dust piles.
@@ -131,9 +124,4 @@ public interface IHardOreProcessing {
 	public int getPressurePackAmount(ItemStack stack);
 
 	public List<Block> getRandomSluiceResults(Random rand, Item item);
-	
-	/**
-	 * Internal use only
-	 */
-	public void setup();
 }

@@ -1,0 +1,29 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderores:tinydust_iron"
+        },
+        "title": {
+            "translate": "achievement.grindOre"
+        },
+        "description": {
+            "translate": "achievement.grindOre.desc"
+        }
+    },
+    "parent": "harderores:construct_mill",
+    "criteria": {
+        "get_dust": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:tinydust"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["get_dust"]
+    ]
+}

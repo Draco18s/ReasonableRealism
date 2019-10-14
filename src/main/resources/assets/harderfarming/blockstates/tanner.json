@@ -1,0 +1,99 @@
+{
+	"multipart": [
+		{
+			"apply": {
+				"model": "harderfarming:block/tanning_rack"
+			}
+		},
+		{
+			"when": {
+				"leather_left": "raw"
+			},
+			"apply": {
+				"model": "harderfarming:block/leather",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"leather_left": "cured"
+			},
+			"apply": {
+				"model": "harderfarming:block/leather_cured",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"leather_right": "raw"
+			},
+			"apply": {
+				"model": "harderfarming:block/leather2",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"leather_right": "cured"
+			},
+			"apply": {
+				"model": "harderfarming:block/leather2_cured",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "1"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt1",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "2"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt2",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "3"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt3",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "4"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt4",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "5"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt5",
+				"uvlock": true
+			}
+		},
+		{
+			"when": {
+				"salt_level": "6"
+			},
+			"apply": {
+				"model": "harderfarming:block/salt6",
+				"uvlock": true
+			}
+		}
+	]
+}

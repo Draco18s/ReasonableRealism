@@ -1,0 +1,30 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderores:sifter"
+        },
+        "title": {
+            "translate": "achievement.craftSifter"
+        },
+        "description": {
+            "translate": "achievement.craftSifter.desc"
+        },
+        "frame": "goal"
+    },
+    "parent": "harderores:ore_grinder",
+    "criteria": {
+        "craft_sifter": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "harderores:sifter"
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["craft_sifter"]
+    ]
+}

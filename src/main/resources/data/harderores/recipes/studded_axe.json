@@ -10,7 +10,7 @@
             "item": "harderores:orechunk_diamond"
         },
         "I": {
-            "item": "minecraft:iron_ingot"
+            "tag": "forge:ingots/iron"
         },
         "s": {
             "tag": "forge:rods/wooden"

@@ -87,6 +87,7 @@ public class HarderOres {
 			
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/iron")), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/gold")), new ItemStack(HarderOres.ModItems.tinydust_gold,2));
+			
 		});
 		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();

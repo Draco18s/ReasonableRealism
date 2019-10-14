@@ -22,18 +22,11 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = HarderOres.MODID)
 public class EventHandlers {
-	
-	@SubscribeEvent
-	public static void onWorldLoad(WorldEvent.Load evnet) {
-		HardLibAPI.oreMachines.setup();//this is dumb
-	}
-	
 	//HarvestDropsEvent exists, but is not called
 	@SubscribeEvent
 	public static void harvest(BlockEvent.BreakEvent event) {

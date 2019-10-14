@@ -1,0 +1,56 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "harderores:studded_pickaxe",
+      "harderores:studded_axe",
+      "harderores:studded_shovel",
+      "harderores:studded_hoe"
+    ]
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "harderores:orechunk_diamond"
+          }
+        ]
+      }
+    },
+    "has_the_pick_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "harderores:studded_pickaxe"
+      }
+    },
+    "has_the_axe_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "harderores:studded_axe"
+      }
+    },
+    "has_the_shovel_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "harderores:studded_shovel"
+      }
+    },
+    "has_the_hoe_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "harderores:studded_hoe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_item",
+      "has_the_pick_recipe",
+      "has_the_axe_recipe",
+      "has_the_shovel_recipe",
+      "has_the_hoe_recipe"
+    ]
+  ]
+}

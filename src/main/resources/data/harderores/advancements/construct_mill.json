@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderores:millstone"
+        },
+        "title": {
+            "translate": "achievement.constructMill"
+        },
+        "description": {
+            "translate": "achievement.constructMill.desc"
+        }
+    },
+    "parent": "harderores:craft_mill",
+    "criteria": {
+        "craft_mill": {
+            "trigger": "harderores:millstone_grind",
+            "conditions": {
+                
+            }
+        }
+    },
+    "requirements": [
+        ["craft_mill"]
+    ]
+}

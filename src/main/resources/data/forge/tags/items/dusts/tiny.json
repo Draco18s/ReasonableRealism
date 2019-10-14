@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:dusts/tiny/flour",
+    "#forge:dusts/tiny/iron",
+    "#forge:dusts/tiny/gold"
+  ]
+}

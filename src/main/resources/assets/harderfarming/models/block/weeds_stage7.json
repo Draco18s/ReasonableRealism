@@ -1,0 +1,6 @@
+{
+    "parent": "block/crop",
+    "textures": {
+        "crop": "harderfarming:block/weeds_stage_7"
+    }
+}
