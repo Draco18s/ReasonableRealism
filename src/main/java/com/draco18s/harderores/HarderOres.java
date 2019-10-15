@@ -5,7 +5,6 @@ import java.awt.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.draco18s.flowers.OreBlockInfo;
 import com.draco18s.harderores.block.AxelBlock;
 import com.draco18s.harderores.block.MillstoneBlock;
 import com.draco18s.harderores.block.PackagerBlock;
@@ -24,6 +23,7 @@ import com.draco18s.harderores.entity.MillstoneTileEntity;
 import com.draco18s.harderores.entity.PackagerTileEntity;
 import com.draco18s.harderores.entity.SifterTileEntity;
 import com.draco18s.harderores.entity.SluiceTileEntity;
+import com.draco18s.harderores.integration.FlowerIntegration;
 import com.draco18s.harderores.inventory.PackagerContainer;
 import com.draco18s.harderores.inventory.SifterContainer;
 import com.draco18s.harderores.item.HardOreItem;
@@ -88,10 +88,10 @@ public class HarderOres {
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/iron")), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/gold")), new ItemStack(HarderOres.ModItems.tinydust_gold,2));
 			
+			FlowerIntegration.registerFlowerGen();
 		});
 		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
-		//TODO: remove or relocate this dependency
 		HardLibAPI.hardOres = new OreBlockInfo();
 
 		Block block = new LimoniteBlock(Block.Properties.create(Material.EARTH).hardnessAndResistance(3, 1).harvestTool(ToolType.SHOVEL).harvestLevel(0).sound(SoundType.WET_GRASS));
@@ -179,6 +179,7 @@ public class HarderOres {
 		public static final Block windvane = null;
 		public static final Block sluice = null;
 		public static final Block sluice_output = null;
+		public static final Block ore_hardiron = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)

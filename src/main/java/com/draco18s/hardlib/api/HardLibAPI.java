@@ -6,6 +6,7 @@ import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
+import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.interfaces.IHardCrops;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.api.interfaces.IHardOres;
@@ -18,6 +19,7 @@ public class HardLibAPI {
 	public static IHardOres hardOres;
 	public static IHardOreProcessing oreMachines;
 	public static IHardCrops hardCrops;
+	public static IFlowerData oreFlowers;
 	/**
 	 * Advancement triggers. Some are specific to a given mod, others are fired by HardLib.
 	 * @author Draco18s

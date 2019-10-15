@@ -1,12 +1,12 @@
 {
+  "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "minecraft:crafting_shaped"
+    "item": "harderfarming:butcher_knife"
   },
   "pattern": [
     " s",
     "i "
   ],
-  "type": "forge:ore_shaped",
   "key": {
     "s": {
       "tag": "forge:rods/wooden"

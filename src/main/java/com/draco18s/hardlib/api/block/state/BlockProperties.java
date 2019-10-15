@@ -4,6 +4,7 @@ import com.draco18s.hardlib.api.blockproperties.farming.LeatherStatus;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IntegerProperty;
 
@@ -14,5 +15,6 @@ public class BlockProperties {
 	public static final IntegerProperty SALT_LEVEL = IntegerProperty.create("salt_level",0,6);
 	public static final EnumProperty<LeatherStatus> LEFT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_left", LeatherStatus.class);
 	public static final EnumProperty<LeatherStatus> RIGHT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_right", LeatherStatus.class);
-	
+	/** Only used by Horsetail **/
+	public static final BooleanProperty BLOOM_PHASE = BooleanProperty.create("phase");
 }

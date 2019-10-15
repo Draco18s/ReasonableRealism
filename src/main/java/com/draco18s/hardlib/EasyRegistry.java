@@ -24,6 +24,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.tileentity.TileEntityType.Builder;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.conditions.ILootCondition;
+import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -87,6 +89,10 @@ public class EasyRegistry {
 	public static <K extends IForgeRegistryEntry<K>> void registerOther(K object, ResourceLocation registryname) {
 		otherItems.add(object.setRegistryName(registryname));
 	}
+	
+	/*public static <T extends ILootCondition> void registerLootCondition(ILootCondition.AbstractSerializer<? extends T> object) {
+		LootConditionManager.registerCondition(object);
+	}*/
 
 	@SuppressWarnings("unchecked")
 	public static <T extends ICriterionInstance> ICriterionTrigger<T> registerAdvancementTrigger(ICriterionTrigger<T> trigger) {
