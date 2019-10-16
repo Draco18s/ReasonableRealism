@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "bloom=true": { "model": "oreflowers:block/horsetail" },
+        "bloom=false": { "model": "oreflowers:block/horsetail_bloom" }
+    }
+}

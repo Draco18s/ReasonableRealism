@@ -16,5 +16,5 @@ public class BlockProperties {
 	public static final EnumProperty<LeatherStatus> LEFT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_left", LeatherStatus.class);
 	public static final EnumProperty<LeatherStatus> RIGHT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_right", LeatherStatus.class);
 	/** Only used by Horsetail **/
-	public static final BooleanProperty BLOOM_PHASE = BooleanProperty.create("phase");
+	public static final BooleanProperty BLOOM_PHASE = BooleanProperty.create("bloom");
 }

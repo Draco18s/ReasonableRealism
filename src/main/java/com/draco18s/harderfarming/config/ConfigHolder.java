@@ -1,8 +1,13 @@
 package com.draco18s.harderfarming.config;
 
+import java.nio.file.Path;
+
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.tuple.Pair;
+
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -11,7 +16,7 @@ public final class ConfigHolder {
 	@Nonnull
 	public static final ForgeConfigSpec CLIENT_SPEC;
 	@Nonnull
-	public static final ForgeConfigSpec SERVER_SPEC;
+	public static final ForgeConfigSpec COMMON_SPEC;
 	@Nonnull
 	static final ClientConfig CLIENT;
 	@Nonnull
@@ -25,7 +30,18 @@ public final class ConfigHolder {
 		{
 			final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
 			SERVER = specPair.getLeft();
-			SERVER_SPEC = specPair.getRight();
+			COMMON_SPEC = specPair.getRight();
 		}
+	}
+	
+	public static void loadConfig(ForgeConfigSpec spec, Path path) {
+		final CommentedFileConfig configData = CommentedFileConfig.builder(path)
+				.sync()
+				.autosave()
+				.writingMode(WritingMode.REPLACE)
+				.build();
+
+		configData.load();
+		spec.setConfig(configData);
 	}
 }

@@ -42,6 +42,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ObjectHolder;
 
 @Mod(HarderFarming.MODID)
@@ -71,19 +72,21 @@ public class HarderFarming {
 				HardLibAPI.oreMachines.addMillRecipe(new ItemStack(Items.SUGAR_CANE,1), new ItemStack(ModItems.tinydust_sugar, 6));
 				HardLibAPI.oreMachines.addSiftRecipe(new ItemStack(ModItems.tinydust_sugar, 8), new ItemStack(Items.SUGAR), true);
 			}
+
+			final ModLoadingContext modLoadingContext = ModLoadingContext.get();
+			//modLoadingContext.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
+			modLoadingContext.registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
+			//ConfigHolder.loadConfig(ConfigHolder.CLIENT_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID+".toml"));
+			ConfigHolder.loadConfig(ConfigHolder.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID+".toml"));
 		});
-		modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
+		/*modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
 			final ModConfig config = event.getConfig();
 			if (config.getSpec() == ConfigHolder.CLIENT_SPEC) {
 				//ConfigHelper.bakeClient(config);
 			} else if (config.getSpec() == ConfigHolder.SERVER_SPEC) {
 				//ConfigHelper.bakeServer(config);
 			}
-		});
-
-		final ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
-		modLoadingContext.registerConfig(ModConfig.Type.SERVER, ConfigHolder.SERVER_SPEC);
+		});*/
 		
 		HardLibAPI.hardCrops = new CropManager();
 		//PacketHandler.register();

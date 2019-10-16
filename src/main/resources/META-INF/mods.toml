@@ -6,7 +6,7 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	displayName="Harder Farming" #mandatory
 	authors="Draco18s" #optional
 	description='''
-	Basic library.
+	Changes to mechanics to make farms not completely free food.
 	'''
 	[[dependencies.harderfarming]] #optional
 	    modId="forge" #mandatory
@@ -32,7 +32,7 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	displayName="Harder Ores" #mandatory
 	authors="Draco18s" #optional
 	description='''
-	Basic library.
+	Mining and refining ores made more consistent, interesting, and difficult. Ores will appear in structured veins, each block will be tougher to mine, and produce less resources per block.
 	'''
 	[[dependencies.harderores]] #optional
 	    modId="forge" #mandatory
@@ -58,7 +58,7 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	displayName="Exp Industry" #mandatory
 	authors="Draco18s" #optional
 	description='''
-	Basic library.
+	Additional blocks to facilitate vanilla-style industrial operations.
 	'''
 	[[dependencies.expindustry]] #optional
 	    modId="forge" #mandatory
@@ -84,7 +84,7 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	displayName="Ore Flowers" #mandatory
 	authors="Draco18s" #optional
 	description='''
-	Basic library.
+	Adds prospecting plants to the world, each indicates a specific ore found somewhere nearby.
 	'''
 	[[dependencies.oreflowers]] #optional
 	    modId="forge" #mandatory
@@ -110,7 +110,7 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	displayName="Hard Lib" #mandatory
 	authors="Draco18s" #optional
 	description='''
-	Mining and refining ores made more consistent, interesting, and difficult. Ores will appear in structured veins, each block will be tougher to mine, and produce less resources per block.
+	Basic library. Provides a common platform for registering blocks, items, etc. as well as integration between the various child mods and external plugins.
 	'''
 	[[dependencies.hardlib]] #optional
 	    modId="forge" #mandatory

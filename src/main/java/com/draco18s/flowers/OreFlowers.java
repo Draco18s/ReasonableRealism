@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import com.draco18s.flowers.block.BloomingFlower;
 import com.draco18s.flowers.block.SimpleFlower;
 import com.draco18s.flowers.block.TwoTallFlower;
-import com.draco18s.flowers.config.ConfigHelper;
 import com.draco18s.flowers.config.ConfigHolder;
 import com.draco18s.flowers.item.ItemStickyBlob;
 import com.draco18s.flowers.proxy.ClientProxy;
@@ -18,6 +17,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ObjectHolder;
 
 @Mod(OreFlowers.MODID)
@@ -39,26 +40,29 @@ public class OreFlowers {
 		
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
-		
+			final ModLoadingContext modLoadingContext = ModLoadingContext.get();
+			//modLoadingContext.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
+			modLoadingContext.registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
+			//ConfigHolder.loadConfig(ConfigHolder.CLIENT_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID+".toml"));
+			ConfigHolder.loadConfig(ConfigHolder.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID+".toml"));
+			PROXY.registerConfigGui(modLoadingContext);
+			if(HardLibAPI.oreMachines != null)
+				HardLibAPI.oreMachines.addMillRecipe(new ItemStack(ModItems.aveloz), new ItemStack(ModItems.sticky_goo));
 		});
-		modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
+		/*modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
 			final ModConfig config = event.getConfig();
 			if (config.getSpec() == ConfigHolder.CLIENT_SPEC) {
 				ConfigHelper.bakeClient(config);
 			} else if (config.getSpec() == ConfigHolder.SERVER_SPEC) {
 				ConfigHelper.bakeServer(config);
 			}
-		});
-		
-		final ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
-		modLoadingContext.registerConfig(ModConfig.Type.SERVER, ConfigHolder.SERVER_SPEC);
+		});*/
 		
 		Item item;
 		item = new ItemStickyBlob();
 		EasyRegistry.registerItem(item, "sticky_goo");
-		//EasyRegistry.registerOther(new RecipeTagOutput.Serializer(), new ResourceLocation(OreFlowers.MODID, "tag_output"));
 		Block block;
+
 		//simple flowers
 		block = new SimpleFlower(PlantType.Plains);
 		EasyRegistry.registerBlock(block, "poorjoe", new Item.Properties().group(ItemGroup.DECORATIONS));
@@ -84,6 +88,8 @@ public class OreFlowers {
 		EasyRegistry.registerBlock(block, "melastoma", new Item.Properties().group(ItemGroup.DECORATIONS));
 		block = new SimpleFlower(PlantType.Plains);
 		EasyRegistry.registerBlock(block, "broadleaf_arrowhead", new Item.Properties().group(ItemGroup.DECORATIONS));
+		
+		//horsetail
 		block = new BloomingFlower(PlantType.Plains);
 		EasyRegistry.registerBlock(block, "horsetail", new Item.Properties().group(ItemGroup.DECORATIONS));
 		//TODO: what ground material should be
@@ -144,8 +150,6 @@ public class OreFlowers {
 		public static final Block flame_lily = null;
 		
 		public static final Block red_sorrel = null;
-		public static final Block chandelier_tree = null;
-		public static final Block aveloz = null;
 		public static final Block copper_flower = null;
 		public static final Block sheeps_fescue = null;
 		public static final Block primrose = null;
@@ -154,10 +158,13 @@ public class OreFlowers {
 		public static final Block madwort = null;
 		public static final Block zilla = null;
 		public static final Block marigold = null;
+		public static final Block aveloz = null;
+		public static final Block chandelier_tree = null;
 	}
 
 	@ObjectHolder(OreFlowers.MODID)
 	public static class ModItems {
-
+		public static final Item aveloz = null;
+		public static final Item sticky_goo = null;
 	}
 }

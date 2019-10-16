@@ -18,8 +18,8 @@ public final class ConfigHelper {
 	public static void bakeServer(final ModConfig config) {
 		serverConfig = config;
 		
-		poopBonemealFlowers = ConfigHolder.SERVER.poopBonemealFlowers.get();
-		configScanDepth = ConfigHolder.SERVER.configScanDepth.get();
+		//poopBonemealFlowers = ConfigHolder.SERVER.poopBonemealFlowers.get();
+		//configScanDepth = ConfigHolder.SERVER.configScanDepth.get();
 	}
 
 	public static void setValueAndSave(final ModConfig modConfig, final String path, final Object newValue) {
