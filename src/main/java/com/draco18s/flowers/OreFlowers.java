@@ -13,11 +13,21 @@ import com.draco18s.flowers.proxy.IProxy;
 import com.draco18s.flowers.proxy.ServerProxy;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.block.state.BlockProperties;
+import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
+import com.draco18s.hardlib.api.internal.BlockWrapper;
+import com.draco18s.hardlib.api.internal.OreFlowerData;
+import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -133,9 +143,44 @@ public class OreFlowers {
 		 */
 	}
 	
+	public void addAllOres() {
+		addArbitraryOre("forge:ores/iron",		 8, 11, 7, OreFlowerDictator.defaultDictator,	ModBlocks.poorjoe.getDefaultState(), ModBlocks.red_sorrel.getDefaultState());
+		addArbitraryOre("forge:ores/gold",		 9, 11, 6, OreFlowerDictator.defaultDictator,	ModBlocks.horsetail.getDefaultState(), Blocks.AIR.getDefaultState());
+		addArbitraryOre("forge:ores/diamond",	 8, 11, 5, OreFlowerDictator.commonDictator,	ModBlocks.vallozia.getDefaultState(), ModBlocks.aveloz.getDefaultState());
+		addArbitraryOre("forge:ores/redstone",	 8, 15, 5, OreFlowerDictator.closeRareDictator,	ModBlocks.flame_lily.getDefaultState(), ModBlocks.chandelier_tree.getDefaultState());
+		
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void addArbitraryOre(String oreTagName, int numFlowers, int clusterSize, int threshold, OreFlowerDictator dictator, BlockState flower, BlockState desertFlower) {
+		OreFlowerData data;
+		BlockWrapper wrap;
+		Tag<Block> oretag = BlockTags.getCollection().getOrCreate(new ResourceLocation(oreTagName));
+		for(Block block : oretag.getAllElements()) {
+			if(block.getRegistryName().toString().contains("dummy")) continue;
+			if(block instanceof IBlockMultiBreak) {
+				wrap = new BlockWrapper(block, BlockProperties.ORE_DENSITY);
+			}
+			else {
+				wrap = new BlockWrapper(block, 9);
+			}
+			if(HardLibAPI.oreFlowers.getDataForOre(wrap) == null) {
+				if(!flower.isAir()) {
+					data = new OreFlowerData(flower, numFlowers, clusterSize, threshold);
+					HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
+				}
+				if(!desertFlower.isAir()) {
+					data = new OreFlowerData(desertFlower, numFlowers, clusterSize, threshold);
+					HardLibAPI.oreFlowers.addOreFlowerData(wrap, dictator, data);
+				}
+			}
+		}
+	}
+
 	@ObjectHolder(OreFlowers.MODID)
 	public static class ModBlocks {
-		public static final Block poorjoe = null;  
+		public static final Block poorjoe = null; 
+		public static final Block horsetail = null; 
 		public static final Block vallozia = null;
 		public static final Block hauman = null;
 		public static final Block leadplant = null;

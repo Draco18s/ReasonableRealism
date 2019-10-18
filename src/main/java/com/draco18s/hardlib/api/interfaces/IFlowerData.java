@@ -12,6 +12,7 @@ import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -36,16 +37,16 @@ public interface IFlowerData {
 	 * @param canBeTallPlant
 	 * @param tallChance - if the flower can be two blocks tall, weighted probability of doing so
 	 */
-	void doSpawnFlowerCluster(World world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance);
+	void doSpawnFlowerCluster(World world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant);
 	
 	/**
 	 * Registers an ore (with metadata) with its matching indicator plant.<br>
 	 * 
-	 * @param ore - Use one of:<br> {@link BlockWrapper#BlockWrapper(Block, PropertyInteger)}<br> {@link BlockWrapper#BlockWrapper(Block, int)}<br>{@link BlockWrapper#BlockWrapper(IBlockState, int)} 
+	 * @param oretag - Use one of:<br> {@link BlockWrapper#BlockWrapper(Block, PropertyInteger)}<br> {@link BlockWrapper#BlockWrapper(Block, int)}<br>{@link BlockWrapper#BlockWrapper(IBlockState, int)} 
 	 * @param dictator
 	 * @param data
 	 */
-	void addOreFlowerData(BlockWrapper ore, OreFlowerDictator dictator, OreFlowerData data);
+	void addOreFlowerData(BlockWrapper oretag, OreFlowerDictator dictator, OreFlowerData data);
 	
 	/**
 	 * Gets the hash of all of the registered ore blocks for flower data.

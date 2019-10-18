@@ -1,7 +1,9 @@
 package com.draco18s.harderores;
 
 import java.awt.Color;
+import java.util.Iterator;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,6 +59,15 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage.Decoration;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.placement.ConfiguredPlacement;
+import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -66,6 +77,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 
 @Mod(HarderOres.MODID)
@@ -73,7 +85,7 @@ public class HarderOres {
 	public static final String MODID = "harderores";
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
-	
+
 	public HarderOres() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
@@ -84,11 +96,12 @@ public class HarderOres {
 		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
 			HardLibAPI.oreMachines.addSiftRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("forge","dusts/tiny/iron")), 8, new ItemStack(HarderOres.ModItems.largedust_iron,1));
 			HardLibAPI.oreMachines.addSiftRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("forge","dusts/tiny/gold")), 8, new ItemStack(HarderOres.ModItems.largedust_gold,1));
-			
+
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/iron")), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
 			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/gold")), new ItemStack(HarderOres.ModItems.tinydust_gold,2));
-			
+
 			FlowerIntegration.registerFlowerGen();
+			replaceOreGenerators();
 		});
 		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
@@ -107,7 +120,7 @@ public class HarderOres {
 		block = new SluiceBlock();
 		EasyRegistry.registerBlock(block, "sluice", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(SluiceTileEntity::new, block), HarderOres.MODID, "sluice");
-		
+
 		block = new HardOreBlock(1, new Color(0xd8af93), Block.Properties.create(Material.ROCK).hardnessAndResistance(Blocks.IRON_ORE.getDefaultState().getBlockHardness(null, null)*2, 5).harvestTool(ToolType.PICKAXE).harvestLevel(1).sound(SoundType.STONE));
 		EasyRegistry.registerBlockWithVariants(block, "ore_hardiron", BlockProperties.ORE_DENSITY, HardOreItem::new, new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
 		block = new HardOreBlock(3, new Color(0x5decf5), Block.Properties.create(Material.ROCK).hardnessAndResistance(Blocks.DIAMOND_ORE.getDefaultState().getBlockHardness(null, null)*4, 5).harvestTool(ToolType.PICKAXE).harvestLevel(2).sound(SoundType.STONE));
@@ -117,7 +130,7 @@ public class HarderOres {
 
 		block = new SluiceOutput();
 		EasyRegistry.registerBlock(block, "sluice_output");
-		
+
 		Item item = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(item, "orechunk_limonite");
 
@@ -127,7 +140,7 @@ public class HarderOres {
 		EasyRegistry.registerItem(itemTiny, "tinydust_iron");
 		Item itemPile = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemPile, "largedust_iron");
-		
+
 		itemChunk = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
 		EasyRegistry.registerItem(itemChunk, "orechunk_gold");
 		itemTiny = new Item(new Item.Properties().group(ItemGroup.MATERIALS));
@@ -156,7 +169,7 @@ public class HarderOres {
 		EasyRegistry.registerItem(item, "diamondstud_hoe");
 		item = new AxeItem(ModItemTier.DIAMOND_STUD, 5.0F, -3.0F, (new Item.Properties()).group(ItemGroup.TOOLS));
 		EasyRegistry.registerItem(item, "diamondstud_axe");
-		
+
 		EquipmentSlotType[] slots = new EquipmentSlotType[] { EquipmentSlotType.OFFHAND };
 		Enchantment ench = new ProspectorEnchantment(slots);
 		EasyRegistry.registerOther(ench, new ResourceLocation(HarderOres.MODID,"prospector"));
@@ -169,7 +182,44 @@ public class HarderOres {
 		slots = new EquipmentSlotType[] { EquipmentSlotType.MAINHAND };
 		ench = new PulverizeEnchantment(slots);
 		EasyRegistry.registerOther(ench, new ResourceLocation(HarderOres.MODID,"pulverize"));
-		
+
+	}
+
+	private void replaceOreGenerators() {
+		replaceGenerator(Blocks.IRON_ORE, ModBlocks.ore_hardiron);
+	}
+
+	@SuppressWarnings("unused")
+	private void replaceGenerator(Block vanillaOre, Block replacementOre) {
+		Iterator<Biome> list = ForgeRegistries.BIOMES.iterator();
+		while(list.hasNext()) {
+			OreFeatureConfig oreConfig = null;
+			ConfiguredPlacement<?> placementConfig = null;
+			Biome biome = list.next();
+			Iterator<ConfiguredFeature<?>> it = biome.getFeatures(Decoration.UNDERGROUND_ORES).iterator();
+			while(it.hasNext()) {
+				ConfiguredFeature<?> feature = it.next();
+				if(feature.config instanceof DecoratedFeatureConfig) {
+					DecoratedFeatureConfig dfconfig = (DecoratedFeatureConfig)feature.config;
+					if(dfconfig.feature.config instanceof OreFeatureConfig) {
+						OreFeatureConfig oreConfigl = (OreFeatureConfig)dfconfig.feature.config;
+						if(oreConfigl.state.getBlock() == vanillaOre) {
+							oreConfig = oreConfigl;
+							placementConfig = (ConfiguredPlacement<?>)dfconfig.decorator;
+							HarderOres.LOGGER.log(Level.DEBUG, "Replacing " + vanillaOre.getRegistryName() + " ore generator.");
+							it.remove();
+							break;
+						}
+					}
+				}
+			}
+			if(oreConfig != null) {
+				biome.addFeature(Decoration.UNDERGROUND_ORES, Biome.createDecoratedFeature(
+						Feature.ORE, oreConfig, (Placement<IPlacementConfig>)placementConfig.decorator, (IPlacementConfig)placementConfig.config
+						));
+				HarderOres.LOGGER.log(Level.DEBUG, "Replaced!");
+			}
+		}
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -213,7 +263,7 @@ public class HarderOres {
 		public static final Enchantment pulverize = null;
 		public static final Enchantment cracker = null;
 	}
-	
+
 	public static class ModItemTags {
 		//public static Tag<Item> TINY_IRON_DUST = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/iron"));
 		public static final Tag<Item> STONE_ANY = new ItemTags.Wrapper(new ResourceLocation("hardlib", "stoneany"));

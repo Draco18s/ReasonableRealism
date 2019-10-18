@@ -14,7 +14,6 @@ public class OreFlowerData {
 	public final int clusterNum;
 	public final int clusterSize;
 	public final int highConcentrationThreshold;
-	public final int twoBlockChance;
 	
 	/**
 	 * Data neccessary to grow ore indicator plants
@@ -28,14 +27,5 @@ public class OreFlowerData {
 		highConcentrationThreshold = threshold;
 		clusterNum = clusterQuantity;
 		clusterSize = clusterRadius;
-		twoBlockChance = 0;
-	}
-
-	public OreFlowerData(@Nonnull BlockState plant, int clusterQuantity, int clusterRadius, int threshold, int twoTallWeight) {
-		flower = plant;
-		highConcentrationThreshold = threshold;
-		clusterNum = clusterQuantity;
-		clusterSize = clusterRadius;
-		twoBlockChance = twoTallWeight;
 	}
 }

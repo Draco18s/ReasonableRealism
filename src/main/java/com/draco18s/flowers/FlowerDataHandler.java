@@ -22,7 +22,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
@@ -53,12 +52,12 @@ public class FlowerDataHandler implements IFlowerData {
 			OreFlowerData dat = it.next();
 			int radius = dictator.spawnDistance;
 			BlockPos clusterPos = pos.add(Math.round(u[0]*radius), 0, Math.round(u[1]*radius));
-			doSpawnFlowerCluster(world, clusterPos, dat.flower, r, dat.clusterNum, dat.clusterSize, dat.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF), dat.twoBlockChance);
+			doSpawnFlowerCluster(world, clusterPos, dat.flower, r, dat.clusterNum, dat.clusterSize, dat.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF));
 		}
 	}
 
 	@Override
-	public void doSpawnFlowerCluster(World world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant, int tallChance) {
+	public void doSpawnFlowerCluster(World world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant) {
 		if(world.isRemote) {
 			return;
 		}
@@ -74,17 +73,7 @@ public class FlowerDataHandler implements IFlowerData {
 				BlockState wb = world.getBlockState(p);
 				BlockState pDown = world.getBlockState(p.down());
 				if(pDown.getBlock() != flowerState.getBlock() && flowerState.isValidPosition(world, p) && (wb.getMaterial().isReplaceable() || checkMaterial(world, p)) && !(wb.getBlock() instanceof FlowingFluidBlock || wb.getBlock() instanceof IFluidBlock)) {
-					int ra = 1;
-					if(canBeTallPlant) {
-						ra = r.nextInt(tallChance);
-					}
-					if(canBeTallPlant && ra == 0 && checkMaterial(world, p.up())) {
-						world.setBlockState(p.up(), flowerState.with(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER), 3);
-						world.setBlockState(p, flowerState.with(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER), 3);
-					}
-					else {
-						world.setBlockState(p, flowerState, 3);
-					}
+					world.setBlockState(p, flowerState, 3);
 					num--;
 					break;
 				}

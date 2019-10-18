@@ -46,10 +46,10 @@ public class EventHandlers {
 					for(;--count >= 0;) {
 						for(OreFlowerData data : entry) {
 							if(count >= data.highConcentrationThreshold && event.getPlayer() != null) {
-								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower, rand, 1, 7, data.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF), data.twoBlockChance);
+								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower, rand, 1, 7, data.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF));
 							}
 							if(rand.nextBoolean() && (event.getPlayer() != null || rand.nextInt(128) == 0)) {
-								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower, rand, 1, 7, data.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF), data.twoBlockChance);
+								HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), data.flower, rand, 1, 7, data.flower.has(BlockStateProperties.DOUBLE_BLOCK_HALF));
 							}
 						}
 					}
@@ -63,7 +63,7 @@ public class EventHandlers {
 				int count = rand.nextInt(4) + 3;
 				for(;--count >= 0;) {
 					if(rand.nextBoolean() && (event.getPlayer() != null || rand.nextInt(128) == 0)) {
-						HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), Blocks.DEAD_BUSH.getDefaultState(), rand, 1, 7, false, 0);
+						HardLibAPI.oreFlowers.doSpawnFlowerCluster(event.getWorld(), event.getPos(), Blocks.DEAD_BUSH.getDefaultState(), rand, 1, 7, false);
 					}
 				}
 			}
