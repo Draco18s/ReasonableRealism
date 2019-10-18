@@ -24,8 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.tileentity.TileEntityType.Builder;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
-import net.minecraft.world.storage.loot.conditions.LootConditionManager;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -197,6 +196,14 @@ public class EasyRegistry {
 			for(IForgeRegistryEntry<?> e : otherItems) {
 				if(e instanceof ContainerType<?>)
 					event.getRegistry().register((ContainerType<?>)e);
+			}
+		}
+
+		@SubscribeEvent
+		public static void registerFEature(@Nonnull final RegistryEvent.Register<Feature<?>> event) {
+			for(IForgeRegistryEntry<?> e : otherItems) {
+				if(e instanceof Feature<?>)
+					event.getRegistry().register((Feature<?>)e);
 			}
 		}
 	}

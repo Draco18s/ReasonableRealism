@@ -36,6 +36,7 @@ import com.draco18s.harderores.network.PacketHandler;
 import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.proxy.ServerProxy;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
+import com.draco18s.harderores.world.HardOreFeature;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
@@ -59,11 +60,13 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage.Decoration;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.OreFeature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
@@ -86,11 +89,15 @@ public class HarderOres {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
+	@SuppressWarnings("deprecation")
 	public HarderOres() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
 			LootFunctionManager.registerFunction(new BlockItemFunction.Serializer());
 			LootFunctionManager.registerFunction(new HarderSetCount.Serializer());
+			
+			//Feature.register("ore", new OreFeature(OreFeatureConfig::deserialize));
+			//ModFeatures.hardOre = (Registry.<Feature<?>>register(Registry.FEATURE, "hardore", new HardOreFeature(OreFeatureConfig::deserialize, BlockProperties.ORE_DENSITY)));
 		});
 
 		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
@@ -107,6 +114,8 @@ public class HarderOres {
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		HardLibAPI.hardOres = new OreBlockInfo();
 
+		EasyRegistry.registerOther(new HardOreFeature(OreFeatureConfig::deserialize, BlockProperties.ORE_DENSITY), new ResourceLocation(MODID, "hardore"));
+		
 		Block block = new LimoniteBlock(Block.Properties.create(Material.EARTH).hardnessAndResistance(3, 1).harvestTool(ToolType.SHOVEL).harvestLevel(0).sound(SoundType.WET_GRASS));
 		EasyRegistry.registerBlock(block, "ore_limonite", new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
 		block = new MillstoneBlock();
@@ -189,7 +198,7 @@ public class HarderOres {
 		replaceGenerator(Blocks.IRON_ORE, ModBlocks.ore_hardiron);
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void replaceGenerator(Block vanillaOre, Block replacementOre) {
 		Iterator<Biome> list = ForgeRegistries.BIOMES.iterator();
 		while(list.hasNext()) {
@@ -206,7 +215,7 @@ public class HarderOres {
 						if(oreConfigl.state.getBlock() == vanillaOre) {
 							oreConfig = oreConfigl;
 							placementConfig = (ConfiguredPlacement<?>)dfconfig.decorator;
-							HarderOres.LOGGER.log(Level.DEBUG, "Replacing " + vanillaOre.getRegistryName() + " ore generator.");
+							//HarderOres.LOGGER.log(Level.DEBUG, "Replacing " + vanillaOre.getRegistryName() + " ore generator.");
 							it.remove();
 							break;
 						}
@@ -214,10 +223,14 @@ public class HarderOres {
 				}
 			}
 			if(oreConfig != null) {
+				//Feature feat = new HardOreFeature()
+				Feature feat = ModFeatures.hardOre;
+				//Feature feat2 = Registry.FEATURE.getValue(new ResourceLocation(HarderOres.MODID,"hardore")).orElse(null);
+				OreFeatureConfig newConf = new OreFeatureConfig(oreConfig.target, replacementOre.getDefaultState(), oreConfig.size*2);
 				biome.addFeature(Decoration.UNDERGROUND_ORES, Biome.createDecoratedFeature(
-						Feature.ORE, oreConfig, (Placement<IPlacementConfig>)placementConfig.decorator, (IPlacementConfig)placementConfig.config
+						feat, newConf, (Placement<IPlacementConfig>)placementConfig.decorator, (IPlacementConfig)placementConfig.config
 						));
-				HarderOres.LOGGER.log(Level.DEBUG, "Replaced!");
+				HarderOres.LOGGER.log(Level.DEBUG, "Replaced with " + feat.getRegistryName() + "!");
 			}
 		}
 	}
@@ -267,5 +280,10 @@ public class HarderOres {
 	public static class ModItemTags {
 		//public static Tag<Item> TINY_IRON_DUST = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/iron"));
 		public static final Tag<Item> STONE_ANY = new ItemTags.Wrapper(new ResourceLocation("hardlib", "stoneany"));
+	}
+
+	@ObjectHolder(HarderOres.MODID)
+	public static class ModFeatures {
+		public static final Feature<?> hardOre = null;
 	}
 }
