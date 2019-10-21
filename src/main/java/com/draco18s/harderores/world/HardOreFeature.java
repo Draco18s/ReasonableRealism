@@ -21,6 +21,7 @@ public class HardOreFeature extends OreFeature {
 		this.densityProp = densityProp;
 	}
 
+	@Override
 	protected boolean func_207803_a(IWorld worldIn, Random random, OreFeatureConfig config, double x1, double x2, double z1, double z2, double y1, double y2, int xMinIn, int yMinIn, int zMinIn, int XZSize, int YSize) {
 		int numPlaced = 0;
 		BitSet alreadyPlacedFlags = new BitSet(XZSize * YSize * XZSize);

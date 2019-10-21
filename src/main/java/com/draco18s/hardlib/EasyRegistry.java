@@ -200,7 +200,7 @@ public class EasyRegistry {
 		}
 
 		@SubscribeEvent
-		public static void registerFEature(@Nonnull final RegistryEvent.Register<Feature<?>> event) {
+		public static void registerFeature(@Nonnull final RegistryEvent.Register<Feature<?>> event) {
 			for(IForgeRegistryEntry<?> e : otherItems) {
 				if(e instanceof Feature<?>)
 					event.getRegistry().register((Feature<?>)e);

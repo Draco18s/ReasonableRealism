@@ -3,7 +3,6 @@ package com.draco18s.harderores;
 import java.awt.Color;
 import java.util.Iterator;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,6 +36,8 @@ import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.proxy.ServerProxy;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.harderores.world.HardOreFeature;
+import com.draco18s.harderores.world.feature.OreVeinStructure;
+import com.draco18s.harderores.world.feature.OreVeinStructureConfig;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
@@ -60,14 +61,16 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.GenerationStage.Decoration;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.OreFeature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.structure.MineshaftConfig;
+import net.minecraft.world.gen.feature.structure.MineshaftStructure;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
@@ -89,7 +92,6 @@ public class HarderOres {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
-	@SuppressWarnings("deprecation")
 	public HarderOres() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
@@ -114,8 +116,6 @@ public class HarderOres {
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		HardLibAPI.hardOres = new OreBlockInfo();
 
-		EasyRegistry.registerOther(new HardOreFeature(OreFeatureConfig::deserialize, BlockProperties.ORE_DENSITY), new ResourceLocation(MODID, "hardore"));
-		
 		Block block = new LimoniteBlock(Block.Properties.create(Material.EARTH).hardnessAndResistance(3, 1).harvestTool(ToolType.SHOVEL).harvestLevel(0).sound(SoundType.WET_GRASS));
 		EasyRegistry.registerBlock(block, "ore_limonite", new Item.Properties().group(ItemGroup.BUILDING_BLOCKS));
 		block = new MillstoneBlock();
@@ -192,6 +192,9 @@ public class HarderOres {
 		ench = new PulverizeEnchantment(slots);
 		EasyRegistry.registerOther(ench, new ResourceLocation(HarderOres.MODID,"pulverize"));
 
+		EasyRegistry.registerOther(new HardOreFeature(OreFeatureConfig::deserialize, BlockProperties.ORE_DENSITY), new ResourceLocation(MODID, "hardore"));
+		EasyRegistry.registerOther(new OreVeinStructure(OreVeinStructureConfig::deserialize), new ResourceLocation(MODID, "ore_vein"));
+		
 	}
 
 	private void replaceOreGenerators() {
@@ -215,7 +218,6 @@ public class HarderOres {
 						if(oreConfigl.state.getBlock() == vanillaOre) {
 							oreConfig = oreConfigl;
 							placementConfig = (ConfiguredPlacement<?>)dfconfig.decorator;
-							//HarderOres.LOGGER.log(Level.DEBUG, "Replacing " + vanillaOre.getRegistryName() + " ore generator.");
 							it.remove();
 							break;
 						}
@@ -230,8 +232,10 @@ public class HarderOres {
 				biome.addFeature(Decoration.UNDERGROUND_ORES, Biome.createDecoratedFeature(
 						feat, newConf, (Placement<IPlacementConfig>)placementConfig.decorator, (IPlacementConfig)placementConfig.config
 						));
-				HarderOres.LOGGER.log(Level.DEBUG, "Replaced with " + feat.getRegistryName() + "!");
+				//HarderOres.LOGGER.log(Level.DEBUG, "Replaced with " + feat.getRegistryName() + "!");
 			}
+			biome.addStructure((Structure<OreVeinStructureConfig>)ModFeatures.ore_vein, new OreVeinStructureConfig(0.004));
+			biome.addFeature(GenerationStage.Decoration.UNDERGROUND_STRUCTURES, Biome.createDecoratedFeature((Feature<OreVeinStructureConfig>)ModFeatures.ore_vein, new OreVeinStructureConfig(0.004), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
 		}
 	}
 
@@ -243,6 +247,7 @@ public class HarderOres {
 		public static final Block sluice = null;
 		public static final Block sluice_output = null;
 		public static final Block ore_hardiron = null;
+		public static final Block ore_harddiamond = null;
 	}
 
 	@ObjectHolder(HarderOres.MODID)
@@ -285,5 +290,6 @@ public class HarderOres {
 	@ObjectHolder(HarderOres.MODID)
 	public static class ModFeatures {
 		public static final Feature<?> hardOre = null;
+		public static final Structure<?> ore_vein = null;
 	}
 }
