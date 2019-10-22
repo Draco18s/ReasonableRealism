@@ -36,6 +36,7 @@ import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.proxy.ServerProxy;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.harderores.world.HardOreFeature;
+import com.draco18s.harderores.world.feature.OreVeinPieces;
 import com.draco18s.harderores.world.feature.OreVeinStructure;
 import com.draco18s.harderores.world.feature.OreVeinStructureConfig;
 import com.draco18s.hardlib.EasyRegistry;
@@ -68,8 +69,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.feature.structure.MineshaftConfig;
-import net.minecraft.world.gen.feature.structure.MineshaftStructure;
+import net.minecraft.world.gen.feature.structure.IStructurePieceType;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
@@ -194,7 +194,8 @@ public class HarderOres {
 
 		EasyRegistry.registerOther(new HardOreFeature(OreFeatureConfig::deserialize, BlockProperties.ORE_DENSITY), new ResourceLocation(MODID, "hardore"));
 		EasyRegistry.registerOther(new OreVeinStructure(OreVeinStructureConfig::deserialize), new ResourceLocation(MODID, "ore_vein"));
-		
+		ModStructurePieceTypes.OVMotherLoad = IStructurePieceType.register(OreVeinPieces.Motherload::new, "Motherload");
+		ModStructurePieceTypes.OreVein = IStructurePieceType.register(OreVeinPieces.Motherload::new, "Vein");
 	}
 
 	private void replaceOreGenerators() {
@@ -291,5 +292,10 @@ public class HarderOres {
 	public static class ModFeatures {
 		public static final Feature<?> hardOre = null;
 		public static final Structure<?> ore_vein = null;
+	}
+	
+	public static class ModStructurePieceTypes {
+		public static IStructurePieceType OVMotherLoad;
+		public static IStructurePieceType OreVein;
 	}
 }
