@@ -57,10 +57,13 @@ public class EntityAIAging extends EntityAIBase {
 		if(AnimalUtil.animalGlobalAgeRate == 0) {
 			return false;
 		}
-		if(entity.get() instanceof EntityHorse) {
-			return !((EntityHorse)entity.get()).isTame();
+		if(entity.get().getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
+			return false;
 		}
-		else if(entity.get() instanceof IEntityOwnable) {
+		if(entity.get() instanceof AbstractHorse) {
+			return !((AbstractHorse)entity.get()).isTame();
+		}
+		if(entity.get() instanceof IEntityOwnable) {
 			return ((IEntityOwnable)entity.get()).getOwner() == null;
 		}
 		return true;
