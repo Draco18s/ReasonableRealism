@@ -1,119 +1,55 @@
 package com.draco18s.hardlib.api.recipe;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 public class RecipeTagOutput extends ShapedRecipe {
 	private static final int MAX_HEIGHT = 3;
 	private static final int MAX_WIDTH = 3;
 	protected final ResourceLocation resultName;
+	protected final Ingredient result;
 
-	public RecipeTagOutput(ResourceLocation idIn, String groupIn, final ResourceLocation result, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn) {
-		super(idIn, groupIn, recipeWidthIn, recipeHeightIn, recipeItemsIn, ItemStack.EMPTY);
-		resultName = result;
+	public RecipeTagOutput(ResourceLocation idIn, String groupIn, CraftingBookCategory category, final ResourceLocation resultIn, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn) {
+		super(idIn, groupIn, category, recipeWidthIn, recipeHeightIn, recipeItemsIn, ItemStack.EMPTY, false);
+		resultName = resultIn;
+		result = Ingredient.of(TagKey.create(Registries.ITEM, resultName));
 	}
 
-	public IRecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<?> getSerializer() {
 		return HardLibAPI.RecipeSerializers.TAG_OUTPUT;
 	}
 
 	@Override
 	@Nonnull
-	public ItemStack getRecipeOutput() {
-		Collection<Item> list = ItemTags.getCollection().getOrCreate(resultName).getAllElements();
-		return new ItemStack(list.stream().findFirst().orElse(Items.AIR));
-	}
-
-	@Override
-	@Nonnull
-	public ItemStack getCraftingResult(@Nonnull CraftingInventory var1){
-		Collection<Item> list = ItemTags.getCollection().getOrCreate(resultName).getAllElements();
-		return new ItemStack(list.stream().findFirst().orElse(Items.AIR));
-	}
-
-	private static NonNullList<Ingredient> deserializeIngredients(String[] pattern, Map<String, Ingredient> keys, int patternWidth, int patternHeight) {
-		NonNullList<Ingredient> nonnulllist = NonNullList.withSize(patternWidth * patternHeight, Ingredient.EMPTY);
-		Set<String> set = Sets.newHashSet(keys.keySet());
-		set.remove(" ");
-
-		for(int i = 0; i < pattern.length; ++i) {
-			for(int j = 0; j < pattern[i].length(); ++j) {
-				String s = pattern[i].substring(j, j + 1);
-				Ingredient ingredient = keys.get(s);
-				if (ingredient == null) {
-					throw new JsonSyntaxException("Pattern references symbol '" + s + "' but it's not defined in the key");
-				}
-
-				set.remove(s);
-				nonnulllist.set(j + patternWidth * i, ingredient);
-			}
-		}
-
-		if (!set.isEmpty()) {
-			throw new JsonSyntaxException("Key defines symbols that aren't used in pattern: " + set);
-		} else {
-			return nonnulllist;
-		}
-	}
-
-	static String[] shrink(String... toShrink) {
-		int i = Integer.MAX_VALUE;
-		int j = 0;
-		int k = 0;
-		int l = 0;
-
-		for(int i1 = 0; i1 < toShrink.length; ++i1) {
-			String s = toShrink[i1];
-			i = Math.min(i, firstNonSpace(s));
-			int j1 = lastNonSpace(s);
-			j = Math.max(j, j1);
-			if (j1 < 0) {
-				if (k == i1) {
-					++k;
-				}
-
-				++l;
-			} else {
-				l = 0;
-			}
-		}
-
-		if (toShrink.length == l) {
-			return new String[0];
-		} else {
-			String[] astring = new String[toShrink.length - l - k];
-
-			for(int k1 = 0; k1 < astring.length; ++k1) {
-				astring[k1] = toShrink[k1 + k].substring(i, j + 1);
-			}
-
-			return astring;
-		}
+	public ItemStack getResultItem(RegistryAccess regAccess) {
+		Collection<ItemStack> list = Arrays.asList(result.getItems());
+		return list.stream().findFirst().orElse(ItemStack.EMPTY);
 	}
 
 	private static int firstNonSpace(String str) {
@@ -133,16 +69,51 @@ public class RecipeTagOutput extends ShapedRecipe {
 
 		return i;
 	}
+	
+	static String[] shrink(String... p_44187_) {
+		int i = Integer.MAX_VALUE;
+		int j = 0;
+		int k = 0;
+		int l = 0;
 
-	private static String[] patternFromJson(JsonArray jsonArr) {
-		String[] astring = new String[jsonArr.size()];
+		for(int i1 = 0; i1 < p_44187_.length; ++i1) {
+			String s = p_44187_[i1];
+			i = Math.min(i, firstNonSpace(s));
+			int j1 = lastNonSpace(s);
+			j = Math.max(j, j1);
+			if (j1 < 0) {
+				if (k == i1) {
+					++k;
+				}
+
+				++l;
+			} else {
+				l = 0;
+			}
+		}
+
+		if (p_44187_.length == l) {
+			return new String[0];
+		} else {
+			String[] astring = new String[p_44187_.length - l - k];
+
+			for(int k1 = 0; k1 < astring.length; ++k1) {
+				astring[k1] = p_44187_[k1 + k].substring(i, j + 1);
+			}
+
+			return astring;
+		}
+	}
+
+	static String[] patternFromJson(JsonArray p_44197_) {
+		String[] astring = new String[p_44197_.size()];
 		if (astring.length > MAX_HEIGHT) {
 			throw new JsonSyntaxException("Invalid pattern: too many rows, " + MAX_HEIGHT + " is maximum");
 		} else if (astring.length == 0) {
 			throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
 		} else {
 			for(int i = 0; i < astring.length; ++i) {
-				String s = JSONUtils.getString(jsonArr.get(i), "pattern[" + i + "]");
+				String s = GsonHelper.convertToString(p_44197_.get(i), "pattern[" + i + "]");
 				if (s.length() > MAX_WIDTH) {
 					throw new JsonSyntaxException("Invalid pattern: too many columns, " + MAX_WIDTH + " is maximum");
 				}
@@ -158,10 +129,10 @@ public class RecipeTagOutput extends ShapedRecipe {
 		}
 	}
 
-	private static Map<String, Ingredient> deserializeKey(JsonObject json) {
+	static Map<String, Ingredient> keyFromJson(JsonObject p_44211_) {
 		Map<String, Ingredient> map = Maps.newHashMap();
 
-		for(Entry<String, JsonElement> entry : json.entrySet()) {
+		for(Map.Entry<String, JsonElement> entry : p_44211_.entrySet()) {
 			if (entry.getKey().length() != 1) {
 				throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
 			}
@@ -170,65 +141,56 @@ public class RecipeTagOutput extends ShapedRecipe {
 				throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
 			}
 
-			map.put(entry.getKey(), Ingredient.deserialize(entry.getValue()));
+			map.put(entry.getKey(), Ingredient.fromJson(entry.getValue()));
 		}
 
 		map.put(" ", Ingredient.EMPTY);
 		return map;
 	}
 
-	public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>>  implements IRecipeSerializer<RecipeTagOutput> {
+	public static class Serializer implements RecipeSerializer<RecipeTagOutput> {
+		public static final ResourceLocation ID = new ResourceLocation("hardlib", "tag_output");
 
 		@Override
-		public RecipeTagOutput read(ResourceLocation recipeId, JsonObject json) {
-			String group = JSONUtils.getString(json, "group", "");
-			Map<String, Ingredient> keyMap = RecipeTagOutput.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-			String[] astring = RecipeTagOutput.shrink(RecipeTagOutput.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
+		public RecipeTagOutput fromJson(ResourceLocation recipeId, JsonObject json) {
+			String group = GsonHelper.getAsString(json, "group", "");
+			CraftingBookCategory craftingbookcategory = Objects.requireNonNullElse(CraftingBookCategory.valueOf(GsonHelper.getAsString(json, "category", (String)null)), CraftingBookCategory.MISC);
+			Map<String, Ingredient> keyMap = RecipeTagOutput.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
+			String[] astring = RecipeTagOutput.shrink(RecipeTagOutput.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
 			int i = astring[0].length();
 			int j = astring.length;
-			NonNullList<Ingredient> ingredientsList = RecipeTagOutput.deserializeIngredients(astring, keyMap, i, j);
-			String tagname = JSONUtils.getString(JSONUtils.getJsonObject(json, "result"), "tag", "minecraft:air");
-			return new RecipeTagOutput(recipeId, group, new ResourceLocation(tagname), i, j, ingredientsList);
+			NonNullList<Ingredient> ingredientsList = RecipeUtils.dissolvePattern(astring, keyMap, i, j);
+			String tagname = GsonHelper.getAsString(GsonHelper.getAsJsonObject(json, "result"), "tag", "minecraft:air");
+			return new RecipeTagOutput(recipeId, group, craftingbookcategory, new ResourceLocation(tagname), i, j, ingredientsList);
 		}
 
 		@Override
-		public RecipeTagOutput read(ResourceLocation recipeId, PacketBuffer buffer) {
+		public @Nullable RecipeTagOutput fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
 			int i = buffer.readVarInt();
 			int j = buffer.readVarInt();
-			String group = buffer.readString(32767);
+			String group = buffer.readUtf();
 			NonNullList<Ingredient> ingredientsList = NonNullList.withSize(i * j, Ingredient.EMPTY);
 
 			for(int k = 0; k < ingredientsList.size(); ++k) {
-				ingredientsList.set(k, Ingredient.read(buffer));
+				ingredientsList.set(k, Ingredient.fromNetwork(buffer));
 			}
+			CraftingBookCategory craftingbookcategory = buffer.readEnum(CraftingBookCategory.class);
+			ResourceLocation result = new ResourceLocation(buffer.readUtf());
 
-			ResourceLocation result = new ResourceLocation(buffer.readString());
-			return new RecipeTagOutput(recipeId, group, result, i, j, ingredientsList);
+			return new RecipeTagOutput(recipeId, group, craftingbookcategory, result, i, j, ingredientsList);
 		}
 
 		@Override
-		public void write(PacketBuffer buffer, RecipeTagOutput recipe) {
+		public void toNetwork(FriendlyByteBuf buffer, RecipeTagOutput recipe) {
 			buffer.writeVarInt(recipe.getWidth());
 			buffer.writeVarInt(recipe.getHeight());
-			buffer.writeString(recipe.getGroup());
+			buffer.writeUtf(recipe.getGroup());
 
 			for(Ingredient ingredient : recipe.getIngredients()) {
-				ingredient.write(buffer);
+				ingredient.toNetwork(buffer);
 			}
-
-			buffer.writeString(recipe.resultName.toString());
+			buffer.writeEnum(recipe.category());
+			buffer.writeUtf(recipe.resultName.toString());
 		}
 	}
-
-	/*public static class Factory implements IRecipeFactory {
-
-		@Override
-		public IRecipe parse(final JsonContext context, final JsonObject json) {
-			final String group = JsonUtils.getString(json, "group", "");
-			final CraftingHelper.ShapedPrimer primer = RecipesUtils.parseShaped(context, json);
-			final String result = JsonUtils.getString(JsonUtils.getJsonObject(json, "result"), "ore");
-
-			return new RecipeOreDictOutput(group.isEmpty() ? null : new ResourceLocation(group), result, primer);
-		}
-	}*/
 }

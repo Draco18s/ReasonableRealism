@@ -1,71 +1,60 @@
 package com.draco18s.industry.block;
 
-import com.draco18s.hardlib.api.interfaces.ICustomContainer;
-import com.draco18s.hardlib.util.InventoryUtils;
-import com.draco18s.industry.entity.WoodenHopperTileEntity;
+import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HopperBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.items.CapabilityItemHandler;
+import com.draco18s.hardlib.api.interfaces.ICustomContainer;
+import com.draco18s.industry.ExpandedIndustry;
+import com.draco18s.industry.entity.WoodenHopperBlockEntity;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class WoodenHopperBlock extends HopperBlock {
 
 	public WoodenHopperBlock() {
-		super(Properties.create(Material.WOOD).hardnessAndResistance(2, 4).harvestTool(ToolType.AXE).harvestLevel(0).sound(SoundType.WOOD));
-
+		super(Properties.of(Material.WOOD).strength(2, 4).sound(SoundType.WOOD).requiresCorrectToolForDrops());
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new WoodenHopperBlockEntity(pos,state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
+		return level.isClientSide ? null : createTickerHelper(betType, ExpandedIndustry.ModTileEntities.machine_wood_hopper, WoodenHopperBlockEntity::tick);
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new WoodenHopperTileEntity();
-	}
-
-	@Override
-	public TileEntity createNewTileEntity(IBlockReader worldIn) {
-		return new WoodenHopperTileEntity();
-	}
-
-	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-	}
-
-	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		if (!world.isRemote) {
-			final ICustomContainer tileEntity = (ICustomContainer)world.getTileEntity(pos);
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		if (!world.isClientSide) {
+			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
 			if (tileEntity != null) {
-				tileEntity.openGUI((ServerPlayerEntity) player);
+				tileEntity.openGUI((ServerPlayer) player);
 			}
 		}
 
-		return true;
+		return InteractionResult.CONSUME;
 	}
 
 	@Override
-	@Deprecated
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() != newState.getBlock()) {
-			TileEntity tileEntity = world.getTileEntity(pos);
-			InventoryUtils.dropItemHandlerContents(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null), world, pos);
-			super.onReplaced(state, world, pos, newState, isMoving);
-		}
+	@Nullable
+	public BlockState getStateForPlacement(BlockPlaceContext p_49820_) {
+		return this.defaultBlockState().setValue(HopperBlock.FACING, Direction.DOWN);
 	}
 }

@@ -2,7 +2,7 @@ package com.draco18s.hardlib.api.internal.inventory;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -13,7 +13,7 @@ public class SlotOutput extends SlotItemHandler {
 	}
 
 	@Override
-	public boolean isItemValid(@Nullable ItemStack stack) {
+	public boolean mayPlace(@Nullable ItemStack stack) {
 		return false;
 	}
 }

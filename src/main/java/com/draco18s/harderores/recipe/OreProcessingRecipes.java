@@ -5,106 +5,85 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
+import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
+import com.draco18s.hardlib.api.recipe.GrindingRecipe;
+import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 import com.google.common.collect.Maps;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.Tag;
-import net.minecraft.util.Tuple;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public class OreProcessingRecipes implements IHardOreProcessing {
-	private static Map<ItemStack, ItemStack> millRecipes = Maps.<ItemStack, ItemStack>newHashMap();
-	private static Map<Supplier<Tag<Item>>, ItemStack> millRecipes2 = Maps.<Supplier<Tag<Item>>, ItemStack>newHashMap();
-	private static Map<ItemStack, ItemStack> siftRecipes = Maps.<ItemStack, ItemStack>newHashMap();
-	private static Map<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> siftRecipes2 = Maps.<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack>newHashMap();
+	//private static Map<ItemStack, ItemStack> millRecipes = Maps.<ItemStack, ItemStack>newHashMap();
+	//private static Map<Supplier<TagKey<Item>>, ItemStack> millRecipes2 = Maps.<Supplier<TagKey<Item>>, ItemStack>newHashMap();
+	//private static Map<ItemStack, ItemStack> siftRecipes = Maps.<ItemStack, ItemStack>newHashMap();
+	//private static Map<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack> siftRecipes2 = Maps.<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack>newHashMap();
+	private List<SiftingRecipe> siftRecipes;
+	private List<GrindingRecipe> millRecipes;
 	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newHashMap();
 	private static List<Block> sluiceRecipes = new ArrayList<Block>();
-	
-	@Override
-	public void addSiftRecipe(Supplier<Tag<Item>> input, int count, ItemStack output) {
-		siftRecipes2.put(new Tuple<Supplier<Tag<Item>>, Integer>(input, count), output);
+	public static OreProcessingRecipes SERVER_INSTANCE;
+	private RegistryAccess registryAccess;
+
+	public OreProcessingRecipes() {
+		SERVER_INSTANCE = this;
 	}
 
-	@Override
-	public void addSiftRecipe(ItemStack input, ItemStack output, boolean registerOutput) {
-		siftRecipes.put(input, output);
-		if(registerOutput && input != output) {
-			output = output.copy();
-			output.setCount(1);
-			siftRecipes.put(output, output);
-		}
-	}
-	
-	public void addMillRecipe(Supplier<Tag<Item>> input, ItemStack output) {
-		millRecipes2.put(input, output);
-	}
+	public void update(RecipeManager man) {
+		siftRecipes = man.getAllRecipesFor(HardLibAPI.RecipeTypes.SIFTING);
+		millRecipes = man.getAllRecipesFor(HardLibAPI.RecipeTypes.GRINDING);
 
-	@Override
-	public void addMillRecipe(ItemStack input, ItemStack output) {
-		millRecipes.put(input, output);
+		registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
 	}
 
 	@Override
 	public int getSiftAmount(ItemStack stack) {
-		for (Entry<ItemStack, ItemStack> entry : siftRecipes.entrySet()) {
-			if (this.compareItemStacks(stack, entry.getKey(), false)) {
-				return entry.getValue().getCount();
-			}
-		}
-		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
-			Tag<Item> alltags = entry.getKey().getA().get();
-			if(alltags.contains(stack.getItem())) {
-				return entry.getValue().getCount();
-			}
-		}
-		
-		return 8;//((ItemStack)entry.getKey()).getCount();
+		Optional<SiftingRecipe> recip = siftRecipes.stream().filter(
+				rec -> rec.getIngredients().parallelStream().anyMatch(ing -> ing.test(stack))
+				).findAny();
+		if(recip.isEmpty()) return 8;
+		return recip.get().getIngredientQuantity();
 	}
 
 	@Override
 	@Nonnull
 	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize) {
-		for (Entry<ItemStack, ItemStack> entry : siftRecipes.entrySet()) {
-			if (this.compareItemStacks(stack, entry.getKey(), checkStackSize)) {
-				return entry.getValue();
-			}
-		}
-		for(Entry<Tuple<Supplier<Tag<Item>>, Integer>, ItemStack> entry : siftRecipes2.entrySet()) {
-			Tag<Item> alltags = entry.getKey().getA().get();
-			if(alltags.contains(stack.getItem()) && (!checkStackSize || stack.getCount() >= entry.getKey().getB())) {
-				return entry.getValue();
-			}
-		}
-		return ItemStack.EMPTY;
+		Optional<SiftingRecipe> recip = siftRecipes.stream().filter(
+				rec -> rec.getIngredients().stream().anyMatch(ing -> ing.test(stack))
+				).findAny();
+		if(recip.isEmpty() || (checkStackSize && stack.getCount() < recip.get().getIngredientQuantity()))
+			return ItemStack.EMPTY;
+
+		return  recip.get().getResultItem(registryAccess).copy();
 	}
 
 	@Override
 	@Nonnull
 	public ItemStack getMillResult(ItemStack stack) {
-		for (Entry<ItemStack, ItemStack> entry : millRecipes.entrySet()) {
-			if (this.compareItemStacks(stack, (ItemStack)entry.getKey())) {
-				return entry.getValue();
-			}
-		}
-		for(Entry<Supplier<Tag<Item>>, ItemStack> entry : millRecipes2.entrySet()) {
-			Tag<Item> alltags = entry.getKey().get();
-			if(alltags.contains(stack.getItem())) {
-				return entry.getValue();
-			}
-		}
-		return ItemStack.EMPTY;
+		Optional<GrindingRecipe> recip = millRecipes.stream().filter(
+				rec -> {
+					return rec.getIngredients().stream().anyMatch(ing -> {
+						return ing.test(stack);
+					});
+				}).findAny();
+		if(recip.isEmpty())
+			return ItemStack.EMPTY;
+
+		return  recip.get().getResultItem(registryAccess).copy();
 	}
 
 	private boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
-		//return stack2.getItem() == stack1.getItem() && (stack2.getMetadata() == 32767 || stack2.getMetadata() == stack1.getMetadata());
 		return compareItemStacks(stack1, stack2, false);
 	}
 
@@ -112,11 +91,6 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		return entry.getItem() == key.getItem() && (!keyStackBiggerThanEntry || key.getCount() >= entry.getCount());
 	}
 
-	@Override
-	public void addSluiceRecipe(Block output) {
-		sluiceRecipes.add(output);
-	}
-	
 	@Nonnull
 	@Override
 	public Block getRandomSluiceResult(Random rand, Item item) {
@@ -151,11 +125,6 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	@Override
-	public void addPressurePackRecipe(ItemStack input, ItemStack output) {
-		packingRecipes.put(input, output);
-	}
-
-	@Override
 	@Nonnull
 	public ItemStack getPressurePackResult(ItemStack stack, boolean checkStackSize) {
 		for (Entry<ItemStack, ItemStack> entry : packingRecipes.entrySet()) {
@@ -165,7 +134,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		}
 		return ItemStack.EMPTY;
 	}
-	
+
 	public int getPressurePackAmount(ItemStack stack) {
 		Iterator<Entry<ItemStack, ItemStack>> iterator = packingRecipes.entrySet().iterator();
 		Entry<ItemStack, ItemStack> entry;

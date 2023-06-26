@@ -6,10 +6,13 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.Tag;
+import org.apache.commons.lang3.NotImplementedException;
+
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.block.Block;
 
 public interface IHardOreProcessing {
 	
@@ -22,7 +25,10 @@ public interface IHardOreProcessing {
 	 * @param registerOutput (optional) Pass true to register the output stack as a 1:1 sift (this prevents some items which
 	 *  can be created normally from clogging the sifter, such as bonemeal).
 	 */
-	public void addSiftRecipe(Supplier<Tag<Item>> input, int count, ItemStack output);
+	@Deprecated
+	default void addSiftRecipe(Supplier<TagKey<Item>> input, int count, ItemStack output) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	/**
 	 * The sifter "autocrafts" tiny dust piles to large dust piles.  Typically the crafting table recipe will be a
 	 * full grid (9 tiny dusts) and craft into 1 large dust and the sifter will sift 8 to 1.
@@ -31,7 +37,10 @@ public interface IHardOreProcessing {
 	 * @param registerOutput (optional) Pass true to register the output stack as a 1:1 sift (this prevents some items which
 	 *  can be created normally from clogging the sifter, such as bonemeal).
 	 */
-	public void addSiftRecipe(ItemStack input, ItemStack output, boolean registerOutput);
+	@Deprecated
+	default void addSiftRecipe(ItemStack input, ItemStack output, boolean registerOutput) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	
 	/**
 	 * See {@link IHardOreProcessing#addSiftRecipe(ItemStack, ItemStack, boolean)}
@@ -52,14 +61,20 @@ public interface IHardOreProcessing {
 	 * @param input - Supplier for an Item {@link net.minecraft.tags.Tag}, all items in this tag will be registered as inputs. See {@link IHardOreProcessing#addMillRecipe(ItemStack, ItemStack)}
 	 * @param output ItemStack including size
 	 */
-	public void addMillRecipe(Supplier<Tag<Item>> input, ItemStack output);
+	@Deprecated
+	default void addMillRecipe(Supplier<TagKey<Item>> input, ItemStack output) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	
 	/**
 	 * The millstone will grind "raw" materials down into "dust" materials, typically tiny dust piles.
 	 * @param input ItemStack to be ground
 	 * @param output ItemStack including size
 	 */
-	public void addMillRecipe(ItemStack input, ItemStack output);
+	@Deprecated
+	default void addMillRecipe(ItemStack input, ItemStack output) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	
 	/**
 	 * Returns the number items needed for the sifter recipes (minimum input stack size).
@@ -97,14 +112,20 @@ public interface IHardOreProcessing {
 	 * Add an ore block to the sluice result list. Its drops will be what the sluice produces. 
 	 * @param output
 	 */
-	void addSluiceRecipe(Block output);
+	@Deprecated
+	default void addSluiceRecipe(Block output) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	
 	/**
 	 * Add a recipe to the pressure packager
 	 * @param input
 	 * @param output
 	 */
-	public void addPressurePackRecipe(ItemStack input, ItemStack output);
+	@Deprecated
+	default void addPressurePackRecipe(ItemStack input, ItemStack output) {
+		throw new NotImplementedException("Use recipe json assets!");
+	}
 	
 	/**
 	 * Get pressure packager result
@@ -124,4 +145,6 @@ public interface IHardOreProcessing {
 	public int getPressurePackAmount(ItemStack stack);
 
 	public List<Block> getRandomSluiceResults(Random rand, Item item);
+	
+	public void update(RecipeManager recipeManager);
 }

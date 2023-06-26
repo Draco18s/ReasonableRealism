@@ -1,11 +1,9 @@
 package com.draco18s.hardlib.api.blockproperties.ores;
 
-//import com.draco18s.hardlib.api.internal.IMetaLookup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
 
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-
-public enum MillstoneOrientation implements IStringSerializable/*,IMetaLookup<MillstoneOrientation>*/
+public enum MillstoneOrientation implements StringRepresentable
 {
 	NONE("none", false, false, 				BlockPos.ZERO),
 	CENTER("center", false, true, 			BlockPos.ZERO),
@@ -31,27 +29,7 @@ public enum MillstoneOrientation implements IStringSerializable/*,IMetaLookup<Mi
 	}
 
 	@Override
-	public String getName() {
+	public String getSerializedName() {
 		return this.name;
 	}
-
-	/*@Override
-	public String getID() {
-		return "mill_orientation";
-	}
-
-	@Override
-	public MillstoneOrientation getByOrdinal(int i) {
-		return MillstoneOrientation.values()[i];
-	}
-
-	@Override
-	public String getVariantName() {
-		return this.name;
-	}
-
-	@Override
-	public int getOrdinal() {
-		return this.meta;
-	}*/
 }

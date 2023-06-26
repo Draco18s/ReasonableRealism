@@ -1,0 +1,100 @@
+{
+  "overrides": [
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_1",
+      "predicate": {
+        "harderores:ore_density": 1.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_2",
+      "predicate": {
+        "harderores:ore_density": 2.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_3",
+      "predicate": {
+        "harderores:ore_density": 3.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_4",
+      "predicate": {
+        "harderores:ore_density": 4.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_5",
+      "predicate": {
+        "harderores:ore_density": 5.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_6",
+      "predicate": {
+        "harderores:ore_density": 6.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_7",
+      "predicate": {
+        "harderores:ore_density": 7.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_8",
+      "predicate": {
+        "harderores:ore_density": 8.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_9",
+      "predicate": {
+        "harderores:ore_density": 9.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_10",
+      "predicate": {
+        "harderores:ore_density": 10.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_11",
+      "predicate": {
+        "harderores:ore_density": 11.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_12",
+      "predicate": {
+        "harderores:ore_density": 12.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_13",
+      "predicate": {
+        "harderores:ore_density": 13.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_14",
+      "predicate": {
+        "harderores:ore_density": 14.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_15",
+      "predicate": {
+        "harderores:ore_density": 15.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_harddeepslate_gold_16",
+      "predicate": {
+        "harderores:ore_density": 16.0
+      }
+    }
+  ]
+}

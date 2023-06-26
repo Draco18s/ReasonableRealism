@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "half=upper": { "model": "oreflowers:block/flame_lily" },
-        "half=lower": { "model": "oreflowers:block/flame_lily_down" }
-    }
-}

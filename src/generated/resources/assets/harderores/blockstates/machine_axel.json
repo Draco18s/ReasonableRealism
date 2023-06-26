@@ -1,0 +1,65 @@
+{
+  "variants": {
+    "axel_orientation=gears,facing=east": {
+      "model": "harderores:block/machine_axel_gears",
+      "y": 90
+    },
+    "axel_orientation=gears,facing=north": {
+      "model": "harderores:block/machine_axel_gears"
+    },
+    "axel_orientation=gears,facing=south": {
+      "model": "harderores:block/machine_axel_gears",
+      "y": 180
+    },
+    "axel_orientation=gears,facing=west": {
+      "model": "harderores:block/machine_axel_gears",
+      "y": 270
+    },
+    "axel_orientation=hub,facing=east": {
+      "model": "harderores:block/machine_axel",
+      "y": 90
+    },
+    "axel_orientation=hub,facing=north": {
+      "model": "harderores:block/machine_axel"
+    },
+    "axel_orientation=hub,facing=south": {
+      "model": "harderores:block/machine_axel",
+      "y": 180
+    },
+    "axel_orientation=hub,facing=west": {
+      "model": "harderores:block/machine_axel",
+      "y": 270
+    },
+    "axel_orientation=none,facing=east": {
+      "model": "harderores:block/machine_axel",
+      "y": 90
+    },
+    "axel_orientation=none,facing=north": {
+      "model": "harderores:block/machine_axel"
+    },
+    "axel_orientation=none,facing=south": {
+      "model": "harderores:block/machine_axel",
+      "y": 180
+    },
+    "axel_orientation=none,facing=west": {
+      "model": "harderores:block/machine_axel",
+      "y": 270
+    },
+    "axel_orientation=up,facing=east": {
+      "model": "harderores:block/machine_axel",
+      "x": 270
+    },
+    "axel_orientation=up,facing=north": {
+      "model": "harderores:block/machine_axel",
+      "x": 270
+    },
+    "axel_orientation=up,facing=south": {
+      "model": "harderores:block/machine_axel",
+      "x": 270
+    },
+    "axel_orientation=up,facing=west": {
+      "model": "harderores:block/machine_axel",
+      "x": 270
+    }
+  }
+}

@@ -6,16 +6,14 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.tags.Tag;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fluids.capability.wrappers.BlockWrapper;
 
 public interface IFlowerData {
 	/**
@@ -24,7 +22,7 @@ public interface IFlowerData {
 	 * @param pos
 	 * @param ore - A blockwrapper state of the ore at the specified BlockPos
 	 */
-	void trySpawnFlowerCluster(World world, BlockPos pos, BlockWrapper ore);
+	void trySpawnFlowerCluster(Level world, BlockPos pos, BlockWrapper ore);
 	
 	/**
 	 * Spawns a cluster of flowers (or other block passed) in the given location, radius, and number.
@@ -37,7 +35,7 @@ public interface IFlowerData {
 	 * @param canBeTallPlant
 	 * @param tallChance - if the flower can be two blocks tall, weighted probability of doing so
 	 */
-	void doSpawnFlowerCluster(World world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant);
+	void doSpawnFlowerCluster(Level world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant);
 	
 	/**
 	 * Registers an ore (with metadata) with its matching indicator plant.<br>

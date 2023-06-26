@@ -1,0 +1,12 @@
+{
+  "type": "hardlib:grinding",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar_cane"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "item": "harderfarming:tinydust_sugar"
+  }
+}

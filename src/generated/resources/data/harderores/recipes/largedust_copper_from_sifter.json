@@ -1,0 +1,12 @@
+{
+  "type": "hardlib:sifting",
+  "ingredientQuantity": 8,
+  "ingredients": [
+    {
+      "tag": "harderores:dust/tiny/copper"
+    }
+  ],
+  "result": {
+    "item": "harderores:largedust_copper"
+  }
+}

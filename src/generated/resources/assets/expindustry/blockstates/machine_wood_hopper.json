@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "expindustry:block/hopper",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "expindustry:block/hopper_side",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "expindustry:block/hopper_side",
+      "uvlock": true
+    },
+    "facing=south": {
+      "model": "expindustry:block/hopper_side",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "expindustry:block/hopper_side",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

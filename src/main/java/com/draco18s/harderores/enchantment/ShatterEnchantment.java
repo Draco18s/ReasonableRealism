@@ -1,64 +1,51 @@
 package com.draco18s.harderores.enchantment;
 
-import java.util.Set;
-
-import com.draco18s.harderores.HarderOres;
-
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentType;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.common.ToolActions;
 
 public class ShatterEnchantment extends Enchantment {
 
-	public ShatterEnchantment(EquipmentSlotType[] slots) {
-		super(Enchantment.Rarity.UNCOMMON, EnchantmentType.DIGGER, slots);
-	}
-	
-	@Override
-	public int getMinEnchantability(int par1) {
-		return 1 + 10 * par1;
-	}
-	
-	@Override
-	public int getMaxEnchantability(int par1) {
-		return getMinEnchantability(par1) + 15;
+	public ShatterEnchantment(EquipmentSlot[] slots) {
+		super(Enchantment.Rarity.UNCOMMON, EnchantmentCategory.DIGGER, slots);
 	}
 	
 	@Override
 	public int getMaxLevel() {
-		return 4;
+		return 3;
+	}
+
+	@Override
+	public int getMinCost(int par1) {
+		return 5 + 8 * par1;
+	}
+
+	@Override
+	public int getMaxCost(int par1) {
+		return getMinCost(par1) + 15;
 	}
 	
-	public boolean canApplyTogether(Enchantment other) {
-		boolean ret = super.canApplyTogether(other);
-		ret &= other != Enchantments.EFFICIENCY;
+	@Override
+	protected boolean checkCompatibility(Enchantment other) {
+		boolean ret = super.checkCompatibility(other);
+		ret &= other != Enchantments.BLOCK_EFFICIENCY;
 		ret &= other != Enchantments.SILK_TOUCH;
-		ret &= other != HarderOres.ModEnchantments.cracker;
+		if(ret) {
+			String name = other.getDescriptionId().toLowerCase();
+			ret &= !name.contains("smelt");
+			ret &= !name.contains("heat");
+			ret &= !name.contains("inferno");
+			ret &= !name.contains("fiery");
+			ret &= !name.contains("forg");
+		}
 		return ret;
 	}
 	
 	@Override
-	public boolean canApply(ItemStack stack) {
-		Item i = stack.getItem();
-		if(i instanceof ToolItem) {
-			ToolItem tool = (ToolItem)i;
-			Set<ToolType> classes = tool.getToolTypes(stack);
-			for(ToolType cl : classes) {
-				if(cl.equals(ToolType.PICKAXE)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack) {
-		return canApply(stack);
+	public boolean canEnchant(ItemStack stack) {
+		return super.canEnchant(stack) || stack.canPerformAction(ToolActions.PICKAXE_DIG);
 	}
 }

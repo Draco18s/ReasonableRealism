@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "item": "minecraft:iron_bars"
+    },
+    "p": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    " h ",
+    " i ",
+    "ppp"
+  ],
+  "result": {
+    "item": "expindustry:machine_distributor"
+  },
+  "show_notification": true
+}

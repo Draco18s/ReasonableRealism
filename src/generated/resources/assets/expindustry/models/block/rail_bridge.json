@@ -1,0 +1,7 @@
+{
+  "parent": "expindustry:block/rail_bridge_base",
+  "textures": {
+    "rail": "expindustry:block/rail_bridge",
+    "supports": "minecraft:block/oak_planks"
+  }
+}

@@ -56,6 +56,13 @@
   "block.harderores.ore_hardzinc": "Hartes Zinkerz",
   "block.harderores.ore_hardosmium": "Hartes Osmiumerz",
   "block.harderores.ore_hardquartz": "Hartes Blauquarzerz",
+  
+  "block.harderores.ore_harddeepslate_iron": "Hartes Tiefenschiefer Eisenerz",
+  "block.harderores.ore_harddeepslate_gold": "Hartes Tiefenschiefer Golderz",
+  "block.harderores.ore_harddeepslate_diamond": "Hartes Tiefenschiefer Diamanterz",
+  "block.harderores.ore_harddeepslate_copper": "Hartes Tiefenschiefer Kupfererz",
+  
+  "harderores.ore_density":"Dichte %s",
 
   "block.harderores.orechunk_dummy_iron": "GebÃ¼ndeltes Eisenerz",
   "block.harderores.orechunk_dummy_gold": "GebÃ¼ndeltes Golderz",
@@ -72,7 +79,7 @@
   "block.harderores.orechunk_dummy_osmium": "GebÃ¼ndeltes Osmiumerz",
   "block.harderores.orechunk_dummy_quartz": "GebÃ¼ndeltes Blauquarzerz",
 
-  "block.harderores.millstone": "MÃ¼hlstein",
+  "block.harderores.machine_millstone": "MÃ¼hlstein",
   "block.harderores.axel": "Achse",
   "block.harderores.windvane": "Windfahne",
   "block.harderores.sifter": "Sieb",

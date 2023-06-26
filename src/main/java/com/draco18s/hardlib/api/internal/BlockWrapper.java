@@ -2,9 +2,9 @@ package com.draco18s.hardlib.api.internal;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.IntegerProperty;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 public class BlockWrapper {
 	public final Block block;
@@ -60,21 +60,15 @@ public class BlockWrapper {
 		return false;
 	}
 
-	@Deprecated
-	public int getOreValue() {
-		return oreValue;
-	}
-
 	public int getOreValue(@Nonnull BlockState state) {
 		if(valProp != null) {
-			return state.get(valProp);
+			return state.getValue(valProp);
 		}
-		if(oreValue < 0) return 0;
-		return oreValue;
+		return oreValue > 0 ? oreValue : 0;
 	}
 
 	@Override
 	public String toString() {
-		return block.getRegistryName() + " [" + (valProp != null?"*":oreValue) + "]";
+		return block.getDescriptionId() + " [" + (valProp != null?"*":oreValue) + "]";
 	}
 }

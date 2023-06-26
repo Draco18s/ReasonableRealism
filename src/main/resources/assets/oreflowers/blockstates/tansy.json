@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "half=upper": { "model": "oreflowers:block/tansy" },
-        "half=lower": { "model": "oreflowers:block/tansy_down" }
-    }
-}

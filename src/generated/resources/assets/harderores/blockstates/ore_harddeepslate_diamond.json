@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "ore_density=1": {
+      "model": "harderores:block/ore_harddeepslate_diamond_1"
+    },
+    "ore_density=10": {
+      "model": "harderores:block/ore_harddeepslate_diamond_10"
+    },
+    "ore_density=11": {
+      "model": "harderores:block/ore_harddeepslate_diamond_11"
+    },
+    "ore_density=12": {
+      "model": "harderores:block/ore_harddeepslate_diamond_12"
+    },
+    "ore_density=13": {
+      "model": "harderores:block/ore_harddeepslate_diamond_13"
+    },
+    "ore_density=14": {
+      "model": "harderores:block/ore_harddeepslate_diamond_14"
+    },
+    "ore_density=15": {
+      "model": "harderores:block/ore_harddeepslate_diamond_15"
+    },
+    "ore_density=16": {
+      "model": "harderores:block/ore_harddeepslate_diamond_16"
+    },
+    "ore_density=2": {
+      "model": "harderores:block/ore_harddeepslate_diamond_2"
+    },
+    "ore_density=3": {
+      "model": "harderores:block/ore_harddeepslate_diamond_3"
+    },
+    "ore_density=4": {
+      "model": "harderores:block/ore_harddeepslate_diamond_4"
+    },
+    "ore_density=5": {
+      "model": "harderores:block/ore_harddeepslate_diamond_5"
+    },
+    "ore_density=6": {
+      "model": "harderores:block/ore_harddeepslate_diamond_6"
+    },
+    "ore_density=7": {
+      "model": "harderores:block/ore_harddeepslate_diamond_7"
+    },
+    "ore_density=8": {
+      "model": "harderores:block/ore_harddeepslate_diamond_8"
+    },
+    "ore_density=9": {
+      "model": "harderores:block/ore_harddeepslate_diamond_9"
+    }
+  }
+}

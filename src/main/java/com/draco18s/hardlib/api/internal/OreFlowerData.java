@@ -2,7 +2,8 @@ package com.draco18s.hardlib.api.internal;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
+
 
 /**
  * Data neccessary to grow ore indicator plants

@@ -1,219 +1,172 @@
 package com.draco18s.harderores.block;
 
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.Level;
-
 import com.draco18s.harderores.HarderOres;
-import com.draco18s.harderores.entity.AxelTileEntity;
+import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
-import com.draco18s.hardlib.api.capability.CapabilityMechanicalPower;
+import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
+import com.draco18s.hardlib.api.internal.block.ModEntityBlock;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition.Builder;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class AxelBlock extends Block{
-	private static boolean debug = false;
-	private static Direction[] checkDirs = new Direction[]{Direction.UP, Direction.NORTH, Direction.EAST};
-
+public class AxelBlock extends ModEntityBlock {
+	public static final VoxelShape WEST = 	axel(0, 2, 2, 16, 14, 14);
+	public static final VoxelShape UP = 	axel(2, 0, 2, 14, 16, 14);
+	public static final VoxelShape NORTH = 	axel(2, 2, 0, 14, 14, 16);
+	public static final VoxelShape GEARS = gearBox();
+	
 	public AxelBlock() {
-		super(Properties.create(Material.ROCK, MaterialColor.STONE).hardnessAndResistance(2).harvestTool(ToolType.AXE).harvestLevel(1).sound(SoundType.WOOD));
-		this.setDefaultState(this.stateContainer.getBaseState().with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE).with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+		super(Properties.of(Material.WOOD).strength(2).sound(SoundType.WOOD));
+		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+		
 	}
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
-	}
-
-	@Override
-	@Nullable
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		Direction dir = getFacingFromEntity(context.getPos(), context.getPlayer());
-		BlockState state = this.getDefaultState();
-		if(dir == Direction.UP || dir == Direction.DOWN) {
-			dir = Direction.NORTH;
-			state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.UP);
+	private static VoxelShape axel(int nx, int ny, int nz, int mx, int my, int mz) {
+		VoxelShape p1 = box(nx, ny, nz, mx, my, mz);
+		VoxelShape p2;
+		if(ny == 0) {
+			p2 = Shapes.joinUnoptimized(box(0, 0, 6, 16, 16, 10), box(6, 0, 0, 10, 16, 16), BooleanOp.OR);
 		}
-		context.getWorld().getPendingBlockTicks().scheduleTick(context.getPos(), this, 10);
-		state = state.with(BlockStateProperties.HORIZONTAL_FACING, dir);
-		return state;
+		else if(nx == 0) {
+			p2 = Shapes.joinUnoptimized(box(0, 6, 0, 16, 10, 16), box(0, 0, 6, 16, 16, 10), BooleanOp.OR);
+		}
+		else {
+			p2 = Shapes.joinUnoptimized(box(6, 0, 0, 10, 16, 16), box(0, 6, 0, 16, 10, 16), BooleanOp.OR);
+		}
+		return Shapes.join(p1, p2, BooleanOp.OR);
+	}
+
+	private static VoxelShape gearBox() {
+		VoxelShape p1 = Shapes.joinUnoptimized(box(0.01,0.01,0,16-0.01,16,2), box(0.01,0,0.01,2,16,16-0.01), BooleanOp.OR);
+		VoxelShape p2 = Shapes.joinUnoptimized(box(14,0,0.01,16-0.01,16,16-0.01), box(0.01,0,14,16-0.01,16,16-0.01), BooleanOp.OR);
+		
+		return Shapes.join(p1, p2, BooleanOp.OR);
 	}
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		builder.add(BlockProperties.AXEL_ORIENTATION);
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return state.get(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB;
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		Direction dir = BlockProperties.getFacingFromEntity(context.getClickedPos(), context.getPlayer());
+		BlockState state = this.defaultBlockState();
+		context.getLevel().scheduleTick(context.getClickedPos(), this, 2);
+		state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, dir);
+		return state;
+	}
+	
+	@Override
+	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block p_60512_, BlockPos p_60513_, boolean p_60514_) {
+		this.checkPlacement(world, pos, state);
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		if(state.get(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB) {
-			return new AxelTileEntity();
-		}
-		return null;
+	public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+		this.checkPlacement(world, pos, state);
 	}
-
-	public static Direction getFacingFromEntity(BlockPos pos, PlayerEntity p_185647_1_) {
-		return p_185647_1_.getHorizontalFacing().getOpposite();
-	}
-
+	
 	@Override
-	public void tick(BlockState state, World worldIn, BlockPos pos, Random random) {
-		checkPlacement(worldIn, pos, state);
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return state.getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB ? new AxelBlockEntity(pos, state) : null;
 	}
-
-	public boolean checkPlacement(World worldIn, BlockPos pos, BlockState stateIn) {
+	
+	public void checkPlacement(Level worldIn, BlockPos pos, BlockState stateIn) {
 		BlockState state = stateIn;
-		Direction facing = stateIn.get(BlockStateProperties.HORIZONTAL_FACING);
-		logMessage("Checking, is [" + facing + "]");
-		if(worldIn.getBlockState(pos.up()).getBlock() == this) {
-			logMessage("Should point up");
-			if(stateIn.get(BlockProperties.AXEL_ORIENTATION) != AxelOrientation.UP) {
-				worldIn.getPendingBlockTicks().scheduleTick(pos.up(), this, 10);
-			}
-			state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.UP);
+		Direction facing = stateIn.getValue(BlockStateProperties.HORIZONTAL_FACING);
+		AxelOrientation axelState = stateIn.getValue(BlockProperties.AXEL_ORIENTATION);
+		if(worldIn.getBlockState(pos.above()).getBlock() == this) {
+			if(axelState != AxelOrientation.UP)
+				state = state.setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.UP);
 		}
 		else {
-			if(worldIn.getBlockState(pos.down()).getBlock() == this) {
-				logMessage("Should be gears; " + facing);
-
-				logMessage(worldIn.getBlockState(pos.offset(facing)).getBlock() + ":" + worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock());
-				if(worldIn.getBlockState(pos.offset(facing)).getBlock() != this && worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock() == this) {
-					logMessage("Flopping");
-					state = state.with(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
-					worldIn.getPendingBlockTicks().scheduleTick(pos.offset(facing.getOpposite()), this, 10);
-				}
-				if(stateIn.get(BlockProperties.AXEL_ORIENTATION) != AxelOrientation.GEARS) {
-					worldIn.getPendingBlockTicks().scheduleTick(pos.down(), this, 10);
-				}
-				state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.GEARS);
+			if(axelState != AxelOrientation.GEARS && worldIn.getBlockState(pos.below()).getBlock() == this) {
+				state = state.setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.GEARS);
+				worldIn.scheduleTick(pos.below(), this, 2);
 			}
-			else if(worldIn.getTileEntity(pos.down()) != null && worldIn.getTileEntity(pos.down()).getCapability(CapabilityMechanicalPower.MECHANICAL_POWER_CAPABILITY, Direction.DOWN).isPresent()) {
-				logMessage("Should be gears (power user); " + facing);
-				logMessage(worldIn.getBlockState(pos.offset(facing)).getBlock() + ":" + worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock());
-				if(worldIn.getBlockState(pos.offset(facing)).getBlock() != this && worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock() == this) {
-					logMessage("Flopping");
-					state = state.with(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
-					worldIn.getPendingBlockTicks().scheduleTick(pos.offset(facing.getOpposite()), this, 10);
-				}
-				state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.GEARS);
-				worldIn.getPendingBlockTicks().scheduleTick(pos.offset(facing,1), this, 10);
+			BlockState oState = worldIn.getBlockState(pos.relative(facing));
+			boolean shouldRotate = oState.getBlock() != this;
+			
+			if(shouldRotate && worldIn.getBlockState(pos.relative(facing.getOpposite())).getBlock() == this) {
+				state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
+				worldIn.scheduleTick(pos.relative(facing.getOpposite()), this, 2);
 			}
-			else {
-				logMessage("Hub?");
-
-				int numMatching = 0;
-				for(Direction dir : checkDirs) {
-					if(worldIn.getBlockState(pos.offset(dir,1)).getBlock() == HarderOres.ModBlocks.windvane &&
-							worldIn.getBlockState(pos.offset(dir,2)).getBlock() == HarderOres.ModBlocks.windvane &&
-							worldIn.getBlockState(pos.offset(dir.getOpposite(), 1)).getBlock() == HarderOres.ModBlocks.windvane &&
-							worldIn.getBlockState(pos.offset(dir.getOpposite(), 2)).getBlock() == HarderOres.ModBlocks.windvane
-							) {
-						numMatching++;
-					}
-				}
-				if(numMatching == 2) {
-					logMessage("	Yes");
-					state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.HUB);
-					for(Direction dir : checkDirs) {
-						BlockState newstate = HarderOres.ModBlocks.windvane.getDefaultState();
-						if(worldIn.getBlockState(pos.offset(dir,1)).getBlock() == HarderOres.ModBlocks.windvane) {
-							worldIn.setBlockState(pos.offset(dir,1), newstate.with(BlockStateProperties.FACING, dir));
-							worldIn.setBlockState(pos.offset(dir,2), newstate.with(BlockStateProperties.FACING, dir));
-							worldIn.setBlockState(pos.offset(dir.getOpposite(),1), newstate.with(BlockStateProperties.FACING, dir.getOpposite()));
-							worldIn.setBlockState(pos.offset(dir.getOpposite(),2), newstate.with(BlockStateProperties.FACING, dir.getOpposite()));
-						}
-					}
-				}
-				else {
-					logMessage("	No");
-					state = state.with(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE);
-				}
+			else if(shouldRotate && worldIn.getBlockState(pos.relative(facing.getClockWise())).getBlock() == this) {
+				state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing.getClockWise());
+				worldIn.scheduleTick(pos.relative(facing.getClockWise()), this, 2);
 			}
-			if(worldIn.getBlockState(pos.offset(facing.getOpposite())).getBlock() != this) {
-				logMessage("Rotating because not coming from axel");
-				Direction check = facing;
-				do {
-					check = check.rotateY();
-					logMessage("   " + check.getOpposite() + " is " + worldIn.getBlockState(pos.offset(check.getOpposite())).getBlock());
-					BlockState checkState = worldIn.getBlockState(pos.offset(check.getOpposite()));
-					if(checkState.getBlock() == this) {
-						if(checkState.get(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.GEARS) {
-							logMessage("Neighbor is gears, adopting neighbor's facing");
-							state = state.with(BlockStateProperties.HORIZONTAL_FACING, check);
-							worldIn.getPendingBlockTicks().scheduleTick(pos.offset(check.getOpposite()), this, 10);
-						}
-						else if(state.get(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.GEARS) {
-							logMessage("I am gears, forcing my facing on neighbor");
-							state = state.with(BlockStateProperties.HORIZONTAL_FACING, check.getOpposite());
-							worldIn.getPendingBlockTicks().scheduleTick(pos.offset(check.getOpposite()), this, 10);
-						}
-						else if(checkState.get(BlockStateProperties.HORIZONTAL_FACING) == check.getOpposite()) {
-							logMessage("Adopting neighbor's facing");
-							state = state.with(BlockStateProperties.HORIZONTAL_FACING, check.getOpposite());
-						}
-						else {
-							logMessage("Forcing my facing on neighbor");
-							state = state.with(BlockStateProperties.HORIZONTAL_FACING, check);
-							worldIn.getPendingBlockTicks().scheduleTick(pos.offset(check), this, 10);
-						}
-						break;
-					}
-				} while(facing != check);
+			else if(shouldRotate && worldIn.getBlockState(pos.relative(facing.getCounterClockWise())).getBlock() == this) {
+				state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing.getCounterClockWise());
+				worldIn.scheduleTick(pos.relative(facing.getOpposite()), this, 2);
+			}
+			
+			if(worldIn.getBlockEntity(pos.below()) != null && worldIn.getBlockEntity(pos.below()).getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, Direction.DOWN).isPresent()) {
+				if(worldIn.getBlockState(pos.relative(facing)).getBlock() != this && worldIn.getBlockState(pos.relative(facing.getOpposite())).getBlock() == this) {
+					state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
+					worldIn.scheduleTick(pos.relative(facing.getOpposite()), this, 2);
+				}
+				state = state.setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.GEARS);
+				worldIn.scheduleTick(pos.relative(facing), this, 2);
 			}
 			else {
-				if(worldIn.getBlockState(pos.offset(facing.getOpposite())).get(BlockStateProperties.HORIZONTAL_FACING) != facing) {
-					worldIn.getPendingBlockTicks().scheduleTick(pos.offset(facing.getOpposite()), this, 10);
+				Direction[] checks = { Direction.UP, Direction.DOWN, facing.getClockWise(), facing.getCounterClockWise() };
+				if(checkForVanes(worldIn, pos, checks)) {
+					state = state.setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.HUB);
 				}
-				if(worldIn.getBlockState(pos.offset(facing)).getBlock() == this && worldIn.getBlockState(pos.offset(facing)).get(BlockStateProperties.HORIZONTAL_FACING) == facing.getOpposite()) {
-					state = state.with(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
-					worldIn.getPendingBlockTicks().scheduleTick(pos.offset(facing.getOpposite()), this, 10);
+				else if(state.getValue(BlockProperties.AXEL_ORIENTATION) != AxelOrientation.GEARS){
+					state = state.setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE);
 				}
 			}
 		}
-		facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
-		logMessage("Setting to [" + facing + "]");
-		worldIn.setBlockState(pos, state, 3);
-		return false;
+		worldIn.setBlock(pos, state, 3);
 	}
 
-	private static void logMessage(String message) {
-		if(debug)
-			HarderOres.LOGGER.log(Level.DEBUG, message);
+	private boolean checkForVanes(Level worldIn, BlockPos pos, Direction[] checks) {
+		for(Direction f2 : checks) {
+			if(worldIn.getBlockState(pos.relative(f2,1)).getBlock() != HarderOres.ModBlocks.machine_windvane) return false;
+			if(worldIn.getBlockState(pos.relative(f2,1)).getBlock() != HarderOres.ModBlocks.machine_windvane) return false;
+		}
+		return true;
 	}
+	
+	public static final VoxelShape FULL_BLOCK = box(1,1,1,15,15,15);
 
-	@Override
 	@Deprecated
-	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-		super.neighborChanged(state,world,pos,block,fromPos,isMoving);
-		if(block != this) {
-			world.getPendingBlockTicks().scheduleTick(pos, this, 10);
+	public VoxelShape getShape(BlockState state, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext context) {
+		AxelOrientation axelState = state.getValue(BlockProperties.AXEL_ORIENTATION);
+		if(axelState == AxelOrientation.UP) return UP;
+		if(axelState == AxelOrientation.GEARS) return GEARS;
+		Direction dir = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+		switch(dir) {
+			case EAST:
+			case WEST:
+				return WEST;
+			case NORTH:
+			case SOUTH:
+				return NORTH;
+			default:
+				break;
+		
 		}
-		else if(state.get(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.GEARS) {
-			world.getPendingBlockTicks().scheduleTick(pos, this, 10);
-		}
+		return FULL_BLOCK;
 	}
 }

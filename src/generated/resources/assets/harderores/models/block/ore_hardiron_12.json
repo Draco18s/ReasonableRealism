@@ -1,0 +1,7 @@
+{
+  "parent": "harderores:block/hard_ore",
+  "textures": {
+    "all": "minecraft:block/iron_ore",
+    "overlay": "harderores:block/ore_hardiron_12"
+  }
+}

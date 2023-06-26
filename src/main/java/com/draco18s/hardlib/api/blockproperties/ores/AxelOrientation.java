@@ -1,8 +1,8 @@
 package com.draco18s.hardlib.api.blockproperties.ores;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum AxelOrientation implements IStringSerializable {
+public enum AxelOrientation implements StringRepresentable {
 	NONE("none"),
 	GEARS("gears"),
 	HUB("hub"),
@@ -15,7 +15,7 @@ public enum AxelOrientation implements IStringSerializable {
 	}
 
 	@Override
-	public String getName() {
+	public String getSerializedName() {
 		return this.name;
 	}
 }

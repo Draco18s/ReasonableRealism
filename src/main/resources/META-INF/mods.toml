@@ -1,69 +1,46 @@
-modLoader="javafml" #mandatory
-loaderVersion="[25,)" #mandatory (24 is current forge version)
-[[mods]] #mandatory
-	modId="harderfarming" #mandatory
-	version="${version}" #mandatory
-	displayName="Harder Farming" #mandatory
-	authors="Draco18s" #optional
-	description='''
-	Changes to mechanics to make farms not completely free food.
+modLoader="javafml"
+# Forge for 1.19 is version 41
+loaderVersion="[41,)"
+license="All rights reserved"
+showAsResourcePack=false
+
+[[mods]]
+    modId="hardlib"
+    version="1.0.0.0"
+    displayName="Hardlib"
+    displayURL="minecraftforge.net"
+    logoFile="logo.png"
+    credits="."
+    authors="Draco18s"
+    description='''
+	Basic library. Provides a common platform for registering blocks, items, etc. as well as integration between the various child mods and external plugins.
 	'''
-	[[dependencies.harderfarming]] #optional
-	    modId="forge" #mandatory
-	    mandatory=true #mandatory
-	    versionRange="[25,)" #mandatory
-	    ordering="NONE"
-	    side="BOTH"
-	[[dependencies.harderfarming]] #optional
-	    modId="hardlib" #mandatory
-	    mandatory=true #mandatory
-	    versionRange="[0,)" #mandatory
-	    ordering="AFTER"
-	    side="BOTH"
-	[[dependencies.harderfarming]]
-	    modId="minecraft"
-	    mandatory=true
-	    versionRange="[1.14.4,)"
-	    ordering="NONE"
-	    side="BOTH"
-[[mods]] #mandatory
-	modId="harderores" #mandatory
-	version="${version}" #mandatory
-	displayName="Harder Ores" #mandatory
-	authors="Draco18s" #optional
-	description='''
-	Mining and refining ores made more consistent, interesting, and difficult. Ores will appear in structured veins, each block will be tougher to mine, and produce less resources per block.
-	'''
-	[[dependencies.harderores]] #optional
-	    modId="forge" #mandatory
-	    mandatory=true #mandatory
-	    versionRange="[25,)" #mandatory
-	    ordering="NONE"
-	    side="BOTH"
-	[[dependencies.harderores]] #optional
-	    modId="hardlib" #mandatory
-	    mandatory=true #mandatory
-	    versionRange="[0,)" #mandatory
-	    ordering="AFTER"
-	    side="BOTH"
-	[[dependencies.harderores]]
-	    modId="minecraft"
-	    mandatory=true
-	    versionRange="[1.14.4,)"
-	    ordering="NONE"
-	    side="BOTH"
+    displayTest="MATCH_VERSION"
+
+	[[dependencies.hardlib]]
+		modId="forge"
+		mandatory=true
+		versionRange="[41,)"
+		ordering="NONE"
+		side="BOTH"
+
+	[[dependencies.hardlib]]
+		modId="minecraft"
+		mandatory=true
+		versionRange="[1.19,)"
+		ordering="NONE"
+		side="BOTH"
+		
 [[mods]] #mandatory
 	modId="expindustry" #mandatory
-	version="${version}" #mandatory
+	version="${file.jarVersion}" #mandatory
 	displayName="Exp Industry" #mandatory
 	authors="Draco18s" #optional
-	description='''
-	Additional blocks to facilitate vanilla-style industrial operations.
-	'''
+	description='''Additional blocks to facilitate vanilla-style industrial operations.'''
 	[[dependencies.expindustry]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-	    versionRange="[25,)" #mandatory
+		versionRange="[41,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.expindustry]] #optional
@@ -75,52 +52,62 @@ loaderVersion="[25,)" #mandatory (24 is current forge version)
 	[[dependencies.expindustry]]
 	    modId="minecraft"
 	    mandatory=true
-	    versionRange="[1.14.4,)"
+		versionRange="[1.19,)"
 	    ordering="NONE"
 	    side="BOTH"
+		
 [[mods]] #mandatory
-	modId="oreflowers" #mandatory
-	version="${version}" #mandatory
-	displayName="Ore Flowers" #mandatory
+	modId="harderores" #mandatory
+	version="${file.jarVersion}" #mandatory
+	displayName="Harder Ores" #mandatory
 	authors="Draco18s" #optional
-	description='''
-	Adds prospecting plants to the world, each indicates a specific ore found somewhere nearby.
-	'''
-	[[dependencies.oreflowers]] #optional
+	description='''Mining and refining ores made more consistent, interesting, and difficult. Ores will appear in structured veins, each block will be tougher to mine, and produce less resources per block.'''
+	[[dependencies.harderores]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-	    versionRange="[25,)" #mandatory
+		versionRange="[41,)"
 	    ordering="NONE"
 	    side="BOTH"
-	[[dependencies.oreflowers]] #optional
+	[[dependencies.harderores]] #optional
 	    modId="hardlib" #mandatory
 	    mandatory=true #mandatory
 	    versionRange="[0,)" #mandatory
 	    ordering="AFTER"
 	    side="BOTH"
-	[[dependencies.oreflowers]]
+	[[dependencies.harderores]]
 	    modId="minecraft"
 	    mandatory=true
-	    versionRange="[1.14.4,)"
+		versionRange="[1.19,)"
 	    ordering="NONE"
 	    side="BOTH"
+	[[dependencies.harderores]]
+	    modId="dynamic_asset_generator"
+	    mandatory=true
+		versionRange="[3.1.1,4.0.0)"
+	    ordering="NONE"
+	    side="BOTH"
+		
 [[mods]] #mandatory
-	modId="hardlib" #mandatory
-	version="${version}" #mandatory
-	displayName="Hard Lib" #mandatory
+	modId="harderfarming" #mandatory
+	version="${file.jarVersion}" #mandatory
+	displayName="Harder Ores" #mandatory
 	authors="Draco18s" #optional
-	description='''
-	Basic library. Provides a common platform for registering blocks, items, etc. as well as integration between the various child mods and external plugins.
-	'''
-	[[dependencies.hardlib]] #optional
+	description='''Alters crop growth and a few other things to be more reasonably realistic.'''
+	[[dependencies.harderfarming]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-	    versionRange="[25,)" #mandatory
+		versionRange="[41,)"
 	    ordering="NONE"
 	    side="BOTH"
-	[[dependencies.hardlib]]
+	[[dependencies.harderfarming]] #optional
+	    modId="hardlib" #mandatory
+	    mandatory=true #mandatory
+	    versionRange="[0,)" #mandatory
+	    ordering="AFTER"
+	    side="BOTH"
+	[[dependencies.harderfarming]]
 	    modId="minecraft"
 	    mandatory=true
-	    versionRange="[1.14.4,)"
+		versionRange="[1.19,)"
 	    ordering="NONE"
 	    side="BOTH"

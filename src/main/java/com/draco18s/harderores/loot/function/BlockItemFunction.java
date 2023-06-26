@@ -1,4 +1,4 @@
-package com.draco18s.harderores.loot.function;
+/*package com.draco18s.harderores.loot.function;
 
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.google.gson.JsonDeserializationContext;
@@ -42,4 +42,4 @@ public class BlockItemFunction extends LootFunction {
 			return new BlockItemFunction(conditionsIn);
 		}
 	}
-}
+}*/

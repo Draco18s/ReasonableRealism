@@ -1,0 +1,100 @@
+{
+  "overrides": [
+    {
+      "model": "harderores:block/ore_hardcopper_1",
+      "predicate": {
+        "harderores:ore_density": 1.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_2",
+      "predicate": {
+        "harderores:ore_density": 2.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_3",
+      "predicate": {
+        "harderores:ore_density": 3.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_4",
+      "predicate": {
+        "harderores:ore_density": 4.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_5",
+      "predicate": {
+        "harderores:ore_density": 5.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_6",
+      "predicate": {
+        "harderores:ore_density": 6.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_7",
+      "predicate": {
+        "harderores:ore_density": 7.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_8",
+      "predicate": {
+        "harderores:ore_density": 8.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_9",
+      "predicate": {
+        "harderores:ore_density": 9.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_10",
+      "predicate": {
+        "harderores:ore_density": 10.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_11",
+      "predicate": {
+        "harderores:ore_density": 11.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_12",
+      "predicate": {
+        "harderores:ore_density": 12.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_13",
+      "predicate": {
+        "harderores:ore_density": 13.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_14",
+      "predicate": {
+        "harderores:ore_density": 14.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_15",
+      "predicate": {
+        "harderores:ore_density": 15.0
+      }
+    },
+    {
+      "model": "harderores:block/ore_hardcopper_16",
+      "predicate": {
+        "harderores:ore_density": 16.0
+      }
+    }
+  ]
+}

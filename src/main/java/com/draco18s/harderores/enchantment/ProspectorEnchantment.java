@@ -1,70 +1,51 @@
 package com.draco18s.harderores.enchantment;
 
-import java.util.Set;
 import java.util.function.Predicate;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentType;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.common.ToolActions;
 
 public class ProspectorEnchantment extends Enchantment {
 
-	public ProspectorEnchantment(EquipmentSlotType[] slots) {
-		super(Enchantment.Rarity.RARE, EnchantmentType.create("DIGGER_COMPASS", new Predicate<Item>() {
+	public ProspectorEnchantment(EquipmentSlot[] slots) {
+		super(Enchantment.Rarity.RARE, EnchantmentCategory.create("DIGGER_COMPASS", new Predicate<Item>() {
 			@Override
 			public boolean test(Item itemIn) {
-				return itemIn instanceof ToolItem || itemIn == Items.COMPASS;
+				return itemIn == Items.COMPASS;
 			}
 		}), slots);
 	}
-	
-	@Override
-	public int getMinEnchantability(int par1) {
-		return 15 * par1 - 5;
-	}
-	
-	@Override
-	public int getMaxEnchantability(int par1) {
-		return getMinEnchantability(par1) + 15;
-	}
-	
+
 	@Override
 	public int getMaxLevel() {
 		return 3;
 	}
-	
-	public boolean canApplyTogether(Enchantment other) {
-		boolean ret = super.canApplyTogether(other);
-		ret |= other != Enchantments.FORTUNE;
+
+	@Override
+	public int getMinCost(int p_44679_) {
+		return 15 * p_44679_ - 5;
+	}
+
+	@Override
+	public int getMaxCost(int p_44691_) {
+		return getMinCost(p_44691_) + 15;
+	}
+
+	@Override
+	protected boolean checkCompatibility(Enchantment other) {
+		boolean ret = super.checkCompatibility(other);
+		ret |= other != Enchantments.BLOCK_FORTUNE;
 		return ret;
 	}
-	
+
 	@Override
-	public boolean canApply(ItemStack stack) {
-		Item i = stack.getItem();
-		if(i instanceof ToolItem) {
-			ToolItem tool = (ToolItem)i;
-			Set<ToolType> classes = tool.getToolTypes(stack);
-			for(ToolType cl : classes) {
-				if(cl.equals(ToolType.PICKAXE)) {
-					return true;
-				}
-			}
-		}
-		else if(i == Items.COMPASS) {
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack) {
-		return canApply(stack);
+	public boolean canEnchant(ItemStack stack) {
+		return super.canEnchant(stack) || stack.canPerformAction(ToolActions.PICKAXE_DIG);
 	}
 }

@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "powered=false,shape=ascending_east": {
+      "model": "minecraft:block/air"
+    },
+    "powered=false,shape=ascending_north": {
+      "model": "minecraft:block/air"
+    },
+    "powered=false,shape=ascending_south": {
+      "model": "minecraft:block/air"
+    },
+    "powered=false,shape=ascending_west": {
+      "model": "minecraft:block/air"
+    },
+    "powered=false,shape=east_west": {
+      "model": "expindustry:block/powered_rail_bridge",
+      "y": 90
+    },
+    "powered=false,shape=north_south": {
+      "model": "expindustry:block/powered_rail_bridge"
+    },
+    "powered=true,shape=ascending_east": {
+      "model": "minecraft:block/air"
+    },
+    "powered=true,shape=ascending_north": {
+      "model": "minecraft:block/air"
+    },
+    "powered=true,shape=ascending_south": {
+      "model": "minecraft:block/air"
+    },
+    "powered=true,shape=ascending_west": {
+      "model": "minecraft:block/air"
+    },
+    "powered=true,shape=east_west": {
+      "model": "expindustry:block/powered_rail_bridge",
+      "y": 90
+    },
+    "powered=true,shape=north_south": {
+      "model": "expindustry:block/powered_rail_bridge"
+    }
+  }
+}

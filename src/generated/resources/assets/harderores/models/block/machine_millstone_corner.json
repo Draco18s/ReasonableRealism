@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "harderores:block/mill_corner2",
+    "side": "harderores:block/mill_side",
+    "top": "harderores:block/mill_corner"
+  }
+}

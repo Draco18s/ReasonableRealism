@@ -1,51 +1,64 @@
 package com.draco18s.industry.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.RailBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.RailShape;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class RailBridgeBlock extends RailBlock {
-	protected static final VoxelShape THICK_FLAT_AABB = Block.makeCuboidShape(0.0D, -2.0D, 0.0D, 16.0D, 2.0D, 16.0D);
+public class RailBridgeBlock extends BaseRailBlock {
+	protected static final VoxelShape THICK_FLAT_AABB = Block.box(0.0D, -2.0D, 0.0D, 16.0D, 2.0D, 16.0D);
+	public static final EnumProperty<RailShape> SHAPE = BlockStateProperties.RAIL_SHAPE_STRAIGHT;
 
 	public RailBridgeBlock() {
-		super(Block.Properties.create(Material.MISCELLANEOUS).doesNotBlockMovement().hardnessAndResistance(0.7F).sound(SoundType.METAL));
-
+		super(true, Block.Properties.of(Material.DECORATION).noCollission().strength(0.7F).sound(SoundType.METAL));
+		this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean isFlexibleRail(BlockState state, IBlockReader world, BlockPos pos) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_55408_) {
+		p_55408_.add(SHAPE, WATERLOGGED);
+	}
+
+	@Override
+	public boolean isFlexibleRail(BlockState state, BlockGetter world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public boolean canMakeSlopes(BlockState state, IBlockReader world, BlockPos pos) {
+	public boolean canMakeSlopes(BlockState state, BlockGetter world, BlockPos pos) {
 		return false;
 	}
 
+	@Override
 	@Deprecated
-	public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-		BlockPos blockpos = pos.offset(Direction.DOWN);
+	public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+		BlockPos blockpos = pos.relative(Direction.DOWN);
 		BlockState blockstate = world.getBlockState(blockpos);
-		return !blockstate.func_224755_d(world, blockpos, Direction.UP) || isRail(blockstate) || isRail( world.getBlockState(pos.offset(Direction.UP)));
+		return !blockstate.isFaceSturdy(world, blockpos, Direction.UP, SupportType.RIGID) || isRail(blockstate);// || isRail( world.getBlockState(pos.relative(Direction.UP)));
 	}
 
 	@Override
 	@Deprecated
-	public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-		if (!world.isRemote) {
-			if(!isValidPosition(state, world, pos)) {
+	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+		if (!world.isClientSide) {
+			if(!canSurvive(state, world, pos)) {
 				//this.dropBlockAsItem(world, pos, state, 0);
 				world.destroyBlock(pos, true);
 			}
@@ -56,20 +69,27 @@ public class RailBridgeBlock extends RailBlock {
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		return THICK_FLAT_AABB;
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+	public VoxelShape getInteractionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
 		return THICK_FLAT_AABB;
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context) {
-		if(reader instanceof IWorld) {
+	public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+		if(context instanceof EntityCollisionContext ctx) {
+			if(ctx.getEntity() instanceof Player p) {
+				if(p.isShiftKeyDown()) {
+					return THICK_FLAT_AABB;
+				}
+			}
+		}
+		/*if(reader instanceof IWorld) {
 			IWorld iworld = (IWorld)reader;
 			PlayerEntity p = iworld.getClosestPlayer(pos.getX()+0.5, pos.getY(), pos.getZ()+0.5, 1.5, false);
 			if(p == null) {
@@ -81,7 +101,12 @@ public class RailBridgeBlock extends RailBlock {
 			if(p != null && p.isSneaking()) {
 				return THICK_FLAT_AABB;
 			}
-		}
-		return VoxelShapes.empty();
+		}*/
+		return Shapes.empty();
+	}
+
+	@Override
+	public Property<RailShape> getShapeProperty() {
+		return BlockStateProperties.RAIL_SHAPE_STRAIGHT;
 	}
 }

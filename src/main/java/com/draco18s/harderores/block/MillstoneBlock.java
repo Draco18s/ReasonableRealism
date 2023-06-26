@@ -1,89 +1,63 @@
 package com.draco18s.harderores.block;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
-import com.draco18s.harderores.entity.MillstoneTileEntity;
-import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.entity.MillstoneBlockEntity;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
+import com.draco18s.hardlib.api.internal.block.ModEntityBlock;
 import com.draco18s.hardlib.util.InventoryUtils;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
-public class MillstoneBlock extends Block {
+public class MillstoneBlock extends ModEntityBlock {
 
 	public MillstoneBlock() {
-		super(Properties.create(Material.ROCK, MaterialColor.STONE).hardnessAndResistance(2).harvestTool(ToolType.PICKAXE).harvestLevel(1).sound(SoundType.STONE));
-		this.setDefaultState(this.stateContainer.getBaseState().with(BlockProperties.MILL_ORIENTATION, MillstoneOrientation.NONE));
+		super(Properties.of(Material.STONE).strength(2).sound(SoundType.STONE).requiresCorrectToolForDrops());
+		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.MILL_ORIENTATION, MillstoneOrientation.NONE));
 	}
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(BlockProperties.MILL_ORIENTATION);
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+		return new MillstoneBlockEntity(p_153215_, p_153216_);
 	}
 
+	@Nullable
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new MillstoneTileEntity();
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
+		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_millstone, MillstoneBlockEntity::tick);
 	}
 
-	@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-		ItemStack heldItem = player.getHeldItem(hand);
-		if(!heldItem.isEmpty()) {
-			MillstoneTileEntity te = (MillstoneTileEntity)world.getTileEntity(pos);
-			IItemHandler inventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(null);
-			if(inventory == null) return false;
-			ItemStack stack = heldItem.copy();
-			stack.setCount(1);
-			stack = inventory.insertItem(0, stack, true);
-			if(stack.isEmpty()) {
-				stack = inventory.insertItem(0, heldItem.split(1), false);
-
-				MillstoneOrientation millpos = world.getBlockState(pos).get(BlockProperties.MILL_ORIENTATION);
-				MillstoneTileEntity center = (MillstoneTileEntity)world.getTileEntity(te.getPos().add(millpos.offset.getX(), 0, millpos.offset.getZ()));
-
-				if(center != null && center.getPower() > 0) {
-					if(player instanceof ServerPlayerEntity) {
-						HardLibAPI.Advancements.MILL_BUILT.trigger((ServerPlayerEntity) player, center.getPower());
-					}
-				}
-				return true;
-			}
-		}
-		return false;
+	public InteractionResult use(BlockState p_48804_, Level p_48805_, BlockPos p_48806_, Player p_48807_, InteractionHand p_48808_, BlockHitResult p_48809_) {
+		return InteractionResult.CONSUME;
 	}
-
-	@Deprecated
-	public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
-		if(!checkPlacement(world, pos)) {
-			List<BlockPos> list = BlockPos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1)).map(BlockPos::toImmutable).collect(Collectors.toList());
+	
+	//updatePostPlacement
+	public BlockState updateShape(BlockState thisCurState, Direction dir, BlockState state2, LevelAccessor world, BlockPos thisPos, BlockPos pos2) {
+		if(!checkPlacement(world, thisPos)) {
+			Iterable<BlockPos> list = BlockPos.betweenClosed(thisPos.offset(-1,0,-1), thisPos.offset(1,0,1));//.map(BlockPos::toImmutable).collect(Collectors.toList());
 			for(BlockPos p : list) {
 				if(world.getBlockState(p).getBlock() == this) {
 					if(checkPlacement(world, p))
@@ -91,29 +65,28 @@ public class MillstoneBlock extends Block {
 				}
 			}
 		}
-		return world.getBlockState(pos);
+		return world.getBlockState(thisPos);
 	}
-
-	public boolean checkPlacement(IWorld iworld, BlockPos pos) {
-		if(iworld instanceof World) {
-			World world = (World)iworld;
+	
+	public boolean checkPlacement(LevelAccessor iworld, BlockPos pos) {
+		if(iworld instanceof Level world) {
+			//World world = (World)iworld;
 			BlockState state;// = this.getDefaultState();
 
-			List<BlockPos> list = BlockPos.getAllInBox(pos.add(-1,0,-1), pos.add(1,0,1)).map(BlockPos::toImmutable).collect(Collectors.toList());
+			Iterable<BlockPos> list = BlockPos.betweenClosed(pos.offset(-1,0,-1), pos.offset(1,0,1));//map(BlockPos::toImmutable).collect(Collectors.toList());
 			int count = 0;
 			for(BlockPos p : list) {
 				state = world.getBlockState(p);
-				if(state.getBlock() == this && state.get(BlockProperties.MILL_ORIENTATION) == MillstoneOrientation.NONE) {
+				if(state.getBlock() == this && state.getValue(BlockProperties.MILL_ORIENTATION) == MillstoneOrientation.NONE) {
 					count++;
 				}
 			}
 			if(count == 9) {
 				for(BlockPos p : list) {
-					Vec3i q = new Vec3i(p.getX(), p.getY(), p.getZ());
-					BlockPos off = pos.subtract(q);
+					BlockPos off = pos.subtract(p);
 					for(MillstoneOrientation orient : MillstoneOrientation.values()) {
 						if(orient.offset.getX() == off.getX() && orient.offset.getZ() == off.getZ()) {
-							world.setBlockState(p, getDefaultState().with(BlockProperties.MILL_ORIENTATION, orient));
+							world.setBlockAndUpdate(p, defaultBlockState().setValue(BlockProperties.MILL_ORIENTATION, orient));
 						}
 					}
 				}
@@ -121,32 +94,31 @@ public class MillstoneBlock extends Block {
 		}
 		return false;
 	}
-
-	@Override
+	
 	@Deprecated
-	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-		super.neighborChanged(state,world,pos,block,fromPos,isMoving);
-		if(block == this && state.get(BlockProperties.MILL_ORIENTATION) != MillstoneOrientation.NONE && world.getBlockState(fromPos).isAir()) {
-			BlockPos offset = state.get(BlockProperties.MILL_ORIENTATION).offset;
-			BlockPos centerPos = pos.add(offset.getX(),offset.getY(),offset.getZ());
+	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, BlockPos fromPos, boolean isMoving) {
+		super.neighborChanged(state,world,pos,neighbor,fromPos,isMoving);
+		if(neighbor == this && state.getValue(BlockProperties.MILL_ORIENTATION) != MillstoneOrientation.NONE && world.getBlockState(fromPos).isAir()) {
+			BlockPos offset = state.getValue(BlockProperties.MILL_ORIENTATION).offset;
+			BlockPos centerPos = pos.offset(offset.getX(),offset.getY(),offset.getZ());
 			if(!checkPlacement(world, centerPos)) {
-				List<BlockPos> list = BlockPos.getAllInBox(centerPos.add(-1,0,-1), centerPos.add(1,0,1)).map(BlockPos::toImmutable).collect(Collectors.toList());
+				Iterable<BlockPos> list = BlockPos.betweenClosed(centerPos.offset(-1,0,-1), centerPos.offset(1,0,1));//.map(BlockPos::toImmutable).collect(Collectors.toList());
 				for(BlockPos p : list) {
 					if(world.getBlockState(p).getBlock() == this) {
-						world.setBlockState(p, getDefaultState(),1|2|16);
+						world.setBlock(p, defaultBlockState(), 1|2|16);
 					}
 				}
 			}
 		}
 	}
-
-	@Override
+	
+	//onReplaced
 	@Deprecated
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
-			TileEntity tileEntity = world.getTileEntity(pos);
-			InventoryUtils.dropItemHandlerContents(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null), world, pos);
-			super.onReplaced(state, world, pos, newState, isMoving);
+			BlockEntity blockentity = world.getBlockEntity(pos);
+			InventoryUtils.dropItemHandlerContents(blockentity.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null), world, pos);
+			super.onRemove(state, world, pos, newState, isMoving);
 		}
 	}
 }

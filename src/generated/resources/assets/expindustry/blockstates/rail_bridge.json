@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "shape=ascending_east": {
+      "model": "minecraft:block/air"
+    },
+    "shape=ascending_north": {
+      "model": "minecraft:block/air"
+    },
+    "shape=ascending_south": {
+      "model": "minecraft:block/air"
+    },
+    "shape=ascending_west": {
+      "model": "minecraft:block/air"
+    },
+    "shape=east_west": {
+      "model": "expindustry:block/rail_bridge",
+      "y": 90
+    },
+    "shape=north_south": {
+      "model": "expindustry:block/rail_bridge"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "hardlib:sifting",
+  "ingredientQuantity": 8,
+  "ingredients": [
+    {
+      "tag": "harderores:dust/tiny/gold"
+    }
+  ],
+  "result": {
+    "item": "harderores:largedust_gold"
+  }
+}

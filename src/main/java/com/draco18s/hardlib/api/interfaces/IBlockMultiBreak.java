@@ -2,9 +2,9 @@ package com.draco18s.hardlib.api.interfaces;
 
 import java.awt.Color;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Used to denote a block that needs to be broken multiple times.  Implemented by BlockHardOreBase.<br/>
@@ -22,7 +22,7 @@ public interface IBlockMultiBreak {
 	 * @param state
 	 * @return the density change for breaking the ore block once
 	 */
-	int getDensityChangeOnBreak(IBlockReader worldIn, BlockPos pos, BlockState state);
+	int getDensityChangeOnBreak(LevelReader worldIn, BlockPos pos, BlockState state);
 	
 	/**
 	 * Determines the color of the prospector enchantment particle effect
@@ -31,5 +31,5 @@ public interface IBlockMultiBreak {
 	 * @param state
 	 * @return
 	 */
-	Color getProspectorParticleColor(IBlockReader worldIn, BlockPos pos, BlockState state);
+	Color getProspectorParticleColor(LevelReader worldIn, BlockPos pos, BlockState state);
 }

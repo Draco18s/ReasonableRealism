@@ -2,40 +2,22 @@ package com.draco18s.harderores.block.ore;
 
 import java.awt.Color;
 
-import javax.annotation.Nullable;
-
-import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateContainer;
-import net.minecraft.stats.Stats;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.HitResult;
 
 public class HardOreBlock extends Block implements IBlockMultiBreak {
 	private final int metaChange;
@@ -45,97 +27,47 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 		super(properties);
 		metaChange = metaDecrement;
 		particleColor = particleColorIn;
-		setDefaultState(stateContainer.getBaseState().with(BlockProperties.ORE_DENSITY, 16));
+		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.ORE_DENSITY, 16));
 	}
 
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(BlockProperties.ORE_DENSITY);
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
+	public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+		return setNbtOnStack(super.getCloneItemStack(state, target, level, pos, player), BlockProperties.ORE_DENSITY, state);
 	}
 
-	@Deprecated
-	public boolean isSolid(BlockState state) {
-		return true;
+	public static ItemStack setNbtOnStack(ItemStack stack, Property<?> prop, BlockState state) {
+		CompoundTag compoundtag = new CompoundTag();
+		compoundtag.putString(prop.getName(), String.valueOf(state.getValue(prop)));
+		stack.addTagElement("BlockStateTag", compoundtag);
+		return stack;
 	}
 
-	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		Item test = ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+1));
-		if(items.stream().anyMatch(x -> x.getItem() == test)) return;
-		for(int i = 1; i <= 16; i++) {
-			ItemStack it = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+i)));
-			//ItemStack it = new ItemStack(this);
-			//it.getOrCreateTag().putInt("harderores:density", Math.max(0, i));
-			if(!items.contains(it))
-				items.add(it);
-		}
+	public static <V extends Comparable<V>> ItemStack setNbtOnStack(ItemStack stack, Property<V> prop, V val) {
+		CompoundTag compoundtag = new CompoundTag();
+		compoundtag.putString(prop.getName(), String.valueOf(val));
+		stack.addTagElement("BlockStateTag", compoundtag);
+		return stack;
 	}
 
 	@Override
-	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player)
-	{
-		int density = state.get(BlockProperties.ORE_DENSITY);
-		ItemStack it = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(this.getRegistryName().getNamespace(),this.getRegistryName().getPath()+"_"+density)));
-		//it.getOrCreateTag().putInt("harderores:density", Math.max(0, density));
-		return it;
+	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+		if(player.isCreative() && !player.isCrouching()) {
+			return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+		}
+		int val = Math.max(state.getValue(BlockProperties.ORE_DENSITY) - metaChange, 0);
+        if(val > 0) {
+        	level.setBlock(pos, state.setValue(BlockProperties.ORE_DENSITY, val), level.isClientSide ? 11 : 3);
+        	return true;
+        }
+		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 	}
 
-	@Override
-	@Nullable
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		int density = 16;
-		Item item = context.getItem().getItem();
-		if(item instanceof HardOreItem) {
-			density = ((HardOreItem)item).getDensity();
-		}
-		return this.getDefaultState().with(BlockProperties.ORE_DENSITY, density);
-	}
-
-	@Override
-	public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-		//super.harvestBlock(worldIn, player, pos, state, te, stack);
-		player.addStat(Stats.BLOCK_MINED.get(this));
-		player.addExhaustion(0.005F);
-		if (worldIn instanceof ServerWorld) {
-			getDrops(state, (ServerWorld)worldIn, pos, te, player, stack).forEach((p_220057_2_) -> {
-				tspawnAsEntity(worldIn, pos, p_220057_2_);
-			});
-		}
-		if (/*this.canSilkHarvest(worldIn, pos, state, player)*/ worldIn.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
-			worldIn.removeBlock(pos, false);
-		}
-	}
-
-	@Override
-	public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid)
-	{
-		if(player != null && player.abilities.isCreativeMode) {
-			world.removeBlock(pos, false);
-			return true;
-		}
-		if(willHarvest) {
-			this.onBlockHarvested(world, pos, state, player);
-			int m = state.get(BlockProperties.ORE_DENSITY);
-			m -= metaChange;
-			if(m < 1)
-				return world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-
-			world.setBlockState(pos, state.with(BlockProperties.ORE_DENSITY, m), 3);
-			ItemStack itemstack1 = player.getHeldItemMainhand();
-			ItemStack itemstack2 = itemstack1 == null ? null : itemstack1.copy();
-			this.harvestBlock(world, player, pos, state, null, itemstack2);
-			m -= metaChange;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
+	/*@Override
 	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
 		if(player != null && player.abilities.isCreativeMode && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
 			if(!world.isRemote) {
@@ -182,15 +114,15 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 				}
 			}
 		}
-	}
+	}*/
 
 	@Override
-	public int getDensityChangeOnBreak(IBlockReader worldIn, BlockPos pos, BlockState state) {
+	public int getDensityChangeOnBreak(LevelReader worldIn, BlockPos pos, BlockState state) {
 		return metaChange;
 	}
 
 	@Override
-	public Color getProspectorParticleColor(IBlockReader worldIn, BlockPos pos, BlockState state) {
+	public Color getProspectorParticleColor(LevelReader worldIn, BlockPos pos, BlockState state) {
 		return particleColor;
 	}
 }

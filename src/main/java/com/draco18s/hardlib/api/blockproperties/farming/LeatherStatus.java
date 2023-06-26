@@ -1,8 +1,8 @@
 package com.draco18s.hardlib.api.blockproperties.farming;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum LeatherStatus implements IStringSerializable {
+public enum LeatherStatus implements StringRepresentable {
 	NONE,
 	RAW,
 	CURED;
@@ -14,7 +14,7 @@ public enum LeatherStatus implements IStringSerializable {
 	}
 
 	@Override
-	public String getName() {
+	public String getSerializedName() {
 		return name;
 	}
 }

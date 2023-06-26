@@ -7,48 +7,52 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.IRandomRange;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.RandomValueRange;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 
-public class HarderSetCount extends LootFunction {
-	float divisor = 1;
 
-	private HarderSetCount(ILootCondition[] p_i51222_1_, float mod) {
-		super(p_i51222_1_);
-		divisor = mod;
+public class HarderSetCount extends LootItemConditionalFunction {
+	//float divisor = 1;
+	NumberProvider modProv;
+	
+	protected HarderSetCount(LootItemCondition[] conditions, NumberProvider modProv) {
+		super(conditions);
+		this.modProv = modProv;
 	}
 
-	public ItemStack doApply(ItemStack stack, LootContext context) {
-		Entity harvester = context.get(LootParameters.THIS_ENTITY);
-		BlockState state = context.get(LootParameters.BLOCK_STATE);
-		ItemStack itemstack = context.get(LootParameters.TOOL);
+	@Override
+	public LootItemFunctionType getType() {
+		return HarderOres.LootFunctions.harderSetCountReg.get();
+	}
+
+	@Override
+	protected ItemStack run(ItemStack stack, LootContext context) {
+		BlockState state = context.getParam(LootContextParams.BLOCK_STATE);
+		ItemStack itemstack = context.getParam(LootContextParams.TOOL);
 		int fortune = 0;
 		if (itemstack != null) {
-			fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, itemstack);
+			fortune = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, itemstack);
 		}
-		if(state.has(BlockProperties.ORE_DENSITY)) {
-			int density = state.get(BlockProperties.ORE_DENSITY);
-			IRandomRange densityRange = new RandomValueRange(1,2+((density-1)/divisor)+fortune);
-			stack.setCount(densityRange.generateInt(context.getRandom()));
-			int pulverize = fortune = EnchantmentHelper.getEnchantmentLevel(HarderOres.ModEnchantments.pulverize, itemstack);
-			stack = processPulverize(harvester, stack, pulverize);
+		if(state.hasProperty(BlockProperties.ORE_DENSITY)) {
+			int density = state.getValue(BlockProperties.ORE_DENSITY);
+			stack.setCount(context.getRandom().nextIntBetweenInclusive(1, 2+(int)((density-1)/modProv.getFloat(context))+fortune));
+			int pulverize = fortune = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.pulverize, itemstack);
+			stack = processPulverize(stack, pulverize);
 			return stack;
 		}
-		stack.setCount(0);
-		return stack;
+		return null;
 	}
 
-	private static ItemStack processPulverize(Entity harvester, ItemStack stack, int pulverize) {
+	private static ItemStack processPulverize(ItemStack stack, int pulverize) {
 		if(pulverize > 0) {
 			ItemStack milled = HardLibAPI.oreMachines.getMillResult(stack).copy();
 			if(!milled.isEmpty()) {
@@ -59,24 +63,22 @@ public class HarderSetCount extends LootFunction {
 		return stack;
 	}
 
-	public static LootFunction.Builder<?> func_215932_a(float mod) {
-		return builder((p_215934_1_) -> {
+	public static LootItemConditionalFunction.Builder<?> addHardOreCount(NumberProvider mod) {
+		return simpleBuilder((p_215934_1_) -> {
 			return new HarderSetCount(p_215934_1_, mod);
 		});
 	}
-
-	public static class Serializer extends LootFunction.Serializer<HarderSetCount> {
-		public Serializer() {
-			super(new ResourceLocation("harderores:set_count"), HarderSetCount.class);
-		}
-
+	
+	public static class Serializer extends LootItemConditionalFunction.Serializer<HarderSetCount> {
+		@Override
 		public void serialize(JsonObject object, HarderSetCount functionClazz, JsonSerializationContext serializationContext) {
 			super.serialize(object, functionClazz, serializationContext);
-			object.addProperty("divisor", functionClazz.divisor);
+			object.add("divisor", serializationContext.serialize(functionClazz.modProv));
 		}
-
-		public HarderSetCount deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
-			float mod = object.get("divisor").getAsFloat();
+		
+		@Override
+		public HarderSetCount deserialize(JsonObject object, JsonDeserializationContext ctx, LootItemCondition[] conditionsIn) {
+			NumberProvider mod = GsonHelper.getAsObject(object, "divisor", ctx, NumberProvider.class);
 			return new HarderSetCount(conditionsIn, mod);
 		}
 	}

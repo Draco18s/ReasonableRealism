@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "mill_orientation=center": {
+      "model": "harderores:block/machine_millstone_center"
+    },
+    "mill_orientation=east": {
+      "model": "harderores:block/machine_millstone_side"
+    },
+    "mill_orientation=none": {
+      "model": "harderores:block/machine_millstone"
+    },
+    "mill_orientation=north": {
+      "model": "harderores:block/machine_millstone_side",
+      "y": 270
+    },
+    "mill_orientation=north_east": {
+      "model": "harderores:block/machine_millstone_corner"
+    },
+    "mill_orientation=north_west": {
+      "model": "harderores:block/machine_millstone_corner",
+      "y": 270
+    },
+    "mill_orientation=south": {
+      "model": "harderores:block/machine_millstone_side",
+      "y": 90
+    },
+    "mill_orientation=south_east": {
+      "model": "harderores:block/machine_millstone_corner",
+      "y": 90
+    },
+    "mill_orientation=south_west": {
+      "model": "harderores:block/machine_millstone_corner",
+      "y": 180
+    },
+    "mill_orientation=west": {
+      "model": "harderores:block/machine_millstone_side",
+      "y": 180
+    }
+  }
+}

@@ -2,7 +2,8 @@ package com.draco18s.hardlib.api.internal;
 
 import com.draco18s.hardlib.math.HashUtils;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+
 
 public class ChunkCoords {
 	public int dimID;

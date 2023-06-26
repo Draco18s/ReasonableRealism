@@ -2,7 +2,7 @@ package com.draco18s.harderores.inventory;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -13,7 +13,7 @@ public class SlotDust extends SlotItemHandler {
 	}
 	
 	@Override
-	public boolean isItemValid(ItemStack stack) {
-		return super.isItemValid(stack) && !HardLibAPI.oreMachines.getSiftResult(stack, false).isEmpty();
+	public boolean mayPlace(ItemStack stack) {
+		return super.mayPlace(stack) && !HardLibAPI.oreMachines.getSiftResult(stack, false).isEmpty();
 	}
 }

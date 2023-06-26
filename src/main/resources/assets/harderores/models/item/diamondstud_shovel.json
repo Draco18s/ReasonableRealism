@@ -1,6 +1,0 @@
-{
-    "parent": "item/handheld",
-    "textures": {
-        "layer0": "harderores:item/diamond_stud_shovel"
-    }
-}

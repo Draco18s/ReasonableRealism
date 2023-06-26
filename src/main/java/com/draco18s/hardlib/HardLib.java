@@ -1,45 +1,49 @@
 package com.draco18s.hardlib;
 
+import java.util.function.Supplier;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
-import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
+import com.draco18s.hardlib.api.recipe.GrindingRecipe;
 import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
+import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 import com.draco18s.hardlib.proxy.ClientProxy;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.stats.ServerStatisticsManager;
-import net.minecraft.stats.Stats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod(HardLib.MODID)
 public class HardLib {
 	public static final String MODID = "hardlib";
 	public static final Logger LOGGER = LogManager.getLogger();
-	public static final IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
-	
+	public static final IProxy PROXY = DistExecutor.safeRunForDist(()->ClientProxy::new, ()->ServerProxy::new);
+
+
 	public HardLib() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		EasyRegistry.registerEventBus(modEventBus);
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
 			HardLibAPI.Advancements.MILL_BUILT = (MillstoneTrigger) EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
 			HardLibAPI.Advancements.FOUND_ORE = (FoundOreTrigger) EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
@@ -47,50 +51,33 @@ public class HardLib {
 			HardLibAPI.Advancements.WORLD_TIME = (WorldTimeTrigger) EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
 			HardLibAPI.Advancements.DISTANCE_TRAVELED = (DistanceTraveledTrigger) EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
 		});
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
+
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
 		
-		EasyRegistry.registerOther(new RecipeTagOutput.Serializer(), new ResourceLocation(HardLib.MODID, "tag_output"));
+		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+		forgeBus.addListener(HardLib::onAddDebugReloadListener);
 	}
-	
-	@EventBusSubscriber(modid = HardLib.MODID, bus = EventBusSubscriber.Bus.MOD)
-	private static class EventHandlers {
-		@SubscribeEvent
-		public void onBlockBreak(BlockEvent.BreakEvent event) {
-			PlayerEntity player = event.getPlayer();
-			if(player instanceof ServerPlayerEntity) {
-				HardLibAPI.Advancements.BLOCK_BREAK.trigger((ServerPlayerEntity)player, event.getState());
+
+	private static void onAddDebugReloadListener(final AddReloadListenerEvent event)
+	{
+		event.addListener(new ResourceReloader(event.getServerResources()));
+	}
+
+	private record ResourceReloader(ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
+		@Override
+		public void onResourceManagerReload(ResourceManager man) {
+			if(HardLibAPI.oreMachines != null) {
+				HardLibAPI.oreMachines.update(serverResources.getRecipeManager());
 			}
 		}
-		
-		@SubscribeEvent
-		public void onLivingUpdateEvent(PlayerTickEvent event) {
-			if(event.phase == Phase.END && event.player instanceof ServerPlayerEntity) {
-				ServerStatisticsManager stats = ((ServerPlayerEntity) event.player).getStats();
-				int dist = stats.getValue(Stats.CUSTOM.get(Stats.MINECART_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.RAIL);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.BOAT_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.BOAT);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.HORSE_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.HORSE);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.PIG_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.PIG);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.WALK_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.WALK);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.WALK_ON_WATER_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.WALK_ON_WATER);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.WALK_UNDER_WATER_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.WALK_UNDER_WATER);
-				dist = stats.getValue(Stats.CUSTOM.get(Stats.FLY_ONE_CM));
-				HardLibAPI.Advancements.DISTANCE_TRAVELED.trigger((ServerPlayerEntity) event.player, dist/100f, TravelType.FLY);
-			}
-		}
-		
-		@SubscribeEvent
-		public void onPlayerTick(PlayerTickEvent event) {
-			if(event.phase == Phase.END && event.side == LogicalSide.SERVER) {
-				long time = event.player.world.getGameTime();
-				if(time % 1000 == 0)
-					HardLibAPI.Advancements.WORLD_TIME.trigger((ServerPlayerEntity)event.player, time);
-			}
-		}
+	}
+
+
+	private ResourceLocation getRL(String string) {
+		return new ResourceLocation(MODID, string);
 	}
 }

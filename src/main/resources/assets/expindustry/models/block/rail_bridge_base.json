@@ -1,0 +1,46 @@
+{
+    "__comment": "Designed by Stohun with Cubik Studio - https://cubik.studio",
+	"render_type": "cutout_mipped",
+    "textures": {
+        "particle": "block/rail",
+        "rail": "block/rail",
+        "supports": "block/oak_planks"
+    },
+    "elements": [
+        {
+            "__comment": "RailPlane",
+            "from": [ 0, 1, 0 ],
+            "to": [ 16, 1.001, 16 ],
+            "faces": {
+                "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#rail" },
+                "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#rail", "rotation": 180 }
+            }
+        },
+        {
+            "__comment": "Support1",
+            "from": [ 12, -2, 0 ],
+            "to": [ 16, 0, 16 ],
+            "faces": {
+                "down": { "uv": [ 0, 0, 16, 4 ], "texture": "#supports", "rotation": 90 },
+                "up": { "uv": [ 0, 12, 16, 16 ], "texture": "#supports", "rotation": 270 },
+                "north": { "uv": [ 0, 0, 4, 2 ], "texture": "#supports" },
+                "south": { "uv": [ 12, 0, 16, 2 ], "texture": "#supports" },
+                "west": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "east": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" }
+            }
+        },
+        {
+            "__comment": "Support2",
+            "from": [ 0, -2, 0 ],
+            "to": [ 4, 0, 16 ],
+            "faces": {
+                "down": { "uv": [ 0, 12, 16, 16 ], "texture": "#supports", "rotation": 90 },
+                "up": { "uv": [ 0, 0, 16, 4 ], "texture": "#supports", "rotation": 270 },
+                "north": { "uv": [ 12, 0, 16, 2 ], "texture": "#supports" },
+                "south": { "uv": [ 0, 0, 4, 2 ], "texture": "#supports" },
+                "west": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" },
+                "east": { "uv": [ 0, 0, 16, 2 ], "texture": "#supports" }
+            }
+        }
+    ]
+}

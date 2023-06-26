@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "expindustry:block/rail_bridge_powered_on"
+  }
+}

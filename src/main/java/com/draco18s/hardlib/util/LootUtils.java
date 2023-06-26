@@ -1,18 +1,7 @@
 package com.draco18s.hardlib.util;
 
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
-
-import net.minecraft.item.Item;
-import net.minecraft.world.storage.loot.ItemLootEntry;
-import net.minecraft.world.storage.loot.LootEntry;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTable;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-
 public class LootUtils {
-	private static Field tablePools;
+	/*private static Field tablePools;
 	private static Field poolEntries;
 	private static Field entryItem;
 
@@ -30,7 +19,7 @@ public class LootUtils {
 	 * @param toRemove
 	 * @return returns if any entries were removed
 	 */
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	public static boolean removeLootFromTable(LootTable table, Item toRemove) {
 		List<LootPool> pools;
 		try {
@@ -54,5 +43,5 @@ public class LootUtils {
 			e.printStackTrace();
 		}
 		return false;
-	}
+	}*/
 }

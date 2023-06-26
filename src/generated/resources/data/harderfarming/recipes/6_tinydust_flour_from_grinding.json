@@ -1,0 +1,12 @@
+{
+  "type": "hardlib:grinding",
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    }
+  ],
+  "result": {
+    "count": 6,
+    "item": "harderfarming:tinydust_flour"
+  }
+}

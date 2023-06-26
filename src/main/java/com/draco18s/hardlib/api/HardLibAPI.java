@@ -1,6 +1,5 @@
 package com.draco18s.hardlib.api;
 
-import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
@@ -10,16 +9,49 @@ import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.interfaces.IHardCrops;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.api.interfaces.IHardOres;
-import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
+import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
+import com.draco18s.hardlib.api.recipe.GrindingRecipe;
+import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class HardLibAPI {
+	public static final Capability<IMechanicalPower> MECHANICAL_POWER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+	public static final TagKey<Item> STONE_ANY = Tags.Items.STONE;
+	
 	public static IHardOres hardOres;
 	public static IHardOreProcessing oreMachines;
 	public static IHardCrops hardCrops;
 	public static IFlowerData oreFlowers;
+
+	public static class RecipeSerializers {
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:tag_output")
+		public static RecipeSerializer<?> TAG_OUTPUT;
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:sifting")
+		public static RecipeSerializer<?> SIFTING;
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:grinding")
+		public static RecipeSerializer<?> GRINDING;
+	}
+	
+	public static class RecipeTypes {
+		@ObjectHolder(registryName = "minecraft:recipe_type", value = "hardlib:sifting")
+		public static RecipeType<SiftingRecipe> SIFTING = null;
+		@ObjectHolder(registryName = "minecraft:recipe_type", value = "hardlib:grinding")
+		public static RecipeType<GrindingRecipe> GRINDING = null;
+	}
+	
+	//public static class ModItemTags {
+		//public static TagKey<Item> STONE = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HardLib.MODID, "stone"));
+	//}
+
 	/**
 	 * Advancement triggers. Some are specific to a given mod, others are fired by HardLib.
 	 * @author Draco18s
@@ -74,10 +106,5 @@ public class HardLibAPI {
 		 *  <b>RAIL</b>
 		 */
 		public static DistanceTraveledTrigger DISTANCE_TRAVELED;
-	}
-
-	@ObjectHolder(HardLib.MODID)
-	public static class RecipeSerializers {
-		public static final IRecipeSerializer<RecipeTagOutput> TAG_OUTPUT = null;
 	}
 }

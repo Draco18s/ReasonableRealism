@@ -3,208 +3,200 @@ package com.draco18s.hardlib;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
-import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Lifecycle;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.ICriterionInstance;
-import net.minecraft.advancements.ICriterionTrigger;
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.state.IProperty;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.tileentity.TileEntityType.Builder;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
+import net.minecraftforge.registries.RegistryObject;
 
 public class EasyRegistry {
-	private static List<Block> blocksToReg = new ArrayList<Block>();
-	private static List<Item>  itemsToReg  = new ArrayList<Item>();
-	private static List<TileEntityType<?>> tilesToReg = new ArrayList<TileEntityType<?>>();
-	private static List<IForgeRegistryEntry<?>> otherItems = new ArrayList<IForgeRegistryEntry<?>>();
+	private static List<Tuple<ResourceLocation, Supplier<Block>>> blocksToReg = new ArrayList<Tuple<ResourceLocation, Supplier<Block>>>();
+	private static List<Tuple<ResourceLocation, Supplier<Item>>> itemsToReg = new ArrayList<Tuple<ResourceLocation, Supplier<Item>>>();
+	private static List<Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>> tilesToReg = new ArrayList<Tuple<ResourceLocation,Supplier<BlockEntityType<?>>>>();
+	private static List<Tuple<ResourceLocation, Supplier<MenuType<?>>>> menusToReg = new ArrayList<Tuple<ResourceLocation, Supplier<MenuType<?>>>>();
+	private static HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation, Supplier<?>>>> miscReg = new HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation,Supplier<?>>>>();
+	private static List<RegistryObject<Item>> regItems = new ArrayList<RegistryObject<Item>>();
 	private static Method CriterionRegister;
-
-	public static void registerBlock(Block block, String registryname) {
-		block.setRegistryName(registryname);
-		blocksToReg.add(block);
+	
+	static void registerEventBus(IEventBus modEventBus) {
+		modEventBus.register(EasyRegistry.class);
 	}
 
-	public static void registerBlock(Block block, String registryname, Item.Properties props) {
-		BlockItem iBlock = new BlockItem(block, props);
-		block.setRegistryName(registryname);
-		iBlock.setRegistryName(block.getRegistryName());
-
-		blocksToReg.add(block);
-		itemsToReg.add(iBlock);
-	}
-
-	public static <T extends BlockItem,U extends Comparable<U>> void registerBlockWithVariants(Block block, String registryname, IProperty<U> prop, IBlockItemFactory<T,U> blockItemCtor, Item.Properties props) {
-		block.setRegistryName(registryname);
-		blocksToReg.add(block);
-		Collection<U> col = prop.getAllowedValues();
-		for(U o : col) {
-			BlockItem iBlock = blockItemCtor.create(block, o, props);
-			iBlock.setRegistryName(block.getRegistryName().getNamespace(),block.getRegistryName().getPath()+"_"+o.toString());
-			itemsToReg.add(iBlock);
-		}
-	}
-
-	public interface IBlockItemFactory<T extends BlockItem, U> {
-		T create(Block block, U value, Item.Properties props);
-	}
-
-	public static void registerBlock(Block block, String registryname, BlockItem iBlock) {
-		block.setRegistryName(registryname);
-		iBlock.setRegistryName(block.getRegistryName());
-		blocksToReg.add(block);
-		itemsToReg.add(iBlock);
-	}
-
-	public static void registerItem(Item item, String registryname) {
-		item.setRegistryName(registryname);
-		itemsToReg.add(item);
-	}
-
-	public static void registerTileEntity(Builder<?> create, String domain, String registryname) {
-		tilesToReg.add(build(domain, registryname,create));
-	}
-
-	public static <K extends IForgeRegistryEntry<K>> void registerOther(K object, ResourceLocation registryname) {
-		otherItems.add(object.setRegistryName(registryname));
+	public static RegistryObject<Block> registerBlock(Supplier<Block> block, ResourceLocation registryname) {
+		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
+		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
+		return ret;
 	}
 	
-	/*public static <T extends ILootCondition> void registerLootCondition(ILootCondition.AbstractSerializer<? extends T> object) {
-		LootConditionManager.registerCondition(object);
-	}*/
-
+	public static RegistryObject<Block> registerBlock(Supplier<Block> block, ResourceLocation registryname, Item.Properties props) {
+		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
+		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
+		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, ()-> new BlockItem(ret.get(), props)));
+		return ret;
+	}
+	
+	public static <T extends BlockItem,U extends Comparable<U>> void registerBlockWithVariants(Supplier<Block> block, ResourceLocation registryname, Property<U> prop, IBlockItemFactory<T> blockItemCtor, Item.Properties props) {
+		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
+		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
+		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, () -> blockItemCtor.create(ret.get(), props)));
+	}
+	
+	public interface IBlockItemFactory<T extends BlockItem> {
+		T create(Block block, Item.Properties props);
+	}
+	
+	public static void registerBlock(Supplier<Block> block, ResourceLocation registryname, Function<Block,BlockItem> iBlock) {
+		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
+		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
+		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, () -> iBlock.apply(ret.get())));
+	}
+	
+	public static void registerItem(Supplier<Item> item, ResourceLocation registryname) {
+		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, item));
+	}
+	
+	public static void registerTileEntity(Supplier<BlockEntityType<?>> create, ResourceLocation registryname) {
+		tilesToReg.add(new Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>(registryname, create));
+	}
+	
 	@SuppressWarnings("unchecked")
-	public static <T extends ICriterionInstance> ICriterionTrigger<T> registerAdvancementTrigger(ICriterionTrigger<T> trigger) {
+	public static <T extends CriterionTrigger<?>> T registerAdvancementTrigger(T trigger) {
 		if(CriterionRegister == null) {
-			CriterionRegister = ObfuscationReflectionHelper.findMethod(CriteriaTriggers.class, "register", ICriterionTrigger.class);
+			//Class<?> persistentClass = trigger.getClass().getGenericSuperclass().getClass();
+			CriterionRegister = ObfuscationReflectionHelper.findMethod(CriteriaTriggers.class, "register", CriterionTrigger.class);
 			CriterionRegister.setAccessible(true);
 		}
 		try {
-			trigger = (ICriterionTrigger<T>) CriterionRegister.invoke(null, trigger);
+			trigger = (T) CriterionRegister.invoke(null, trigger);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			System.out.println("Failed to register trigger " + trigger.getId() + "!");
 			e.printStackTrace();
 		}
 		return trigger;
 	}
-
-	//private static int DATA_VERSION = 103;
-
-	private static <T extends TileEntity> TileEntityType<T> build(final String domain, final String name, final TileEntityType.Builder<T> builder) {
-		final ResourceLocation registryName = new ResourceLocation(domain,name);
-
-		Type<?> dataFixerType = null;
-
-		/*try {
-			dataFixerType = DataFixesManager.getDataFixer()
-					.getSchema(DataFixUtils.makeKey(DATA_VERSION))
-					.getChoiceType(TypeReferences.BLOCK_ENTITY, registryName.toString());
-		} catch (final IllegalArgumentException e) {
-			if (SharedConstants.developmentMode) {
-				throw e;
-			}
-
-			HardLib.LOGGER.warn("No data fixer registered for TileEntity {}", registryName);
-		}*/
-
-		//@SuppressWarnings("ConstantConditions")
-		// dataFixerType will always be null until mod data fixers are implemented
-		final TileEntityType<T> tileEntityType = builder.build(dataFixerType);
-		tileEntityType.setRegistryName(registryName);
-
-		return tileEntityType;
+	
+	// I used to think that I was bold
+	// I used to think love would be fun
+	// Now all the stories have been told
+	// Except for one
+	@SuppressWarnings({ "unchecked" })
+	public static <T> RegistryObject<T> registerOther(ResourceKey<Registry<T>> registryKey, Tuple<ResourceLocation, Supplier<T>> supplier) {
+		if(!miscReg.containsKey(registryKey)) {
+			List<Tuple<ResourceLocation, Supplier<T>>> list = new ArrayList<Tuple<ResourceLocation, Supplier<T>>>();
+			// As the stars start to align
+			// I hope you'll take it as a sign
+			// Th'chu will be okay
+			// Everything will be okay
+			@SuppressWarnings("rawtypes")
+			List t = list;
+			// And if the seven hells collapse
+			// Although the day could be my last
+			// You will be okay
+			// When I'm gone, you'll be okay
+			@SuppressWarnings("rawtypes")
+			ResourceKey r = registryKey;
+			miscReg.put(r, t);
+		}
+		// And when creation goes to die
+		// You can find me in the sky
+		// Upon the last day
+		// And you will be okay
+		@SuppressWarnings("rawtypes")
+		Tuple s = supplier;
+		miscReg.get(registryKey).add(s);
+		RegistryObject<T> ret = RegistryObject.createOptional(supplier.getA(), registryKey, supplier.getA().getNamespace());
+		return ret;
 	}
 
-	@EventBusSubscriber(modid = HardLib.MODID, bus = EventBusSubscriber.Bus.MOD)
-	private static class Registration {
-		@SubscribeEvent
-		public static void onRegisterBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
-			// Register all your blocks inside this registerAll call
-			event.getRegistry().registerAll(
-					blocksToReg.toArray(new Block[0])
-					);
-			HardLib.LOGGER.debug("Registered Blocks");
-		}
-
-		@SubscribeEvent
-		public static void onModConfigEvent(@Nonnull final ModConfig.ModConfigEvent event) {
-			//final ModConfig config = event.getConfig();
-			// Rebake the configs when they change
-			//if (config.getSpec() == ConfigHolder.CLIENT_SPEC) {
-			//	ConfigHelper.bakeClient(config);
-			//} else if (config.getSpec() == ConfigHolder.SERVER_SPEC) {
-			//	ConfigHelper.bakeServer(config);
-			//}
-		}
-
-		@SubscribeEvent
-		public static void onRegisterItems(@Nonnull final RegistryEvent.Register<Item> event) {
-			final IForgeRegistry<Item> registry = event.getRegistry();
-			registry.registerAll(
-					itemsToReg.toArray(new Item[0])
-					);
-			HardLib.LOGGER.debug("Registered Items");
-		}
-
-		@SubscribeEvent
-		public static void onRegister(@Nonnull final RegistryEvent.Register<TileEntityType<?>> event) {
-			// Register your TileEntities here if you have them
-			for(TileEntityType<?> e : tilesToReg) {
-				event.getRegistry().register(e);
+	public static void registerMenuType(ResourceLocation registryKey, Supplier<MenuType<?>> supplier) {
+		menusToReg.add(new Tuple<ResourceLocation, Supplier<MenuType<?>>>(registryKey,supplier));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SubscribeEvent
+	public static void onRegisterEvent(final RegisterEvent event) {
+		@NotNull ResourceKey<? extends Registry<?>> key = event.getRegistryKey();
+		if (key.equals(ForgeRegistries.Keys.BLOCKS)){
+			for(var it : blocksToReg) {
+				event.getForgeRegistry().register(it.getA(), it.getB().get());
 			}
-			HardLib.LOGGER.debug("Registered TileEntitys");
+			return;
 		}
-
-		@SubscribeEvent
-		public static void registerEnchantments(@Nonnull final RegistryEvent.Register<Enchantment> event) {
-			for(IForgeRegistryEntry<?> e : otherItems) {
-				if(e instanceof Enchantment)
-					event.getRegistry().register((Enchantment)e);
+		if (key.equals(ForgeRegistries.Keys.ITEMS)){
+			for(var it : itemsToReg) {
+				event.getForgeRegistry().register(it.getA(), it.getB().get());
 			}
+			return;
 		}
-
-		@SubscribeEvent
-		public static void registerRecipeSerializer(@Nonnull final RegistryEvent.Register<IRecipeSerializer<?>> event) {
-			for(IForgeRegistryEntry<?> e : otherItems) {
-				if(e instanceof IRecipeSerializer<?>)
-					event.getRegistry().register((IRecipeSerializer<?>)e);
+		if(key.equals(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES)) {
+			for(var it : tilesToReg) {
+				event.getForgeRegistry().register(it.getA(), it.getB().get());
+			}
+			return;
+		}
+		if(key.equals(ForgeRegistries.Keys.MENU_TYPES)) {
+			for(var it : menusToReg) {
+				event.getForgeRegistry().register(it.getA(), it.getB().get());
+			}
+			return;
+		}
+		if(miscReg.containsKey(key)) {
+			boolean vanilla = (event.getForgeRegistry() == null);
+			List<Tuple<ResourceLocation, Supplier<?>>> list = miscReg.get(key);
+			for(Tuple<ResourceLocation, Supplier<?>> l : list) {
+				//vanilla is such a whore
+				if(vanilla) {
+					WritableRegistry reg = (WritableRegistry)event.getVanillaRegistry();
+					ResourceKey kk = ResourceKey.create(reg.key(), l.getA());
+					reg.register(kk , l.getB().get(), Lifecycle.stable());
+				}
+				else {
+					event.getForgeRegistry().register(l.getA(), l.getB().get());
+				}
 			}
 		}
-
-		@SubscribeEvent
-		public static void registerContainer(@Nonnull final RegistryEvent.Register<ContainerType<?>> event) {
-			for(IForgeRegistryEntry<?> e : otherItems) {
-				if(e instanceof ContainerType<?>)
-					event.getRegistry().register((ContainerType<?>)e);
-			}
-		}
-
-		@SubscribeEvent
-		public static void registerFeature(@Nonnull final RegistryEvent.Register<Feature<?>> event) {
-			for(IForgeRegistryEntry<?> e : otherItems) {
-				if(e instanceof Feature<?>)
-					event.getRegistry().register((Feature<?>)e);
-			}
-		}
+	}
+	
+	@SubscribeEvent
+	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
+		if(event.getTab() != CreativeModeTabs.SEARCH) return;
+		regItems.forEach(itm -> {
+			event.accept(itm);
+		});
+		if(event.getTab() != CreativeModeTabs.TOOLS_AND_UTILITIES) return;
+		regItems.forEach(itm -> {
+			if(itm.get() instanceof TieredItem)
+				event.accept(itm);
+		});
 	}
 }
