@@ -14,9 +14,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class ClientEventHandler {
 	@SubscribeEvent
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
-		MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, ExtHopperGuiContainer::new);
-		MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_distributor, ExtHopperGuiContainer::new);
-		//ScreenManager.registerFactory(ExpandedIndustry.ModContainerTypes.machine_filter, FilterGuiContainer::new);
-		//ScreenManager.registerFactory(HarderOres.ModContainerTypes.packager, PackagerGuiContainer::new);
+		event.enqueueWork(() -> {
+			MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, ExtHopperGuiContainer::new);
+			MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_distributor, ExtHopperGuiContainer::new);
+			//ScreenManager.registerFactory(ExpandedIndustry.ModContainerTypes.machine_filter, FilterGuiContainer::new);
+			//ScreenManager.registerFactory(HarderOres.ModContainerTypes.packager, PackagerGuiContainer::new);
+		});
 	}
 }
