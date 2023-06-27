@@ -34,27 +34,27 @@ public class ClientEventHandler {
 
 	//@SubscribeEvent
 	public static void registerModels(ModelEvent event) {
-		
 		//ObjLoader.INSTANCE.loadModel(new ModelSettings(new ResourceLocation(HarderOres.MODID, "millstone_corner.obj"), true, true, false, false, null));
 	}
 
 	@SubscribeEvent
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
 		MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
-		@SuppressWarnings("deprecation")
-		ItemPropertyFunction f = (stack, world, entity, seed) -> {
-			CompoundTag compoundtag = stack.getTag();
-			if(compoundtag == null) {
-				compoundtag = stack.getOrCreateTag();
-				HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-			}
-			CompoundTag compoundtag1 = compoundtag.getCompound("BlockStateTag");
-			String s1 = compoundtag1.getString(BlockProperties.ORE_DENSITY.getName());
-			System.out.println("I see a nbt of " + s1);
-			return Integer.parseInt(s1);
-		};
-
-		Block[] oreBlocks = {
+		event.enqueueWork(() -> {
+			@SuppressWarnings("deprecation")
+			ItemPropertyFunction f = (stack, world, entity, seed) -> {
+				CompoundTag compoundtag = stack.getTag();
+				if(compoundtag == null) {
+					compoundtag = stack.getOrCreateTag();
+					HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
+				}
+				CompoundTag compoundtag1 = compoundtag.getCompound("BlockStateTag");
+				String s1 = compoundtag1.getString(BlockProperties.ORE_DENSITY.getName());
+				System.out.println("I see a nbt of " + s1);
+				return Integer.parseInt(s1);
+			};
+			
+			Block[] oreBlocks = {
 				HarderOres.ModBlocks.ore_hardcopper,
 				HarderOres.ModBlocks.ore_harddiamond,
 				HarderOres.ModBlocks.ore_hardgold,
@@ -63,10 +63,11 @@ public class ClientEventHandler {
 				HarderOres.ModBlocks.ore_harddeepslate_diamond,
 				HarderOres.ModBlocks.ore_harddeepslate_gold,
 				HarderOres.ModBlocks.ore_harddeepslate_iron
-		};
-		for(Block blk : oreBlocks) {
-			ItemProperties.register(blk.asItem(), new ResourceLocation(HarderOres.MODID,BlockProperties.ORE_DENSITY.getName()), f);
-		}
+			};
+			for(Block blk : oreBlocks) {
+				ItemProperties.register(blk.asItem(), new ResourceLocation(HarderOres.MODID,BlockProperties.ORE_DENSITY.getName()), f);
+			}
+		});
 	}
 
 	public static void initializeClient() {
