@@ -4,14 +4,11 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -22,16 +19,6 @@ public class HardOreItem extends BlockItem {
 
 	public HardOreItem(Block p_40565_, Properties p_40566_) {
 		super(p_40565_, p_40566_);
-		ItemProperties.register(this.asItem(), new ResourceLocation(HarderOres.MODID,BlockProperties.ORE_DENSITY.getName()), (stack, world, entity, seed) -> {
-			CompoundTag compoundtag = stack.getTag();
-			if(compoundtag == null) {
-				compoundtag = stack.getOrCreateTag();
-				HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-			}
-			CompoundTag compoundtag1 = compoundtag.getCompound("BlockStateTag");
-			String s1 = compoundtag1.getString(BlockProperties.ORE_DENSITY.getName());
-			return Integer.parseInt(s1);
-		});
 	}
 
 	@Override
