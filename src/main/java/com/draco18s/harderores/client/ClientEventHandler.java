@@ -39,8 +39,8 @@ public class ClientEventHandler {
 
 	@SubscribeEvent
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
-		MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
 		event.enqueueWork(() -> {
+			MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
 			@SuppressWarnings("deprecation")
 			ItemPropertyFunction f = (stack, world, entity, seed) -> {
 				CompoundTag compoundtag = stack.getTag();
