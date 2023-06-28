@@ -7,10 +7,12 @@ import net.minecraft.advancements.critereon.SerializationContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class FoundOreTrigger extends HardLibCriteriaTrigger<FoundOreTrigger.Instance> {
     private static final ResourceLocation ID = new ResourceLocation("oreflowers","found_ore");
 	public static LootContextParam<Integer> ORE_COUNT = new LootContextParam<Integer>(ID);
+	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(FoundOreTrigger.ORE_COUNT).build();
 
 	@Override
 	public ResourceLocation getId() {

@@ -28,6 +28,10 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddiamond);
 		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_hardgold);
 		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_hardiron);
+		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_copper);
+		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_diamond);
+		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_gold);
+		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 		 tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.machine_millstone);
 
 		 tag(BlockTags.MINEABLE_WITH_AXE).add(ExpandedIndustry.ModBlocks.machine_distributor);
@@ -45,13 +49,21 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		 
 		 tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_hardcopper);
 		 tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_hardiron);
+		 tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_harddeepslate_copper);
+		 tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 		 
 		 tag(BlockTags.NEEDS_IRON_TOOL).add(HarderOres.ModBlocks.ore_hardgold);
 		 tag(BlockTags.NEEDS_IRON_TOOL).add(HarderOres.ModBlocks.ore_harddiamond);
+		 tag(BlockTags.NEEDS_IRON_TOOL).add(HarderOres.ModBlocks.ore_harddeepslate_gold);
+		 tag(BlockTags.NEEDS_IRON_TOOL).add(HarderOres.ModBlocks.ore_harddeepslate_diamond);
 		 
 		 tag(BlockTags.COPPER_ORES).add(HarderOres.ModBlocks.ore_hardcopper);
 		 tag(BlockTags.DIAMOND_ORES).add(HarderOres.ModBlocks.ore_harddiamond);
 		 tag(BlockTags.GOLD_ORES).add(HarderOres.ModBlocks.ore_hardgold);
 		 tag(BlockTags.IRON_ORES).add(HarderOres.ModBlocks.ore_hardiron);
+		 tag(BlockTags.COPPER_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_copper);
+		 tag(BlockTags.DIAMOND_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_diamond);
+		 tag(BlockTags.GOLD_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_gold);
+		 tag(BlockTags.IRON_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 	}
 }

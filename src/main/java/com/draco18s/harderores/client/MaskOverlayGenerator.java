@@ -15,7 +15,7 @@ public record MaskOverlayGenerator(ITexSource original, ITexSource overlay) impl
 	public static final Codec<MaskOverlayGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ITexSource.CODEC.fieldOf("overlay").forGetter(s->s.overlay),
 			ITexSource.CODEC.fieldOf("original").forGetter(s->s.original)
-			).apply(instance,MaskOverlayGenerator::new));
+			).apply(instance, MaskOverlayGenerator::new));
 
 	@Override
 	public Codec<? extends ITexSource> codec() {

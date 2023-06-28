@@ -110,8 +110,6 @@ public class ExpandedIndustry {
     }
 	
 	public static class ModBlocks {
-		//@ObjectHolder(registryName = "minecraft:blocks", value = MODID+"machine_filter")
-		public static final Block machine_filter = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"rail_bridge")
 		public static final Block rail_bridge = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"powered_rail_bridge")
@@ -120,6 +118,8 @@ public class ExpandedIndustry {
 		public static final Block machine_wood_hopper = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_distributor")
 		public static final Block machine_distributor = null;
+		//@ObjectHolder(registryName = "minecraft:blocks", value = MODID+"machine_filter")
+		//public static final Block machine_filter = null;
 	}
 
 	public static class ModItems {
@@ -127,7 +127,7 @@ public class ExpandedIndustry {
 		public static final Item machine_wood_hopper = null;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"machine_distributor")
 		public static final Item machine_distributor = null;
-		public static final Item machine_filter = null;
+		//public static final Item machine_filter = null;
 	}
 
 	public static class ModTileEntities {

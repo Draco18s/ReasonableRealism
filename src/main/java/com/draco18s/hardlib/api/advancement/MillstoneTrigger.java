@@ -8,10 +8,12 @@ import net.minecraft.advancements.critereon.SerializationContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class MillstoneTrigger extends HardLibCriteriaTrigger<MillstoneTrigger.Instance> {
 	private static final ResourceLocation ID = new ResourceLocation(HarderOres.MODID,"millstone_grind");
 	public static LootContextParam<Float> POWER = new LootContextParam<Float>(ID);
+	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(MillstoneTrigger.POWER).build();
 
 	@Override
 	public ResourceLocation getId() {

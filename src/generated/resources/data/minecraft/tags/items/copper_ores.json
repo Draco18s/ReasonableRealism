@@ -1,6 +1,7 @@
 {
   "values": [
-    "harderores:orechunk_copper",
-    "harderores:largedust_copper"
+    "harderores:largedust_copper",
+    "harderores:ore_hardcopper",
+    "harderores:ore_harddeepslate_copper"
   ]
 }

@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.entity.MillstoneBlockEntity;
+import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.api.internal.block.ModEntityBlock;
@@ -11,9 +13,11 @@ import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -24,8 +28,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 
 public class MillstoneBlock extends ModEntityBlock {
 
@@ -50,11 +57,41 @@ public class MillstoneBlock extends ModEntityBlock {
 		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_millstone, MillstoneBlockEntity::tick);
 	}
 
-	public InteractionResult use(BlockState p_48804_, Level p_48805_, BlockPos p_48806_, Player p_48807_, InteractionHand p_48808_, BlockHitResult p_48809_) {
-		return InteractionResult.CONSUME;
+	@Deprecated
+	@Override
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		MillstoneOrientation mill = state.getValue(BlockProperties.MILL_ORIENTATION);
+		ItemStack heldItem = player.getItemInHand(hand);
+		if(!mill.canAcceptInput || heldItem.isEmpty()) return InteractionResult.PASS;
+		BlockEntity be = world.getBlockEntity(pos);
+		LazyOptional<IItemHandler> handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
+		return handler.map(inventory -> {
+			ItemStack stack = heldItem.copy();
+			stack.setCount(1);
+			stack = inventory.insertItem(0, stack, true);
+			if(stack.isEmpty()) {
+				inventory.insertItem(0, heldItem.split(1), false);
+				
+				MillstoneOrientation millpos = world.getBlockState(pos).getValue(BlockProperties.MILL_ORIENTATION);
+				MillstoneBlockEntity center = (MillstoneBlockEntity)world.getBlockEntity(be.getBlockPos().offset(millpos.offset.getX(), 0, millpos.offset.getZ()));
+
+				if(center != null && center.getPower() > 0) {
+					if(player instanceof ServerPlayer sPlayer) {
+						LootContext.Builder bld = new LootContext.Builder(sPlayer.getLevel())
+								.withParameter(MillstoneTrigger.POWER, center.getPower());
+						LootContext ctx = bld.create(MillstoneTrigger.requiredParams);
+						HardLibAPI.Advancements.MILL_BUILT.trigger(sPlayer, ctx);
+					}
+				}
+				
+				return InteractionResult.CONSUME;
+			}
+			return InteractionResult.PASS;
+		}).orElse(InteractionResult.PASS);
 	}
-	
-	//updatePostPlacement
+
+	@Deprecated
+	@Override
 	public BlockState updateShape(BlockState thisCurState, Direction dir, BlockState state2, LevelAccessor world, BlockPos thisPos, BlockPos pos2) {
 		if(!checkPlacement(world, thisPos)) {
 			Iterable<BlockPos> list = BlockPos.betweenClosed(thisPos.offset(-1,0,-1), thisPos.offset(1,0,1));//.map(BlockPos::toImmutable).collect(Collectors.toList());
@@ -68,7 +105,7 @@ public class MillstoneBlock extends ModEntityBlock {
 		return world.getBlockState(thisPos);
 	}
 	
-	public boolean checkPlacement(LevelAccessor iworld, BlockPos pos) {
+	protected boolean checkPlacement(LevelAccessor iworld, BlockPos pos) {
 		if(iworld instanceof Level world) {
 			//World world = (World)iworld;
 			BlockState state;// = this.getDefaultState();
@@ -96,6 +133,7 @@ public class MillstoneBlock extends ModEntityBlock {
 	}
 	
 	@Deprecated
+	@Override
 	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, BlockPos fromPos, boolean isMoving) {
 		super.neighborChanged(state,world,pos,neighbor,fromPos,isMoving);
 		if(neighbor == this && state.getValue(BlockProperties.MILL_ORIENTATION) != MillstoneOrientation.NONE && world.getBlockState(fromPos).isAir()) {
@@ -112,8 +150,8 @@ public class MillstoneBlock extends ModEntityBlock {
 		}
 	}
 	
-	//onReplaced
 	@Deprecated
+	@Override
 	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockentity = world.getBlockEntity(pos);

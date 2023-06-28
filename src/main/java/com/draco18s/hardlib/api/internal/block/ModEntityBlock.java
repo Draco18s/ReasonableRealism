@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -27,8 +28,8 @@ public abstract class ModEntityBlock extends BaseEntityBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		if (!world.isClientSide) {
-			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
-			if (tileEntity != null) {
+			BlockEntity be = world.getBlockEntity(pos);
+			if(be instanceof ICustomContainer tileEntity) {
 				tileEntity.openGUI((ServerPlayer) player);
 				return InteractionResult.CONSUME;
 			}

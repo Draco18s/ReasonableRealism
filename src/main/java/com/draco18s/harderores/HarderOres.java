@@ -1,10 +1,10 @@
 package com.draco18s.harderores;
 
 import java.awt.Color;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import com.draco18s.harderores.block.AxelBlock;
 import com.draco18s.harderores.block.MillstoneBlock;
@@ -22,12 +22,21 @@ import com.draco18s.harderores.entity.SifterBlockEntity;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.harderores.loot.function.HarderSetCount;
+import com.draco18s.harderores.network.PacketHandler;
+import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
+import com.draco18s.hardlib.proxy.IProxy;
+import com.draco18s.hardlib.proxy.ServerProxy;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -57,6 +66,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeTier;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -67,20 +77,17 @@ import net.minecraftforge.registries.RegistryObject;
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class HarderOres {
 	public static final String MODID = "harderores";
-	public static final Logger LOGGER = LogManager.getLogger();
-    //public static final IProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
-	//public static final DataResourceCache DATA_CACHE = ResourceCache.register(new DataResourceCache(new ResourceLocation(MODID, "ore_overlays")));
+	public static final Logger LOGGER = LogUtils.getLogger();
+	public static final IProxy PROXY = DistExecutor.safeRunForDist(()->ClientProxy::new, ()->ServerProxy::new);
 
 	@SuppressWarnings("deprecation")
 	public HarderOres() {
 		/*final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
-			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/iron")), new ItemStack(HarderOres.ModItems.tinydust_iron,2));
-			HardLibAPI.oreMachines.addMillRecipe(() -> ItemTags.getCollection().getOrCreate(new ResourceLocation("harderores","chunks/gold")), new ItemStack(HarderOres.ModItems.tinydust_gold,2));
-
 			FlowerIntegration.registerFlowerGen();
 			replaceOreGenerators();
 		});*/
+		PacketHandler.register();
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		//HardLibAPI.hardOres = new OreBlockInfo();
 		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of(Material.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());
@@ -131,10 +138,22 @@ public class HarderOres {
 		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("shatter"),() -> new ShatterEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("pulverize"),() -> new PulverizeEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
 		
+		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
+		
 		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType>>(
 				getRL("set_count"),() -> new LootItemFunctionType(new HarderSetCount.Serializer())));
 	}
 	
+	@SuppressWarnings("deprecation")
+	private static <T extends ParticleOptions> ParticleType<T> getParticleType(boolean bypassParticleLimit, ParticleOptions.Deserializer<T> deserializer, final Function<ParticleType<T>, Codec<T>> codec) {
+		return new ParticleType<T>(bypassParticleLimit, deserializer) {
+			public Codec<T> codec() {
+				return codec.apply(this);
+			}
+		};
+	}
+
 	public static class LootFunctions {
 		public static RegistryObject<LootItemFunctionType> harderSetCountReg;
 	}
@@ -207,7 +226,7 @@ public class HarderOres {
 		}
 	}*/
 
-	private static ResourceLocation getRL(String name) {
+	public static ResourceLocation getRL(String name) {
 		return new ResourceLocation(MODID, name);
 	}
 
@@ -291,6 +310,13 @@ public class HarderOres {
 		//public static final BlockEntityType<SluiceTileEntity> sluice = null;
 	}
 
+	public static class ModParticleTypes {
+		@ObjectHolder(registryName = "minecraft:particle_type", value = MODID+":"+"prospector_dust")
+		public static final ParticleType<BlockParticleOption> prospector_dust = null;
+		@ObjectHolder(registryName = "minecraft:particle_type", value = MODID+":"+"prospector_radar")
+		public static final ParticleType<BlockParticleOption> prospector_radar = null;
+	}
+
 	public static class ModContainerTypes {
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_sifter")
 		public static final MenuType<SifterContainerMenu> machine_sifter = null;
@@ -302,6 +328,9 @@ public class HarderOres {
 		public static final Enchantment prospector = null;
 		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"cracker")
 		public static final Enchantment cracker = null;
+		/**
+		 * Ore Breaker
+		 */
 		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"shatter")
 		public static final Enchantment shatter = null;
 		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"pulverize")
@@ -309,9 +338,9 @@ public class HarderOres {
 	}
 
 	public static class ModItemTags {
-		public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/copper"));
-		public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/gold"));
-		public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/iron"));
+		public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/copper"));
+		public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/gold"));
+		public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/iron"));
 	}
 
 	public static class ModFeatures {

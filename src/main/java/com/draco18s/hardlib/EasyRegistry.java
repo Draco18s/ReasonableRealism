@@ -3,8 +3,10 @@ package com.draco18s.hardlib;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -36,12 +38,12 @@ import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 public class EasyRegistry {
-	private static List<Tuple<ResourceLocation, Supplier<Block>>> blocksToReg = new ArrayList<Tuple<ResourceLocation, Supplier<Block>>>();
-	private static List<Tuple<ResourceLocation, Supplier<Item>>> itemsToReg = new ArrayList<Tuple<ResourceLocation, Supplier<Item>>>();
-	private static List<Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>> tilesToReg = new ArrayList<Tuple<ResourceLocation,Supplier<BlockEntityType<?>>>>();
-	private static List<Tuple<ResourceLocation, Supplier<MenuType<?>>>> menusToReg = new ArrayList<Tuple<ResourceLocation, Supplier<MenuType<?>>>>();
-	private static HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation, Supplier<?>>>> miscReg = new HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation,Supplier<?>>>>();
-	private static List<RegistryObject<Item>> regItems = new ArrayList<RegistryObject<Item>>();
+	private static List<Tuple<ResourceLocation, Supplier<Block>>> blocksToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<Block>>>());
+	private static List<Tuple<ResourceLocation, Supplier<Item>>> itemsToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<Item>>>());
+	private static List<Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>> tilesToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation,Supplier<BlockEntityType<?>>>>());
+	private static List<Tuple<ResourceLocation, Supplier<MenuType<?>>>> menusToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<MenuType<?>>>>());
+	private static Map<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation, Supplier<?>>>> miscReg = Collections.synchronizedMap(new HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation,Supplier<?>>>>());
+	private static List<RegistryObject<Item>> regItems = Collections.synchronizedList(new ArrayList<RegistryObject<Item>>());
 	private static Method CriterionRegister;
 	
 	static void registerEventBus(IEventBus modEventBus) {
@@ -186,17 +188,32 @@ public class EasyRegistry {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
-		if(event.getTab() != CreativeModeTabs.SEARCH) return;
-		regItems.forEach(itm -> {
-			event.accept(itm);
-		});
-		if(event.getTab() != CreativeModeTabs.TOOLS_AND_UTILITIES) return;
-		regItems.forEach(itm -> {
-			if(itm.get() instanceof TieredItem)
+		if(event.getTab() == CreativeModeTabs.SEARCH) {
+			regItems.forEach(itm -> {
 				event.accept(itm);
-		});
+			});
+		}
+		if(event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+			regItems.forEach(itm -> {
+				if(itm.get() instanceof TieredItem)
+					event.accept(itm);
+			});
+			/*miscReg.forEach((reg,list) -> {
+				if(reg.equals(ForgeRegistries.Keys.ENCHANTMENTS)) {
+					list.forEach(msc -> {
+						Enchantment ench = ForgeRegistries.ENCHANTMENTS.getValue(msc.getA());
+						for(int lv=1;lv <= ench.getMaxLevel(); lv++) {
+							ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
+							EnchantmentInstance enchInst = new EnchantmentInstance(ench, lv);
+							EnchantedBookItem.addEnchantment(stack, enchInst);
+							event.accept(stack);
+						}
+					});
+				}
+			});*/
+		}
 	}
 }

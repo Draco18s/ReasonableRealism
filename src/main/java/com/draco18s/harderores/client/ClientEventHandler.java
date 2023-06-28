@@ -11,18 +11,24 @@ import dev.lukebemish.dynamicassetgenerator.api.client.AssetResourceCache;
 import dev.lukebemish.dynamicassetgenerator.api.client.generators.TextureGenerator;
 import dev.lukebemish.dynamicassetgenerator.api.client.generators.texsources.TextureReader;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.particle.ParticleEngine.SpriteParticleRegistration;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
+@SuppressWarnings("deprecation")
 @EventBusSubscriber(modid = HarderOres.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEventHandler {
 	public static final AssetResourceCache ASSET_CACHE = ResourceCache.register(
@@ -30,6 +36,23 @@ public class ClientEventHandler {
 	static
 	{
 		initializeClient();
+	}
+  
+	@SubscribeEvent
+	public static void registerParticles(RegisterParticleProvidersEvent event) {
+		MutableSpriteSet set = new MutableSpriteSet();
+		//event.registerSpecial(HarderOres.ModParticleTypes.prospector_dust, ProspectorParticle::new);
+		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_dust, set);
+		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_radar, set);
+	}
+	
+	static class MutableSpriteSet implements SpriteParticleRegistration<BlockParticleOption> {
+		@Override
+		public ParticleProvider<BlockParticleOption> create(SpriteSet sprites) {
+			return (opt, world, x, y, z, dx, dy, dz) -> {
+				return new ProspectorParticleRadar(opt, world, x, y, z, dx, dy, dz, sprites);
+			};
+		}
 	}
 
 	//@SubscribeEvent
@@ -41,7 +64,6 @@ public class ClientEventHandler {
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
 			MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
-			@SuppressWarnings("deprecation")
 			ItemPropertyFunction f = (stack, world, entity, seed) -> {
 				CompoundTag compoundtag = stack.getTag();
 				if(compoundtag == null) {
@@ -50,7 +72,6 @@ public class ClientEventHandler {
 				}
 				CompoundTag compoundtag1 = compoundtag.getCompound("BlockStateTag");
 				String s1 = compoundtag1.getString(BlockProperties.ORE_DENSITY.getName());
-				System.out.println("I see a nbt of " + s1);
 				return Integer.parseInt(s1);
 			};
 			
@@ -85,9 +106,7 @@ public class ClientEventHandler {
 	}
 	
 	public static void genOverlayTexture(ResourceLocation oreTex, ResourceLocation overlayTex, ResourceLocation outputLocation) {
-		System.out.println("Creating texture " + outputLocation.toString());
-		// This method would be run during client initialization from the appropriate location.
-		// ResourceLocation oreTex = new ResourceLocation("minecraft", "block/deepslate_gold_ore");
+		//HarderOres.LOGGER.info("Creating texture " + outputLocation.toString());
 		ASSET_CACHE.planSource(
 				new TextureGenerator(
 						outputLocation,

@@ -145,6 +145,10 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 		}
 	}
 
+	public float getPower() {
+		return calcAndGetPower();
+	}
+
 	private float calcAndGetPower() {
 		Level world = level;
 		if(world.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());

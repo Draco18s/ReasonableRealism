@@ -19,18 +19,20 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class ModItemsTagProvider extends ItemTagsProvider {
 
-	public ModItemsTagProvider(PackOutput p_275204_, CompletableFuture<Provider> p_275194_,
-			CompletableFuture<TagLookup<Block>> p_275634_, String modId,
+	public ModItemsTagProvider(PackOutput pack, CompletableFuture<Provider> provider,
+			CompletableFuture<TagLookup<Block>> lookupProvider, String modId,
 			@Nullable ExistingFileHelper existingFileHelper) {
-		super(p_275204_, p_275194_, p_275634_, modId, existingFileHelper);
+		super(pack, provider, lookupProvider, modId, existingFileHelper);
 	}
 
 	@Override
 	protected void addTags(Provider p_256380_) {
-		tag(ItemTags.COPPER_ORES).add(HarderOres.ModItems.orechunk_copper);
-		tag(ItemTags.IRON_ORES).add(HarderOres.ModItems.orechunk_iron);
-		tag(ItemTags.COPPER_ORES).add(HarderOres.ModItems.largedust_copper);
-		tag(ItemTags.IRON_ORES).add(HarderOres.ModItems.largedust_iron);
+		tag(ItemTags.COPPER_ORES).add(HarderOres.ModItems.largedust_copper)
+			.add(HarderOres.ModBlocks.ore_hardcopper.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_copper.asItem());
+		tag(ItemTags.GOLD_ORES).add(HarderOres.ModItems.largedust_gold)
+			.add(HarderOres.ModBlocks.ore_hardgold.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_gold.asItem());
+		tag(ItemTags.IRON_ORES).add(HarderOres.ModItems.largedust_iron)
+			.add(HarderOres.ModBlocks.ore_hardiron.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_iron.asItem());
 
 		tag(ItemTags.create(new ResourceLocation("forge", "dust/copper"))).add(HarderOres.ModItems.largedust_copper);
 		tag(ItemTags.create(new ResourceLocation("forge", "dust/gold"))).add(HarderOres.ModItems.largedust_gold);

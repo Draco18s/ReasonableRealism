@@ -1,6 +1,8 @@
 {
   "values": [
     "harderores:ore_hardgold",
-    "harderores:ore_harddiamond"
+    "harderores:ore_harddiamond",
+    "harderores:ore_harddeepslate_gold",
+    "harderores:ore_harddeepslate_diamond"
   ]
 }

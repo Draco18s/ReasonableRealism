@@ -1,6 +1,8 @@
 {
   "values": [
     "harderores:ore_hardcopper",
-    "harderores:ore_hardiron"
+    "harderores:ore_hardiron",
+    "harderores:ore_harddeepslate_copper",
+    "harderores:ore_harddeepslate_iron"
   ]
 }

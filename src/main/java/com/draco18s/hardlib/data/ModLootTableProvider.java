@@ -40,27 +40,45 @@ public class ModLootTableProvider extends LootTableProvider {
 		@Override
 		protected Iterable<Block> getKnownBlocks() {
 			List<Block> knownBlocks = new ArrayList<Block>();
-			//knownBlocks.add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
-			//knownBlocks.add(ExpandedIndustry.ModBlocks.machine_distributor);
+			knownBlocks.add(ExpandedIndustry.ModBlocks.rail_bridge);
+			knownBlocks.add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
+			knownBlocks.add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
+			knownBlocks.add(ExpandedIndustry.ModBlocks.machine_distributor);
 			knownBlocks.add(HarderOres.ModBlocks.ore_hardcopper);
 			knownBlocks.add(HarderOres.ModBlocks.ore_harddiamond);
 			knownBlocks.add(HarderOres.ModBlocks.ore_hardgold);
 			knownBlocks.add(HarderOres.ModBlocks.ore_hardiron);
-			//knownBlocks.add(HarderOres.ModBlocks.ore_limonite);
-			//knownBlocks.add(HarderOres.ModBlocks.millstone);
+			knownBlocks.add(HarderOres.ModBlocks.ore_harddeepslate_copper);
+			knownBlocks.add(HarderOres.ModBlocks.ore_harddeepslate_diamond);
+			knownBlocks.add(HarderOres.ModBlocks.ore_harddeepslate_gold);
+			knownBlocks.add(HarderOres.ModBlocks.ore_harddeepslate_iron);
+			knownBlocks.add(HarderOres.ModBlocks.ore_limonite);
+			knownBlocks.add(HarderOres.ModBlocks.machine_sifter);
+			knownBlocks.add(HarderOres.ModBlocks.machine_millstone);
+			knownBlocks.add(HarderOres.ModBlocks.machine_axel);
+			knownBlocks.add(HarderOres.ModBlocks.machine_windvane);
 			return knownBlocks;
 		}
 
 		@Override
 		protected void generate() {
-			//dropSelf(ExpandedIndustry.ModBlocks.machine_wood_hopper);
-			//dropSelf(ExpandedIndustry.ModBlocks.machine_distributor);
+			dropSelf(ExpandedIndustry.ModBlocks.rail_bridge);
+			dropSelf(ExpandedIndustry.ModBlocks.powered_rail_bridge);
+			dropSelf(ExpandedIndustry.ModBlocks.machine_wood_hopper);
+			dropSelf(ExpandedIndustry.ModBlocks.machine_distributor);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardcopper, HarderOres.ModItems.orechunk_copper);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddiamond, HarderOres.ModItems.orechunk_diamond);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardgold, HarderOres.ModItems.orechunk_gold);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardiron, HarderOres.ModItems.orechunk_iron);
-			//dropSelf(HarderOres.ModBlocks.millstone);
-			//dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_copper, HarderOres.ModItems.orechunk_copper);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_diamond, HarderOres.ModItems.orechunk_diamond);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_gold, HarderOres.ModItems.orechunk_gold);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_iron, HarderOres.ModItems.orechunk_iron);
+			dropSelf(HarderOres.ModBlocks.machine_sifter);
+			dropSelf(HarderOres.ModBlocks.machine_millstone);
+			dropSelf(HarderOres.ModBlocks.machine_axel);
+			dropSelf(HarderOres.ModBlocks.machine_windvane);
+			dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
 		}
 
 		private void dropOtherOrSilkTouch(Block block, ItemLike item) {

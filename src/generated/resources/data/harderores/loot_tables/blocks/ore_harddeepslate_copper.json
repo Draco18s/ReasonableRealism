@@ -1,0 +1,50 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:match_tool",
+                  "predicate": {
+                    "enchantments": [
+                      {
+                        "enchantment": "minecraft:silk_touch",
+                        "levels": {
+                          "min": 1
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "name": "harderores:ore_harddeepslate_copper"
+            },
+            {
+              "type": "minecraft:item",
+              "functions": [
+                {
+                  "conditions": [
+                    {
+                      "condition": "minecraft:survives_explosion"
+                    }
+                  ],
+                  "divisor": 6.0,
+                  "function": "harderores:set_count"
+                }
+              ],
+              "name": "harderores:orechunk_copper"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}
