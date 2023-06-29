@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import com.draco18s.harderores.block.AxelBlock;
 import com.draco18s.harderores.block.MillstoneBlock;
 import com.draco18s.harderores.block.SifterBlock;
+import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.block.WindvaneBlock;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.block.ore.LimoniteBlock;
@@ -19,6 +20,7 @@ import com.draco18s.harderores.enchantment.VeinCrackerEnchantment;
 import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.harderores.entity.MillstoneBlockEntity;
 import com.draco18s.harderores.entity.SifterBlockEntity;
+import com.draco18s.harderores.entity.SluiceBlockEntity;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.harderores.loot.function.HarderSetCount;
@@ -106,6 +108,8 @@ public class HarderOres {
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_gold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xd8af93), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_IRON_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_iron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 
+		EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
+		
 		String[] itemNames = {
 				"orechunk_limonite",
 				"orechunk_copper", "tinydust_copper", "largedust_copper", "copper_nugget",
@@ -259,6 +263,7 @@ public class HarderOres {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddeepslate_gold")
 		public static final Block ore_harddeepslate_gold = null;
 
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"sluice")
 		public static final Block sluice = null;
 		public static final Block sluice_output = null;
 	}
@@ -297,6 +302,9 @@ public class HarderOres {
 		public static final Item tinydust_gold = null;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"copper_nugget")
 		public static final Item copper_nugget = null;
+		
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"sluice")
+		public static final Item sluice = null;
 	}
 
 	public static class ModBlockEntities {
@@ -306,8 +314,9 @@ public class HarderOres {
 		public static final BlockEntityType<MillstoneBlockEntity> machine_millstone = null;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_axel")
 		public static final BlockEntityType<AxelBlockEntity> machine_axel = null;
+		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"sluice")
+		public static final BlockEntityType<SluiceBlockEntity> sluice = null;
 		//public static final BlockEntityType<SifterTileEntity> packager = null;
-		//public static final BlockEntityType<SluiceTileEntity> sluice = null;
 	}
 
 	public static class ModParticleTypes {

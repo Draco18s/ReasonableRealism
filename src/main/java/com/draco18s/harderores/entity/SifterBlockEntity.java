@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.entity.capability.SiftableItemsHandler;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.inventory.ModContainerBlockEnity;
@@ -33,7 +34,7 @@ public class SifterBlockEntity extends ModContainerBlockEnity {
 	private static final int SiftTime = 40;
 	private int siftTime;
 	private int activeSlot;
-	protected final ItemStackHandler inputSlots = new ItemStackHandler(2);
+	protected final ItemStackHandler inputSlots = new SiftableItemsHandler(2);
 	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
 	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 

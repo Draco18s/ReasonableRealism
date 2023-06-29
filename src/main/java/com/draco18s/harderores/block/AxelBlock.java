@@ -35,7 +35,6 @@ public class AxelBlock extends ModEntityBlock {
 	public AxelBlock() {
 		super(Properties.of(Material.WOOD).strength(2).sound(SoundType.WOOD));
 		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
-		
 	}
 
 	private static VoxelShape axel(int nx, int ny, int nz, int mx, int my, int mz) {
@@ -54,10 +53,11 @@ public class AxelBlock extends ModEntityBlock {
 	}
 
 	private static VoxelShape gearBox() {
-		VoxelShape p1 = Shapes.joinUnoptimized(box(0.01,0.01,0,16-0.01,16,2), box(0.01,0,0.01,2,16,16-0.01), BooleanOp.OR);
-		VoxelShape p2 = Shapes.joinUnoptimized(box(14,0,0.01,16-0.01,16,16-0.01), box(0.01,0,14,16-0.01,16,16-0.01), BooleanOp.OR);
-		
-		return Shapes.join(p1, p2, BooleanOp.OR);
+		VoxelShape p1 = Shapes.block();
+		p1 = Shapes.joinUnoptimized(p1, Block.box(0.0D, 2.0D, 2.0D, 16.0D, 14.0D, 14.0D), BooleanOp.ONLY_FIRST);
+		p1 = Shapes.joinUnoptimized(p1, Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D), BooleanOp.ONLY_FIRST);
+		p1 = Shapes.join(p1, Block.box(2.0D, 2.0D, 0.0D, 14.0D, 14.0D, 16.0D), BooleanOp.ONLY_FIRST);
+		return p1;
 	}
 
 	@Override

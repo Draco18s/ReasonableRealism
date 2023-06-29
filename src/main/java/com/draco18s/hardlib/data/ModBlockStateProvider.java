@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -67,13 +69,28 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		
 		genHardOres();
 		
+		sluicemodel(HarderOres.ModBlocks.sluice, prebuiltModel(new ResourceLocation(HarderOres.MODID,"sluice-1")));
 		simpleBlockWithItem(HarderOres.ModBlocks.machine_sifter, prebuiltModel(new ResourceLocation(HarderOres.MODID,"machine_sifter")));
 		extHopper(ExpandedIndustry.ModBlocks.machine_wood_hopper, new ResourceLocation(ExpandedIndustry.MODID, "wood_hopper"));
 		extHopper(ExpandedIndustry.ModBlocks.machine_distributor, new ResourceLocation(ExpandedIndustry.MODID, "distributor"));
 		axel(HarderOres.ModBlocks.machine_axel);
 		windvane(HarderOres.ModBlocks.machine_windvane);
 		
-		crops((CropBlock)HarderFarming.ModBlocks.crop_winter_wheat, "block/crop", "winter_wheat_stage_");
+		crops((CropBlock)HarderFarming.ModBlocks.crop_winter_wheat, "block/winter_wheat_stage_", "winter_wheat_stage_");
+	}
+
+	private void sluicemodel(Block block, ModelFile prebuiltModel) {
+		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
+		Function<BlockState, ConfiguredModel[]> f = state -> {
+			ConfiguredModel model = null;
+			int h = ((state.getValue(SluiceBlock.LEVEL) + 1) / 2) * 2 - 1;
+			h = Math.max(h, 1);
+			model = new ConfiguredModel(models().getExistingFile(registryName.withSuffix("-"+h)),0,0,false);
+			return new ConfiguredModel[] {model}; 
+		};
+		getVariantBuilder(block).forAllStates(f);
+		ResourceLocation registryName2 = ForgeRegistries.BLOCKS.getKey(block);
+		//itemModels().withExistingParent(registryName2.toString(), registryName);
 	}
 
 	private void windvane(Block block) {
@@ -193,6 +210,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
 							.texture("side", textureName.withSuffix("_side")),0,270,false);
 					break;
 				case NORTH_EAST:
+					/*model = new ConfiguredModel(models().getExistingFile(new ResourceLocation("harderores","block/test.obj")));
+					*/
 					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), new ResourceLocation("cube_bottom_top"))
 							.texture("bottom", textureName.withSuffix("_corner2"))
 							.texture("top", textureName.withSuffix("_corner"))
@@ -352,6 +371,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 	private ConfiguredModel[] cropStates(BlockState state, CropBlock block, String modelName, String textureName) {
 		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		modelName = registryName.getNamespace() + ":" + modelName;
 		ConfiguredModel[] models = new ConfiguredModel[1];
 		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(block.getAgeProperty()),
 				new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(block.getAgeProperty()))

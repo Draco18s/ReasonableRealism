@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.draco18s.farming.HarderFarming;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.loot.function.HarderSetCount;
 import com.draco18s.industry.ExpandedIndustry;
 
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -23,11 +26,10 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer.Builder;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-@SuppressWarnings("unused")
 public class ModLootTableProvider extends LootTableProvider {
 	public ModLootTableProvider(PackOutput output)
 	{
@@ -40,6 +42,7 @@ public class ModLootTableProvider extends LootTableProvider {
 		@Override
 		protected Iterable<Block> getKnownBlocks() {
 			List<Block> knownBlocks = new ArrayList<Block>();
+			knownBlocks.add(HarderFarming.ModBlocks.crop_winter_wheat);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
@@ -57,6 +60,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			knownBlocks.add(HarderOres.ModBlocks.machine_millstone);
 			knownBlocks.add(HarderOres.ModBlocks.machine_axel);
 			knownBlocks.add(HarderOres.ModBlocks.machine_windvane);
+			knownBlocks.add(HarderOres.ModBlocks.sluice);
 			return knownBlocks;
 		}
 
@@ -66,6 +70,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropSelf(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 			dropSelf(ExpandedIndustry.ModBlocks.machine_wood_hopper);
 			dropSelf(ExpandedIndustry.ModBlocks.machine_distributor);
+			dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardcopper, HarderOres.ModItems.orechunk_copper);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddiamond, HarderOres.ModItems.orechunk_diamond);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardgold, HarderOres.ModItems.orechunk_gold);
@@ -78,7 +83,10 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropSelf(HarderOres.ModBlocks.machine_millstone);
 			dropSelf(HarderOres.ModBlocks.machine_axel);
 			dropSelf(HarderOres.ModBlocks.machine_windvane);
-			dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
+			dropSelf(HarderOres.ModBlocks.sluice);
+			
+			LootItemCondition.Builder cropMinAge = LootItemBlockStatePropertyCondition.hasBlockStateProperties(HarderFarming.ModBlocks.crop_winter_wheat).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, 7));
+			add(HarderFarming.ModBlocks.crop_winter_wheat, createCropDrops(HarderFarming.ModBlocks.crop_winter_wheat, Items.WHEAT, HarderFarming.ModItems.winter_wheat_seeds, cropMinAge));
 		}
 
 		private void dropOtherOrSilkTouch(Block block, ItemLike item) {

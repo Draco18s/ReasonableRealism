@@ -1,0 +1,112 @@
+{
+  "variants": {
+    "facing=east,level=0": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=east,level=1": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=east,level=2": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=east,level=3": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=east,level=4": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=east,level=5": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=east,level=6": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=east,level=7": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=east,level=8": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=north,level=0": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=north,level=1": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=north,level=2": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=north,level=3": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=north,level=4": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=north,level=5": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=north,level=6": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=north,level=7": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=north,level=8": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=south,level=0": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=south,level=1": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=south,level=2": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=south,level=3": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=south,level=4": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=south,level=5": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=south,level=6": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=south,level=7": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=south,level=8": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=west,level=0": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=west,level=1": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=west,level=2": {
+      "model": "harderores:block/sluice-1"
+    },
+    "facing=west,level=3": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=west,level=4": {
+      "model": "harderores:block/sluice-3"
+    },
+    "facing=west,level=5": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=west,level=6": {
+      "model": "harderores:block/sluice-5"
+    },
+    "facing=west,level=7": {
+      "model": "harderores:block/sluice-7"
+    },
+    "facing=west,level=8": {
+      "model": "harderores:block/sluice-7"
+    }
+  }
+}

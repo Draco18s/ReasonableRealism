@@ -1,28 +1,28 @@
 {
   "variants": {
     "age=0": {
-      "model": "harderores:block/crop0"
+      "model": "harderfarming:block/winter_wheat_stage_0"
     },
     "age=1": {
-      "model": "harderores:block/crop1"
+      "model": "harderfarming:block/winter_wheat_stage_1"
     },
     "age=2": {
-      "model": "harderores:block/crop2"
+      "model": "harderfarming:block/winter_wheat_stage_2"
     },
     "age=3": {
-      "model": "harderores:block/crop3"
+      "model": "harderfarming:block/winter_wheat_stage_3"
     },
     "age=4": {
-      "model": "harderores:block/crop4"
+      "model": "harderfarming:block/winter_wheat_stage_4"
     },
     "age=5": {
-      "model": "harderores:block/crop5"
+      "model": "harderfarming:block/winter_wheat_stage_5"
     },
     "age=6": {
-      "model": "harderores:block/crop6"
+      "model": "harderfarming:block/winter_wheat_stage_6"
     },
     "age=7": {
-      "model": "harderores:block/crop7"
+      "model": "harderfarming:block/winter_wheat_stage_7"
     }
   }
 }

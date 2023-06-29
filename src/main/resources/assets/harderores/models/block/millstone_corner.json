@@ -1,0 +1,13 @@
+{
+  "loader": "forge:obj",
+  "flip_v": true,
+  "parent": "block/block",
+  "ambientocclusion": true,
+  "render_type": "cutout_mipped",
+  "model": "harderores:models/block/test.obj",
+  "textures": {
+    "texture0": "harderores:block/mill_corner",
+    "texture1": "harderores:block/mill_side",
+    "particle": "harderores:block/mill_generic"
+  }
+}

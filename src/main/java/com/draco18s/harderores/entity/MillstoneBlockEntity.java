@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.entity.capability.MillableItemsHandler;
+import com.draco18s.harderores.entity.capability.MillstoneMechanicalPowerHandler;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
@@ -33,7 +35,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 public class MillstoneBlockEntity extends ModBlockEntity implements FakeContainer {
-	protected final ItemStackHandler inputSlots = new ItemStackHandler(1);
+	protected final ItemStackHandler inputSlots = new MillableItemsHandler(1);
 	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
 	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 	protected RawMechanicalPowerHandler powerUser = new MillstoneMechanicalPowerHandler();
@@ -52,6 +54,9 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+		boolean notSelf = level.getBlockState(worldPosition).getBlock() != HarderOres.ModBlocks.machine_millstone;
+		if(cap == ForgeCapabilities.ITEM_HANDLER && notSelf) return (LazyOptional<T>)all;
+		if(notSelf ) return super.getCapability(cap, side);
 		MillstoneOrientation millpos = level.getBlockState(worldPosition).getValue(BlockProperties.MILL_ORIENTATION);
 		if(cap == IMechanicalPower.MECHANICAL_POWER_CAPABILITY && millpos == MillstoneOrientation.CENTER) {
 			return (LazyOptional<T>)powerUserholder;

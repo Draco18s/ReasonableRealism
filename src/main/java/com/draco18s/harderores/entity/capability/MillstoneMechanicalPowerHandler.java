@@ -1,4 +1,4 @@
-package com.draco18s.harderores.entity;
+package com.draco18s.harderores.entity.capability;
 
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 

@@ -41,6 +41,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 		simpleItem(HarderOres.ModItems.orechunk_iron, getRL("iron_chunk"));
 		simpleItem(HarderOres.ModItems.tinydust_iron, getRL("iron_dust_sm"));
 		simpleItem(HarderOres.ModItems.largedust_iron, getRL("iron_dust_lg"));
+		simpleItem(HarderOres.ModItems.sluice, getRL("basic_sluice"));
 	}
 
 	private ResourceLocation getRL(String name) {

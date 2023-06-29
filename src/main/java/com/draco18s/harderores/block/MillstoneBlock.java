@@ -90,9 +90,40 @@ public class MillstoneBlock extends ModEntityBlock {
 		}).orElse(InteractionResult.PASS);
 	}
 
+	/*public static final VoxelShape CORNER_SE = box(0,0,0,10,16,10);
+	public static final VoxelShape CORNER_NE = box(0,0,6,10,16,16);
+	public static final VoxelShape CORNER_NW = box(6,0,6,16,16,16);
+	public static final VoxelShape CORNER_SW = box(6,0,0,16,16,10);
+	public static final VoxelShape POST = box(2,2,2,14,14,14);
+	
+	@Override
+	@Deprecated
+	public VoxelShape getOcclusionShape(BlockState state, BlockGetter world, BlockPos pos) {
+		return POST;
+	}
+
+	@Override
+	@Deprecated
+	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext ctx) {
+		switch(state.getValue(BlockProperties.MILL_ORIENTATION)) {
+			case SOUTH_EAST:
+				return CORNER_SE;
+			case NORTH_EAST:
+				return CORNER_NE;
+			case NORTH_WEST:
+				return CORNER_NW;
+			case SOUTH_WEST:
+				return CORNER_SW;
+			default:
+				break;
+		}
+		return super.getShape(state, world, pos, ctx);
+	}*/
+
 	@Deprecated
 	@Override
 	public BlockState updateShape(BlockState thisCurState, Direction dir, BlockState state2, LevelAccessor world, BlockPos thisPos, BlockPos pos2) {
+		if(world.getBlockState(thisPos).getBlock() != this) return world.getBlockState(thisPos);
 		if(!checkPlacement(world, thisPos)) {
 			Iterable<BlockPos> list = BlockPos.betweenClosed(thisPos.offset(-1,0,-1), thisPos.offset(1,0,1));//.map(BlockPos::toImmutable).collect(Collectors.toList());
 			for(BlockPos p : list) {
