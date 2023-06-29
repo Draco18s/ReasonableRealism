@@ -341,7 +341,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 							.texture("supports", supportTexture), 0, 90, false);
 					return new ConfiguredModel[] {model};
 				default:
-					model = new ConfiguredModel(models().withExistingParent("minecraft:air", "minecraft:air"));
+					model = new ConfiguredModel(models().getExistingFile(new ResourceLocation("minecraft:air")));
 					return new ConfiguredModel[] { model };
 			}
 		};

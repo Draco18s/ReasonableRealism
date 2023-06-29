@@ -1,0 +1,21 @@
+{
+  "type": "harderfarming:grass_modifier",
+  "conditions": [
+    {
+      "condition": "minecraft:alternative",
+      "terms": [
+        {
+          "block": "minecraft:tall_grass",
+          "condition": "minecraft:block_state_property"
+        },
+        {
+          "block": "minecraft:grass",
+          "condition": "minecraft:block_state_property"
+        }
+      ]
+    },
+    {
+      "condition": "harderfarming:can_snow"
+    }
+  ]
+}

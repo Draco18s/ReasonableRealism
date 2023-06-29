@@ -36,6 +36,7 @@ public class ModDataGenerator {
 			generator.addProvider(true, blockTagProvider);
 			generator.addProvider(true, new ModItemsTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), HarderOres.MODID, fileHelper));
 			generator.addProvider(true, (DataProvider.Factory)ModRecipeProvider::new);
+			generator.addProvider(true, (DataProvider.Factory)LootModifierProvider::new);
 		}
 		addVirtualPackContents(fileHelper);
 	}

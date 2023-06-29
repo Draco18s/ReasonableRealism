@@ -48,37 +48,31 @@ public class ModItemModelProvider extends ItemModelProvider {
 		return new ResourceLocation("unknown",name);
 	}
 
-	/*private void blockItems() {
-		simpleBlock(HarderOres.ModBlocks.ore_limonite);
-	}
-
-	private void simpleBlock(Block block) {
-		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(block.asItem());
-		withExistingParent(itemName.getPath(), 
-				new ResourceLocation(itemName.getNamespace(), BLOCK_FOLDER + "/" + itemName.getPath()));
-	}*/
-
 	private ItemModelBuilder simpleItem(Item item) {
 		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
-		return withExistingParent(itemName.getPath(),
+		return withExistingParent(itemName.toString(),
 				new ResourceLocation("minecraft","item/generated")).texture("layer0",
 				new ResourceLocation(itemName.getNamespace(), ITEM_FOLDER + "/" +  itemName.getPath()));
 	}
 
 	private ItemModelBuilder simpleItem(Item item, ResourceLocation texture) {
-		if(item == null) {
-			throw new RuntimeException("Unregistered item " + texture.getPath() + "!");
-		}
 		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
-		return withExistingParent(itemName.getPath(),
+		return withExistingParent(itemName.toString(),
 				new ResourceLocation("minecraft","item/generated")).texture("layer0",
 				new ResourceLocation(itemName.getNamespace(), ITEM_FOLDER + "/" +  texture.getPath()));
 	}
 
-	/*private ItemModelBuilder handheldItem(Item item) {
+	private ItemModelBuilder handheldItem(Item item) {
 		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
-		return withExistingParent(itemName.getPath(),
+		return withExistingParent(itemName.toString(),
 				new ResourceLocation("item/handheld")).texture("layer0",
 				new ResourceLocation(itemName.getNamespace() + ITEM_FOLDER, itemName.getPath()));
-	}*/
+	}
+
+	private ItemModelBuilder handheldItem(Item item, ResourceLocation texture) {
+		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
+		return withExistingParent(itemName.toString(),
+				new ResourceLocation("item/handheld")).texture("layer0",
+				new ResourceLocation(itemName.getNamespace() + ITEM_FOLDER, texture.getPath()));
+	}
 }
