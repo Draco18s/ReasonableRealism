@@ -3,6 +3,7 @@ package com.draco18s.farming;
 import java.util.function.Supplier;
 
 import com.draco18s.farming.block.CropWinterWheatBlock;
+import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.farming.item.WinterSeedsItem;
 import com.draco18s.farming.loot.GrassLootModifier;
 import com.draco18s.hardlib.EasyRegistry;
@@ -11,10 +12,12 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
@@ -33,6 +36,7 @@ public class HarderFarming {
 	
 	public HarderFarming() {
 		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
+		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
 		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
 			new Tuple<ResourceLocation,Supplier<Codec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
@@ -47,6 +51,10 @@ public class HarderFarming {
 		for(String it : itemNames) {
 			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
 		}
+	}
+	
+	public static class ModTags {
+		public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation("minecraft", "mineable/knife"));
 	}
 	
 	public static class ModLootConditionTypes {
@@ -69,6 +77,9 @@ public class HarderFarming {
 
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_flour")
 		public static final Item largedust_flour = null;
+		
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"butcher_knife")
+		public static final Item butcher_knife = null;
 	}
 	
 	@SubscribeEvent
