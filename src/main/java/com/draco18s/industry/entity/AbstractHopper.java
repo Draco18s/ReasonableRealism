@@ -202,7 +202,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 	
 	protected static AABB getAABB(BlockPos pos) {
 	//	return new AABB(pos.getX() - 0.5D, pos.getY() - 0.5D, pos.getZ() - 0.5D, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-		return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX()+1, pos.getY()+1.25, pos.getZ()+1);
+		return new AABB(pos.getX()+1/8f, pos.getY()+.75f, pos.getZ()+1/8f, pos.getX()+7/8f, pos.getY()+1.05f, pos.getZ()+7/8f);
 	}
 	
 	protected static IntStream getSlotStream(IItemHandler sourceInven, Direction direction) {

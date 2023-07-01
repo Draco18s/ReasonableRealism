@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import java.util.concurrent.CompletableFuture;
 

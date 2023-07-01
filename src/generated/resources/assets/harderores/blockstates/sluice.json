@@ -27,6 +27,9 @@
     "facing=east,level=8": {
       "model": "harderores:block/sluice-7"
     },
+    "facing=east,level=9": {
+      "model": "harderores:block/sluice-9"
+    },
     "facing=north,level=0": {
       "model": "harderores:block/sluice-1"
     },
@@ -53,6 +56,9 @@
     },
     "facing=north,level=8": {
       "model": "harderores:block/sluice-7"
+    },
+    "facing=north,level=9": {
+      "model": "harderores:block/sluice-9"
     },
     "facing=south,level=0": {
       "model": "harderores:block/sluice-1"
@@ -81,6 +87,9 @@
     "facing=south,level=8": {
       "model": "harderores:block/sluice-7"
     },
+    "facing=south,level=9": {
+      "model": "harderores:block/sluice-9"
+    },
     "facing=west,level=0": {
       "model": "harderores:block/sluice-1"
     },
@@ -107,6 +116,9 @@
     },
     "facing=west,level=8": {
       "model": "harderores:block/sluice-7"
+    },
+    "facing=west,level=9": {
+      "model": "harderores:block/sluice-9"
     }
   }
 }

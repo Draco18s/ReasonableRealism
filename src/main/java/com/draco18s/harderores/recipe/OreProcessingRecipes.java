@@ -10,10 +10,8 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
-import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.harderores.HarderOres;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
-import com.draco18s.hardlib.api.recipe.GrindingRecipe;
-import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 import com.google.common.collect.Maps;
 
 import net.minecraft.core.RegistryAccess;
@@ -41,8 +39,8 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	public void update(RecipeManager man) {
-		siftRecipes = man.getAllRecipesFor(HardLibAPI.RecipeTypes.SIFTING);
-		millRecipes = man.getAllRecipesFor(HardLibAPI.RecipeTypes.GRINDING);
+		siftRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.SIFTING);
+		millRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.GRINDING);
 
 		registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
 	}

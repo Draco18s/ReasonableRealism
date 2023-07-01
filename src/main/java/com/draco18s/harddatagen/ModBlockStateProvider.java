@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -66,6 +66,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/mill"));
 
 		simpleBlockWithItem(HarderOres.ModBlocks.ore_limonite, simpleOre(HarderOres.ModBlocks.ore_limonite));
+		simpleBlockWithItem(HarderFarming.ModBlocks.ore_salt, simpleOre(HarderFarming.ModBlocks.ore_salt));
 		
 		genHardOres();
 		

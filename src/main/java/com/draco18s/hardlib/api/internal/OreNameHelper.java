@@ -2,8 +2,6 @@ package com.draco18s.hardlib.api.internal;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
-import com.draco18s.harderores.HarderOres;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ModelProvider;
 
@@ -31,7 +29,7 @@ public class OreNameHelper {
 				
 				ResourceLocation vanillaStoneTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stoneName);
 				ResourceLocation vanillaOriginalOreTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stone_+ore+"_ore");
-				ResourceLocation harderOreBlockName = new ResourceLocation(HarderOres.MODID, "ore_hard"+stone_+ore);
+				ResourceLocation harderOreBlockName = new ResourceLocation("harderores", "ore_hard"+stone_+ore);
 				callback.accept(vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName);
 			}
 		}

@@ -23,6 +23,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -120,7 +121,12 @@ public class SifterBlockEntity extends ModContainerBlockEnity {
 		ItemStack stack = sifter.inputSlots.getStackInSlot(slot);
 		if(stack.isEmpty()) return;
 		ItemStack result = HardLibAPI.oreMachines.getSiftResult(stack, true);
-		if(result.isEmpty()) return;
+		if(result.isEmpty()) {
+			if(stack.is(Tags.Items.DUSTS))
+				result = stack.copyWithCount(1);
+			else
+				return;
+		}
 		if(!sifter.outputSlots.insertItem(0, result, true).isEmpty()) return;
 		sifter.inputSlots.extractItem(slot, HardLibAPI.oreMachines.getSiftAmount(stack), false);
 		sifter.outputSlots.insertItem(0, result.copy(), false);

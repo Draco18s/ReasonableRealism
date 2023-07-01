@@ -51,7 +51,7 @@ public abstract class ModBlockEntity extends BlockEntity {
 	    modLoad(pkt.getTag());
 	}
 	
-	protected abstract void modSave(CompoundTag nbt);
+	protected abstract void modSave(CompoundTag tag);
 
-	protected abstract void modLoad(CompoundTag nbt);
+	protected abstract void modLoad(CompoundTag tag);
 }

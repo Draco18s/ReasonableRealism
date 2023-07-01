@@ -26,7 +26,9 @@ import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.harderores.loot.function.HarderSetCount;
 import com.draco18s.harderores.network.PacketHandler;
 import com.draco18s.harderores.proxy.ClientProxy;
+import com.draco18s.harderores.recipe.GrindingRecipe;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
+import com.draco18s.harderores.recipe.SiftingRecipe;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -42,6 +44,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -58,6 +61,8 @@ import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -108,7 +113,8 @@ public class HarderOres {
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_gold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xd8af93), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_IRON_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_iron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 
-		EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
+		RegistryObject<Block> sluice = EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
+		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SluiceBlockEntity::new, sluice.get()).build(null), getRL("sluice"));
 		
 		String[] itemNames = {
 				"orechunk_limonite",
@@ -145,6 +151,11 @@ public class HarderOres {
 		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
 		
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
+		
 		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType>>(
 				getRL("set_count"),() -> new LootItemFunctionType(new HarderSetCount.Serializer())));
 	}
@@ -163,25 +174,25 @@ public class HarderOres {
 	}
 	
 	public static class ModItemTiers {
-		public static final Supplier<Ingredient> itm = () -> Ingredient.of(ModItems.orechunk_diamond);
-		public static final Tier DIAMOND_STUD = new ForgeTier(3, 750, 7f, 2f, 5, BlockTags.NEEDS_DIAMOND_TOOL, itm);
+		public static final Supplier<Ingredient> stud_repair_item = () -> Ingredient.of(ModItems.orechunk_diamond);
+		public static final Tier DIAMOND_STUD = new ForgeTier(3, 750, 7f, 2f, 5, BlockTags.NEEDS_DIAMOND_TOOL, stud_repair_item);
+	}
+	
+	public static class RecipeTypes {
+		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"sifting")
+		public static RecipeType<SiftingRecipe> SIFTING = null;
+		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"grinding")
+		public static RecipeType<GrindingRecipe> GRINDING = null;
+	}
+	
+	public static class RecipeSerializers {
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = MODID+":"+"sifting")
+		public static RecipeSerializer<?> SIFTING;
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = MODID+":"+"grinding")
+		public static RecipeSerializer<?> GRINDING;
 	}
 	
 	/*public HarderOres() {
-		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
-			FlowerIntegration.registerFlowerGen();
-			replaceOreGenerators();
-		});
-		PacketHandler.register();
-		HardLibAPI.hardOres = new OreBlockInfo();
-
-		block = new SluiceBlock();
-		EasyRegistry.registerBlock(block, "sluice", new Item.Properties().group(ItemGroup.DECORATIONS));
-		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(SluiceTileEntity::new, block), HarderOres.MODID, "sluice");
-
-		block = new SluiceOutput();
-		EasyRegistry.registerBlock(block, "sluice_output");
-
 		block = new PackagerBlock();
 		EasyRegistry.registerBlock(block, "packager", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(PackagerTileEntity::new, block), HarderOres.MODID, "packager");
@@ -229,9 +240,19 @@ public class HarderOres {
 			biome.addFeature(GenerationStage.Decoration.UNDERGROUND_STRUCTURES, Biome.createDecoratedFeature((Feature<OreVeinStructureConfig>)ModFeatures.ore_vein, new OreVeinStructureConfig(0.004), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
 		}
 	}*/
-
-	public static ResourceLocation getRL(String name) {
-		return new ResourceLocation(MODID, name);
+	
+	public static class Tags {
+		public static class Blocks {
+			//public static final TagKey<Block> GRANULAR = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation(MODID, "granular"));
+		}
+		public static class Items {
+			public static final TagKey<Item> GRANULAR = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(MODID, "granular"));
+			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets"));
+			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/ore"));
+			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/copper"));
+			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/gold"));
+			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/iron"));
+		}
 	}
 
 	public static class ModBlocks {
@@ -346,12 +367,6 @@ public class HarderOres {
 		public static final Enchantment pulverize = null;
 	}
 
-	public static class ModItemTags {
-		public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/copper"));
-		public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/gold"));
-		public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/iron"));
-	}
-
 	public static class ModFeatures {
 		//public static final Feature<?> hardOre = null;
 		//public static final Structure<?> ore_vein = null;
@@ -379,45 +394,25 @@ public class HarderOres {
 	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event)
     {
 		CreativeModeTab tab = event.getTab();
+		if (tab == CreativeModeTabs.NATURAL_BLOCKS) {
+			event.accept(new ItemStack(ModBlocks.ore_limonite, 1));
+		}
         if (tab == CreativeModeTabs.BUILDING_BLOCKS) {
-        	event.accept(new ItemStack(ModBlocks.ore_limonite, 1));
-        	ItemStack stack = new ItemStack(ModBlocks.ore_hardcopper, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_harddiamond, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_hardgold, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_hardiron, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-
-        	stack = new ItemStack(ModBlocks.ore_harddeepslate_copper, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_harddeepslate_diamond, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_harddeepslate_iron, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
-        	stack = new ItemStack(ModBlocks.ore_harddeepslate_gold, 1);
-        	HardOreBlock.setNbtOnStack(stack, BlockProperties.ORE_DENSITY, 16);
-        	event.accept(stack);
+        	
         }
         if(tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
         	event.accept(ModBlocks.machine_millstone);
         	event.accept(ModBlocks.machine_axel);
         	event.accept(ModBlocks.machine_windvane);
         	event.accept(ModBlocks.machine_sifter);
+        	event.accept(ModBlocks.sluice);
         }
         if (tab == CreativeModeTabs.INGREDIENTS) {
         	event.accept(new ItemStack(ModItems.orechunk_limonite, 1));
         	event.accept(new ItemStack(ModItems.orechunk_copper, 1));
         	event.accept(new ItemStack(ModItems.tinydust_copper, 1));
         	event.accept(new ItemStack(ModItems.largedust_copper, 1));
+        	event.accept(new ItemStack(ModItems.copper_nugget, 1));
         	event.accept(new ItemStack(ModItems.orechunk_gold, 1));
         	event.accept(new ItemStack(ModItems.tinydust_gold, 1));
         	event.accept(new ItemStack(ModItems.largedust_gold, 1));
@@ -427,4 +422,8 @@ public class HarderOres {
         	event.accept(new ItemStack(ModItems.orechunk_diamond, 1));
         }
     }
+
+	public static ResourceLocation getRL(String name) {
+		return new ResourceLocation(MODID, name);
+	}
 }

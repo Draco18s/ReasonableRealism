@@ -33,9 +33,10 @@ import net.minecraftforge.fluids.FluidType;
 public class SluiceBlock extends ModEntityBlock {
 	public static final VoxelShape THIN_SLAB = box(0,0,0,16,1,16);
 	public static final VoxelShape FLAT_SLAB = box(0,0,0,16,2,16);
-	public static final VoxelShape THICK_SLAB = box(0,0,0,16,6.5,16);
+	public static final VoxelShape THICK_SLAB = box(0,0,0,16,6,16);
 	public static final VoxelShape MOST_BLOCK = box(0,0,0,16,10,16);
-	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 8);
+	public static final VoxelShape NEARLY_BLOCK = box(0,0,0,16,15,16);
+	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 9);
 
 	public SluiceBlock() {
 		super(Properties.of(Material.WOOD));
@@ -93,7 +94,7 @@ public class SluiceBlock extends ModEntityBlock {
 		for(Direction face : Direction.values()) {
 			if(face == Direction.UP || face == Direction.DOWN) continue;
 			BlockState bl = world.getBlockState(pos.relative(face,1));
-			if(bl.getBlock() == this && bl.getValue(BlockStateProperties.HORIZONTAL_FACING) == face.getOpposite()) {
+			if(bl.getBlock() == this /*&& bl.getValue(BlockStateProperties.HORIZONTAL_FACING) == face.getOpposite()*/) {
 				if(bl.getValue(LEVEL) > height) {
 					facing = face.getOpposite();
 					height = bl.getValue(LEVEL);
@@ -105,7 +106,7 @@ public class SluiceBlock extends ModEntityBlock {
 		FluidType abvL = abvF.getFluidType();
 		if(abvL == Fluids.WATER.getFluidType() || abvL == Fluids.FLOWING_WATER.getFluidType()) {
 			if(height <= 1)
-				height = 9;
+				height = 11;
 			else
 				world.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), UPDATE_ALL);
 		}
@@ -123,6 +124,7 @@ public class SluiceBlock extends ModEntityBlock {
 	@Deprecated
 	public FluidState getFluidState(BlockState state) {
 		int l = state.getValue(LEVEL);
+		if(l > 8) l = 8;
 		if(l > 0)
 			return Fluids.FLOWING_WATER.defaultFluidState().setValue(FlowingFluid.LEVEL, l);
 		else return super.getFluidState(state);
@@ -145,6 +147,8 @@ public class SluiceBlock extends ModEntityBlock {
 			case 7:
 			case 8:
 				return MOST_BLOCK;
+			case 9:
+				return NEARLY_BLOCK;
 		}
 		return FLAT_SLAB;
 	}
@@ -169,6 +173,6 @@ public class SluiceBlock extends ModEntityBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_sifter, SluiceBlockEntity::tick);
+		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.sluice, SluiceBlockEntity::tick);
 	}
 }

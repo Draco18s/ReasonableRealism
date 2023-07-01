@@ -1,0 +1,8 @@
+{
+  "values": [
+    "#forge:raw_materials/nuggets/copper",
+    "#forge:raw_materials/nuggets/diamond",
+    "#forge:raw_materials/nuggets/gold",
+    "#forge:raw_materials/nuggets/iron"
+  ]
+}

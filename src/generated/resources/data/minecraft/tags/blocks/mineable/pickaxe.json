@@ -8,6 +8,7 @@
     "harderores:ore_harddeepslate_diamond",
     "harderores:ore_harddeepslate_gold",
     "harderores:ore_harddeepslate_iron",
-    "harderores:machine_millstone"
+    "harderores:machine_millstone",
+    "harderfarming:ore_salt"
   ]
 }

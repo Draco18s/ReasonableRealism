@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "s": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "pattern": [
+    " s",
+    "i "
+  ],
+  "result": {
+    "item": "harderfarming:butcher_knife"
+  },
+  "show_notification": true
+}

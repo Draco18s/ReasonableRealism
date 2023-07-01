@@ -1,8 +1,8 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.farming.loot.GrassLootModifier;
-import com.draco18s.hardlib.api.loot.TemperatureCheck;
+import com.draco18s.harderfarming.loot.TemperatureCheck;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;

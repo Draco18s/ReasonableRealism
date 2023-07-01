@@ -10,13 +10,12 @@ import com.draco18s.hardlib.api.interfaces.IHardCrops;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.api.interfaces.IHardOres;
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
-import com.draco18s.hardlib.api.recipe.GrindingRecipe;
-import com.draco18s.hardlib.api.recipe.SiftingRecipe;
+//import com.draco18s.hardlib.api.recipe.GrindingRecipe;
+//import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -31,23 +30,11 @@ public class HardLibAPI {
 	public static IHardOreProcessing oreMachines;
 	public static IHardCrops hardCrops;
 	public static IFlowerData oreFlowers;
-
+	
 	public static class RecipeSerializers {
 		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:tag_output")
 		public static RecipeSerializer<?> TAG_OUTPUT;
-		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:sifting")
-		public static RecipeSerializer<?> SIFTING;
-		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = "hardlib:grinding")
-		public static RecipeSerializer<?> GRINDING;
-	}
-	
-	public static class RecipeTypes {
-		@ObjectHolder(registryName = "minecraft:recipe_type", value = "hardlib:sifting")
-		public static RecipeType<SiftingRecipe> SIFTING = null;
-		@ObjectHolder(registryName = "minecraft:recipe_type", value = "hardlib:grinding")
-		public static RecipeType<GrindingRecipe> GRINDING = null;
-	}
-	
+	}	
 	//public static class ModItemTags {
 		//public static TagKey<Item> STONE = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HardLib.MODID, "stone"));
 	//}

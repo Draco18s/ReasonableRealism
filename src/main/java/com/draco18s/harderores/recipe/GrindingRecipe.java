@@ -1,12 +1,12 @@
-package com.draco18s.hardlib.api.recipe;
+package com.draco18s.harderores.recipe;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.draco18s.harderores.entity.SifterBlockEntity;
-import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.entity.MillstoneBlockEntity;
 import com.google.gson.JsonObject;
 
 import net.minecraft.core.NonNullList;
@@ -20,21 +20,15 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-public class SiftingRecipe implements Recipe<SifterBlockEntity> {
+public class GrindingRecipe implements Recipe<MillstoneBlockEntity> {
 	protected ResourceLocation registryName;
-	protected int ingredientQuantity;
 	protected Ingredient input;
 	protected Ingredient result;
-	
-	public SiftingRecipe(ResourceLocation regName, Ingredient in, int qntIn, Ingredient out) {
-		registryName = regName;
-		input = in;
-		ingredientQuantity = qntIn;
-		result = out;
-	}
-	
-	public int getIngredientQuantity() {
-		return ingredientQuantity;
+
+	public GrindingRecipe(ResourceLocation reg, Ingredient ingred, Ingredient output) {
+		registryName = reg;
+		input = ingred;
+		result = output;
 	}
 
 	@Override
@@ -45,14 +39,13 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 	}
 
 	@Override
-	public boolean matches(SifterBlockEntity sifter, Level world) {
-		if(input.test(sifter.getItem(0))) return true;
-		if(input.test(sifter.getItem(1))) return true;
+	public boolean matches(MillstoneBlockEntity millstone, Level world) {
+		if(input.test(millstone.getItem(0))) return true;
 		return false;
 	}
 
 	@Override
-	public ItemStack assemble(SifterBlockEntity sifter, RegistryAccess regAccess) {
+	public ItemStack assemble(MillstoneBlockEntity millstone, RegistryAccess regAccess) {
 		return null;
 	}
 
@@ -73,33 +66,32 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 
 	@Override
 	public RecipeType<?> getType() {
-		return HardLibAPI.RecipeTypes.SIFTING;
+		return HarderOres.RecipeTypes.GRINDING;
 	}
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return HardLibAPI.RecipeSerializers.SIFTING;
+		return HarderOres.RecipeSerializers.GRINDING;
 	}
 	
-	public static class Serializer implements RecipeSerializer<SiftingRecipe> {
+	public static class Serializer implements RecipeSerializer<GrindingRecipe> {
 		@Override
-		public SiftingRecipe fromJson(ResourceLocation reg, JsonObject jsonObject) {
-			return new SiftingRecipe(reg,
-					Ingredient.fromJson(jsonObject.get("ingredients")), jsonObject.get("ingredientQuantity").getAsInt(),
+		public GrindingRecipe fromJson(ResourceLocation reg, JsonObject jsonObject) {
+			return new GrindingRecipe(reg,
+					Ingredient.fromJson(jsonObject.get("ingredients")),
 					Ingredient.fromJson(jsonObject.get("result")));
 		}
 
 		@Override
-		public @Nullable SiftingRecipe fromNetwork(ResourceLocation reg, FriendlyByteBuf buffer) {
-			return new SiftingRecipe(reg,
-					Ingredient.fromNetwork(buffer), buffer.readInt(),
+		public @Nullable GrindingRecipe fromNetwork(ResourceLocation reg, FriendlyByteBuf buffer) {
+			return new GrindingRecipe(reg,
+					Ingredient.fromNetwork(buffer),
 					Ingredient.fromNetwork(buffer));
 		}
 
 		@Override
-		public void toNetwork(FriendlyByteBuf buffer, SiftingRecipe recipe) {
+		public void toNetwork(FriendlyByteBuf buffer, GrindingRecipe recipe) {
 			recipe.input.toNetwork(buffer);
-			buffer.writeInt(recipe.ingredientQuantity);
 			recipe.result.toNetwork(buffer);
 		}
 	}

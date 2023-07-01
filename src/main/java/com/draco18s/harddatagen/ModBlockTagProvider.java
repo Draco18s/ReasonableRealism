@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -35,6 +35,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_gold);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.machine_millstone);
+		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderFarming.ModBlocks.ore_salt);
 
 		tag(BlockTags.MINEABLE_WITH_AXE).add(ExpandedIndustry.ModBlocks.machine_distributor);
 		tag(BlockTags.MINEABLE_WITH_AXE).add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
@@ -48,6 +49,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(Tags.Blocks.NEEDS_WOOD_TOOL).add(ExpandedIndustry.ModBlocks.machine_distributor);
 		tag(Tags.Blocks.NEEDS_WOOD_TOOL).add(HarderOres.ModBlocks.ore_limonite);
 		tag(Tags.Blocks.NEEDS_WOOD_TOOL).add(HarderOres.ModBlocks.machine_millstone);
+		tag(Tags.Blocks.NEEDS_WOOD_TOOL).add(HarderFarming.ModBlocks.ore_salt);
 
 		tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_hardcopper);
 		tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.ore_hardiron);
@@ -68,10 +70,10 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(BlockTags.GOLD_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_gold);
 		tag(BlockTags.IRON_ORES).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 
-		tag(HarderFarming.ModTags.MINABLE_WITH_KNIFE).add(Blocks.SLIME_BLOCK);
-		tag(HarderFarming.ModTags.MINABLE_WITH_KNIFE).add(Blocks.SPONGE);
-		tag(HarderFarming.ModTags.MINABLE_WITH_KNIFE).add(Blocks.PUMPKIN);
-		tag(HarderFarming.ModTags.MINABLE_WITH_KNIFE).add(Blocks.CARVED_PUMPKIN);
-		tag(HarderFarming.ModTags.MINABLE_WITH_KNIFE).add(Blocks.MELON);
+		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(Blocks.SLIME_BLOCK);
+		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(Blocks.SPONGE);
+		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(Blocks.PUMPKIN);
+		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(Blocks.CARVED_PUMPKIN);
+		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(Blocks.MELON);
 	}
 }

@@ -1,13 +1,13 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import java.util.function.Consumer;
 
-import org.checkerframework.common.returnsreceiver.qual.This;
+import org.antlr.v4.runtime.atn.SemanticContext.Predicate;
 
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.harddatagen.custom.GrindingRecipeBuilder;
+import com.draco18s.harddatagen.custom.SifterRecipeBuilder;
 import com.draco18s.harderores.HarderOres;
-import com.draco18s.hardlib.data.custom.GrindingRecipeBuilder;
-import com.draco18s.hardlib.data.custom.SifterRecipeBuilder;
 import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -24,8 +24,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -51,16 +51,16 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.pattern("p p")
 			.pattern("p p")
 			.pattern(" p ")
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Blocks.DIORITE).build()))
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(ItemTags.PLANKS).build()))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ExpandedIndustry.ModBlocks.machine_distributor)
 			.define('h', Blocks.HOPPER)
-			.define('i', Items.IRON_BARS)
+			.define('i', Items.IRON_INGOT)
 			.define('p', ItemTags.PLANKS)
 			.pattern(" h ")
 			.pattern(" i ")
 			.pattern("ppp")
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Blocks.DIORITE).build()))
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Blocks.HOPPER).build()))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ExpandedIndustry.ModBlocks.rail_bridge)
 			.define('r', Blocks.RAIL)
@@ -78,36 +78,36 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.save(finishedRecipeConsumer);
 		
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderOres.ModItems.diamond_studded_axe)
-			.define('i', Items.IRON_BARS)
+			.define('i', Items.IRON_INGOT)
 			.define('d', HarderOres.ModItems.orechunk_diamond)
-			.define('s', Items.STICK)
+			.define('s', Tags.Items.RODS_WOODEN)
 			.pattern("di")
 			.pattern("is")
 			.pattern(" s")
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_diamond).build()))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderOres.ModItems.diamond_studded_pick)
-			.define('i', Items.IRON_BARS)
+			.define('i', Items.IRON_INGOT)
 			.define('d', HarderOres.ModItems.orechunk_diamond)
-			.define('s', Items.STICK)
+			.define('s', Tags.Items.RODS_WOODEN)
 			.pattern("did")
 			.pattern(" s ")
 			.pattern(" s ")
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_diamond).build()))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderOres.ModItems.diamond_studded_shovel)
-			.define('i', Items.IRON_BARS)
+			.define('i', Items.IRON_INGOT)
 			.define('d', HarderOres.ModItems.orechunk_diamond)
-			.define('s', Items.STICK)
+			.define('s', Tags.Items.RODS_WOODEN)
 			.pattern("d")
 			.pattern("i")
 			.pattern("s")
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_diamond).build()))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderOres.ModItems.diamond_studded_hoe)
-			.define('i', Items.IRON_BARS)
+			.define('i', Items.IRON_INGOT)
 			.define('d', HarderOres.ModItems.orechunk_diamond)
-			.define('s', Items.STICK)
+			.define('s', Tags.Items.RODS_WOODEN)
 			.pattern("di")
 			.pattern(" s")
 			.pattern(" s")
@@ -116,18 +116,43 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 		ShapedRecipeBuilder.shaped(RecipeCategory.FOOD, Items.BREAD)
 			.define('w', HarderFarming.ModItems.largedust_flour)
 			.pattern("www")
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModItems.largedust_flour).build()))
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.WHEAT).build()))
 			.save(finishedRecipeConsumer);
-		/*ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS,HarderOres.ModBlocks.millstone)
+		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HarderOres.ModBlocks.machine_millstone)
 			.define('S', Tags.Items.STONE)
-			.define('A', HarderOres.ModBlocks.axel)
+			.define('A', HarderOres.ModBlocks.machine_axel)
 			.pattern("SSS")
 			.pattern("SAS")
 			.pattern("SSS")
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Blocks.DIORITE).build()));*/
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Tags.Items.RAW_MATERIALS).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HarderOres.ModBlocks.machine_axel, 2)
+			.define('S', ItemTags.LOGS)
+			.pattern("SSS")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Tags.Items.RAW_MATERIALS).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HarderOres.ModBlocks.machine_windvane, 2)
+			.define('S', Tags.Items.RODS_WOODEN)
+			.define('W', ItemTags.WOOL)
+			.pattern("SW")
+			.pattern("SW")
+			.pattern("SW")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Tags.Items.RAW_MATERIALS).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderFarming.ModItems.butcher_knife)
+			.define('i', Items.IRON_INGOT)
+			.define('s', Tags.Items.RODS_WOODEN)
+			.pattern(" s")
+			.pattern("i ")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.IRON_INGOT).build()))
+			.save(finishedRecipeConsumer);
 	}
 	
 	private void Grinding(Consumer<FinishedRecipe> finishedRecipeConsumer) {
+		GrindingRecipeBuilder.grind(HarderFarming.ModItems.salt, 3)
+			.requires(HarderFarming.ModItems.salt_chunk)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModBlocks.ore_salt).build()))
+			.save(finishedRecipeConsumer);
 		GrindingRecipeBuilder.grind(HarderFarming.ModItems.tinydust_sugar, 3)
 			.requires(Items.SUGAR_CANE)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.SUGAR_CANE).build()))
@@ -167,9 +192,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.RAW_GOLD).build()))
 			.save(finishedRecipeConsumer);
 		
+		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_copper), RecipeCategory.MISC, HarderOres.ModItems.copper_nugget, 0.08f, 200);
+		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_gold), RecipeCategory.MISC, Items.GOLD_NUGGET, 0.08f, 200);
+		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
+	
 		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_copper), RecipeCategory.MISC, HarderOres.ModItems.copper_nugget, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
 		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_gold), RecipeCategory.MISC, Items.GOLD_NUGGET, 0.08f, 200);
+		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
 	}
 
 	private void Dusts(Consumer<FinishedRecipe> finishedRecipeConsumer) {

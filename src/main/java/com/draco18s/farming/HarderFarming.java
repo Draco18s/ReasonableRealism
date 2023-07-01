@@ -6,8 +6,9 @@ import com.draco18s.farming.block.CropWinterWheatBlock;
 import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.farming.item.WinterSeedsItem;
 import com.draco18s.farming.loot.GrassLootModifier;
+import com.draco18s.harderfarming.block.SaltOreBlock;
+import com.draco18s.harderfarming.loot.TemperatureCheck;
 import com.draco18s.hardlib.EasyRegistry;
-import com.draco18s.hardlib.api.loot.TemperatureCheck;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.registries.Registries;
@@ -35,6 +36,7 @@ public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
+		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"));
 		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
 		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
@@ -47,14 +49,20 @@ public class HarderFarming {
 		String[] itemNames = {
 				"tinydust_sugar",
 				"tinydust_flour", "largedust_flour",
+				"salt_chunk", "salt",
 		};
 		for(String it : itemNames) {
 			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
 		}
 	}
 	
-	public static class ModTags {
-		public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation("minecraft", "mineable/knife"));
+	public static class Tags {
+		public static class Blocks{
+			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation("minecraft", "mineable/knife"));
+		}
+		public static class Items {
+			
+		}
 	}
 	
 	public static class ModLootConditionTypes {
@@ -64,6 +72,8 @@ public class HarderFarming {
 	public static class ModBlocks {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"crop_winter_wheat")
 		public static final Block crop_winter_wheat = null;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_salt")
+		public static final Block ore_salt = null;
 	}
 	
 	public static class ModItems {
@@ -77,6 +87,12 @@ public class HarderFarming {
 
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_flour")
 		public static final Item largedust_flour = null;
+		
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"salt_chunk")
+		public static final Item salt_chunk = null;
+		
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"salt")
+		public static final Item salt = null;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"butcher_knife")
 		public static final Item butcher_knife = null;

@@ -15,7 +15,7 @@ public class ButcherKnife extends DiggerItem {
 	//private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.SLIME_BLOCK, Blocks.SPONGE, Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN, Blocks.MELON});
 	
 	public ButcherKnife(Tier material) {
-		super((material.getAttackDamageBonus()/2)-1, -1, material, HarderFarming.ModTags.MINABLE_WITH_KNIFE, new Properties().defaultDurability(material.getUses()/2));
+		super((material.getAttackDamageBonus()/2)-1, -1, material, HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE, new Properties().defaultDurability(material.getUses()/2));
 	}
 
 	/*@Override

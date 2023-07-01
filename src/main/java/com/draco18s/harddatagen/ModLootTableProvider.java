@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,7 @@ public class ModLootTableProvider extends LootTableProvider {
 		protected Iterable<Block> getKnownBlocks() {
 			List<Block> knownBlocks = new ArrayList<Block>();
 			knownBlocks.add(HarderFarming.ModBlocks.crop_winter_wheat);
+			knownBlocks.add(HarderFarming.ModBlocks.ore_salt);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
@@ -70,7 +71,10 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropSelf(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 			dropSelf(ExpandedIndustry.ModBlocks.machine_wood_hopper);
 			dropSelf(ExpandedIndustry.ModBlocks.machine_distributor);
+			
 			dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
+			dropOtherOrSilkTouch(HarderFarming.ModBlocks.ore_salt, HarderFarming.ModItems.salt_chunk);
+			
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardcopper, HarderOres.ModItems.orechunk_copper);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddiamond, HarderOres.ModItems.orechunk_diamond);
 			dropsOreChunks(HarderOres.ModBlocks.ore_hardgold, HarderOres.ModItems.orechunk_gold);
@@ -79,6 +83,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_diamond, HarderOres.ModItems.orechunk_diamond);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_gold, HarderOres.ModItems.orechunk_gold);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_iron, HarderOres.ModItems.orechunk_iron);
+			
 			dropSelf(HarderOres.ModBlocks.machine_sifter);
 			dropSelf(HarderOres.ModBlocks.machine_millstone);
 			dropSelf(HarderOres.ModBlocks.machine_axel);

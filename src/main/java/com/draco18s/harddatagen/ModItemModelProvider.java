@@ -1,4 +1,4 @@
-package com.draco18s.hardlib.data;
+package com.draco18s.harddatagen;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.harderores.HarderOres;

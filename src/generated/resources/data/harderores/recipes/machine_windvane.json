@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": {
+      "tag": "forge:rods/wooden"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "pattern": [
+    "SW",
+    "SW",
+    "SW"
+  ],
+  "result": {
+    "count": 2,
+    "item": "harderores:machine_windvane"
+  },
+  "show_notification": true
+}

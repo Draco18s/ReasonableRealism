@@ -1,6 +1,7 @@
-package com.draco18s.hardlib.api.loot;
+package com.draco18s.harderfarming.loot;
 
 import com.draco18s.farming.HarderFarming;
+//import com.draco18s.farming.HarderFarming;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;

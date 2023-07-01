@@ -11,9 +11,7 @@ import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
-import com.draco18s.hardlib.api.recipe.GrindingRecipe;
 import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
-import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 import com.draco18s.hardlib.proxy.ClientProxy;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
@@ -24,7 +22,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -53,11 +50,6 @@ public class HardLib {
 		});
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
 
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
-		
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 		forgeBus.addListener(HardLib::onAddDebugReloadListener);
 	}

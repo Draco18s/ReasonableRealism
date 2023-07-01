@@ -6,10 +6,10 @@
       "item": "harderores:orechunk_diamond"
     },
     "i": {
-      "item": "minecraft:iron_bars"
+      "item": "minecraft:iron_ingot"
     },
     "s": {
-      "item": "minecraft:stick"
+      "tag": "forge:rods/wooden"
     }
   },
   "pattern": [
