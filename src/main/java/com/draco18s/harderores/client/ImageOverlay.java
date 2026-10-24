@@ -2,33 +2,31 @@ package com.draco18s.harderores.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 
-import dev.lukebemish.dynamicassetgenerator.impl.client.NativeImageHelper;
-import dev.lukebemish.dynamicassetgenerator.impl.client.palette.ColorHolder;
-
 public class ImageOverlay {
+	/**
+	 * The ore texture where the overlay is opaque, transparent where it isn't. The result is as large as the larger
+	 * of the two (by their smaller sides, so an animated strip counts as one frame); the other is scaled up to match.
+	 */
 	public static NativeImage combinedImage(NativeImage rImg, NativeImage oImg) {
 		int rDim = Math.min(rImg.getHeight(),rImg.getWidth());
-        int oDim = Math.min(oImg.getHeight(),oImg.getWidth());
-        int w = Math.max(rDim, oDim);
-        int rs = w/rImg.getWidth();
-        int os = w/oImg.getWidth();
-        NativeImage outImg = NativeImageHelper.of(NativeImage.Format.RGBA,w,w,false);
-        
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < w; y++) {
-            	ColorHolder overlayC = ColorHolder.fromColorInt(oImg.getPixelRGBA(x/os,y/os));
-            	ColorHolder oreC = ColorHolder.fromColorInt(rImg.getPixelRGBA(x/rs,y/rs));
-            	
-            	ColorHolder outVal;
-            	if(overlayC.getA() < 0.1) {
-            		outVal = overlayC;
-            	}
-            	else {
-            		outVal = oreC;
-            	}
-                outImg.setPixelRGBA(x,y,ColorHolder.toColorInt(outVal));
-            }
-        }
-        return outImg;
+		int oDim = Math.min(oImg.getHeight(),oImg.getWidth());
+		int w = Math.max(rDim, oDim);
+		int rs = Math.max(w/rImg.getWidth(), 1);
+		int os = Math.max(w/oImg.getWidth(), 1);
+		NativeImage outImg = new NativeImage(NativeImage.Format.RGBA, w, w, false);
+
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < w; y++) {
+				int overlayC = oImg.getPixelRGBA(x/os,y/os);
+				// Alpha below 0.1: that part of the ore shows through.
+				if((overlayC >>> 24) < 26) {
+					outImg.setPixelRGBA(x, y, overlayC);
+				}
+				else {
+					outImg.setPixelRGBA(x, y, rImg.getPixelRGBA(x/rs,y/rs));
+				}
+			}
+		}
+		return outImg;
 	}
 }

@@ -17,6 +17,7 @@ import com.draco18s.hardlib.api.recipe.FakeContainer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
@@ -114,7 +115,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 				if(! inven.insertItem(0, stack, true).isEmpty()) return;
 				millstone.inputSlots.insertItem(0,
 					inven.insertItem(0, 
-							millstone.inputSlots.extractItem(0, Container.LARGE_MAX_STACK_SIZE, false)
+							millstone.inputSlots.extractItem(0, Integer.MAX_VALUE, false)
 							, false)
 					, false);
 			});
@@ -173,19 +174,19 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag) {
-		tag.put("harderores:power", powerUser.serializeNBT());
-		tag.put("harderores:inputslot", inputSlots.serializeNBT());
-		tag.put("harderores:outputSlot", outputSlots.serializeNBT());
+	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
+		tag.put("harderores:power", powerUser.serializeNBT(registries));
+		tag.put("harderores:inputslot", inputSlots.serializeNBT(registries));
+		tag.put("harderores:outputSlot", outputSlots.serializeNBT(registries));
 		tag.putFloat("harderores:grindTime", grindTime);
 	}
 
 
 	@Override
-	protected void modLoad(CompoundTag tag) {
-		powerUser.deserializeNBT(tag.getCompound("harderores:power"));
-		inputSlots.deserializeNBT(tag.getCompound("harderores:inputslot"));
-		outputSlots.deserializeNBT(tag.getCompound("harderores:outputSlot"));
+	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
+		powerUser.deserializeNBT(registries, tag.getCompound("harderores:power"));
+		inputSlots.deserializeNBT(registries, tag.getCompound("harderores:inputslot"));
+		outputSlots.deserializeNBT(registries, tag.getCompound("harderores:outputSlot"));
 		grindTime = tag.getFloat("harderores:grindTime");
 	}
 }

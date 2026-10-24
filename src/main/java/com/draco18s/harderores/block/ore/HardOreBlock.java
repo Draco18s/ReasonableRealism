@@ -4,22 +4,22 @@ import java.awt.Color;
 
 import javax.annotation.Nullable;
 
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.item.component.BlockItemStateProperties;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -49,28 +49,31 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
 		return setNbtOnStack(super.getCloneItemStack(state, target, level, pos, player), BlockProperties.ORE_DENSITY, state);
 	}
 
-	public static ItemStack setNbtOnStack(ItemStack stack, Property<?> prop, BlockState state) {
-		CompoundTag compoundtag = new CompoundTag();
-		compoundtag.putString(prop.getName(), String.valueOf(state.getValue(prop)));
-		stack.addTagElement("BlockStateTag", compoundtag);
+	/** Sets the state the item places (its block_state component, which was the BlockStateTag NBT). */
+	public static <V extends Comparable<V>> ItemStack setNbtOnStack(ItemStack stack, Property<V> prop, BlockState state) {
+		stack.update(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY, props -> props.with(prop, state));
 		return stack;
 	}
 
 	public static <V extends Comparable<V>> ItemStack setNbtOnStack(ItemStack stack, Property<V> prop, V val) {
-		CompoundTag compoundtag = new CompoundTag();
-		compoundtag.putString(prop.getName(), String.valueOf(val));
-		stack.addTagElement("BlockStateTag", compoundtag);
+		stack.update(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY, props -> props.with(prop, val));
 		return stack;
+	}
+
+	/** The density an ore item places at, 16 if it doesn't say. */
+	public static int getDensity(ItemStack stack) {
+		Integer density = stack.getOrDefault(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY).get(BlockProperties.ORE_DENSITY);
+		return density == null ? 16 : density;
 	}
 
 	@Override
 	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
 		// Silk touch takes the whole block, density and all (the loot table copies the density onto the item).
-		if((player.isCreative() && !player.isCrouching()) || EnchantmentHelper.hasSilkTouch(player.getMainHandItem())) {
+		if((player.isCreative() && !player.isCrouching()) || HardLib.getEnchantmentLevel(level.registryAccess(), Enchantments.SILK_TOUCH, player.getMainHandItem()) > 0) {
 			return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 		}
 		int val = Math.max(state.getValue(BlockProperties.ORE_DENSITY) - metaChange, 0);
@@ -84,8 +87,8 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 	/** Creative tool: right-click with an empty hand to lower the density by 4 (by 1 while sneaking), wrapping 1 to 16. */
 	@Override
 	@Deprecated
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if(!player.getAbilities().instabuild || !player.getItemInHand(hand).isEmpty()) {
+	protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+		if(!player.getAbilities().instabuild) {
 			return InteractionResult.PASS;
 		}
 		if(!world.isClientSide) {

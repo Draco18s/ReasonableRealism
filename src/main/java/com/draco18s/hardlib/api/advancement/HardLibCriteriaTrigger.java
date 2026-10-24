@@ -1,22 +1,13 @@
 package com.draco18s.hardlib.api.advancement;
 
-import com.draco18s.hardlib.HardLib;
-
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 
 import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.storage.loot.LootParams;
 
 public abstract class HardLibCriteriaTrigger<T extends ICriterionTriggerInstanceTester> implements CriterionTrigger<T> {
 	protected final Map<PlayerAdvancements, CriterionListener<T>> listeners = Maps.<PlayerAdvancements, CriterionListener<T>>newHashMap();
@@ -56,21 +47,11 @@ public abstract class HardLibCriteriaTrigger<T extends ICriterionTriggerInstance
 		return listeners.containsKey(player.getAdvancements());
 	}
 
-	public final void trigger(ServerPlayer player, LootContext ctx) {
+	public final void trigger(ServerPlayer player, LootParams params) {
 		CriterionListener<T> enterblocktrigger$listeners = listeners.get(player.getAdvancements());
 
 		if (enterblocktrigger$listeners != null) {
-			enterblocktrigger$listeners.trigger(ctx);
-		}
-	}
-
-	@Nullable
-	public static Block deserializeBlock(JsonObject json) {
-		if (json.has("block")) {
-			ResourceLocation resourcelocation = HardLib.parseRL(GsonHelper.getAsString(json, "block"));
-			return ForgeRegistries.BLOCKS.getValue(resourcelocation);
-		} else {
-			return null;
+			enterblocktrigger$listeners.trigger(params);
 		}
 	}
 }

@@ -1,0 +1,10 @@
+{
+  "type": "harderores:grinding",
+  "count": 3,
+  "ingredients": {
+    "item": "harderfarming:salt_chunk"
+  },
+  "result": {
+    "item": "harderfarming:salt"
+  }
+}

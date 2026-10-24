@@ -8,11 +8,12 @@ import com.draco18s.farming.HarderFarming;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -25,7 +26,8 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -38,7 +40,7 @@ public class CropWeedsBlock extends CropBlock {
 	public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
 
 	public CropWeedsBlock() {
-		super(Properties.of(Material.PLANT).randomTicks().strength(2, 0).noCollission().sound(SoundType.CROP));
+		super(Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).randomTicks().strength(2, 0).noCollission().sound(SoundType.CROP));
 	}
 
 	@Override
@@ -109,7 +111,7 @@ public class CropWeedsBlock extends CropBlock {
 		if(world.getBlockState(p.below()).is(Blocks.FARMLAND))
 			world.setBlock(p, HarderFarming.ModBlocks.crop_weeds.defaultBlockState(), 3);
 		else
-			world.setBlock(p, Blocks.GRASS.defaultBlockState(), 3);
+			world.setBlock(p, Blocks.SHORT_GRASS.defaultBlockState(), 3);
 	}
 
 	/** Only open farmland: a carpet (or anything else) over it keeps weeds out. */
@@ -127,10 +129,8 @@ public class CropWeedsBlock extends CropBlock {
 			return 1f / 90;
 		}
 		hardness += tiered.getTier().getSpeed();
-		int i = EnchantmentHelper.getBlockEfficiency(player);
-		if (i > 0) {
-			hardness += i * i + 1;
-		}
+		// Efficiency adds level^2+1 to this attribute (since 1.21), as it used to add here.
+		hardness += (float)player.getAttributeValue(Attributes.MINING_EFFICIENCY);
 		return hardness / state.getDestroySpeed(world, pos) / 45;
 	}
 
@@ -138,7 +138,7 @@ public class CropWeedsBlock extends CropBlock {
 	public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
 		ItemStack stack = player.getMainHandItem();
 		if(stack.getItem() instanceof TieredItem) {
-			stack.hurtAndBreak(stack.getItem() instanceof HoeItem ? 1 : 2, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
+			stack.hurtAndBreak(stack.getItem() instanceof HoeItem ? 1 : 2, player, EquipmentSlot.MAINHAND);
 		}
 		return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
 	}

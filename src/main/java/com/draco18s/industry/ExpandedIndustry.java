@@ -15,23 +15,24 @@ import com.draco18s.industry.inventory.DistributorContainerMenu;
 import com.draco18s.industry.inventory.WoodHopperContainerMenu;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.DisplayItemsGenerator;
 import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
 import net.minecraft.world.item.CreativeModeTab.Output;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -49,6 +50,7 @@ public class ExpandedIndustry {
 	//public static final IProxy PROXY = DistExecutor.runForDist(()->ClientProxy::new, ()->ServerProxy::new);
 	
 	public ExpandedIndustry() {
+		registerCreativeTab();
 		
 		/*
 		PacketHandler.register();
@@ -76,10 +78,9 @@ public class ExpandedIndustry {
 		return HardLib.getRL(MODID, name);
 	}
 
-	@SubscribeEvent
-	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
+	private static void registerCreativeTab() {
 		/*tab = */
-		event.registerCreativeModeTab(getRL("creative_tab"), (builder) -> {
+		EasyRegistry.registerCreativeTab(getRL("creative_tab"), (builder) -> {
 			builder.title(Component.translatable("itemGroup.industry"));
 			builder.icon(() -> new ItemStack(ModBlocks.machine_wood_hopper));
 			builder.displayItems(new DisplayItemsGenerator() {
@@ -99,9 +100,9 @@ public class ExpandedIndustry {
 	}
 
 	@SubscribeEvent
-	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event)
+	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event)
     {
-		CreativeModeTab tab = event.getTab();
+		ResourceKey<CreativeModeTab> tab = event.getTabKey();
         if (tab == CreativeModeTabs.REDSTONE_BLOCKS) {
         	event.accept(new ItemStack(ModBlocks.machine_wood_hopper, 1));
         	event.accept(new ItemStack(ModBlocks.machine_distributor, 1));

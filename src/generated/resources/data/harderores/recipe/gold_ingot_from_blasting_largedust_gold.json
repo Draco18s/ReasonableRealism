@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "harderores:largedust_gold"
+  },
+  "result": {
+    "id": "minecraft:gold_ingot"
+  }
+}

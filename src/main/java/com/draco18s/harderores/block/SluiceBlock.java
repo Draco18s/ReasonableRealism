@@ -22,10 +22,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidType;
@@ -39,7 +40,7 @@ public class SluiceBlock extends ModEntityBlock {
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 9);
 
 	public SluiceBlock() {
-		super(Properties.of(Material.WOOD));
+		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava());
 		registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 0));		
 	}
 	

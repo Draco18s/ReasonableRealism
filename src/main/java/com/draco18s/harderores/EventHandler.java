@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.draco18s.harderores.network.PacketHandler;
 import com.draco18s.harderores.network.ToClientMessageOreParticles;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
@@ -13,14 +14,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,7 +36,7 @@ public class EventHandler {
 	@SubscribeEvent
 	public static void breakSpeed(PlayerEvent.BreakSpeed event) {
 		if(!event.getState().hasProperty(BlockProperties.ORE_DENSITY)) return;
-		if(EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.shatter, event.getEntity().getMainHandItem()) > 0) {
+		if(HardLib.getEnchantmentLevel(event.getEntity().registryAccess(), HarderOres.ModEnchantments.shatter, event.getEntity().getMainHandItem()) > 0) {
 			event.setNewSpeed(event.getNewSpeed() / 2f);
 		}
 	}
@@ -47,7 +48,8 @@ public class EventHandler {
 		BlockState state = event.getState();
 		BlockPos pos = event.getPos();
 		if(!state.hasProperty(BlockProperties.ORE_DENSITY)) {
-			if(state.getMaterial() == Material.STONE) {
+			// (Material.STONE before 1.20: natural stone and ores.)
+			if(state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(Tags.Blocks.ORES)) {
 				prospect(world, pos, (ServerPlayer)harvester);
 			}
 			return;
@@ -59,7 +61,7 @@ public class EventHandler {
 
 		// Ore Breaker: extra layers off this block. The last layer is left for the break itself, which drops loot for
 		// the state from before this event (taking the block away here would make that loot a duplicate).
-		int level = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.shatter, mainStack);
+		int level = HardLib.getEnchantmentLevel(world.registryAccess(), HarderOres.ModEnchantments.shatter, mainStack);
 		for(level += level > 0 ? 1 : 0; level > 0; level--) {
 			BlockState current = world.getBlockState(pos);
 			if(!(current.getBlock() instanceof IBlockMultiBreak ore)) break;
@@ -68,7 +70,7 @@ public class EventHandler {
 		}
 
 		// Vein Cracker: a layer off random neighbors of the same ore (up to 12 tries).
-		level = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.cracker, mainStack) * 2;
+		level = HardLib.getEnchantmentLevel(world.registryAccess(), HarderOres.ModEnchantments.cracker, mainStack) * 2;
 		for(int tries = 0; tries < 12 && level > 0; tries++) {
 			BlockPos neighbor = pos.relative(Direction.values()[world.getRandom().nextInt(6)]);
 			BlockState current = world.getBlockState(neighbor);
@@ -109,9 +111,9 @@ public class EventHandler {
 	 * a little of its dust.
 	 */
 	private static void prospect(ServerLevel world, BlockPos pos, ServerPlayer harvester) {
-		int level = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.prospector, harvester.getOffhandItem());
+		int level = HardLib.getEnchantmentLevel(world.registryAccess(), HarderOres.ModEnchantments.prospector, harvester.getOffhandItem());
 		if(!harvester.getMainHandItem().is(Items.COMPASS)) {
-			level = Math.max(level, EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.prospector, harvester.getMainHandItem()));
+			level = Math.max(level, HardLib.getEnchantmentLevel(world.registryAccess(), HarderOres.ModEnchantments.prospector, harvester.getMainHandItem()));
 		}
 		if(level <= 0) return;
 		for(Direction dir : Direction.values()) {

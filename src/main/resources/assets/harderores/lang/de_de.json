@@ -60,6 +60,8 @@
   "block.harderores.ore_harddeepslate_copper": "Hartes Tiefenschiefer Kupfererz",
   
   "harderores.ore_density":"Dichte %s",
+  "gui.harderores.recipebook.siftable": "Siebbares wird angezeigt",
+  "gui.harderores.recipebook.packable": "Packbares wird angezeigt",
 
   "block.harderores.orechunk_dummy_iron": "Gebündeltes Eisenerz",
   "block.harderores.orechunk_dummy_gold": "Gebündeltes Golderz",

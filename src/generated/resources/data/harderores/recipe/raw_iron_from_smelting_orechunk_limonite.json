@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.08,
+  "ingredient": {
+    "item": "harderores:orechunk_limonite"
+  },
+  "result": {
+    "id": "minecraft:raw_iron"
+  }
+}

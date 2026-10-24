@@ -7,6 +7,7 @@ import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -55,13 +56,13 @@ public class AxelBlockEntity extends ModBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag) {
-		tag.put("harderores:power", powerSupply.serializeNBT());
+	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
+		tag.put("harderores:power", powerSupply.serializeNBT(registries));
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag) {
-		powerSupply.deserializeNBT(tag.getCompound("harderores:power"));
+	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
+		powerSupply.deserializeNBT(registries, tag.getCompound("harderores:power"));
 	}
 	
 	@Override

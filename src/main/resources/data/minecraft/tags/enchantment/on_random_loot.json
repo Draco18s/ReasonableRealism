@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "harderores:prospector",
+    "harderores:pulverize",
+    "harderores:shatter",
+    "harderores:cracker"
+  ]
+}

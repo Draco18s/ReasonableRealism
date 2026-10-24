@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    },
+    {
+      "item": "harderores:orechunk_diamond"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:diamond"
+  }
+}

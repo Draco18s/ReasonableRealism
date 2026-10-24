@@ -15,6 +15,7 @@ import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
@@ -211,19 +212,19 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag nbt) {
-		nbt.put("harderores:power", powerUser.serializeNBT());
-		nbt.put("harderores:inputSlot", inputSlots.serializeNBT());
-		nbt.put("harderores:outputSlot", outputSlots.serializeNBT());
+	protected void modSave(CompoundTag nbt, HolderLookup.Provider registries) {
+		nbt.put("harderores:power", powerUser.serializeNBT(registries));
+		nbt.put("harderores:inputSlot", inputSlots.serializeNBT(registries));
+		nbt.put("harderores:outputSlot", outputSlots.serializeNBT(registries));
 		nbt.putFloat("harderores:packTime", packTime);
 		nbt.putFloat("harderores:timeMod", timeMod);
 	}
 
 	@Override
-	protected void modLoad(CompoundTag nbt) {
-		powerUser.deserializeNBT(nbt.getCompound("harderores:power"));
-		inputSlots.deserializeNBT(nbt.getCompound("harderores:inputSlot"));
-		outputSlots.deserializeNBT(nbt.getCompound("harderores:outputSlot"));
+	protected void modLoad(CompoundTag nbt, HolderLookup.Provider registries) {
+		powerUser.deserializeNBT(registries, nbt.getCompound("harderores:power"));
+		inputSlots.deserializeNBT(registries, nbt.getCompound("harderores:inputSlot"));
+		outputSlots.deserializeNBT(registries, nbt.getCompound("harderores:outputSlot"));
 		packTime = nbt.getFloat("harderores:packTime");
 		timeMod = Math.max(nbt.getFloat("harderores:timeMod"), 1);
 	}

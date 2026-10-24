@@ -17,12 +17,18 @@ import com.draco18s.hardlib.proxy.ClientProxy;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -42,17 +48,13 @@ public class HardLib {
 	public HardLib() {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		EasyRegistry.registerEventBus(modEventBus);
-		modEventBus.addListener((FMLCommonSetupEvent event) -> {
-			event.enqueueWork(() -> {
-				HardLibAPI.Advancements.MILL_BUILT = EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
-				HardLibAPI.Advancements.FOUND_ORE = EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
-				HardLibAPI.Advancements.BLOCK_BREAK = EasyRegistry.registerAdvancementTrigger(new BreakBlockTrigger());
-				HardLibAPI.Advancements.WORLD_TIME = EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
-				HardLibAPI.Advancements.DISTANCE_TRAVELED = EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
-				HardLibAPI.Advancements.ADVANCEMENT_EARNED = EasyRegistry.registerAdvancementTrigger(new AdvancementEarnedTrigger());
-			});
-			CogHelper.unpackConfigs();
-		});
+		HardLibAPI.Advancements.MILL_BUILT = EasyRegistry.registerAdvancementTrigger(MillstoneTrigger.ID, new MillstoneTrigger());
+		HardLibAPI.Advancements.FOUND_ORE = EasyRegistry.registerAdvancementTrigger(FoundOreTrigger.ID, new FoundOreTrigger());
+		HardLibAPI.Advancements.BLOCK_BREAK = EasyRegistry.registerAdvancementTrigger(BreakBlockTrigger.ID, new BreakBlockTrigger());
+		HardLibAPI.Advancements.WORLD_TIME = EasyRegistry.registerAdvancementTrigger(WorldTimeTrigger.ID, new WorldTimeTrigger());
+		HardLibAPI.Advancements.DISTANCE_TRAVELED = EasyRegistry.registerAdvancementTrigger(DistanceTraveledTrigger.ID, new DistanceTraveledTrigger());
+		HardLibAPI.Advancements.ADVANCEMENT_EARNED = EasyRegistry.registerAdvancementTrigger(AdvancementEarnedTrigger.ID, new AdvancementEarnedTrigger());
+		modEventBus.addListener((FMLCommonSetupEvent event) -> CogHelper.unpackConfigs());
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
 
 		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
@@ -75,6 +77,15 @@ public class HardLib {
 
 
 	/** hardlib:name. Each mod has the same helper for its own namespace. */
+	/**
+	 * The enchantment's level on the stack (enchantments are data since 1.21, so they are looked up by key), or 0 if a
+	 * data pack has removed it.
+	 */
+	public static int getEnchantmentLevel(HolderLookup.Provider registries, ResourceKey<Enchantment> enchantment, ItemStack stack) {
+		return registries.lookupOrThrow(Registries.ENCHANTMENT).get(enchantment)
+				.map(holder -> EnchantmentHelper.getItemEnchantmentLevel(holder, stack)).orElse(0);
+	}
+
 	public static ResourceLocation getRL(String name) {
 		return getRL(MODID, name);
 	}
@@ -84,11 +95,11 @@ public class HardLib {
 	 * constructors with factory methods, so only these two need to change.
 	 */
 	public static ResourceLocation getRL(String namespace, String path) {
-		return new ResourceLocation(namespace, path);
+		return ResourceLocation.fromNamespaceAndPath(namespace, path);
 	}
 
 	/** Parses "namespace:path"; a bare path is in the minecraft namespace. */
 	public static ResourceLocation parseRL(String id) {
-		return new ResourceLocation(id);
+		return ResourceLocation.parse(id);
 	}
 }

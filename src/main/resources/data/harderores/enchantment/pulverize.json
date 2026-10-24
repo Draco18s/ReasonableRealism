@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.harderores.pulverize"
+  },
+  "supported_items": "#minecraft:pickaxes",
+  "weight": 5,
+  "max_level": 1,
+  "min_cost": {
+    "base": 25,
+    "per_level_above_first": 15
+  },
+  "max_cost": {
+    "base": 40,
+    "per_level_above_first": 15
+  },
+  "anvil_cost": 2,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "#harderores:exclusive_set/pulverize"
+}

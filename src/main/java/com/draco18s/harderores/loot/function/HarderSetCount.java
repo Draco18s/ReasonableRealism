@@ -1,15 +1,15 @@
 package com.draco18s.harderores.loot.function;
 
+import java.util.List;
+
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -18,20 +18,25 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
 
 public class HarderSetCount extends LootItemConditionalFunction {
 	//float divisor = 1;
+	public static final MapCodec<HarderSetCount> CODEC = RecordCodecBuilder.mapCodec(inst -> commonFields(inst)
+			.and(NumberProviders.CODEC.fieldOf("divisor").forGetter(f -> f.modProv))
+			.apply(inst, HarderSetCount::new));
 	NumberProvider modProv;
 	
-	protected HarderSetCount(LootItemCondition[] conditions, NumberProvider modProv) {
+	protected HarderSetCount(List<LootItemCondition> conditions, NumberProvider modProv) {
 		super(conditions);
 		this.modProv = modProv;
 	}
 
 	@Override
-	public LootItemFunctionType getType() {
-		return HarderOres.LootFunctions.harderSetCountReg.get();
+	@SuppressWarnings("unchecked")
+	public LootItemFunctionType<HarderSetCount> getType() {
+		return (LootItemFunctionType<HarderSetCount>)HarderOres.LootFunctions.harderSetCountReg.get();
 	}
 
 	@Override
@@ -40,12 +45,12 @@ public class HarderSetCount extends LootItemConditionalFunction {
 		ItemStack itemstack = context.getParam(LootContextParams.TOOL);
 		int fortune = 0;
 		if (itemstack != null) {
-			fortune = EnchantmentHelper.getTagEnchantmentLevel(Enchantments.BLOCK_FORTUNE, itemstack);
+			fortune = HardLib.getEnchantmentLevel(context.getLevel().registryAccess(), Enchantments.FORTUNE, itemstack);
 		}
 		if(state.hasProperty(BlockProperties.ORE_DENSITY)) {
 			int density = state.getValue(BlockProperties.ORE_DENSITY);
 			stack.setCount(context.getRandom().nextIntBetweenInclusive(1, 2+(int)((density-1)/modProv.getFloat(context))+fortune));
-			int pulverize = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.pulverize, itemstack);
+			int pulverize = itemstack == null ? 0 : HardLib.getEnchantmentLevel(context.getLevel().registryAccess(), HarderOres.ModEnchantments.pulverize, itemstack);
 			// Pulverize only grinds what is left of a nearly mined-out block.
 			if(pulverize > 0 && density <= pulverize * 2 + 3) {
 				stack = processPulverize(stack, pulverize);
@@ -70,19 +75,5 @@ public class HarderSetCount extends LootItemConditionalFunction {
 		return simpleBuilder((p_215934_1_) -> {
 			return new HarderSetCount(p_215934_1_, mod);
 		});
-	}
-	
-	public static class Serializer extends LootItemConditionalFunction.Serializer<HarderSetCount> {
-		@Override
-		public void serialize(JsonObject object, HarderSetCount functionClazz, JsonSerializationContext serializationContext) {
-			super.serialize(object, functionClazz, serializationContext);
-			object.add("divisor", serializationContext.serialize(functionClazz.modProv));
-		}
-		
-		@Override
-		public HarderSetCount deserialize(JsonObject object, JsonDeserializationContext ctx, LootItemCondition[] conditionsIn) {
-			NumberProvider mod = GsonHelper.getAsObject(object, "divisor", ctx, NumberProvider.class);
-			return new HarderSetCount(conditionsIn, mod);
-		}
 	}
 }

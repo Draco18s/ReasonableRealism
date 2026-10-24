@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "b": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "pattern": [
+    "PBP",
+    "PbP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "harderores:machine_sifter"
+  }
+}

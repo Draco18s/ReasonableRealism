@@ -1,0 +1,55 @@
+{
+  "parent": "minecraft:story/upgrade_tools",
+  "criteria": {
+    "iron": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:iron_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "upgrade_tools": {
+      "trigger": "hardlib:advancement_earned",
+      "conditions": {
+        "advancement": "minecraft:story/upgrade_tools"
+      }
+    },
+    "iron_nuggets": {
+      "trigger": "hardlib:advancement_earned",
+      "conditions": {
+        "advancement": "harderores:iron_nuggets"
+      }
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.story.smelt_iron.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:iron_ingot"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.story.smelt_iron.title"
+    }
+  },
+  "requirements": [
+    [
+      "iron"
+    ],
+    [
+      "upgrade_tools"
+    ],
+    [
+      "iron_nuggets"
+    ]
+  ]
+}

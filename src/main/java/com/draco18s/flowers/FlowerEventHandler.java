@@ -22,8 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.level.ChunkDataEvent;
@@ -58,9 +57,9 @@ public class FlowerEventHandler {
 	@SubscribeEvent
 	public static void onBonemeal(BonemealEvent event) {
 		Level world = event.getLevel();
-		if(world.isClientSide || event.getEntity() == null) return;
-		// Dispensers use a fake player: they only grow ore flowers if the config allows, and much more rarely.
-		boolean machine = event.getEntity() instanceof FakePlayer;
+		if(world.isClientSide) return;
+		// Dispensers have no player: they only grow ore flowers if the config allows, and much more rarely.
+		boolean machine = event.getEntity() == null;
 		if(machine && !FlowersConfig.poopBonemealFlowers.get()) return;
 		BlockState block = event.getBlock();
 		boolean sand = block.is(Blocks.SAND) || block.is(Blocks.RED_SAND);
@@ -74,7 +73,7 @@ public class FlowerEventHandler {
 			}
 			if(count <= 0) continue;
 			if(!machine && event.getEntity() instanceof ServerPlayer player && HardLibAPI.Advancements.FOUND_ORE != null) {
-				LootContext ctx = new LootContext.Builder(player.getLevel())
+				LootParams ctx = new LootParams.Builder(player.serverLevel())
 						.withParameter(FoundOreTrigger.ORE_COUNT, count)
 						.create(FoundOreTrigger.requiredParams);
 				HardLibAPI.Advancements.FOUND_ORE.trigger(player, ctx);

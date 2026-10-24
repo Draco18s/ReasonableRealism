@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.draco18s.farming.HarderFarming;
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -18,14 +18,14 @@ import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 
 public class GrassLootModifier extends LootModifier {
-	public static final Supplier<Codec<GrassLootModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, GrassLootModifier::new)));
+	public static final Supplier<MapCodec<GrassLootModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, GrassLootModifier::new)));
 
 	public GrassLootModifier(LootItemCondition[] conditionsIn) {
 		super(conditionsIn);
 	}
 
 	@Override
-	public Codec<? extends IGlobalLootModifier> codec() {
+	public MapCodec<? extends IGlobalLootModifier> codec() {
 		return CODEC.get();
 	}
 

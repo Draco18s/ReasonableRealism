@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 /** Uses the sifter's GUI, as 1.12 did: the packager has the same slots-over-output layout. */
 public class PackagerScreen extends TimedMachineScreen<PackagerContainerMenu> {
 	public PackagerScreen(PackagerContainerMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title, HarderOres.getRL("textures/gui/sifter.png"), 100);
+		super(menu, inventory, title, HarderOres.getRL("textures/gui/sifter.png"), 100, Component.translatable("gui.harderores.recipebook.packable"));
 	}
 
 	@Override

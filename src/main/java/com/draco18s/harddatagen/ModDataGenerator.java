@@ -30,7 +30,7 @@ public class ModDataGenerator {
 		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 		
 		if(event.includeClient()) {
-			generator.addProvider(true, (DataProvider.Factory)ModLootTableProvider::new);
+			generator.addProvider(true, new ModLootTableProvider(packOutput, lookupProvider));
 			for(String modid : new String[] {ExpandedIndustry.MODID, HarderOres.MODID, HarderFarming.MODID, OreFlowers.MODID}) {
 				generator.addProvider(true, new ModBlockStateProvider(packOutput, modid, fileHelper));
 				generator.addProvider(true, new ModItemModelProvider(packOutput, modid, fileHelper));
@@ -40,8 +40,8 @@ public class ModDataGenerator {
 			BlockTagsProvider blockTagProvider = new ModBlockTagProvider(packOutput, lookupProvider, HarderOres.MODID, fileHelper);
 			generator.addProvider(true, blockTagProvider);
 			generator.addProvider(true, new ModItemsTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), HarderOres.MODID, fileHelper));
-			generator.addProvider(true, (DataProvider.Factory)ModRecipeProvider::new);
-			generator.addProvider(true, (DataProvider.Factory)LootModifierProvider::new);
+			generator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
+			generator.addProvider(true, new LootModifierProvider(packOutput, lookupProvider));
 		}
 		addVirtualPackContents(fileHelper);
 	}

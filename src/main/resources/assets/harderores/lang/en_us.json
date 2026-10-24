@@ -63,6 +63,8 @@
   "block.harderores.ore_harddeepslate_copper": "Hard Deepslate Copper Ore",
   
   "harderores.ore_density":"Density %s",
+  "gui.harderores.recipebook.siftable": "Showing Siftable",
+  "gui.harderores.recipebook.packable": "Showing Packable",
 
   "block.harderores.orechunk_dummy_iron": "Packaged Iron Ore",
   "block.harderores.orechunk_dummy_gold": "Packaged Gold Ore",

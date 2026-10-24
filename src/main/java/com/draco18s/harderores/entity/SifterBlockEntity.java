@@ -13,6 +13,7 @@ import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntitySelector;
@@ -235,17 +236,17 @@ public class SifterBlockEntity extends ModContainerBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag nbt) {
-		nbt.put("%s:inputslot".formatted(HarderOres.MODID), inputSlots.serializeNBT());
-		nbt.put("%s:outputSlot".formatted(HarderOres.MODID), outputSlots.serializeNBT());
+	protected void modSave(CompoundTag nbt, HolderLookup.Provider registries) {
+		nbt.put("%s:inputslot".formatted(HarderOres.MODID), inputSlots.serializeNBT(registries));
+		nbt.put("%s:outputSlot".formatted(HarderOres.MODID), outputSlots.serializeNBT(registries));
 		nbt.putInt("%s:siftTime".formatted(HarderOres.MODID), siftTime);
 		nbt.putInt("%s:activeSlot".formatted(HarderOres.MODID), activeSlot);
 	}
 
 	@Override
-	public void modLoad(CompoundTag nbt) {
-		inputSlots.deserializeNBT(nbt.getCompound("%s:inputslot".formatted(HarderOres.MODID)));
-		outputSlots.deserializeNBT(nbt.getCompound("%s:outputSlot".formatted(HarderOres.MODID)));
+	public void modLoad(CompoundTag nbt, HolderLookup.Provider registries) {
+		inputSlots.deserializeNBT(registries, nbt.getCompound("%s:inputslot".formatted(HarderOres.MODID)));
+		outputSlots.deserializeNBT(registries, nbt.getCompound("%s:outputSlot".formatted(HarderOres.MODID)));
 		siftTime = nbt.getInt("%s:siftTime".formatted(HarderOres.MODID));
 		activeSlot = nbt.getInt("%s:activeSlot".formatted(HarderOres.MODID));
 	}

@@ -12,20 +12,20 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 /*import net.minecraft.world.level.levelgen.DensityFunction;
-import net.minecraft.world.level.levelgen.DensityFunctions;
-import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Coordinate;
-import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Point;
-import net.minecraft.world.level.levelgen.NoiseRouterData;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.data.worldgen.TerrainProvider;
 import net.minecraft.util.CubicSpline;*/
+import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Coordinate;
+import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Point;
+import net.minecraft.world.level.levelgen.DensityFunctions;
+import net.minecraft.world.level.levelgen.NoiseRouterData;
 
 public class CropWinterWheatBlock extends CropBlock {
 
 	public CropWinterWheatBlock() {
-		super(Properties.copy(Blocks.WHEAT));
+		super(Properties.ofFullCopy(Blocks.WHEAT));
 	}
 
 	protected ItemLike getBaseSeedId() {

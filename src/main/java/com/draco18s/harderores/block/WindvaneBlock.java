@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -30,7 +30,7 @@ public class WindvaneBlock extends Block {
 	public static final VoxelShape DOWN = box(0.0D*16, 0.0D*16, 0.4D*16, 0.7D*16, 1.0D*16, 0.6D*16);
 
 	public WindvaneBlock() {
-		super(Properties.of(Material.CLOTH_DECORATION));
+		super(Properties.of().mapColor(MapColor.WOOL).ignitedByLava());
 		registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.FACING, Direction.NORTH));
 	}
 	
@@ -54,7 +54,7 @@ public class WindvaneBlock extends Block {
 				if(shouldConnect(face, state2))
 					dir = face.getOpposite();
 			}
-			state2.neighborChanged(world, pos2, this, pos, false);
+			state2.handleNeighborChanged(world, pos2, this, pos, false);
 
 			pos2 = pos.relative(face, 2);
 			state2 = world.getBlockState(pos2);
@@ -62,7 +62,7 @@ public class WindvaneBlock extends Block {
 				if(shouldConnect(face, state2))
 					dir = face.getOpposite();
 			}
-			state2.neighborChanged(world, pos2, this, pos, false);
+			state2.handleNeighborChanged(world, pos2, this, pos, false);
 		}
 
 		return defaultBlockState().setValue(BlockStateProperties.FACING, dir);
@@ -92,8 +92,8 @@ public class WindvaneBlock extends Block {
 	@SuppressWarnings("deprecation")
 	public void breakBlock(Level worldIn, BlockPos pos, BlockState state) {
 		for(Direction face : Direction.values()) {
-			worldIn.getBlockState(pos.relative(face, 1)).neighborChanged(worldIn, pos.relative(face,1), this, pos, false);
-			worldIn.getBlockState(pos.relative(face, 2)).neighborChanged(worldIn, pos.relative(face,2), this, pos, false);
+			worldIn.getBlockState(pos.relative(face, 1)).handleNeighborChanged(worldIn, pos.relative(face,1), this, pos, false);
+			worldIn.getBlockState(pos.relative(face, 2)).handleNeighborChanged(worldIn, pos.relative(face,2), this, pos, false);
 		}
 	}
 	

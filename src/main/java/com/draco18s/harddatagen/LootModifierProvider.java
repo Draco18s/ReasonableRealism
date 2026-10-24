@@ -5,26 +5,29 @@ import com.draco18s.farming.loot.GrassLootModifier;
 import com.draco18s.farming.loot.RawLeatherModifier;
 import com.draco18s.farming.loot.TemperatureCheck;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 
+import java.util.concurrent.CompletableFuture;
+
 public class LootModifierProvider extends GlobalLootModifierProvider {
 
-	public LootModifierProvider(PackOutput output) {
-		super(output, HarderFarming.MODID);
+	public LootModifierProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, HarderFarming.MODID, registries);
 	}
 
 	@Override
-	protected void start() {
+	protected void start(HolderLookup.Provider registries) {
 		add("grass_modifier", new GrassLootModifier(
                 new LootItemCondition[]{
                 		LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.TALL_GRASS).or(
-                				LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.GRASS)
+                				LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SHORT_GRASS)
                 		).build(),
-                		new TemperatureCheck()
+                		TemperatureCheck.INSTANCE
                 })
         );
 		add("raw_leather", new RawLeatherModifier(new LootItemCondition[0]));

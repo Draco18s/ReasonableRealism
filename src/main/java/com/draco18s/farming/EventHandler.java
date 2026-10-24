@@ -1,6 +1,7 @@
 package com.draco18s.farming;
 
 import com.draco18s.farming.block.CropWeedsBlock;
+import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
@@ -8,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -38,7 +38,7 @@ public class EventHandler {
 			if(item.getItem() != HarderFarming.ModItems.butcher_knife) return;
 
 			float amt = event.getAmount();
-			DiggerItem tool = (DiggerItem)item.getItem();
+			ButcherKnife tool = (ButcherKnife)item.getItem();
 			float base = tool.getAttackDamage();
 			float add = 10f*amt/base; //add 10 damage scaled by damage being dealt
 
@@ -85,12 +85,18 @@ public class EventHandler {
 	}
 
 	private static IntegerProperty getAgeProperty(BlockState state) {
-		if(state.getBlock() instanceof CropBlock crop) {
-			return crop.getAgeProperty();
-		}
 		for(Property<?> p : state.getProperties()) {
 			if(p instanceof IntegerProperty ip && p.getName().equals("age")) {
 				return ip;
+			}
+		}
+		// A crop's own age property (CropBlock.getAgeProperty is protected now): the one that ends at its max age.
+		if(state.getBlock() instanceof CropBlock crop) {
+			for(Property<?> p : state.getProperties()) {
+				if(p instanceof IntegerProperty ip && ip.getPossibleValues().contains(crop.getMaxAge())
+						&& ip.getPossibleValues().stream().allMatch(v -> v <= crop.getMaxAge())) {
+					return ip;
+				}
 			}
 		}
 		return null;
@@ -140,7 +146,7 @@ public class EventHandler {
 						}
 					}
 				}
-				else if(bl == Blocks.GRASS || bl == Blocks.TALL_GRASS || bl instanceof CropBlock) {
+				else if(bl == Blocks.SHORT_GRASS || bl == Blocks.TALL_GRASS || bl instanceof CropBlock) {
 					inc += 1;
 				}
 			}

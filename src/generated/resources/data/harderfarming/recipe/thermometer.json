@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "g": {
+      "item": "minecraft:glass_pane"
+    },
+    "i": {
+      "tag": "c:nuggets/iron"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "gig",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "harderfarming:thermometer"
+  }
+}

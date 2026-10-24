@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import com.draco18s.hardlib.HardLib;
-import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidget;
 import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
@@ -45,9 +45,9 @@ public class AdvancementLinks {
 		ClientAdvancements advancements = Minecraft.getInstance().getConnection().getAdvancements();
 		synchronized(LINKS) {
 			for(Link link : LINKS) {
-				Advancement parent = advancements.getAdvancements().get(link.parent());
-				Advancement child = advancements.getAdvancements().get(link.child());
-				if(parent == null || child == null) continue;
+				AdvancementNode parent = advancements.getTree().get(link.parent());
+				AdvancementNode child = advancements.getTree().get(link.child());
+				if(parent == null || child == null || child.holder().value().display().isEmpty()) continue;
 				AdvancementWidget parentWidget = screen.getAdvancementWidget(parent);
 				AdvancementWidget childWidget = screen.getAdvancementWidget(child);
 				// Widgets only exist for advancements the player can see, and only within the same tab.
@@ -63,14 +63,14 @@ public class AdvancementLinks {
 		private final AdvancementWidget from;
 		private final AdvancementWidget to;
 
-		LinkWidget(AdvancementWidget from, AdvancementWidget to, Advancement toAdvancement) {
-			super(null, Minecraft.getInstance(), toAdvancement, toAdvancement.getDisplay());
+		LinkWidget(AdvancementWidget from, AdvancementWidget to, AdvancementNode toAdvancement) {
+			super(null, Minecraft.getInstance(), toAdvancement, toAdvancement.holder().value().display().get());
 			this.from = from;
 			this.to = to;
 		}
 
 		@Override
-		public void drawConnectivity(PoseStack poseStack, int x, int y, boolean dropShadow) {
+		public void drawConnectivity(GuiGraphics graphics, int x, int y, boolean dropShadow) {
 			int i = x + from.getX() + 13;
 			int j = x + from.getX() + 26 + 4;
 			int k = y + from.getY() + 13;
@@ -78,19 +78,19 @@ public class AdvancementLinks {
 			int i1 = y + to.getY() + 13;
 			int color = dropShadow ? -16777216 : -1;
 			if(dropShadow) {
-				hLine(poseStack, j, i, k - 1, color);
-				hLine(poseStack, j + 1, i, k, color);
-				hLine(poseStack, j, i, k + 1, color);
-				hLine(poseStack, l, j - 1, i1 - 1, color);
-				hLine(poseStack, l, j - 1, i1, color);
-				hLine(poseStack, l, j - 1, i1 + 1, color);
-				vLine(poseStack, j - 1, i1, k, color);
-				vLine(poseStack, j + 1, i1, k, color);
+				graphics.hLine(j, i, k - 1, color);
+				graphics.hLine(j + 1, i, k, color);
+				graphics.hLine(j, i, k + 1, color);
+				graphics.hLine(l, j - 1, i1 - 1, color);
+				graphics.hLine(l, j - 1, i1, color);
+				graphics.hLine(l, j - 1, i1 + 1, color);
+				graphics.vLine(j - 1, i1, k, color);
+				graphics.vLine(j + 1, i1, k, color);
 			}
 			else {
-				hLine(poseStack, j, i, k, color);
-				hLine(poseStack, l, j, i1, color);
-				vLine(poseStack, j, i1, k, color);
+				graphics.hLine(j, i, k, color);
+				graphics.hLine(l, j, i1, color);
+				graphics.vLine(j, i1, k, color);
 			}
 		}
 	}

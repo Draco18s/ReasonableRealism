@@ -1,75 +1,51 @@
 package com.draco18s.hardlib.api.advancement;
 
-import com.draco18s.hardlib.HardLib;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import java.util.Optional;
 
-import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.SerializationContext;
+import com.draco18s.hardlib.HardLib;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class BreakBlockTrigger extends HardLibCriteriaTrigger<BreakBlockTrigger.Instance> {
-	private static final ResourceLocation ID = HardLib.getRL("break_block");
+	public static final ResourceLocation ID = HardLib.getRL("break_block");
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(LootContextParams.BLOCK_STATE).build();
 
 	@Override
-	public ResourceLocation getId() {
-		return ID;
+	public Codec<Instance> codec() {
+		return Instance.CODEC;
 	}
 
-	@Override
-	public Instance createInstance(JsonObject json, DeserializationContext context) {
-		Block block = deserializeBlock(json);
+	public record Instance(Optional<Holder<Block>> block, Optional<StatePropertiesPredicate> state) implements ICriterionTriggerInstanceTester {
+		public static final Codec<Instance> CODEC = RecordCodecBuilder.<Instance>create(inst -> inst.group(
+				BuiltInRegistries.BLOCK.holderByNameCodec().optionalFieldOf("block").forGetter(Instance::block),
+				StatePropertiesPredicate.CODEC.optionalFieldOf("state").forGetter(Instance::state)
+			).apply(inst, Instance::new)).validate(Instance::checkProperties);
 
-		StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.fromJson(json.get("state"));
-		if (block != null) {
-			statepropertiespredicate.checkState(block.getStateDefinition(), (p_59475_) -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + p_59475_ + ":");
-			});
-		}
-
-		return new BreakBlockTrigger.Instance(block, statepropertiespredicate);
-	}
-
-	public static class Instance implements ICriterionTriggerInstanceTester {
-		private final Block block;
-		private final StatePropertiesPredicate state;
-
-		public Instance(Block block2, StatePropertiesPredicate map) {
-			block = block2;
-			state = map;
+		private static DataResult<Instance> checkProperties(Instance instance) {
+			return instance.block.flatMap(block -> instance.state
+					.flatMap(state -> state.checkState(block.value().getStateDefinition()))
+					.map(property -> DataResult.<Instance>error(() -> "Block " + block + " has no property " + property)))
+				.orElseGet(() -> DataResult.success(instance));
 		}
 
 		@Override
-		public ResourceLocation getCriterion() {
-			return BreakBlockTrigger.ID;
-		}
-
-		@Override
-		public JsonObject serializeToJson(SerializationContext context) {
-			JsonObject jsonobject = new JsonObject();
-			if (this.block != null) {
-				jsonobject.addProperty("block", ForgeRegistries.BLOCKS.getKey(this.block).toString());
-			}
-			jsonobject.add("state", this.state.serializeToJson());
-			return jsonobject;
-		}
-
-		public boolean test(LootContext ctx) {
-			BlockState state = ctx.getParam(LootContextParams.BLOCK_STATE);
-			if (this.block != null && !state.is(this.block)) {
-				return false;
-			} else if (!this.state.matches(state)) {
+		public boolean test(LootParams params) {
+			BlockState state = params.getParameter(LootContextParams.BLOCK_STATE);
+			if (this.block.isPresent() && !state.is(this.block.get())) {
 				return false;
 			}
-			return true;
+			return this.state.isEmpty() || this.state.get().matches(state);
 		}
 	}
 }

@@ -14,6 +14,7 @@ import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -151,26 +152,19 @@ public class TannerBlockEntity extends ModBlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
-		CompoundTag tag = super.getUpdateTag();
-		modSave(tag);
-		return tag;
-	}
-
-	@Override
-	protected void modSave(CompoundTag tag) {
-		tag.put("harderfarming:leftSlot", leftSlot.serializeNBT());
-		tag.put("harderfarming:rightSlot", rightSlot.serializeNBT());
-		tag.put("harderfarming:saltSlot", saltSlot.serializeNBT());
+	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
+		tag.put("harderfarming:leftSlot", leftSlot.serializeNBT(registries));
+		tag.put("harderfarming:rightSlot", rightSlot.serializeNBT(registries));
+		tag.put("harderfarming:saltSlot", saltSlot.serializeNBT(registries));
 		tag.putIntArray("harderfarming:tanningTime", tanningTime);
 		tag.putInt("harderfarming:saltTime", saltTime);
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag) {
-		leftSlot.deserializeNBT(tag.getCompound("harderfarming:leftSlot"));
-		rightSlot.deserializeNBT(tag.getCompound("harderfarming:rightSlot"));
-		saltSlot.deserializeNBT(tag.getCompound("harderfarming:saltSlot"));
+	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
+		leftSlot.deserializeNBT(registries, tag.getCompound("harderfarming:leftSlot"));
+		rightSlot.deserializeNBT(registries, tag.getCompound("harderfarming:rightSlot"));
+		saltSlot.deserializeNBT(registries, tag.getCompound("harderfarming:saltSlot"));
 		tanningTime = tag.getIntArray("harderfarming:tanningTime");
 		if(tanningTime.length < 2) {
 			tanningTime = new int[]{0,0};

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.draco18s.farming.FarmingConfig;
 import com.draco18s.farming.HarderFarming;
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -23,14 +23,14 @@ import net.minecraftforge.common.loot.LootModifier;
  * leather the loot table rolled. Leather comes from curing it on a tanning rack.
  */
 public class RawLeatherModifier extends LootModifier {
-	public static final Supplier<Codec<RawLeatherModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, RawLeatherModifier::new)));
+	public static final Supplier<MapCodec<RawLeatherModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, RawLeatherModifier::new)));
 
 	public RawLeatherModifier(LootItemCondition[] conditionsIn) {
 		super(conditionsIn);
 	}
 
 	@Override
-	public Codec<? extends IGlobalLootModifier> codec() {
+	public MapCodec<? extends IGlobalLootModifier> codec() {
 		return CODEC.get();
 	}
 

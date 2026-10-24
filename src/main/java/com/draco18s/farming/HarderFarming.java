@@ -22,11 +22,12 @@ import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
@@ -49,11 +50,11 @@ import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -66,8 +67,10 @@ public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
+		registerCreativeTab();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FarmingConfig.SPEC);
 		HardLibAPI.hardCrops = new CropManager();
+		ModTriggers.crop_rotation = EasyRegistry.registerAdvancementTrigger(getRL("crop_rotation"), new PlayerTrigger());
 		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"), new Item.Properties());
 		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
@@ -79,13 +82,13 @@ public class HarderFarming {
 		EasyRegistry.registerItem(ClimateGaugeItem.Thermometer::new, getRL("thermometer"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Hydrometer::new, getRL("hydrometer"));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
-			new Tuple<ResourceLocation,Supplier<Codec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
+			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
 		);
 		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
-			new Tuple<ResourceLocation,Supplier<Codec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
+			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
 		);
 		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemConditionType>>(
-				getRL("can_snow"),() -> new LootItemConditionType(new TemperatureCheck.Serializer())));
+				getRL("can_snow"),() -> new LootItemConditionType(TemperatureCheck.CODEC)));
 		
 		String[] itemNames = {
 				"tinydust_sugar",
@@ -104,7 +107,7 @@ public class HarderFarming {
 		}
 		public static class Items {
 			/** What a tanning rack accepts as salt. */
-			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dusts/salt"));
+			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dusts/salt"));
 		}
 	}
 	
@@ -166,9 +169,8 @@ public class HarderFarming {
 		public static final Item tanner = null;
 	}
 	
-	@SubscribeEvent
-	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
-		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+	private static void registerCreativeTab() {
+		EasyRegistry.registerCreativeTab(getRL("creative_tab"), builder -> builder
 			.title(Component.translatable("itemGroup." + MODID))
 			.icon(() -> new ItemStack(ModItems.winter_wheat_seeds))
 			.displayItems((params, output) -> {
@@ -196,8 +198,8 @@ public class HarderFarming {
 	}
 
 	@SubscribeEvent
-	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
-		CreativeModeTab tab = event.getTab();
+	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event) {
+		ResourceKey<CreativeModeTab> tab = event.getTabKey();
 		if(tab == CreativeModeTabs.FOOD_AND_DRINKS) {
 			event.accept(ModItems.tinydust_sugar);
 			event.accept(ModItems.tinydust_flour);
@@ -224,7 +226,6 @@ public class HarderFarming {
 		event.enqueueWork(() -> {
 			registerCropData();
 			HarvestcraftIntegration.registerCrops();
-			ModTriggers.crop_rotation = EasyRegistry.registerAdvancementTrigger(new PlayerTrigger(getRL("crop_rotation")));
 		});
 	}
 

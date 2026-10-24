@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
@@ -46,8 +47,8 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	public void update(RecipeManager man) {
-		siftRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.SIFTING);
-		millRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.GRINDING);
+		siftRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.SIFTING).stream().map(RecipeHolder::value).toList();
+		millRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.GRINDING).stream().map(RecipeHolder::value).toList();
 
 		registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
 		updatePackingRecipes(man);
@@ -60,13 +61,15 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	 */
 	private void updatePackingRecipes(RecipeManager man) {
 		packingRecipes.clear();
-		for(PackingRecipe recipe : man.getAllRecipesFor(HarderOres.RecipeTypes.PACKING)) {
+		for(RecipeHolder<PackingRecipe> holder : man.getAllRecipesFor(HarderOres.RecipeTypes.PACKING)) {
+			PackingRecipe recipe = holder.value();
 			ItemStack result = recipe.getResultItem(registryAccess);
 			for(ItemStack in : recipe.getIngredients().get(0).getItems()) {
 				packingRecipes.putIfAbsent(in.copyWithCount(recipe.getIngredientQuantity()), result);
 			}
 		}
-		for(CraftingRecipe recipe : man.getAllRecipesFor(RecipeType.CRAFTING)) {
+		for(RecipeHolder<CraftingRecipe> holder : man.getAllRecipesFor(RecipeType.CRAFTING)) {
+			CraftingRecipe recipe = holder.value();
 			List<Ingredient> ingredients = recipe.getIngredients().stream().filter(i -> !i.isEmpty()).toList();
 			int size = ingredients.size();
 			if(size != 4 && size != 9 || size != recipe.getIngredients().size()) continue;

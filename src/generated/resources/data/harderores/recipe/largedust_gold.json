@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    },
+    {
+      "item": "harderores:tinydust_gold"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "harderores:largedust_gold"
+  }
+}

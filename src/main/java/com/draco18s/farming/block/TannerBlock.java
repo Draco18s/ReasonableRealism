@@ -12,7 +12,7 @@ import com.draco18s.hardlib.util.InventoryUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,7 +27,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -42,7 +43,7 @@ public class TannerBlock extends ModEntityBlock {
 	public static final VoxelShape TANNER_AABB_WEST = box(3.2, 0, 0, 12.8, 16, 16);
 
 	public TannerBlock() {
-		super(Properties.of(Material.WOOD).strength(2, 0).sound(SoundType.WOOD).noOcclusion());
+		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 0).sound(SoundType.WOOD).noOcclusion());
 		registerDefaultState(this.stateDefinition.any()
 				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 				.setValue(BlockProperties.LEFT_LEATHER_STATE, LeatherStatus.NONE)
@@ -81,11 +82,10 @@ public class TannerBlock extends ModEntityBlock {
 	 */
 	@Override
 	@Deprecated
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if(world.isClientSide) return InteractionResult.SUCCESS;
+	protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if(world.isClientSide) return ItemInteractionResult.SUCCESS;
 		BlockEntity be = world.getBlockEntity(pos);
-		if(!(be instanceof TannerBlockEntity tanner)) return InteractionResult.PASS;
-		ItemStack heldItem = player.getItemInHand(hand);
+		if(!(be instanceof TannerBlockEntity tanner)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		tanner.getCapability(ForgeCapabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(inven -> {
 			if(inven.getSlots() == 0) return;
 			if(inven.getStackInSlot(0).isEmpty() && !heldItem.isEmpty()) {
@@ -101,7 +101,7 @@ public class TannerBlock extends ModEntityBlock {
 		});
 		tanner.setChanged();
 		tanner.updateBlockState();
-		return InteractionResult.CONSUME;
+		return ItemInteractionResult.CONSUME;
 	}
 
 	@Override

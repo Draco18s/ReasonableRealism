@@ -2,13 +2,12 @@ package com.draco18s.harderores.network;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.draco18s.hardlib.HardLib;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class ToClientMessageOreParticles {
 	public int effectID;
@@ -49,8 +48,8 @@ public class ToClientMessageOreParticles {
 	}
 	
 	public static class Handler {
-		public static void handle(final ToClientMessageOreParticles message, Supplier<NetworkEvent.Context> ctx) {
-			ctx.get().enqueueWork(() -> {
+		public static void handle(final ToClientMessageOreParticles message, CustomPayloadEvent.Context ctx) {
+			ctx.enqueueWork(() -> {
 				HardLib.PROXY.spawnParticles(message, ctx);
 			});
 		}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": {
+      "item": "harderores:orechunk_diamond"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "pattern": [
+    "di",
+    "is",
+    " s"
+  ],
+  "result": {
+    "count": 1,
+    "id": "harderores:diamond_studded_axe"
+  }
+}

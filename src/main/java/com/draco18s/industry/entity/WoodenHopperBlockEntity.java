@@ -16,7 +16,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.NetworkHooks;
 
 public class WoodenHopperBlockEntity extends AbstractHopper implements ICustomContainer {
 
@@ -38,7 +37,7 @@ public class WoodenHopperBlockEntity extends AbstractHopper implements ICustomCo
 	@Override
 	public void openGUI(ServerPlayer player) {
 		if (!level.isClientSide) {
-			NetworkHooks.openScreen(player, this, getBlockPos());
+			player.openMenu(this, getBlockPos());
 		}
 	}
 

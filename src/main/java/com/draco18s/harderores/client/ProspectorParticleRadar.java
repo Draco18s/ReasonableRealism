@@ -70,17 +70,13 @@ public class ProspectorParticleRadar extends TextureSheetParticle {
 
     @SuppressWarnings("deprecation")
 	ParticleRenderType ALWAYS_ON_TOP = new ParticleRenderType() {
-		public void begin(BufferBuilder p_107469_, TextureManager p_107470_) {
+		public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
 	    	  RenderSystem.disableDepthTest();
 	    	  RenderSystem.depthMask(false);
 	          RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
 	          RenderSystem.enableBlend();
 	          RenderSystem.defaultBlendFunc();
-	          p_107469_.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-	      }
-
-	      public void end(Tesselator p_107472_) {
-	    	  p_107472_.end();
+	          return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
 	      }
 
 	      public String toString() {

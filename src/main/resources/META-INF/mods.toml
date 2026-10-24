@@ -1,6 +1,6 @@
 modLoader="javafml"
 # Forge for 1.19 is version 41
-loaderVersion="[41,)"
+loaderVersion="[52,)"
 license="All rights reserved"
 showAsResourcePack=false
 
@@ -20,14 +20,14 @@ showAsResourcePack=false
 	[[dependencies.hardlib]]
 		modId="forge"
 		mandatory=true
-		versionRange="[41,)"
+		versionRange="[52,)"
 		ordering="NONE"
 		side="BOTH"
 
 	[[dependencies.hardlib]]
 		modId="minecraft"
 		mandatory=true
-		versionRange="[1.19,)"
+		versionRange="[1.21.1,1.21.2)"
 		ordering="NONE"
 		side="BOTH"
 		
@@ -40,7 +40,7 @@ showAsResourcePack=false
 	[[dependencies.expindustry]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-		versionRange="[41,)"
+		versionRange="[52,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.expindustry]] #optional
@@ -52,7 +52,7 @@ showAsResourcePack=false
 	[[dependencies.expindustry]]
 	    modId="minecraft"
 	    mandatory=true
-		versionRange="[1.19,)"
+		versionRange="[1.21.1,1.21.2)"
 	    ordering="NONE"
 	    side="BOTH"
 		
@@ -65,7 +65,7 @@ showAsResourcePack=false
 	[[dependencies.harderores]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-		versionRange="[41,)"
+		versionRange="[52,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderores]] #optional
@@ -77,13 +77,7 @@ showAsResourcePack=false
 	[[dependencies.harderores]]
 	    modId="minecraft"
 	    mandatory=true
-		versionRange="[1.19,)"
-	    ordering="NONE"
-	    side="BOTH"
-	[[dependencies.harderores]]
-	    modId="dynamic_asset_generator"
-	    mandatory=true
-		versionRange="[3.1.1,4.0.0)"
+		versionRange="[1.21.1,1.21.2)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderores]]
@@ -103,7 +97,7 @@ showAsResourcePack=false
 	[[dependencies.harderfarming]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-		versionRange="[41,)"
+		versionRange="[52,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderfarming]] #optional
@@ -115,7 +109,7 @@ showAsResourcePack=false
 	[[dependencies.harderfarming]]
 	    modId="minecraft"
 	    mandatory=true
-		versionRange="[1.19,)"
+		versionRange="[1.21.1,1.21.2)"
 	    ordering="NONE"
 	    side="BOTH"
 
@@ -128,7 +122,7 @@ showAsResourcePack=false
 	[[dependencies.oreflowers]] #optional
 	    modId="forge" #mandatory
 	    mandatory=true #mandatory
-		versionRange="[41,)"
+		versionRange="[52,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.oreflowers]] #optional
@@ -140,6 +134,6 @@ showAsResourcePack=false
 	[[dependencies.oreflowers]]
 	    modId="minecraft"
 	    mandatory=true
-		versionRange="[1.19,)"
+		versionRange="[1.21.1,1.21.2)"
 	    ordering="NONE"
 	    side="BOTH"

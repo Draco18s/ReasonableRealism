@@ -13,12 +13,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 
 public class SifterBlock extends ModEntityBlock {
 
 	public SifterBlock() {
-		super(Properties.of(Material.WOOD).strength(2).sound(SoundType.WOOD));
+		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
 	}
 
 	@Override

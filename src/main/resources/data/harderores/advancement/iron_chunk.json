@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "id": "minecraft:raw_iron"
+        },
+        "title": {
+            "translate": "achievement.acquireIronChunk"
+        },
+        "description": {
+            "translate": "achievement.acquireIronChunk.desc"
+        }
+    },
+    "parent": "minecraft:story/mine_stone",
+    "criteria": {
+        "craft_sifter": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:raw_iron"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "craft_sifter"
+        ]
+    ]
+}

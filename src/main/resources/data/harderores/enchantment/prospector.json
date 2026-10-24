@@ -1,0 +1,23 @@
+{
+  "description": {
+    "translate": "enchantment.harderores.prospector"
+  },
+  "supported_items": "#harderores:enchantable/prospector",
+  "weight": 2,
+  "max_level": 3,
+  "min_cost": {
+    "base": 10,
+    "per_level_above_first": 15
+  },
+  "max_cost": {
+    "base": 25,
+    "per_level_above_first": 15
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "hand"
+  ],
+  "exclusive_set": [
+    "minecraft:fortune"
+  ]
+}

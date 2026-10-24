@@ -1,7 +1,7 @@
 package com.draco18s.harderores.inventory;
 
 import com.draco18s.harderores.HarderOres;
-import com.draco18s.hardlib.api.internal.CommonContainerMenu;
+import com.draco18s.harderores.recipe.SiftingRecipe;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.hardlib.api.internal.inventory.SlotOutput;
 
@@ -9,11 +9,12 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class SifterContainerMenu extends CommonContainerMenu {
+public class SifterContainerMenu extends MachineRecipeBookMenu<SiftingRecipe> {
 	private ContainerData data;
 
 	public SifterContainerMenu(int p_39640_, Inventory p_39641_) {
@@ -21,11 +22,11 @@ public class SifterContainerMenu extends CommonContainerMenu {
 	}
 
 	public SifterContainerMenu(int p_38852_, int size) {
-		super(HarderOres.ModContainerTypes.machine_sifter, p_38852_, size, 166);
+		super(HarderOres.ModContainerTypes.machine_sifter, p_38852_, size, 166, HarderOres.RecipeTypes.SIFTING);
 	}
 
 	public SifterContainerMenu(int p_39640_, Inventory p_39641_, IItemHandler inputs, IItemHandler outputs, Container container, ContainerData containerdata) {
-		super(HarderOres.ModContainerTypes.machine_sifter, p_39640_, 166, p_39641_, container);
+		super(HarderOres.ModContainerTypes.machine_sifter, p_39640_, 166, p_39641_, container, HarderOres.RecipeTypes.SIFTING);
 		
 		addSlot(new SlotDust(inputs, 0, 71, 13));
 		addSlot(new SlotDust(inputs, 1, 89, 13));
@@ -37,5 +38,10 @@ public class SifterContainerMenu extends CommonContainerMenu {
 
 	public int getTime() {
 		return data.get(0);
+	}
+
+	@Override
+	public RecipeBookType getRecipeBookType() {
+		return HarderOres.RecipeBookTypes.SIFTER;
 	}
 }

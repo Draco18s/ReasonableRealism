@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "id": "harderfarming:tanner"
+        },
+        "title": {
+            "translate": "achievement.craftTanner"
+        },
+        "description": {
+            "translate": "achievement.craftTanner.desc"
+        }
+    },
+    "parent": "minecraft:husbandry/root",
+    "criteria": {
+        "has_item": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "harderfarming:tanner"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_item"
+        ]
+    ]
+}

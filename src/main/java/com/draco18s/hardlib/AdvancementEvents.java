@@ -5,18 +5,18 @@ import java.util.Map;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.advancement.AdvancementEarnedTrigger;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
-import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
+import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
 
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.CriterionProgress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
@@ -48,10 +48,10 @@ public class AdvancementEvents {
 	public static void onAdvancementProgress(AdvancementEvent.AdvancementProgressEvent event) {
 		if(event.getProgressType() != AdvancementEvent.AdvancementProgressEvent.ProgressType.REVOKE) return;
 		if(!(event.getEntity() instanceof ServerPlayer player) || event.getAdvancementProgress().isDone()) return;
-		ResourceLocation revoked = event.getAdvancement().getId();
-		for(Advancement advancement : player.server.getAdvancements().getAllAdvancements()) {
-			for(Map.Entry<String, Criterion> criterion : advancement.getCriteria().entrySet()) {
-				if(criterion.getValue().getTrigger() instanceof AdvancementEarnedTrigger.Instance earned && revoked.equals(earned.getAdvancement())) {
+		ResourceLocation revoked = event.getAdvancement().id();
+		for(AdvancementHolder advancement : player.server.getAdvancements().getAllAdvancements()) {
+			for(Map.Entry<String, Criterion<?>> criterion : advancement.value().criteria().entrySet()) {
+				if(criterion.getValue().triggerInstance() instanceof AdvancementEarnedTrigger.Instance earned && revoked.equals(earned.advancement())) {
 					CriterionProgress progress = player.getAdvancements().getOrStartProgress(advancement).getCriterion(criterion.getKey());
 					if(progress != null && progress.isDone()) {
 						player.getAdvancements().revoke(advancement, criterion.getKey());
@@ -66,17 +66,17 @@ public class AdvancementEvents {
 	public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
 		if(!(event.getEntity() instanceof ServerPlayer player) || HardLibAPI.Advancements.ADVANCEMENT_EARNED == null) return;
 		if(!HardLibAPI.Advancements.ADVANCEMENT_EARNED.hasListeners(player)) return;
-		for(Advancement advancement : player.server.getAdvancements().getAllAdvancements()) {
+		for(AdvancementHolder advancement : player.server.getAdvancements().getAllAdvancements()) {
 			if(player.getAdvancements().getOrStartProgress(advancement).isDone()) {
 				triggerEarned(player, advancement);
 			}
 		}
 	}
 
-	private static void triggerEarned(ServerPlayer player, Advancement advancement) {
+	private static void triggerEarned(ServerPlayer player, AdvancementHolder advancement) {
 		if(HardLibAPI.Advancements.ADVANCEMENT_EARNED == null || !HardLibAPI.Advancements.ADVANCEMENT_EARNED.hasListeners(player)) return;
-		LootContext ctx = new LootContext.Builder(player.getLevel())
-				.withParameter(AdvancementEarnedTrigger.ADVANCEMENT, advancement.getId())
+		LootParams ctx = new LootParams.Builder(player.serverLevel())
+				.withParameter(AdvancementEarnedTrigger.ADVANCEMENT, advancement.id())
 				.create(AdvancementEarnedTrigger.requiredParams);
 		HardLibAPI.Advancements.ADVANCEMENT_EARNED.trigger(player, ctx);
 	}
@@ -84,7 +84,7 @@ public class AdvancementEvents {
 	@SubscribeEvent
 	public static void onBlockBreak(BlockEvent.BreakEvent event) {
 		if(!(event.getPlayer() instanceof ServerPlayer player) || HardLibAPI.Advancements.BLOCK_BREAK == null) return;
-		LootContext ctx = new LootContext.Builder(player.getLevel())
+		LootParams ctx = new LootParams.Builder(player.serverLevel())
 				.withParameter(LootContextParams.BLOCK_STATE, event.getState())
 				.create(BreakBlockTrigger.requiredParams);
 		HardLibAPI.Advancements.BLOCK_BREAK.trigger(player, ctx);
@@ -93,9 +93,9 @@ public class AdvancementEvents {
 	@SubscribeEvent
 	public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
 		if(event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) return;
-		long time = player.getLevel().getGameTime();
+		long time = player.serverLevel().getGameTime();
 		if(time % TIME_INTERVAL == 0 && HardLibAPI.Advancements.WORLD_TIME != null) {
-			LootContext ctx = new LootContext.Builder(player.getLevel())
+			LootParams ctx = new LootParams.Builder(player.serverLevel())
 					.withParameter(WorldTimeTrigger.TIME, (float)time)
 					.create(WorldTimeTrigger.requiredParams);
 			HardLibAPI.Advancements.WORLD_TIME.trigger(player, ctx);
@@ -115,7 +115,7 @@ public class AdvancementEvents {
 
 	/** The statistic is in centimeters; the trigger's distance is in blocks. */
 	private static void triggerDistance(ServerPlayer player, ServerStatsCounter stats, ResourceLocation stat, TravelType type) {
-		LootContext ctx = new LootContext.Builder(player.getLevel())
+		LootParams ctx = new LootParams.Builder(player.serverLevel())
 				.withParameter(DistanceTraveledTrigger.DISTANCE, stats.getValue(Stats.CUSTOM.get(stat)) / 100f)
 				.withParameter(DistanceTraveledTrigger.TRAVEL, type)
 				.create(DistanceTraveledTrigger.requiredParams);

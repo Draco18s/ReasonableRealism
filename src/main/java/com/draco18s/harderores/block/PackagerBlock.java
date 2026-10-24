@@ -14,14 +14,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 /** Pressure packager: powered from above by axels, like the millstone. Opens a GUI on use. */
 public class PackagerBlock extends ModEntityBlock {
 
 	public PackagerBlock() {
-		super(Properties.of(Material.METAL).strength(1).requiresCorrectToolForDrops().sound(SoundType.METAL));
+		super(Properties.of().mapColor(MapColor.METAL).strength(1).requiresCorrectToolForDrops().sound(SoundType.METAL));
 	}
 
 	@Override

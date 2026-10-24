@@ -33,11 +33,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraftforge.common.PlantType;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
@@ -57,6 +57,7 @@ public class OreFlowers {
 	public static final OreDataStore oreData = new OreDataStore();
 
 	public OreFlowers() {
+		registerCreativeTab();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FlowersConfig.SPEC);
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = oreData;
@@ -116,7 +117,7 @@ public class OreFlowers {
 	}
 
 	private static void addOre(FlowerDataHandler flowers, String ore, int numFlowers, int clusterSize, int threshold, OreFlowerDictator dictator, @Nullable String flower, @Nullable String desertFlower) {
-		TagKey<Block> tag = BlockTags.create(HardLib.getRL("forge", "ores/" + ore));
+		TagKey<Block> tag = BlockTags.create(HardLib.getRL("c", "ores/" + ore));
 		for(Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
 			Block block = holder.value();
 			// Hard ores count by density; a vanilla-style ore block counts as about half a full hard ore block.
@@ -146,9 +147,8 @@ public class OreFlowers {
 	}
 
 	/** The ore flowers and sticky goo, then every other flower (vanilla's and other mods'). */
-	@SubscribeEvent
-	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
-		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+	private static void registerCreativeTab() {
+		EasyRegistry.registerCreativeTab(getRL("creative_tab"), builder -> builder
 			.title(Component.translatable("itemGroup." + MODID))
 			.icon(() -> new ItemStack(FLOWERS.get("poorjoe").get()))
 			.displayItems((params, output) -> {
@@ -164,11 +164,11 @@ public class OreFlowers {
 	}
 
 	@SubscribeEvent
-	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
-		if(event.getTab() == CreativeModeTabs.NATURAL_BLOCKS) {
+	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event) {
+		if(event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
 			FLOWERS.values().forEach(flower -> event.accept(flower.get()));
 		}
-		if(event.getTab() == CreativeModeTabs.INGREDIENTS) {
+		if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
 			event.accept(ModItems.sticky_goo);
 		}
 	}

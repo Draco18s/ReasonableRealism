@@ -1,5 +1,6 @@
 package com.draco18s.industry.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -16,18 +17,26 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RailBridgeBlock extends BaseRailBlock {
+
+	/** Blocks are only written by codec for vanilla's block type listing; this one has no parameters to write. */
+	private final MapCodec<RailBridgeBlock> codec = MapCodec.unit(this);
+
+	@Override
+	protected MapCodec<? extends BaseRailBlock> codec() {
+		return codec;
+	}
 	protected static final VoxelShape THICK_FLAT_AABB = Block.box(0.0D, -2.0D, 0.0D, 16.0D, 2.0D, 16.0D);
 	public static final EnumProperty<RailShape> SHAPE = BlockStateProperties.RAIL_SHAPE_STRAIGHT;
 
 	public RailBridgeBlock() {
-		super(true, Block.Properties.of(Material.DECORATION).noCollission().strength(0.7F).sound(SoundType.METAL));
+		super(true, Block.Properties.of().pushReaction(PushReaction.DESTROY).noCollission().strength(0.7F).sound(SoundType.METAL));
 		this.registerDefaultState(this.stateDefinition.any().setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(WATERLOGGED, Boolean.valueOf(false)));
 	}
 

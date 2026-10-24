@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "id": "expindustry:machine_distributor"
+        },
+        "title": {
+            "translate": "achievement.largescale"
+        },
+        "description": {
+            "translate": "achievement.largescale.desc"
+        }
+    },
+    "parent": "expindustry:root",
+    "criteria": {
+        "craft_distributor": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "expindustry:machine_distributor"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "craft_distributor"
+        ]
+    ]
+}

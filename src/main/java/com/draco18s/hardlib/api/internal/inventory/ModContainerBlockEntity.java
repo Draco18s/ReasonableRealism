@@ -8,6 +8,8 @@ import com.draco18s.hardlib.api.interfaces.ICustomContainer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -24,7 +26,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
 
 public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity implements ICustomContainer {
 	public static ItemStackHandler EMPTY_HANDLER = new ItemStackHandler(0);
@@ -38,7 +39,7 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 	@Override
 	public void openGUI(ServerPlayer player) {
 		if (!level.isClientSide) {
-			NetworkHooks.openScreen(player, this, getBlockPos());
+			player.openMenu(this, getBlockPos());
 		}
 	}
 	
@@ -64,6 +65,25 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 		return (double)worldPosition.getZ() + 0.5D;
 	}
 
+	/** The inventory lives in the item handlers; these satisfy BaseContainerBlockEntity with a copy of it. */
+	@Override
+	protected NonNullList<ItemStack> getItems() {
+		IItemHandler inven = getInventory(null);
+		NonNullList<ItemStack> items = NonNullList.withSize(inven.getSlots(), ItemStack.EMPTY);
+		for(int i = 0; i < inven.getSlots(); i++) {
+			items.set(i, inven.getStackInSlot(i));
+		}
+		return items;
+	}
+
+	@Override
+	protected void setItems(NonNullList<ItemStack> items) {
+		IItemHandlerModifiable inven = getInventory(null);
+		for(int i = 0; i < inven.getSlots() && i < items.size(); i++) {
+			inven.setStackInSlot(i, items.get(i));
+		}
+	}
+
 	@Override
 	public int getContainerSize() {
 		return getInventory(null).getSlots();
@@ -86,7 +106,7 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 
 	@Override
 	public ItemStack removeItemNoUpdate(int slot) {
-		return getInventory(null).extractItem(slot, LARGE_MAX_STACK_SIZE, false);
+		return getInventory(null).extractItem(slot, Integer.MAX_VALUE, false);
 	}
 
 	@Override
@@ -103,7 +123,7 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 	public void clearContent() {
 		IItemHandler inven = getInventory(null);
 		for(int i = 0; i < inven.getSlots() ; i++) {
-			inven.extractItem(i, LARGE_MAX_STACK_SIZE, false);
+			inven.extractItem(i, Integer.MAX_VALUE, false);
 		}
 	}
 
@@ -125,31 +145,35 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 	}
 	
 	@Override
-	protected void saveAdditional(CompoundTag nbt) {
-		super.saveAdditional(nbt);
-		modSave(nbt);
+	protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveAdditional(nbt, registries);
+		modSave(nbt, registries);
 	}
 
 	@Override
-	public void load(CompoundTag nbt) {
-		super.load(nbt);
-		modLoad(nbt);
+	protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadAdditional(nbt, registries);
+		modLoad(nbt, registries);
 	}
-	
+
+	@Override
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+		CompoundTag nbtTag = new CompoundTag();
+		modSave(nbtTag, registries);
+		return nbtTag;
+	}
+
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket(){
-	    CompoundTag nbtTag = new CompoundTag();
-	    modSave(nbtTag);
-	    ClientboundBlockEntityDataPacket packet = ClientboundBlockEntityDataPacket.create(this, (e) -> nbtTag);
-	    return packet;
+	    return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt){
-	    modLoad(pkt.getTag());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries){
+	    modLoad(pkt.getTag(), registries);
 	}
 	
-	protected abstract void modSave(CompoundTag nbt);
+	protected abstract void modSave(CompoundTag nbt, HolderLookup.Provider registries);
 
-	protected abstract void modLoad(CompoundTag nbt);
+	protected abstract void modLoad(CompoundTag nbt, HolderLookup.Provider registries);
 }

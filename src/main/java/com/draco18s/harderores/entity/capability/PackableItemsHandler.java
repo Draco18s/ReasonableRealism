@@ -22,7 +22,7 @@ public class PackableItemsHandler extends ItemStackHandler {
 		if(slot+1 >= stacks.size()) return;
 		ItemStack first = stacks.get(slot);
 		ItemStack second = stacks.get(slot+1);
-		if(!first.isEmpty() && !second.isEmpty() && ItemStack.isSameItemSameTags(first, second)) {
+		if(!first.isEmpty() && !second.isEmpty() && ItemStack.isSameItemSameComponents(first, second)) {
 			int change = Math.min(second.getCount(), first.getMaxStackSize() - first.getCount());
 			if(change <= 0) return;
 			first.grow(change);

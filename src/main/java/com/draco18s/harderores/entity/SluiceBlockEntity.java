@@ -9,6 +9,7 @@ import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
@@ -187,12 +188,12 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag) {
-		tag.put("harderores:inputslot", inputSlot.serializeNBT());
+	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
+		tag.put("harderores:inputslot", inputSlot.serializeNBT(registries));
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag) {
-		inputSlot.deserializeNBT(tag.getCompound("harderores:inputslot"));
+	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
+		inputSlot.deserializeNBT(registries, tag.getCompound("harderores:inputslot"));
 	}
 }

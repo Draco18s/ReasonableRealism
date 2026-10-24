@@ -1,10 +1,8 @@
 package com.draco18s.farming.loot;
 
 import com.draco18s.farming.HarderFarming;
+import com.mojang.serialization.MapCodec;
 //import com.draco18s.farming.HarderFarming;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -14,8 +12,10 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 public class TemperatureCheck implements LootItemCondition {
+	public static final TemperatureCheck INSTANCE = new TemperatureCheck();
+	public static final MapCodec<TemperatureCheck> CODEC = MapCodec.unit(INSTANCE);
 
-	public TemperatureCheck() { }
+	private TemperatureCheck() { }
 
 	@Override
 	public boolean test(LootContext ctx) {
@@ -27,15 +27,5 @@ public class TemperatureCheck implements LootItemCondition {
 	@Override
 	public LootItemConditionType getType() {
 		return HarderFarming.ModLootConditionTypes.can_snow.get();
-	}
-	
-	public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<TemperatureCheck> {
-		@Override
-		public void serialize(JsonObject p_79325_, TemperatureCheck p_79326_, JsonSerializationContext p_79327_) { }
-
-		@Override
-		public TemperatureCheck deserialize(JsonObject p_79323_, JsonDeserializationContext p_79324_) {
-			return new TemperatureCheck();
-		}
 	}
 }

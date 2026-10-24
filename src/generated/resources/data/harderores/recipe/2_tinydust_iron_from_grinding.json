@@ -1,0 +1,10 @@
+{
+  "type": "harderores:grinding",
+  "count": 2,
+  "ingredients": {
+    "item": "minecraft:raw_iron"
+  },
+  "result": {
+    "item": "harderores:tinydust_iron"
+  }
+}

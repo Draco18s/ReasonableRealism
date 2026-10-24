@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -21,7 +21,7 @@ public class PoweredRailBridgeBlock extends PoweredRailBlock {
 	protected static final VoxelShape THICK_FLAT_AABB = Block.box(0.0D, -2.0D, 0.0D, 16.0D, 2.0D, 16.0D);
 
 	public PoweredRailBridgeBlock() {
-		super(Block.Properties.of(Material.DECORATION).noCollission().strength(0.7F).sound(SoundType.METAL));
+		super(Block.Properties.of().pushReaction(PushReaction.DESTROY).noCollission().strength(0.7F).sound(SoundType.METAL));
 	}
 
 	@Override

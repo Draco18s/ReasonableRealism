@@ -5,29 +5,31 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.serialization.Lifecycle;
 
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -87,15 +89,24 @@ public class EasyRegistry {
 		tilesToReg.add(new Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>(registryname, create));
 	}
 	
-	@SuppressWarnings("unchecked")
 	/**
-	 * Registers an advancement criterion trigger. CriteriaTriggers keeps them in a plain HashMap, so call this on the
-	 * main thread (in common setup, from enqueueWork). Triggers must be registered before advancements load.
+	 * Registers an advancement criterion trigger (triggers are a registry since 1.20.2), returning it for the caller
+	 * to keep. Call from a mod constructor, like the other registrations.
 	 */
-	public static <T extends CriterionTrigger<?>> T registerAdvancementTrigger(T trigger) {
-		return CriteriaTriggers.register(trigger);
+	public static <T extends CriterionTrigger<?>> T registerAdvancementTrigger(ResourceLocation id, T trigger) {
+		registerOther(Registries.TRIGGER_TYPE, new Tuple<ResourceLocation, Supplier<CriterionTrigger<?>>>(id, () -> trigger));
+		return trigger;
 	}
 	
+	/** Registers a creative tab (tabs are a registry since 1.20); the builder only needs its title, icon and items. */
+	public static RegistryObject<CreativeModeTab> registerCreativeTab(ResourceLocation id, Consumer<CreativeModeTab.Builder> tab) {
+		return registerOther(Registries.CREATIVE_MODE_TAB, new Tuple<ResourceLocation, Supplier<CreativeModeTab>>(id, () -> {
+			CreativeModeTab.Builder builder = CreativeModeTab.builder();
+			tab.accept(builder);
+			return builder.build();
+		}));
+	}
+
 	// I used to think that I was bold
 	// I used to think love would be fun
 	// Now all the stories have been told
@@ -169,7 +180,7 @@ public class EasyRegistry {
 				if(vanilla) {
 					WritableRegistry reg = (WritableRegistry)event.getVanillaRegistry();
 					ResourceKey kk = ResourceKey.create(reg.key(), l.getA());
-					reg.register(kk , l.getB().get(), Lifecycle.stable());
+					reg.register(kk , l.getB().get(), RegistrationInfo.BUILT_IN);
 				}
 				else {
 					event.getForgeRegistry().register(l.getA(), l.getB().get());
@@ -179,13 +190,9 @@ public class EasyRegistry {
 	}
 
 	@SubscribeEvent
-	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
-		if(event.getTab() == CreativeModeTabs.SEARCH) {
-			regItems.forEach(itm -> {
-				event.accept(itm);
-			});
-		}
-		if(event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event) {
+		// (The search tab fills itself from the other tabs.)
+		if(event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			regItems.forEach(itm -> {
 				if(itm.get() instanceof TieredItem)
 					event.accept(itm);

@@ -3,6 +3,7 @@ package com.draco18s.harddatagen;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.flowers.OreFlowers;
@@ -14,6 +15,7 @@ import com.draco18s.industry.ExpandedIndustry;
 import net.minecraft.advancements.critereon.EntityFlagsPredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -41,13 +43,13 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModLootTableProvider extends LootTableProvider {
-	public ModLootTableProvider(PackOutput output)
+	public ModLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries)
 	{
-		super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)));
+		super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)), registries);
 	}
 
 	private static class BlockLootTable extends BlockLootSubProvider {
-		public BlockLootTable() { super(Set.of(), FeatureFlags.VANILLA_SET); }
+		public BlockLootTable(HolderLookup.Provider registries) { super(Set.of(), FeatureFlags.VANILLA_SET, registries); }
 
 		@Override
 		protected Iterable<Block> getKnownBlocks() {
@@ -120,8 +122,8 @@ public class ModLootTableProvider extends LootTableProvider {
 			}
 			// Aveloz sap is an irritant: it only comes away whole if harvested carefully.
 			LootItemCondition.Builder careful = LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-					EntityPredicate.Builder.entity().flags(EntityFlagsPredicate.Builder.flags().setCrouching(true).build()))
-					.or(HAS_SHEARS).or(HAS_SILK_TOUCH);
+					EntityPredicate.Builder.entity().flags(EntityFlagsPredicate.Builder.flags().setCrouching(true)))
+					.or(HAS_SHEARS).or(hasSilkTouch());
 			LootItemCondition.Builder lowerHalf = LootItemBlockStatePropertyCondition.hasBlockStateProperties(OreFlowers.ModBlocks.aveloz)
 					.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
 			add(OreFlowers.ModBlocks.aveloz, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
@@ -129,7 +131,7 @@ public class ModLootTableProvider extends LootTableProvider {
 		}
 
 		private void dropOtherOrSilkTouch(Block block, ItemLike item) {
-			add(block, createSelfDropDispatchTable(block, HAS_SILK_TOUCH, itemToBuilder(block, item)));
+			add(block, createSelfDropDispatchTable(block, hasSilkTouch(), itemToBuilder(block, item)));
 		}
 
 		private Builder<?> itemToBuilder(Block block, ItemLike item) {
@@ -139,7 +141,7 @@ public class ModLootTableProvider extends LootTableProvider {
 		/** Silk touch takes the whole block, keeping its density on the item; otherwise it drops raw ore. */
 		private void dropsOreChunks(Block block, Item chunk) {
 			add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(
-					LootItem.lootTableItem(block).when(HAS_SILK_TOUCH)
+					LootItem.lootTableItem(block).when(hasSilkTouch())
 						.apply(CopyBlockState.copyState(block).copy(BlockProperties.ORE_DENSITY))
 						.otherwise(oreToChunk(block, chunk, 6)))));
 		}

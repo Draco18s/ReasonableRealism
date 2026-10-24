@@ -39,9 +39,9 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		tag(ItemTags.IRON_ORES).add(HarderOres.ModItems.largedust_iron)
 			.add(HarderOres.ModBlocks.ore_hardiron.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_iron.asItem());
 
-		TagKey<Item> copDust = ItemTags.create(HardLib.getRL("forge", "dust/copper"));
-		TagKey<Item> goldDust = ItemTags.create(HardLib.getRL("forge", "dust/gold"));
-		TagKey<Item> ironDust = ItemTags.create(HardLib.getRL("forge", "dust/iron"));
+		TagKey<Item> copDust = ItemTags.create(HardLib.getRL("c", "dust/copper"));
+		TagKey<Item> goldDust = ItemTags.create(HardLib.getRL("c", "dust/gold"));
+		TagKey<Item> ironDust = ItemTags.create(HardLib.getRL("c", "dust/iron"));
 		
 		tag(copDust).add(HarderOres.ModItems.largedust_copper);
 		tag(goldDust).add(HarderOres.ModItems.largedust_gold);
@@ -64,14 +64,14 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		
 		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.winter_wheat_seeds);
 		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.weed_seeds);
-		TagKey<Item> copperNuggets = ItemTags.create(HardLib.getRL("forge", "nuggets/copper"));
+		TagKey<Item> copperNuggets = ItemTags.create(HardLib.getRL("c", "nuggets/copper"));
 		tag(copperNuggets).add(HarderOres.ModItems.copper_nugget);
 		tag(Tags.Items.NUGGETS).addTag(copperNuggets);//raw_materials/copper
 
-		TagKey<Item> rawCopperNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/copper")));
-		TagKey<Item> rawDiamondNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/diamond")));
-		TagKey<Item> rawGoldNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/gold")));
-		TagKey<Item> rawIronNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/iron")));
+		TagKey<Item> rawCopperNug = (ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets/copper")));
+		TagKey<Item> rawDiamondNug = (ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets/diamond")));
+		TagKey<Item> rawGoldNug = (ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets/gold")));
+		TagKey<Item> rawIronNug = (ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets/iron")));
 		
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawCopperNug);
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawDiamondNug);

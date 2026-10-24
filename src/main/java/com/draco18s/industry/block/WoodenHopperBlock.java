@@ -9,7 +9,6 @@ import com.draco18s.industry.entity.WoodenHopperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -20,13 +19,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class WoodenHopperBlock extends HopperBlock {
 
 	public WoodenHopperBlock() {
-		super(Properties.of(Material.WOOD).strength(2, 4).sound(SoundType.WOOD).requiresCorrectToolForDrops());
+		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 4).sound(SoundType.WOOD).requiresCorrectToolForDrops());
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class WoodenHopperBlock extends HopperBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+	protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
 		if (!world.isClientSide) {
 			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
 			if (tileEntity != null) {

@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.server.PlayerAdvancements;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 
 public class CriterionListener<T extends ICriterionTriggerInstanceTester>  {
 	private final PlayerAdvancements playerAdvancements;
@@ -30,11 +30,11 @@ public class CriterionListener<T extends ICriterionTriggerInstanceTester>  {
 		this.listeners.remove(listener);
 	}
 	
-	public void trigger(LootContext ctx) {
+	public void trigger(LootParams params) {
 		// Collected first: completing a criterion unregisters its listener, which would break the iteration.
 		List<CriterionTrigger.Listener<T>> met = new ArrayList<CriterionTrigger.Listener<T>>();
 		for (CriterionTrigger.Listener<T> listener : this.listeners) {
-			if(listener.getTriggerInstance().test(ctx)) {
+			if(listener.trigger().test(params)) {
 				met.add(listener);
 			}
 		}

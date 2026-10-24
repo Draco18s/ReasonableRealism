@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "id": "expindustry:machine_wood_hopper"
+        },
+        "title": {
+            "translate": "achievement.dropchute"
+        },
+        "description": {
+            "translate": "achievement.dropchute.desc"
+        }
+    },
+    "parent": "expindustry:root",
+    "criteria": {
+        "craft_hopper": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "expindustry:machine_wood_hopper"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "craft_hopper"
+        ]
+    ]
+}

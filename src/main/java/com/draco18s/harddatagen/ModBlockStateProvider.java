@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -134,10 +135,15 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		return models().cross(name, HardLib.getRL(modid, ModelProvider.ITEM_FOLDER + "/" + texture)).renderType("cutout");
 	}
 
+	/** A crop's age property (CropBlock.getAgeProperty is protected now). */
+	private static IntegerProperty age(CropBlock block) {
+		return (IntegerProperty)block.getStateDefinition().getProperty(BlockStateProperties.AGE_7.getName());
+	}
+
 	/** Weeds have 16 ages but 8 stages of growth to show; the later ages all look fully grown. */
 	private void weeds(CropBlock block) {
 		getVariantBuilder(block).forAllStates(state -> {
-			int stage = Math.min(state.getValue(block.getAgeProperty()), 7);
+			int stage = Math.min(state.getValue(age(block)), 7);
 			return new ConfiguredModel[] { new ConfiguredModel(models().crop(HarderFarming.MODID + ":block/weeds_stage_" + stage,
 					HarderFarming.getRL(ModelProvider.BLOCK_FOLDER + "/weeds_stage_" + stage)).renderType("cutout")) };
 		});
@@ -437,8 +443,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
 		modelName = registryName.getNamespace() + ":" + modelName;
 		ConfiguredModel[] models = new ConfiguredModel[1];
-		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(block.getAgeProperty()),
-				HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(block.getAgeProperty()))
+		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(age(block)),
+				HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(age(block)))
 				).renderType("cutout"));
 		return models;
 	}

@@ -1,0 +1,9 @@
+{
+  "type": "harderores:grinding",
+  "ingredients": {
+    "item": "oreflowers:aveloz"
+  },
+  "result": {
+    "item": "oreflowers:sticky_goo"
+  }
+}

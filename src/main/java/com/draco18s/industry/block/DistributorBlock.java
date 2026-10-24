@@ -8,7 +8,6 @@ import com.draco18s.industry.entity.DistributorBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -24,7 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 public class DistributorBlock extends HopperBlock {
 
 	public DistributorBlock() {
-		super(BlockBehaviour.Properties.copy(Blocks.HOPPER));
+		super(BlockBehaviour.Properties.ofFullCopy(Blocks.HOPPER));
 	}
 	
 	@Override
@@ -39,7 +38,7 @@ public class DistributorBlock extends HopperBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+	protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
 		if (!world.isClientSide) {
 			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
 			if (tileEntity != null) {

@@ -22,7 +22,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -35,7 +36,7 @@ public class AxelBlock extends ModEntityBlock {
 	public static final VoxelShape GEARS = gearBox();
 	
 	public AxelBlock() {
-		super(Properties.of(Material.WOOD).strength(2).sound(SoundType.WOOD));
+		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
 		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
 	}
 

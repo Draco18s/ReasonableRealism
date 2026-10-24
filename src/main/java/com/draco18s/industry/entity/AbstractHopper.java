@@ -10,6 +10,7 @@ import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -273,40 +274,49 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 
 	}
 
+	@Override
+	public boolean isGridAligned() {
+		return true;
+	}
+
 	public IItemHandler getInventory() {
 		return inventory;
 	}
 	
 	@Override
-	protected void saveAdditional(CompoundTag nbt) {
-		super.saveAdditional(nbt);
-		modSave(nbt);
+	protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveAdditional(nbt, registries);
+		modSave(nbt, registries);
 	}
 
 	@Override
-	public void load(CompoundTag nbt) {
-		super.load(nbt);
-		modLoad(nbt);
+	protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadAdditional(nbt, registries);
+		modLoad(nbt, registries);
 	}
-	
+
+	@Override
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+	    CompoundTag nbtTag = new CompoundTag();
+	    modSave(nbtTag, registries);
+	    return nbtTag;
+	}
+
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket(){
-	    CompoundTag nbtTag = new CompoundTag();
-	    modSave(nbtTag);
-	    ClientboundBlockEntityDataPacket packet = ClientboundBlockEntityDataPacket.create(this, (e) -> nbtTag);
-	    return packet;
+	    return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt){
-	    modLoad(pkt.getTag());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries){
+	    modLoad(pkt.getTag(), registries);
 	}
 	
-	protected void modSave(CompoundTag nbt) {
-		nbt.put("%s:inventory".formatted(ExpandedIndustry.MODID), inventory.serializeNBT());
+	protected void modSave(CompoundTag nbt, HolderLookup.Provider registries) {
+		nbt.put("%s:inventory".formatted(ExpandedIndustry.MODID), inventory.serializeNBT(registries));
 	}
 
-	public void modLoad(CompoundTag nbt) {
-		inventory.deserializeNBT(nbt.getCompound("%s:inventory".formatted(ExpandedIndustry.MODID)));
+	public void modLoad(CompoundTag nbt, HolderLookup.Provider registries) {
+		inventory.deserializeNBT(registries, nbt.getCompound("%s:inventory".formatted(ExpandedIndustry.MODID)));
 	}
 }

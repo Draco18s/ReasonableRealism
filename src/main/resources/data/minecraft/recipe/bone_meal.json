@@ -1,0 +1,15 @@
+{
+  "forge:condition": {
+    "type": "forge:false"
+  },
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:bone"
+    }
+  ],
+  "result": {
+    "id": "minecraft:bone_meal",
+    "count": 3
+  }
+}

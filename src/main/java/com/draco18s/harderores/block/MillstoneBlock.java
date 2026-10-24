@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -27,8 +27,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -37,7 +38,7 @@ import net.minecraftforge.items.IItemHandler;
 public class MillstoneBlock extends ModEntityBlock {
 
 	public MillstoneBlock() {
-		super(Properties.of(Material.STONE).strength(2).sound(SoundType.STONE).requiresCorrectToolForDrops());
+		super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(2).sound(SoundType.STONE).requiresCorrectToolForDrops());
 		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.MILL_ORIENTATION, MillstoneOrientation.NONE));
 	}
 
@@ -59,10 +60,9 @@ public class MillstoneBlock extends ModEntityBlock {
 
 	@Deprecated
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		MillstoneOrientation mill = state.getValue(BlockProperties.MILL_ORIENTATION);
-		ItemStack heldItem = player.getItemInHand(hand);
-		if(!mill.canAcceptInput || heldItem.isEmpty()) return InteractionResult.PASS;
+		if(!mill.canAcceptInput || heldItem.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		BlockEntity be = world.getBlockEntity(pos);
 		LazyOptional<IItemHandler> handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
 		return handler.map(inventory -> {
@@ -77,17 +77,17 @@ public class MillstoneBlock extends ModEntityBlock {
 
 				if(center != null && center.getPower() > 0) {
 					if(player instanceof ServerPlayer sPlayer) {
-						LootContext.Builder bld = new LootContext.Builder(sPlayer.getLevel())
+						LootParams.Builder bld = new LootParams.Builder(sPlayer.serverLevel())
 								.withParameter(MillstoneTrigger.POWER, center.getPower());
-						LootContext ctx = bld.create(MillstoneTrigger.requiredParams);
+						LootParams ctx = bld.create(MillstoneTrigger.requiredParams);
 						HardLibAPI.Advancements.MILL_BUILT.trigger(sPlayer, ctx);
 					}
 				}
 				
-				return InteractionResult.CONSUME;
+				return ItemInteractionResult.CONSUME;
 			}
-			return InteractionResult.PASS;
-		}).orElse(InteractionResult.PASS);
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}).orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
 	}
 
 	/*public static final VoxelShape CORNER_SE = box(0,0,0,10,16,10);

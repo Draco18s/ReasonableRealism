@@ -1,5 +1,6 @@
 package com.draco18s.flowers.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
@@ -8,13 +9,22 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.PlantType;
 
 public class SimpleFlower extends BushBlock {
+
+	/** Blocks are only written by codec for vanilla's block type listing; this one has no parameters to write. */
+	private final MapCodec<SimpleFlower> codec = MapCodec.unit(this);
+
+	@Override
+	protected MapCodec<? extends BushBlock> codec() {
+		return codec;
+	}
 	protected final PlantType type;
 	protected static final VoxelShape FLOWER_AABB = Block.box(4.8, 0.0, 4.8, 11.2, 16.0, 11.2);
 
@@ -28,7 +38,7 @@ public class SimpleFlower extends BushBlock {
 	}
 
 	public static Properties flowerProperties() {
-		return BlockBehaviour.Properties.of(Material.PLANT).noCollission().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ);
+		return BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).noCollission().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ);
 	}
 
 	@Override

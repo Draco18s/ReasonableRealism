@@ -2,6 +2,7 @@ package com.draco18s.hardlib.api.capability;
 
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -33,14 +34,14 @@ public class RawMechanicalPowerHandler implements IMechanicalPower, INBTSerializ
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
+	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
 		tag.putInt("mechpower", powerLevel);
 		return tag;
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag tag) {
+	public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
 		powerLevel = tag.getInt("mechpower");
 	}
 }

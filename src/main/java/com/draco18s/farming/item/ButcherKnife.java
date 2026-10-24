@@ -6,16 +6,25 @@ import com.draco18s.farming.HarderFarming;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
 public class ButcherKnife extends DiggerItem {
 	//private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.SLIME_BLOCK, Blocks.SPONGE, Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN, Blocks.MELON});
 	
+	private final float attackDamage;
+
 	public ButcherKnife(Tier material) {
-		super((material.getAttackDamageBonus()/2)-1, -1, material, HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE, new Properties().defaultDurability(material.getUses()/2));
+		super(material, HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE, new Properties().durability(material.getUses()/2)
+				.attributes(DiggerItem.createAttributes(material, (material.getAttackDamageBonus()/2)-1, -1)));
+		attackDamage = (material.getAttackDamageBonus()/2)-1 + material.getAttackDamageBonus();
+	}
+
+	/** The knife's attack damage (the attribute value, before the player's base 1). */
+	public float getAttackDamage() {
+		return attackDamage;
 	}
 
 	/*@Override
@@ -25,8 +34,8 @@ public class ButcherKnife extends DiggerItem {
 	}*/
 
 	@Override
-	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-		super.appendHoverText(stack, worldIn, tooltip, flagIn);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+		super.appendHoverText(stack, context, tooltip, flagIn);
 		tooltip.add(Component.translatable("tooltip.harderfarming.damagebonus", 10));
 	}
 }

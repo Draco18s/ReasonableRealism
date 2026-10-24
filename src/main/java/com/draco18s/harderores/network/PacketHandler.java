@@ -3,22 +3,20 @@ package com.draco18s.harderores.network;
 import com.draco18s.harderores.HarderOres;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.SimpleChannel;
 
 public final class PacketHandler
 {
 	public static class EffectsIDs {
 		public static int PROSPECTING = 1;
 	}
-	private static final String PROTOCOL_VERSION = Integer.toString(1);
-	private static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
+	private static final int PROTOCOL_VERSION = 1;
+	private static final SimpleChannel HANDLER = ChannelBuilder
 			.named(HarderOres.getRL("main_channel"))
-			.clientAcceptedVersions(PROTOCOL_VERSION::equals)
-			.serverAcceptedVersions(PROTOCOL_VERSION::equals)
-			.networkProtocolVersion(() -> PROTOCOL_VERSION)
+			.networkProtocolVersion(PROTOCOL_VERSION)
 			.simpleChannel();
 
 	public static void register() {
@@ -47,7 +45,7 @@ public final class PacketHandler
 	 */
 	public static <MSG> void sendToServer(MSG msg)
 	{
-		HANDLER.sendToServer(msg);
+		HANDLER.send(msg, PacketDistributor.SERVER.noArg());
 	}
 	
 	/**
@@ -56,9 +54,10 @@ public final class PacketHandler
 	 */
 	public static <MSG> void sendTo(MSG msg, ServerPlayer player)
 	{
-		if (!(player instanceof FakePlayer))
+		// (Fake players have no connection; Forge 1.21 dropped its FakePlayer class.)
+		if (player.connection != null)
 		{
-			HANDLER.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+			HANDLER.send(msg, PacketDistributor.PLAYER.with(player));
 		}
 	}
 }

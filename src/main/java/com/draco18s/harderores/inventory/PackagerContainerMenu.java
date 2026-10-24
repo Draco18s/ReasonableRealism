@@ -1,7 +1,7 @@
 package com.draco18s.harderores.inventory;
 
 import com.draco18s.harderores.HarderOres;
-import com.draco18s.hardlib.api.internal.CommonContainerMenu;
+import com.draco18s.harderores.recipe.PackingRecipe;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.hardlib.api.internal.inventory.SlotOutput;
 
@@ -9,12 +9,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class PackagerContainerMenu extends CommonContainerMenu {
+public class PackagerContainerMenu extends MachineRecipeBookMenu<PackingRecipe> {
 	private ContainerData data;
 
 	public PackagerContainerMenu(int windowID, Inventory inventory) {
@@ -22,7 +23,7 @@ public class PackagerContainerMenu extends CommonContainerMenu {
 	}
 
 	public PackagerContainerMenu(int windowID, Inventory inventory, IItemHandler inputs, IItemHandler outputs, Container container, ContainerData containerdata) {
-		super(HarderOres.ModContainerTypes.packager, windowID, 166, inventory, container);
+		super(HarderOres.ModContainerTypes.packager, windowID, 166, inventory, container, HarderOres.RecipeTypes.PACKING);
 
 		addSlot(new SlotItemHandler(inputs, 0, 71, 13));
 		addSlot(new SlotItemHandler(inputs, 1, 89, 13));
@@ -35,5 +36,10 @@ public class PackagerContainerMenu extends CommonContainerMenu {
 	/** Ticks left on the current pack, out of 100. */
 	public int getTime() {
 		return data.get(0);
+	}
+
+	@Override
+	public RecipeBookType getRecipeBookType() {
+		return HarderOres.RecipeBookTypes.PACKAGER;
 	}
 }

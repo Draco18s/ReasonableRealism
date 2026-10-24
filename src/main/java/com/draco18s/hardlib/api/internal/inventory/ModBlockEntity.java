@@ -1,6 +1,7 @@
 package com.draco18s.hardlib.api.internal.inventory;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -27,31 +28,35 @@ public abstract class ModBlockEntity extends BlockEntity {
 	}
 	
 	@Override
-	protected void saveAdditional(CompoundTag nbt) {
-		super.saveAdditional(nbt);
-		modSave(nbt);
+	protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveAdditional(nbt, registries);
+		modSave(nbt, registries);
 	}
 
 	@Override
-	public void load(CompoundTag nbt) {
-		super.load(nbt);
-		modLoad(nbt);
+	protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadAdditional(nbt, registries);
+		modLoad(nbt, registries);
 	}
-	
+
+	@Override
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+		CompoundTag nbtTag = new CompoundTag();
+		modSave(nbtTag, registries);
+		return nbtTag;
+	}
+
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket(){
-	    CompoundTag nbtTag = new CompoundTag();
-	    modSave(nbtTag);
-	    ClientboundBlockEntityDataPacket packet = ClientboundBlockEntityDataPacket.create(this, (e) -> nbtTag);
-	    return packet;
+	    return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt){
-	    modLoad(pkt.getTag());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries){
+	    modLoad(pkt.getTag(), registries);
 	}
 	
-	protected abstract void modSave(CompoundTag tag);
+	protected abstract void modSave(CompoundTag tag, HolderLookup.Provider registries);
 
-	protected abstract void modLoad(CompoundTag tag);
+	protected abstract void modLoad(CompoundTag tag, HolderLookup.Provider registries);
 }

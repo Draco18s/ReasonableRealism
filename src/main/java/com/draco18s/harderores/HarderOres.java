@@ -1,6 +1,7 @@
 package com.draco18s.harderores;
 
 import java.awt.Color;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -14,10 +15,6 @@ import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.block.WindvaneBlock;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.block.ore.LimoniteBlock;
-import com.draco18s.harderores.enchantment.ProspectorEnchantment;
-import com.draco18s.harderores.enchantment.PulverizeEnchantment;
-import com.draco18s.harderores.enchantment.ShatterEnchantment;
-import com.draco18s.harderores.enchantment.VeinCrackerEnchantment;
 import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.harderores.entity.MillstoneBlockEntity;
 import com.draco18s.harderores.entity.PackagerBlockEntity;
@@ -34,33 +31,36 @@ import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.harderores.recipe.PackingRecipe;
 import com.draco18s.harderores.recipe.SiftingRecipe;
 import com.draco18s.hardlib.CogHelper;
-import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
+import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
@@ -77,14 +77,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeTier;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import net.minecraftforge.registries.RegistryObject;
@@ -98,6 +99,7 @@ public class HarderOres {
 
 	@SuppressWarnings("deprecation")
 	public HarderOres() {
+		registerCreativeTab();
 		/*final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener((FMLLoadCompleteEvent event) -> {
 			FlowerIntegration.registerFlowerGen();
@@ -107,22 +109,23 @@ public class HarderOres {
 		CogHelper.addCogModule("HarderVanillaOres.xml");
 		CogHelper.addCogModule("HarderLimonite.xml");
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
+		RecipeBookTypes.init();
 		HardLibAPI.hardOres = new OreBlockInfo();
-		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of(Material.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());
+		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of().mapColor(MapColor.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());
 		
 		IBlockItemFactory<BlockItem> blockItemFactory = (Block blockIn, Item.Properties builder) -> new HardOreItem(blockIn, builder);
 		float hardMult = 1.5f;
 		float resistMult = 1.0f;
 		
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0x3a685a), Block.Properties.of(Material.STONE).strength(Blocks.COPPER_ORE.defaultDestroyTime() * hardMult, Blocks.COPPER_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardcopper"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(5, new Color(0x5decf5), Block.Properties.of(Material.STONE).strength(Blocks.DIAMOND_ORE.defaultDestroyTime() * hardMult, Blocks.DIAMOND_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddiamond"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0xfacf3b), Block.Properties.of(Material.STONE).strength(Blocks.GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardgold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0xd8af93), Block.Properties.of(Material.STONE).strength(Blocks.IRON_ORE.defaultDestroyTime() * hardMult, Blocks.IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardiron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0x3a685a), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.COPPER_ORE.defaultDestroyTime() * hardMult, Blocks.COPPER_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardcopper"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(5, new Color(0x5decf5), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DIAMOND_ORE.defaultDestroyTime() * hardMult, Blocks.DIAMOND_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddiamond"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0xfacf3b), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardgold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(2, new Color(0xd8af93), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.IRON_ORE.defaultDestroyTime() * hardMult, Blocks.IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_hardiron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 		
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0x3a685a), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_COPPER_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_COPPER_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_copper"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(3, new Color(0x5decf5), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_DIAMOND_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_DIAMOND_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_diamond"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_gold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
-		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xd8af93), Block.Properties.of(Material.STONE).strength(Blocks.DEEPSLATE_IRON_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_iron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0x3a685a), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_COPPER_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_COPPER_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_copper"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(3, new Color(0x5decf5), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_DIAMOND_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_DIAMOND_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_diamond"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_gold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
+		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xd8af93), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_IRON_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_iron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 
 		RegistryObject<Block> sluice = EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SluiceBlockEntity::new, sluice.get()).build(null), getRL("sluice"));
@@ -140,10 +143,10 @@ public class HarderOres {
 			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
 		}
 
-		EasyRegistry.registerItem(() -> new PickaxeItem(ModItemTiers.DIAMOND_STUD, 1, -2.8F, new Item.Properties()), getRL("diamond_studded_pick"));
-		EasyRegistry.registerItem(() -> new AxeItem(ModItemTiers.DIAMOND_STUD, 1.5F, -3.0F, new Item.Properties()), getRL("diamond_studded_axe"));
-		EasyRegistry.registerItem(() -> new ShovelItem(ModItemTiers.DIAMOND_STUD, 5.0F, -3.0F, new Item.Properties()), getRL("diamond_studded_shovel"));
-		EasyRegistry.registerItem(() -> new HoeItem(ModItemTiers.DIAMOND_STUD, 2, -0.5F, new Item.Properties()), getRL("diamond_studded_hoe"));
+		EasyRegistry.registerItem(() -> new PickaxeItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 1, -2.8F))), getRL("diamond_studded_pick"));
+		EasyRegistry.registerItem(() -> new AxeItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 1.5F, -3.0F))), getRL("diamond_studded_axe"));
+		EasyRegistry.registerItem(() -> new ShovelItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 5.0F, -3.0F))), getRL("diamond_studded_shovel"));
+		EasyRegistry.registerItem(() -> new HoeItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 2, -0.5F))), getRL("diamond_studded_hoe"));
 		
 		RegistryObject<Block> sifter = EasyRegistry.registerBlock(SifterBlock::new, getRL("machine_sifter"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SifterBlockEntity::new, sifter.get()).build(null), getRL("machine_sifter"));
@@ -159,13 +162,9 @@ public class HarderOres {
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(PackagerBlockEntity::new, packager.get()).build(null), getRL("packager"));
 		EasyRegistry.registerMenuType(getRL("packager"),() -> new MenuType<>(PackagerContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
-		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("prospector"),() -> new ProspectorEnchantment(new EquipmentSlot[] { EquipmentSlot.OFFHAND })));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("cracker"),() -> new VeinCrackerEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("shatter"),() -> new ShatterEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("pulverize"),() -> new PulverizeEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
 		
-		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getParticleType(false, BlockParticleOption.DESERIALIZER, BlockParticleOption::codec)));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getBlockParticleType(false)));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getBlockParticleType(false)));
 		
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
@@ -174,26 +173,32 @@ public class HarderOres {
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("packing"), () -> RecipeType.simple(getRL("packing"))));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("packing"), () -> new PackingRecipe.Serializer()));
 		
-		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType>>(
-				getRL("set_count"),() -> new LootItemFunctionType(new HarderSetCount.Serializer())));
+		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType<?>>>(
+				getRL("set_count"),() -> new LootItemFunctionType<>(HarderSetCount.CODEC)));
 	}
 	
-	@SuppressWarnings("deprecation")
-	private static <T extends ParticleOptions> ParticleType<T> getParticleType(boolean bypassParticleLimit, ParticleOptions.Deserializer<T> deserializer, final Function<ParticleType<T>, Codec<T>> codec) {
-		return new ParticleType<T>(bypassParticleLimit, deserializer) {
-			public Codec<T> codec() {
-				return codec.apply(this);
+	/** A particle type carrying a block state (as vanilla's block particles do). */
+	private static ParticleType<BlockParticleOption> getBlockParticleType(boolean overrideLimiter) {
+		return new ParticleType<BlockParticleOption>(overrideLimiter) {
+			@Override
+			public MapCodec<BlockParticleOption> codec() {
+				return BlockParticleOption.codec(this);
+			}
+
+			@Override
+			public StreamCodec<? super RegistryFriendlyByteBuf, BlockParticleOption> streamCodec() {
+				return BlockParticleOption.streamCodec(this);
 			}
 		};
 	}
 
 	public static class LootFunctions {
-		public static RegistryObject<LootItemFunctionType> harderSetCountReg;
+		public static RegistryObject<LootItemFunctionType<?>> harderSetCountReg;
 	}
 	
 	public static class ModItemTiers {
 		public static final Supplier<Ingredient> stud_repair_item = () -> Ingredient.of(ModItems.orechunk_diamond);
-		public static final Tier DIAMOND_STUD = new ForgeTier(3, 750, 7f, 2f, 5, BlockTags.NEEDS_DIAMOND_TOOL, stud_repair_item);
+		public static final Tier DIAMOND_STUD = new ForgeTier(750, 7f, 2f, 5, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, stud_repair_item, BlockTags.NEEDS_DIAMOND_TOOL);
 	}
 	
 	public static class RecipeTypes {
@@ -205,6 +210,15 @@ public class HarderOres {
 		public static RecipeType<PackingRecipe> PACKING = null;
 	}
 	
+	/** Recipe books of the sifter and packager screens (extending the enum, so made as early as possible). */
+	public static class RecipeBookTypes {
+		public static final RecipeBookType SIFTER = RecipeBookType.create("HARDERORES_SIFTER");
+		public static final RecipeBookType PACKAGER = RecipeBookType.create("HARDERORES_PACKAGER");
+
+		/** Loads the class, adding the types, before anything lists RecipeBookType's values. */
+		static void init() { }
+	}
+
 	public static class RecipeSerializers {
 		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = MODID+":"+"sifting")
 		public static RecipeSerializer<?> SIFTING;
@@ -269,11 +283,11 @@ public class HarderOres {
 		}
 		public static class Items {
 			public static final TagKey<Item> GRANULAR = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, getRL("granular"));
-			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets"));
-			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/ore"));
-			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/copper"));
-			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/gold"));
-			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/iron"));
+			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets"));
+			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/ore"));
+			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/copper"));
+			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/gold"));
+			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/iron"));
 		}
 	}
 
@@ -373,18 +387,19 @@ public class HarderOres {
 		public static final MenuType<PackagerContainerMenu> packager = null;
 	}
 
+	/** Data-driven since 1.21 (data/harderores/enchantment); read levels with HardLib.getEnchantmentLevel. */
 	public static class ModEnchantments {
-		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"prospector")
-		public static final Enchantment prospector = null;
-		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"cracker")
-		public static final Enchantment cracker = null;
+		public static final ResourceKey<Enchantment> prospector = key("prospector");
+		public static final ResourceKey<Enchantment> cracker = key("cracker");
 		/**
 		 * Ore Breaker
 		 */
-		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"shatter")
-		public static final Enchantment shatter = null;
-		@ObjectHolder(registryName = "minecraft:enchantment", value = MODID+":"+"pulverize")
-		public static final Enchantment pulverize = null;
+		public static final ResourceKey<Enchantment> shatter = key("shatter");
+		public static final ResourceKey<Enchantment> pulverize = key("pulverize");
+
+		private static ResourceKey<Enchantment> key(String name) {
+			return ResourceKey.create(Registries.ENCHANTMENT, getRL(name));
+		}
 	}
 
 	public static class ModFeatures {
@@ -398,9 +413,8 @@ public class HarderOres {
 	}
 	
 	/** Everything Harder Ores adds, including the hard ores (at full density) and books of its enchantments. */
-	@SubscribeEvent
-	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
-		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+	private static void registerCreativeTab() {
+		EasyRegistry.registerCreativeTab(getRL("creative_tab"), builder -> builder
 			.title(Component.translatable("itemGroup." + MODID))
 			.icon(() -> new ItemStack(ModBlocks.machine_millstone))
 			.displayItems((params, output) -> {
@@ -428,18 +442,22 @@ public class HarderOres {
 				output.accept(ModItems.diamond_studded_axe);
 				output.accept(ModItems.diamond_studded_shovel);
 				output.accept(ModItems.diamond_studded_hoe);
-				for(Enchantment ench : new Enchantment[] {ModEnchantments.shatter, ModEnchantments.cracker, ModEnchantments.pulverize, ModEnchantments.prospector}) {
-					for(int lv = 1; lv <= ench.getMaxLevel(); lv++) {
-						output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(ench, lv)));
+				params.holders().lookup(Registries.ENCHANTMENT).ifPresent(enchantments -> {
+					for(ResourceKey<Enchantment> key : List.of(ModEnchantments.shatter, ModEnchantments.cracker, ModEnchantments.pulverize, ModEnchantments.prospector)) {
+						enchantments.get(key).ifPresent(ench -> {
+							for(int lv = 1; lv <= ench.value().getMaxLevel(); lv++) {
+								output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(ench, lv)));
+							}
+						});
 					}
-				}
+				});
 			}));
 	}
 	
 	@SubscribeEvent
-	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event)
+	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event)
     {
-		CreativeModeTab tab = event.getTab();
+		ResourceKey<CreativeModeTab> tab = event.getTabKey();
 		if (tab == CreativeModeTabs.NATURAL_BLOCKS) {
 			event.accept(new ItemStack(ModBlocks.ore_limonite, 1));
 		}
