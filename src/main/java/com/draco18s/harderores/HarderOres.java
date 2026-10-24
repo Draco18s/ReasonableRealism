@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import com.draco18s.harderores.block.AxelBlock;
 import com.draco18s.harderores.block.MillstoneBlock;
+import com.draco18s.harderores.block.PackagerBlock;
 import com.draco18s.harderores.block.SifterBlock;
 import com.draco18s.harderores.block.SluiceBlock;
 import com.draco18s.harderores.block.WindvaneBlock;
@@ -19,8 +20,10 @@ import com.draco18s.harderores.enchantment.ShatterEnchantment;
 import com.draco18s.harderores.enchantment.VeinCrackerEnchantment;
 import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.harderores.entity.MillstoneBlockEntity;
+import com.draco18s.harderores.entity.PackagerBlockEntity;
 import com.draco18s.harderores.entity.SifterBlockEntity;
 import com.draco18s.harderores.entity.SluiceBlockEntity;
+import com.draco18s.harderores.inventory.PackagerContainerMenu;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.harderores.item.HardOreItem;
 import com.draco18s.harderores.loot.function.HarderSetCount;
@@ -28,6 +31,7 @@ import com.draco18s.harderores.network.PacketHandler;
 import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.recipe.GrindingRecipe;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
+import com.draco18s.harderores.recipe.PackingRecipe;
 import com.draco18s.harderores.recipe.SiftingRecipe;
 import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
@@ -145,6 +149,9 @@ public class HarderOres {
 		EasyRegistry.registerBlock(AxelBlock::new, getRL("machine_axel"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(AxelBlockEntity::new, axel.get()).build(null), getRL("machine_axel"));
 		EasyRegistry.registerBlock(WindvaneBlock::new, getRL("machine_windvane"), new Item.Properties());
+		RegistryObject<Block> packager = EasyRegistry.registerBlock(PackagerBlock::new, getRL("packager"), new Item.Properties());
+		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(PackagerBlockEntity::new, packager.get()).build(null), getRL("packager"));
+		EasyRegistry.registerMenuType(getRL("packager"),() -> new MenuType<>(PackagerContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
 		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("prospector"),() -> new ProspectorEnchantment(new EquipmentSlot[] { EquipmentSlot.OFFHAND })));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.ENCHANTMENTS, new Tuple<ResourceLocation,Supplier<Enchantment>>(getRL("cracker"),() -> new VeinCrackerEnchantment(new EquipmentSlot[] { EquipmentSlot.MAINHAND })));
@@ -158,6 +165,8 @@ public class HarderOres {
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("packing"), () -> RecipeType.simple(getRL("packing"))));
+		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("packing"), () -> new PackingRecipe.Serializer()));
 		
 		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType>>(
 				getRL("set_count"),() -> new LootItemFunctionType(new HarderSetCount.Serializer())));
@@ -186,6 +195,8 @@ public class HarderOres {
 		public static RecipeType<SiftingRecipe> SIFTING = null;
 		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"grinding")
 		public static RecipeType<GrindingRecipe> GRINDING = null;
+		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"packing")
+		public static RecipeType<PackingRecipe> PACKING = null;
 	}
 	
 	public static class RecipeSerializers {
@@ -193,6 +204,8 @@ public class HarderOres {
 		public static RecipeSerializer<?> SIFTING;
 		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = MODID+":"+"grinding")
 		public static RecipeSerializer<?> GRINDING;
+		@ObjectHolder(registryName = "minecraft:recipe_serializer", value = MODID+":"+"packing")
+		public static RecipeSerializer<?> PACKING;
 	}
 	
 	/*public HarderOres() {
@@ -267,6 +280,8 @@ public class HarderOres {
 		public static final Block machine_windvane = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_sifter")
 		public static final Block machine_sifter = null;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"packager")
+		public static final Block packager = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddiamond")
 		public static final Block ore_harddiamond = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_hardcopper")
@@ -340,7 +355,8 @@ public class HarderOres {
 		public static final BlockEntityType<AxelBlockEntity> machine_axel = null;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"sluice")
 		public static final BlockEntityType<SluiceBlockEntity> sluice = null;
-		//public static final BlockEntityType<SifterTileEntity> packager = null;
+		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"packager")
+		public static final BlockEntityType<PackagerBlockEntity> packager = null;
 	}
 
 	public static class ModParticleTypes {
@@ -353,7 +369,8 @@ public class HarderOres {
 	public static class ModContainerTypes {
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_sifter")
 		public static final MenuType<SifterContainerMenu> machine_sifter = null;
-		//public static final MenuType<PackagerContainer> packager = null;
+		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"packager")
+		public static final MenuType<PackagerContainerMenu> packager = null;
 	}
 
 	public static class ModEnchantments {
@@ -408,6 +425,7 @@ public class HarderOres {
         	event.accept(ModBlocks.machine_axel);
         	event.accept(ModBlocks.machine_windvane);
         	event.accept(ModBlocks.machine_sifter);
+        	event.accept(ModBlocks.packager);
         	event.accept(ModBlocks.sluice);
         }
         if (tab == CreativeModeTabs.INGREDIENTS) {

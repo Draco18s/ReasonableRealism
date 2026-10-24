@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.loot.function.HarderSetCount;
 import com.draco18s.industry.ExpandedIndustry;
 
+import net.minecraft.advancements.critereon.EntityFlagsPredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -19,6 +22,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -28,7 +34,9 @@ import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ModLootTableProvider extends LootTableProvider {
 	public ModLootTableProvider(PackOutput output)
@@ -44,6 +52,8 @@ public class ModLootTableProvider extends LootTableProvider {
 			List<Block> knownBlocks = new ArrayList<Block>();
 			knownBlocks.add(HarderFarming.ModBlocks.crop_winter_wheat);
 			knownBlocks.add(HarderFarming.ModBlocks.ore_salt);
+			knownBlocks.add(HarderFarming.ModBlocks.crop_weeds);
+			knownBlocks.add(HarderFarming.ModBlocks.tanner);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
@@ -58,10 +68,12 @@ public class ModLootTableProvider extends LootTableProvider {
 			knownBlocks.add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 			knownBlocks.add(HarderOres.ModBlocks.ore_limonite);
 			knownBlocks.add(HarderOres.ModBlocks.machine_sifter);
+			knownBlocks.add(HarderOres.ModBlocks.packager);
 			knownBlocks.add(HarderOres.ModBlocks.machine_millstone);
 			knownBlocks.add(HarderOres.ModBlocks.machine_axel);
 			knownBlocks.add(HarderOres.ModBlocks.machine_windvane);
 			knownBlocks.add(HarderOres.ModBlocks.sluice);
+			OreFlowers.FLOWERS.values().forEach(flower -> knownBlocks.add(flower.get()));
 			return knownBlocks;
 		}
 
@@ -85,6 +97,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_iron, HarderOres.ModItems.orechunk_iron);
 			
 			dropSelf(HarderOres.ModBlocks.machine_sifter);
+			dropSelf(HarderOres.ModBlocks.packager);
 			dropSelf(HarderOres.ModBlocks.machine_millstone);
 			dropSelf(HarderOres.ModBlocks.machine_axel);
 			dropSelf(HarderOres.ModBlocks.machine_windvane);
@@ -92,6 +105,25 @@ public class ModLootTableProvider extends LootTableProvider {
 			
 			LootItemCondition.Builder cropMinAge = LootItemBlockStatePropertyCondition.hasBlockStateProperties(HarderFarming.ModBlocks.crop_winter_wheat).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, 7));
 			add(HarderFarming.ModBlocks.crop_winter_wheat, createCropDrops(HarderFarming.ModBlocks.crop_winter_wheat, Items.WHEAT, HarderFarming.ModItems.winter_wheat_seeds, cropMinAge));
+			dropOther(HarderFarming.ModBlocks.crop_weeds, HarderFarming.ModItems.weed_seeds);
+			dropSelf(HarderFarming.ModBlocks.tanner);
+
+			for(RegistryObject<Block> flower : OreFlowers.FLOWERS.values()) {
+				if(flower.get() instanceof DoublePlantBlock) {
+					add(flower.get(), createSinglePropConditionTable(flower.get(), DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
+				}
+				else {
+					dropSelf(flower.get());
+				}
+			}
+			// Aveloz sap is an irritant: it only comes away whole if harvested carefully.
+			LootItemCondition.Builder careful = LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.entity().flags(EntityFlagsPredicate.Builder.flags().setCrouching(true).build()))
+					.or(HAS_SHEARS).or(HAS_SILK_TOUCH);
+			LootItemCondition.Builder lowerHalf = LootItemBlockStatePropertyCondition.hasBlockStateProperties(OreFlowers.ModBlocks.aveloz)
+					.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
+			add(OreFlowers.ModBlocks.aveloz, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
+					.add(LootItem.lootTableItem(OreFlowers.ModBlocks.aveloz).when(careful).when(lowerHalf))));
 		}
 
 		private void dropOtherOrSilkTouch(Block block, ItemLike item) {

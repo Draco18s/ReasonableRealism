@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_top",
+  "textures": {
+    "side": "harderores:block/packager-side",
+    "top": "harderores:block/packager-top"
+  }
+}

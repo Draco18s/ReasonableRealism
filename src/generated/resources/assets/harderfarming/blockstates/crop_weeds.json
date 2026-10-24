@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "harderfarming:block/weeds_stage_0"
+    },
+    "age=1": {
+      "model": "harderfarming:block/weeds_stage_1"
+    },
+    "age=10": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=11": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=12": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=13": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=14": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=15": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=2": {
+      "model": "harderfarming:block/weeds_stage_2"
+    },
+    "age=3": {
+      "model": "harderfarming:block/weeds_stage_3"
+    },
+    "age=4": {
+      "model": "harderfarming:block/weeds_stage_4"
+    },
+    "age=5": {
+      "model": "harderfarming:block/weeds_stage_5"
+    },
+    "age=6": {
+      "model": "harderfarming:block/weeds_stage_6"
+    },
+    "age=7": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=8": {
+      "model": "harderfarming:block/weeds_stage_7"
+    },
+    "age=9": {
+      "model": "harderfarming:block/weeds_stage_7"
+    }
+  }
+}

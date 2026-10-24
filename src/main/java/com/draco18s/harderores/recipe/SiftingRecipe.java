@@ -25,12 +25,14 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 	protected int ingredientQuantity;
 	protected Ingredient input;
 	protected Ingredient result;
-	
-	public SiftingRecipe(ResourceLocation regName, Ingredient in, int qntIn, Ingredient out) {
+	protected int resultCount;
+
+	public SiftingRecipe(ResourceLocation regName, Ingredient in, int qntIn, Ingredient out, int outputCount) {
 		registryName = regName;
 		input = in;
 		ingredientQuantity = qntIn;
 		result = out;
+		resultCount = outputCount;
 	}
 	
 	public int getIngredientQuantity() {
@@ -63,8 +65,9 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 
 	public ItemStack getResultItem(RegistryAccess regAccess) {
 		Collection<ItemStack> list = Arrays.asList(result.getItems());
-		return list.stream().findFirst().orElse(ItemStack.EMPTY);
+		return list.stream().findFirst().map(stack -> stack.copyWithCount(resultCount)).orElse(ItemStack.EMPTY);
 	}
+
 
 	@Override
 	public ResourceLocation getId() {
@@ -86,14 +89,14 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 		public SiftingRecipe fromJson(ResourceLocation reg, JsonObject jsonObject) {
 			return new SiftingRecipe(reg,
 					Ingredient.fromJson(jsonObject.get("ingredients")), jsonObject.get("ingredientQuantity").getAsInt(),
-					Ingredient.fromJson(jsonObject.get("result")));
+					Ingredient.fromJson(jsonObject.get("result")), GrindingRecipe.resultCount(jsonObject));
 		}
 
 		@Override
 		public @Nullable SiftingRecipe fromNetwork(ResourceLocation reg, FriendlyByteBuf buffer) {
 			return new SiftingRecipe(reg,
 					Ingredient.fromNetwork(buffer), buffer.readInt(),
-					Ingredient.fromNetwork(buffer));
+					Ingredient.fromNetwork(buffer), buffer.readVarInt());
 		}
 
 		@Override
@@ -101,6 +104,7 @@ public class SiftingRecipe implements Recipe<SifterBlockEntity> {
 			recipe.input.toNetwork(buffer);
 			buffer.writeInt(recipe.ingredientQuantity);
 			recipe.result.toNetwork(buffer);
+			buffer.writeVarInt(recipe.resultCount);
 		}
 	}
 }

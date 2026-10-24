@@ -72,12 +72,25 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		
 		sluicemodel(HarderOres.ModBlocks.sluice, prebuiltModel(new ResourceLocation(HarderOres.MODID,"sluice-1")));
 		simpleBlockWithItem(HarderOres.ModBlocks.machine_sifter, prebuiltModel(new ResourceLocation(HarderOres.MODID,"machine_sifter")));
+		simpleBlockWithItem(HarderOres.ModBlocks.packager, models().cubeTop("packager",
+				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/packager-side"),
+				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/packager-top")));
 		extHopper(ExpandedIndustry.ModBlocks.machine_wood_hopper, new ResourceLocation(ExpandedIndustry.MODID, "wood_hopper"));
 		extHopper(ExpandedIndustry.ModBlocks.machine_distributor, new ResourceLocation(ExpandedIndustry.MODID, "distributor"));
 		axel(HarderOres.ModBlocks.machine_axel);
 		windvane(HarderOres.ModBlocks.machine_windvane);
 		
 		crops((CropBlock)HarderFarming.ModBlocks.crop_winter_wheat, "block/winter_wheat_stage_", "winter_wheat_stage_");
+		weeds((CropBlock)HarderFarming.ModBlocks.crop_weeds);
+	}
+
+	/** Weeds have 16 ages but 8 stages of growth to show; the later ages all look fully grown. */
+	private void weeds(CropBlock block) {
+		getVariantBuilder(block).forAllStates(state -> {
+			int stage = Math.min(state.getValue(block.getAgeProperty()), 7);
+			return new ConfiguredModel[] { new ConfiguredModel(models().crop(HarderFarming.MODID + ":block/weeds_stage_" + stage,
+					new ResourceLocation(HarderFarming.MODID, ModelProvider.BLOCK_FOLDER + "/weeds_stage_" + stage)).renderType("cutout")) };
+		});
 	}
 
 	private void sluicemodel(Block block, ModelFile prebuiltModel) {
@@ -376,7 +389,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		ConfiguredModel[] models = new ConfiguredModel[1];
 		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(block.getAgeProperty()),
 				new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(block.getAgeProperty()))
-				));
+				).renderType("cutout"));
 		return models;
 	}
 

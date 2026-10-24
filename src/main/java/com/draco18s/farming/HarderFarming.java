@@ -2,13 +2,21 @@ package com.draco18s.farming;
 
 import java.util.function.Supplier;
 
+import com.draco18s.farming.block.CropWeedsBlock;
 import com.draco18s.farming.block.CropWinterWheatBlock;
+import com.draco18s.farming.block.TannerBlock;
+import com.draco18s.farming.entity.TannerBlockEntity;
 import com.draco18s.farming.item.ButcherKnife;
+import com.draco18s.farming.item.ClimateGaugeItem;
 import com.draco18s.farming.item.WinterSeedsItem;
 import com.draco18s.farming.loot.GrassLootModifier;
+import com.draco18s.farming.loot.RawLeatherModifier;
+import com.draco18s.farming.util.CropManager;
 import com.draco18s.harderfarming.block.SaltOreBlock;
 import com.draco18s.harderfarming.loot.TemperatureCheck;
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.registries.Registries;
@@ -18,14 +26,17 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import net.minecraftforge.registries.RegistryObject;
@@ -36,12 +47,22 @@ public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
+		HardLibAPI.hardCrops = new CropManager();
 		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"));
 		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
 		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
+		RegistryObject<Block> weeds = EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
+		EasyRegistry.registerItem(() -> new ItemNameBlockItem(weeds.get(), new Item.Properties()), getRL("weed_seeds"));
+		RegistryObject<Block> tanner = EasyRegistry.registerBlock(TannerBlock::new, getRL("tanner"), new Item.Properties());
+		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(TannerBlockEntity::new, tanner.get()).build(null), getRL("tanner"));
+		EasyRegistry.registerItem(ClimateGaugeItem.Thermometer::new, getRL("thermometer"));
+		EasyRegistry.registerItem(ClimateGaugeItem.Hydrometer::new, getRL("hydrometer"));
 		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
 			new Tuple<ResourceLocation,Supplier<Codec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
+		);
+		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
+			new Tuple<ResourceLocation,Supplier<Codec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
 		);
 		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemConditionType>>(
 				getRL("can_snow"),() -> new LootItemConditionType(new TemperatureCheck.Serializer())));
@@ -50,6 +71,7 @@ public class HarderFarming {
 				"tinydust_sugar",
 				"tinydust_flour", "largedust_flour",
 				"salt_chunk", "salt",
+				"raw_leather",
 		};
 		for(String it : itemNames) {
 			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
@@ -61,7 +83,8 @@ public class HarderFarming {
 			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation("minecraft", "mineable/knife"));
 		}
 		public static class Items {
-			
+			/** What a tanning rack accepts as salt. */
+			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dusts/salt"));
 		}
 	}
 	
@@ -74,6 +97,15 @@ public class HarderFarming {
 		public static final Block crop_winter_wheat = null;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_salt")
 		public static final Block ore_salt = null;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"crop_weeds")
+		public static final Block crop_weeds = null;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"tanner")
+		public static final Block tanner = null;
+	}
+
+	public static class ModBlockEntities {
+		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"tanner")
+		public static final BlockEntityType<TannerBlockEntity> tanner = null;
 	}
 	
 	public static class ModItems {
@@ -96,6 +128,17 @@ public class HarderFarming {
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"butcher_knife")
 		public static final Item butcher_knife = null;
+
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"weed_seeds")
+		public static final Item weed_seeds = null;
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"raw_leather")
+		public static final Item raw_leather = null;
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"thermometer")
+		public static final Item thermometer = null;
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"hydrometer")
+		public static final Item hydrometer = null;
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tanner")
+		public static final Item tanner = null;
 	}
 	
 	@SubscribeEvent
@@ -106,6 +149,42 @@ public class HarderFarming {
 			event.accept(ModItems.tinydust_flour);
 			event.accept(ModItems.largedust_flour);
 		}
+		if(tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+			event.accept(ModItems.thermometer);
+			event.accept(ModItems.hydrometer);
+		}
+		if(tab == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+			event.accept(ModItems.tanner);
+		}
+		if(tab == CreativeModeTabs.INGREDIENTS) {
+			event.accept(ModItems.raw_leather);
+		}
+		if(tab == CreativeModeTabs.NATURAL_BLOCKS) {
+			event.accept(ModItems.weed_seeds);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onCommonSetup(final FMLCommonSetupEvent event) {
+		event.enqueueWork(HarderFarming::registerCropData);
+	}
+
+	/**
+	 * The climate each crop prefers, as offsets from the biome's: positive temperature is "cold native",
+	 * positive rainfall is "dry native". (1.12 also shifted these by season; the season offsets are not used.)
+	 */
+	private static void registerCropData() {
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.PUMPKIN_STEM, new CropWeatherOffsets(0.2f,0,0,0));
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.WHEAT, new CropWeatherOffsets(0,0,0,0));//no offsets!
+		HardLibAPI.hardCrops.putCropWeather(ModBlocks.crop_winter_wheat, new CropWeatherOffsets(0.8f,0.2f,0,0));//grows best when cold
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.MELON_STEM, new CropWeatherOffsets(-0.4f,0,0,0));//cold sensitive
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.POTATOES, new CropWeatherOffsets(0.7f,0,0,0));//potatoes are a "cool season" crop
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.CARROTS, new CropWeatherOffsets(0.1f,0.2f,0,0));//ideal growth between 60 and 70 F
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.SUGAR_CANE, new CropWeatherOffsets(-0.4f,-0.3f,0,0));//reeds grow warm and wet
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.BEETROOTS, new CropWeatherOffsets(0.25f,0.1f,0,0));//beets grow cool and slightly dry
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.COCOA, new CropWeatherOffsets(-0.2f,-0.6f,0,0));//warm and VERY wet
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.NETHER_WART, new CropWeatherOffsets(-1.2f,1.2f,0,0));//HOT HOT HOT
+		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new CropWeatherOffsets(0.6f,-0.1f,0,0));//Cool and wet
 	}
 
 	private static ResourceLocation getRL(String name) {

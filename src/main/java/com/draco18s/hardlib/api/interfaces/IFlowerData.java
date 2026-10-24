@@ -2,67 +2,66 @@ package com.draco18s.hardlib.api.interfaces;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.capability.wrappers.BlockWrapper;
 
 public interface IFlowerData {
 	/**
-	 * Finds surface, attempts to spawn flowers for all OreFlowerData objects mapped to the ore blockstate
+	 * Finds the surface above an ore block and, by chance, spawns a cluster of each of the ore's indicator plants
+	 * nearby. During worldgen (a WorldGenRegion) only the writable part of the region gets flowers.
 	 * @param world
-	 * @param pos
-	 * @param ore - A blockwrapper state of the ore at the specified BlockPos
+	 * @param pos - the ore block
+	 * @param ore - the wrapper registered for the ore block at pos
 	 */
-	void trySpawnFlowerCluster(Level world, BlockPos pos, BlockWrapper ore);
-	
+	void trySpawnFlowerCluster(LevelAccessor world, BlockPos pos, BlockWrapper ore);
+
 	/**
-	 * Spawns a cluster of flowers (or other block passed) in the given location, radius, and number.
+	 * Spawns a cluster of flowers (or other plant) around the given location. Two-tall plants are placed whole.
 	 * @param world
-	 * @param pos
-	 * @param ore - the state of the ore at the specified BlockPos
-	 * @param radius
-	 * @param num
-	 * @param clusterRadius
-	 * @param canBeTallPlant
-	 * @param tallChance - if the flower can be two blocks tall, weighted probability of doing so
+	 * @param pos - the cluster's center; plants are placed up to 5 blocks above or below it
+	 * @param flowerState
+	 * @param r
+	 * @param num - how many plants
+	 * @param clusterRadius - the width of the cluster
 	 */
-	void doSpawnFlowerCluster(Level world, BlockPos pos, BlockState flowerState, Random r, int num, int clusterRadius, boolean canBeTallPlant);
-	
+	void doSpawnFlowerCluster(LevelAccessor world, BlockPos pos, BlockState flowerState, RandomSource r, int num, int clusterRadius);
+
 	/**
-	 * Registers an ore (with metadata) with its matching indicator plant.<br>
-	 * 
-	 * @param oretag - Use one of:<br> {@link BlockWrapper#BlockWrapper(Block, PropertyInteger)}<br> {@link BlockWrapper#BlockWrapper(Block, int)}<br>{@link BlockWrapper#BlockWrapper(IBlockState, int)} 
+	 * Registers an ore with its matching indicator plant.<br>
+	 * @param ore - Use one of:<br> {@link BlockWrapper#BlockWrapper(Block, net.minecraft.world.level.block.state.properties.IntegerProperty)}<br> {@link BlockWrapper#BlockWrapper(Block, int)}
 	 * @param dictator
 	 * @param data
 	 */
-	void addOreFlowerData(BlockWrapper oretag, OreFlowerDictator dictator, OreFlowerData data);
-	
+	void addOreFlowerData(BlockWrapper ore, OreFlowerDictator dictator, OreFlowerData data);
+
 	/**
-	 * Gets the hash of all of the registered ore blocks for flower data.
-	 * @return
+	 * Gets all of the registered ore blocks with their flower data.
 	 */
 	Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> getOreList();
 
 	/**
-	 * Get the dictator for the ore
-	 * @param ore
-	 * @return
+	 * The wrapper registered for a block, if it is a registered ore.
 	 */
-	OreFlowerDictator getDictatorForOre(BlockWrapper ore);
-	
+	@Nullable BlockWrapper getOreWrapper(Block block);
+
+	/**
+	 * Get the dictator for the ore
+	 */
+	@Nullable OreFlowerDictator getDictatorForOre(BlockWrapper ore);
+
 	/**
 	 * Get all OreFlowerData for a given ore
-	 * @param ore
-	 * @return
 	 */
 	@Nullable Iterable<OreFlowerData> getDataForOre(BlockWrapper ore);
 }

@@ -2,6 +2,7 @@ package com.draco18s.harderores.client;
 
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.block.ore.HardOreBlock;
+import com.draco18s.harderores.client.gui.PackagerScreen;
 import com.draco18s.harderores.client.gui.SifterScreen;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.internal.OreNameHelper;
@@ -64,6 +65,7 @@ public class ClientEventHandler {
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
 			MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
+			MenuScreens.register(HarderOres.ModContainerTypes.packager, PackagerScreen::new);
 			ItemPropertyFunction f = (stack, world, entity, seed) -> {
 				CompoundTag compoundtag = stack.getTag();
 				if(compoundtag == null) {

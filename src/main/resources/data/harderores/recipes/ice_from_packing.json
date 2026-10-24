@@ -1,0 +1,12 @@
+{
+  "type": "harderores:packing",
+  "ingredientQuantity": 9,
+  "ingredients": [
+    {
+      "item": "minecraft:snow_block"
+    }
+  ],
+  "result": {
+    "item": "minecraft:ice"
+  }
+}

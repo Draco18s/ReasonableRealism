@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import org.antlr.v4.runtime.atn.SemanticContext.Predicate;
 
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harddatagen.custom.GrindingRecipeBuilder;
 import com.draco18s.harddatagen.custom.SifterRecipeBuilder;
 import com.draco18s.harderores.HarderOres;
@@ -40,6 +41,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 	protected void buildRecipes(Consumer<FinishedRecipe> finishedRecipeConsumer) {
 		Grinding(finishedRecipeConsumer);
 		Dusts(finishedRecipeConsumer);
+		Farming(finishedRecipeConsumer);
+		Machines(finishedRecipeConsumer);
 		
 		ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.COPPER_INGOT, 1)
 			.requires(HarderOres.ModItems.copper_nugget, 9)
@@ -148,7 +151,53 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.save(finishedRecipeConsumer);
 	}
 	
+	private void Machines(Consumer<FinishedRecipe> finishedRecipeConsumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, HarderOres.ModBlocks.packager)
+			.define('s', Tags.Items.STONE)
+			.define('p', Items.PISTON)
+			.pattern("sps")
+			.pattern("s s")
+			.pattern("sss")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.PISTON).build()))
+			.save(finishedRecipeConsumer);
+	}
+
+	private void Farming(Consumer<FinishedRecipe> finishedRecipeConsumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, HarderFarming.ModBlocks.tanner)
+			.define('s', Tags.Items.RODS_WOODEN)
+			.define('t', Items.STRING)
+			.pattern("sss")
+			.pattern("sts")
+			.pattern("s s")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModItems.raw_leather).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderFarming.ModItems.thermometer)
+			.define('g', Items.GLASS_PANE)
+			.define('i', Tags.Items.NUGGETS_IRON)
+			.pattern("ggg")
+			.pattern("gig")
+			.pattern("ggg")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.GLASS_PANE).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, HarderFarming.ModItems.hydrometer)
+			.define('g', Items.GLASS_PANE)
+			.define('i', Tags.Items.NUGGETS_GOLD)
+			.pattern("ggg")
+			.pattern("gig")
+			.pattern("ggg")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.GLASS_PANE).build()))
+			.save(finishedRecipeConsumer);
+		GrindingRecipeBuilder.grind(Items.BONE_MEAL, 2)
+			.requires(Items.BONE)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.BONE).build()))
+			.save(finishedRecipeConsumer);
+	}
+
 	private void Grinding(Consumer<FinishedRecipe> finishedRecipeConsumer) {
+		GrindingRecipeBuilder.grind(OreFlowers.ModItems.sticky_goo, 1)
+			.requires(OreFlowers.ModItems.aveloz)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(OreFlowers.ModItems.aveloz).build()))
+			.save(finishedRecipeConsumer);
 		GrindingRecipeBuilder.grind(HarderFarming.ModItems.salt, 3)
 			.requires(HarderFarming.ModItems.salt_chunk)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModBlocks.ore_salt).build()))

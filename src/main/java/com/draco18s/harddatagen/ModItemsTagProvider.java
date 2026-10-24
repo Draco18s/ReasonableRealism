@@ -11,6 +11,7 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -29,6 +30,8 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 
 	@Override
 	protected void addTags(Provider p_256380_) {
+		copy(BlockTags.SMALL_FLOWERS, ItemTags.SMALL_FLOWERS);
+		copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
 		tag(ItemTags.COPPER_ORES).add(HarderOres.ModItems.largedust_copper)
 			.add(HarderOres.ModBlocks.ore_hardcopper.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_copper.asItem());
 		tag(ItemTags.GOLD_ORES).add(HarderOres.ModItems.largedust_gold)
@@ -49,6 +52,7 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		tag(Tags.Items.DUSTS).addTag(ironDust);
 		tag(Tags.Items.DUSTS).add(HarderFarming.ModItems.largedust_flour);
 		tag(Tags.Items.DUSTS).add(HarderFarming.ModItems.salt);
+		tag(HarderFarming.Tags.Items.SALT).add(HarderFarming.ModItems.salt);
 		
 		tag(HarderOres.Tags.Items.TINY_COPPER_DUST).add(HarderOres.ModItems.tinydust_copper);
 		tag(HarderOres.Tags.Items.TINY_GOLD_DUST).add(HarderOres.ModItems.tinydust_gold);
@@ -59,6 +63,7 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		tag(HarderOres.Tags.Items.TINY_ORE_DUSTS).addTag(HarderOres.Tags.Items.TINY_IRON_DUST);
 		
 		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.winter_wheat_seeds);
+		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.weed_seeds);
 		TagKey<Item> copperNuggets = ItemTags.create(new ResourceLocation("forge", "nuggets/copper"));
 		tag(copperNuggets).add(HarderOres.ModItems.copper_nugget);
 		tag(Tags.Items.NUGGETS).addTag(copperNuggets);//raw_materials/copper

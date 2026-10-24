@@ -97,7 +97,7 @@ showAsResourcePack=false
 [[mods]] #mandatory
 	modId="harderfarming" #mandatory
 	version="${file.jarVersion}" #mandatory
-	displayName="Harder Ores" #mandatory
+	displayName="Harder Farming" #mandatory
 	authors="Draco18s" #optional
 	description='''Alters crop growth and a few other things to be more reasonably realistic.'''
 	[[dependencies.harderfarming]] #optional
@@ -113,6 +113,31 @@ showAsResourcePack=false
 	    ordering="AFTER"
 	    side="BOTH"
 	[[dependencies.harderfarming]]
+	    modId="minecraft"
+	    mandatory=true
+		versionRange="[1.19,)"
+	    ordering="NONE"
+	    side="BOTH"
+
+[[mods]] #mandatory
+	modId="oreflowers" #mandatory
+	version="${file.jarVersion}" #mandatory
+	displayName="Ore Flowers" #mandatory
+	authors="Draco18s" #optional
+	description='''Flowers that grow over ore deposits.'''
+	[[dependencies.oreflowers]] #optional
+	    modId="forge" #mandatory
+	    mandatory=true #mandatory
+		versionRange="[41,)"
+	    ordering="NONE"
+	    side="BOTH"
+	[[dependencies.oreflowers]] #optional
+	    modId="hardlib" #mandatory
+	    mandatory=true #mandatory
+	    versionRange="[0,)" #mandatory
+	    ordering="AFTER"
+	    side="BOTH"
+	[[dependencies.oreflowers]]
 	    modId="minecraft"
 	    mandatory=true
 		versionRange="[1.19,)"

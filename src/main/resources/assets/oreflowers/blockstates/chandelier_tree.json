@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "half=upper": { "model": "oreflowers:block/chandelier_tree" },
+        "half=lower": { "model": "oreflowers:block/chandelier_tree_down" }
+    }
+}

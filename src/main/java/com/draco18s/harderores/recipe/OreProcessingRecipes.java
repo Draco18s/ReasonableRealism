@@ -1,12 +1,15 @@
 package com.draco18s.harderores.recipe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +21,11 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -29,7 +36,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	//private static Map<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack> siftRecipes2 = Maps.<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack>newHashMap();
 	private List<SiftingRecipe> siftRecipes;
 	private List<GrindingRecipe> millRecipes;
-	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newHashMap();
+	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newLinkedHashMap();
 	private static List<Block> sluiceRecipes = new ArrayList<Block>();
 	public static OreProcessingRecipes SERVER_INSTANCE;
 	private RegistryAccess registryAccess;
@@ -43,6 +50,41 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 		millRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.GRINDING);
 
 		registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+		updatePackingRecipes(man);
+	}
+
+	/**
+	 * The pressure packager packs what its own recipes say, plus anything with a storage recipe: a crafting
+	 * recipe made of 4 or 9 of one item (9 ingots into a block, 4 sand into sandstone...). That was 1.12's rule,
+	 * including its exclusions.
+	 */
+	private void updatePackingRecipes(RecipeManager man) {
+		packingRecipes.clear();
+		for(PackingRecipe recipe : man.getAllRecipesFor(HarderOres.RecipeTypes.PACKING)) {
+			ItemStack result = recipe.getResultItem(registryAccess);
+			for(ItemStack in : recipe.getIngredients().get(0).getItems()) {
+				packingRecipes.putIfAbsent(in.copyWithCount(recipe.getIngredientQuantity()), result);
+			}
+		}
+		for(CraftingRecipe recipe : man.getAllRecipesFor(RecipeType.CRAFTING)) {
+			List<Ingredient> ingredients = recipe.getIngredients().stream().filter(i -> !i.isEmpty()).toList();
+			int size = ingredients.size();
+			if(size != 4 && size != 9 || size != recipe.getIngredients().size()) continue;
+			ItemStack result = recipe.getResultItem(registryAccess);
+			if(result.isEmpty() || result.getCount() >= size) continue;
+			if(result.is(Items.OAK_TRAPDOOR) || result.is(Items.IRON_TRAPDOOR) || result.is(Items.CRAFTING_TABLE)) continue;
+			Set<Item> items = itemsOf(ingredients.get(0));
+			if(items.isEmpty() || ingredients.stream().anyMatch(i -> !itemsOf(i).equals(items))) continue;
+			for(Item item : items) {
+				if(item == Items.RABBIT_HIDE) continue;
+				if(packingRecipes.keySet().stream().anyMatch(k -> k.is(item))) continue;
+				packingRecipes.put(new ItemStack(item, size), result.copy());
+			}
+		}
+	}
+
+	private static Set<Item> itemsOf(Ingredient ingredient) {
+		return Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).collect(Collectors.toSet());
 	}
 
 	@Override

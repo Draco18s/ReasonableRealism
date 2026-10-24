@@ -1,0 +1,20 @@
+{
+	"block.harderfarming.crop_winter_wheat": "Winter Wheat",
+	"block.harderfarming.crop_weeds": "Weeds",
+	"block.harderfarming.tanner": "Tanning Rack",
+	"block.harderfarming.ore_salt": "Salt Ore",
+	"item.harderfarming.winter_wheat_seeds": "Winter Wheat Seeds",
+	"item.harderfarming.weed_seeds": "Weed Seeds",
+	"item.harderfarming.thermometer": "Thermometer",
+	"item.harderfarming.hydrometer": "Hydrometer",
+	"item.harderfarming.raw_leather": "Rawhide",
+	"item.harderfarming.salt_chunk": "Salt Chunk",
+	"item.harderfarming.salt": "Salt",
+	"item.harderfarming.butcher_knife": "Butcher's Knife",
+	"item.harderfarming.tinydust_sugar": "Tiny Pile of Sugar",
+	"item.harderfarming.tinydust_flour": "Tiny Pile of Flour",
+	"item.harderfarming.largedust_flour": "Flour",
+	"tooltip.harderfarming.linkedcrop": "Linked Crop:",
+	"tooltip.harderfarming.unlink": "Right-click to unlink",
+	"tooltip.harderfarming.link": "Right-click a crop to link"
+}

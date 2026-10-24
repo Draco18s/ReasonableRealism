@@ -5,16 +5,20 @@ import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockTagProvider extends BlockTagsProvider {
 	public ModBlockTagProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
@@ -24,9 +28,14 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 	@Override
 	protected void addTags(Provider provider) {
 		tag(BlockTags.RAILS).add(ExpandedIndustry.ModBlocks.rail_bridge);
+		for(RegistryObject<Block> flower : OreFlowers.FLOWERS.values()) {
+			tag(flower.get() instanceof DoublePlantBlock ? BlockTags.TALL_FLOWERS : BlockTags.SMALL_FLOWERS).add(flower.get());
+		}
 		tag(BlockTags.RAILS).add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
 
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_hardcopper);
+		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.packager);
+		tag(BlockTags.NEEDS_STONE_TOOL).add(HarderOres.ModBlocks.packager);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddiamond);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_hardgold);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_hardiron);
@@ -36,6 +45,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.ore_harddeepslate_iron);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderOres.ModBlocks.machine_millstone);
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(HarderFarming.ModBlocks.ore_salt);
+		tag(BlockTags.MINEABLE_WITH_AXE).add(HarderFarming.ModBlocks.tanner);
 
 		tag(BlockTags.MINEABLE_WITH_AXE).add(ExpandedIndustry.ModBlocks.machine_distributor);
 		tag(BlockTags.MINEABLE_WITH_AXE).add(ExpandedIndustry.ModBlocks.machine_wood_hopper);
