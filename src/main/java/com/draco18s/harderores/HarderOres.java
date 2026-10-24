@@ -36,6 +36,7 @@ import com.draco18s.harderores.recipe.SiftingRecipe;
 import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.proxy.IProxy;
@@ -47,6 +48,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -59,6 +61,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -69,6 +72,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -103,7 +107,7 @@ public class HarderOres {
 		CogHelper.addCogModule("HarderVanillaOres.xml");
 		CogHelper.addCogModule("HarderLimonite.xml");
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
-		//HardLibAPI.hardOres = new OreBlockInfo();
+		HardLibAPI.hardOres = new OreBlockInfo();
 		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of(Material.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());
 		
 		IBlockItemFactory<BlockItem> blockItemFactory = (Block blockIn, Item.Properties builder) -> new HardOreItem(blockIn, builder);
@@ -124,11 +128,13 @@ public class HarderOres {
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SluiceBlockEntity::new, sluice.get()).build(null), getRL("sluice"));
 		
 		String[] itemNames = {
+				// Hard ores drop vanilla raw ore (raw_iron...); diamond has no raw item, so it keeps its chunk.
+				// Limonite is a poor surface iron ore (swamps, shovel); its chunk smelts into raw iron.
 				"orechunk_limonite",
-				"orechunk_copper", "tinydust_copper", "largedust_copper", "copper_nugget",
+				"tinydust_copper", "largedust_copper", "copper_nugget",
 				"orechunk_diamond",
-				"orechunk_gold", "tinydust_gold", "largedust_gold",
-				"orechunk_iron", "tinydust_iron", "largedust_iron",
+				"tinydust_gold", "largedust_gold",
+				"tinydust_iron", "largedust_iron",
 		};
 		for(String it : itemNames) {
 			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
@@ -212,7 +218,7 @@ public class HarderOres {
 		block = new PackagerBlock();
 		EasyRegistry.registerBlock(block, "packager", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(PackagerTileEntity::new, block), HarderOres.MODID, "packager");
-		EasyRegistry.registerOther(IForgeContainerType.create(PackagerContainer::new), new ResourceLocation(HarderOres.MODID,"packager"));
+		EasyRegistry.registerOther(IForgeContainerType.create(PackagerContainer::new), getRL("packager"));
 	}*/
 
 	/*private void replaceOreGenerators() {
@@ -262,12 +268,12 @@ public class HarderOres {
 			//public static final TagKey<Block> GRANULAR = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation(MODID, "granular"));
 		}
 		public static class Items {
-			public static final TagKey<Item> GRANULAR = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(MODID, "granular"));
-			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets"));
-			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/ore"));
-			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/copper"));
-			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/gold"));
-			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dust/tiny/iron"));
+			public static final TagKey<Item> GRANULAR = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, getRL("granular"));
+			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets"));
+			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/ore"));
+			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/copper"));
+			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/gold"));
+			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dust/tiny/iron"));
 		}
 	}
 
@@ -319,12 +325,6 @@ public class HarderOres {
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_diamond")
 		public static final Item orechunk_diamond = null;
-		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_copper")
-		public static final Item orechunk_copper = null;
-		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_gold")
-		public static final Item orechunk_gold = null;
-		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_iron")
-		public static final Item orechunk_iron = null;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_limonite")
 		public static final Item orechunk_limonite = null;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_copper")
@@ -397,18 +397,44 @@ public class HarderOres {
 		//public static IStructurePieceType OreVein;
 	}
 	
-	/*@SubscribeEvent
+	/** Everything Harder Ores adds, including the hard ores (at full density) and books of its enchantments. */
+	@SubscribeEvent
 	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
-		event.registerCreativeModeTab(getRL("creative_tab"), (builder) -> {
-			//builder.icon(() -> new ItemStack(ModBlocks.machine_wood_hopper));
-			builder.displayItems(new DisplayItemsGenerator() {
-				@Override
-				public void accept(ItemDisplayParameters params, Output output) {
-					//output.accept(new ItemStack(ModBlocks.powered_rail_bridge, 1));
+		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+			.title(Component.translatable("itemGroup." + MODID))
+			.icon(() -> new ItemStack(ModBlocks.machine_millstone))
+			.displayItems((params, output) -> {
+				output.accept(ModBlocks.machine_millstone);
+				output.accept(ModBlocks.machine_axel);
+				output.accept(ModBlocks.machine_windvane);
+				output.accept(ModBlocks.machine_sifter);
+				output.accept(ModBlocks.packager);
+				output.accept(ModBlocks.sluice);
+				for(Block ore : new Block[] {ModBlocks.ore_hardiron, ModBlocks.ore_hardgold, ModBlocks.ore_hardcopper, ModBlocks.ore_harddiamond,
+						ModBlocks.ore_harddeepslate_iron, ModBlocks.ore_harddeepslate_gold, ModBlocks.ore_harddeepslate_copper, ModBlocks.ore_harddeepslate_diamond}) {
+					output.accept(HardOreBlock.setNbtOnStack(new ItemStack(ore), BlockProperties.ORE_DENSITY, 16));
 				}
-			});
-		});
-	}*/
+				output.accept(ModBlocks.ore_limonite);
+				output.accept(ModItems.orechunk_limonite);
+				output.accept(ModItems.tinydust_iron);
+				output.accept(ModItems.largedust_iron);
+				output.accept(ModItems.tinydust_gold);
+				output.accept(ModItems.largedust_gold);
+				output.accept(ModItems.tinydust_copper);
+				output.accept(ModItems.largedust_copper);
+				output.accept(ModItems.copper_nugget);
+				output.accept(ModItems.orechunk_diamond);
+				output.accept(ModItems.diamond_studded_pick);
+				output.accept(ModItems.diamond_studded_axe);
+				output.accept(ModItems.diamond_studded_shovel);
+				output.accept(ModItems.diamond_studded_hoe);
+				for(Enchantment ench : new Enchantment[] {ModEnchantments.shatter, ModEnchantments.cracker, ModEnchantments.pulverize, ModEnchantments.prospector}) {
+					for(int lv = 1; lv <= ench.getMaxLevel(); lv++) {
+						output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(ench, lv)));
+					}
+				}
+			}));
+	}
 	
 	@SubscribeEvent
 	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event)
@@ -430,14 +456,11 @@ public class HarderOres {
         }
         if (tab == CreativeModeTabs.INGREDIENTS) {
         	event.accept(new ItemStack(ModItems.orechunk_limonite, 1));
-        	event.accept(new ItemStack(ModItems.orechunk_copper, 1));
         	event.accept(new ItemStack(ModItems.tinydust_copper, 1));
         	event.accept(new ItemStack(ModItems.largedust_copper, 1));
         	event.accept(new ItemStack(ModItems.copper_nugget, 1));
-        	event.accept(new ItemStack(ModItems.orechunk_gold, 1));
         	event.accept(new ItemStack(ModItems.tinydust_gold, 1));
         	event.accept(new ItemStack(ModItems.largedust_gold, 1));
-        	event.accept(new ItemStack(ModItems.orechunk_iron, 1));
         	event.accept(new ItemStack(ModItems.tinydust_iron, 1));
         	event.accept(new ItemStack(ModItems.largedust_iron, 1));
         	event.accept(new ItemStack(ModItems.orechunk_diamond, 1));
@@ -445,6 +468,6 @@ public class HarderOres {
     }
 
 	public static ResourceLocation getRL(String name) {
-		return new ResourceLocation(MODID, name);
+		return HardLib.getRL(MODID, name);
 	}
 }

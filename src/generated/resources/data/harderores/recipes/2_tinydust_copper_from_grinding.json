@@ -2,7 +2,7 @@
   "type": "harderores:grinding",
   "ingredients": [
     {
-      "item": "harderores:orechunk_copper"
+      "item": "minecraft:raw_copper"
     }
   ],
   "result": {

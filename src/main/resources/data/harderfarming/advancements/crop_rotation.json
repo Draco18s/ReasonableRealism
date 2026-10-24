@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:beetroot_seeds"
+        },
+        "title": {
+            "translate": "achievement.cropRotation"
+        },
+        "description": {
+            "translate": "achievement.cropRotation.desc"
+        }
+    },
+    "parent": "harderfarming:gardening",
+    "criteria": {
+        "crop_rotation": {
+            "trigger": "harderfarming:crop_rotation",
+            "conditions": {}
+        }
+    },
+    "requirements": [
+        [
+            "crop_rotation"
+        ]
+    ]
+}

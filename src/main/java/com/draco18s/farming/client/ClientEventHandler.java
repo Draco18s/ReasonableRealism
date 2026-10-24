@@ -2,9 +2,9 @@ package com.draco18s.farming.client;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.farming.item.ClimateGaugeItem;
+import com.draco18s.hardlib.HardLib;
 
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,6 +24,6 @@ public class ClientEventHandler {
 
 	private static void registerGauge(Item item) {
 		ClimateGaugeItem gauge = (ClimateGaugeItem)item;
-		ItemProperties.register(item, new ResourceLocation("time"), (stack, level, entity, seed) -> gauge.getFrame(stack, level, entity));
+		ItemProperties.register(item, HardLib.parseRL("time"), (stack, level, entity, seed) -> gauge.getFrame(stack, level, entity));
 	}
 }

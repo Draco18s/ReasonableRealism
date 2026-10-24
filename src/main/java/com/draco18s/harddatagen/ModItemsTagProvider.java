@@ -6,11 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.hardlib.HardLib;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -39,9 +39,9 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		tag(ItemTags.IRON_ORES).add(HarderOres.ModItems.largedust_iron)
 			.add(HarderOres.ModBlocks.ore_hardiron.asItem()).add(HarderOres.ModBlocks.ore_harddeepslate_iron.asItem());
 
-		TagKey<Item> copDust = ItemTags.create(new ResourceLocation("forge", "dust/copper"));
-		TagKey<Item> goldDust = ItemTags.create(new ResourceLocation("forge", "dust/gold"));
-		TagKey<Item> ironDust = ItemTags.create(new ResourceLocation("forge", "dust/iron"));
+		TagKey<Item> copDust = ItemTags.create(HardLib.getRL("forge", "dust/copper"));
+		TagKey<Item> goldDust = ItemTags.create(HardLib.getRL("forge", "dust/gold"));
+		TagKey<Item> ironDust = ItemTags.create(HardLib.getRL("forge", "dust/iron"));
 		
 		tag(copDust).add(HarderOres.ModItems.largedust_copper);
 		tag(goldDust).add(HarderOres.ModItems.largedust_gold);
@@ -64,24 +64,21 @@ public class ModItemsTagProvider extends ItemTagsProvider {
 		
 		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.winter_wheat_seeds);
 		tag(Tags.Items.SEEDS).add(HarderFarming.ModItems.weed_seeds);
-		TagKey<Item> copperNuggets = ItemTags.create(new ResourceLocation("forge", "nuggets/copper"));
+		TagKey<Item> copperNuggets = ItemTags.create(HardLib.getRL("forge", "nuggets/copper"));
 		tag(copperNuggets).add(HarderOres.ModItems.copper_nugget);
 		tag(Tags.Items.NUGGETS).addTag(copperNuggets);//raw_materials/copper
 
-		TagKey<Item> rawCopperNug = (ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets/copper")));
-		TagKey<Item> rawDiamondNug = (ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets/diamond")));
-		TagKey<Item> rawGoldNug = (ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets/gold")));
-		TagKey<Item> rawIronNug = (ItemTags.create(new ResourceLocation("forge", "raw_materials/nuggets/iron")));
+		TagKey<Item> rawCopperNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/copper")));
+		TagKey<Item> rawDiamondNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/diamond")));
+		TagKey<Item> rawGoldNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/gold")));
+		TagKey<Item> rawIronNug = (ItemTags.create(HardLib.getRL("forge", "raw_materials/nuggets/iron")));
 		
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawCopperNug);
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawDiamondNug);
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawGoldNug);
 		tag(HarderOres.Tags.Items.ORE_CHUNKS).addTag(rawIronNug);
 		
-		tag(rawCopperNug).add(HarderOres.ModItems.orechunk_copper);
 		tag(rawDiamondNug).add(HarderOres.ModItems.orechunk_diamond);
-		tag(rawGoldNug).add(HarderOres.ModItems.orechunk_gold);
-		tag(rawIronNug).add(HarderOres.ModItems.orechunk_iron);
 
 		tag(rawCopperNug).addTag(HarderOres.Tags.Items.TINY_COPPER_DUST);
 		tag(rawGoldNug).addTag(HarderOres.Tags.Items.TINY_GOLD_DUST);

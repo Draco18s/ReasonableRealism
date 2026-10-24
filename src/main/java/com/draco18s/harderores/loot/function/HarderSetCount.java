@@ -45,8 +45,11 @@ public class HarderSetCount extends LootItemConditionalFunction {
 		if(state.hasProperty(BlockProperties.ORE_DENSITY)) {
 			int density = state.getValue(BlockProperties.ORE_DENSITY);
 			stack.setCount(context.getRandom().nextIntBetweenInclusive(1, 2+(int)((density-1)/modProv.getFloat(context))+fortune));
-			int pulverize = fortune = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.pulverize, itemstack);
-			stack = processPulverize(stack, pulverize);
+			int pulverize = EnchantmentHelper.getTagEnchantmentLevel(HarderOres.ModEnchantments.pulverize, itemstack);
+			// Pulverize only grinds what is left of a nearly mined-out block.
+			if(pulverize > 0 && density <= pulverize * 2 + 3) {
+				stack = processPulverize(stack, pulverize);
+			}
 			return stack;
 		}
 		return null;

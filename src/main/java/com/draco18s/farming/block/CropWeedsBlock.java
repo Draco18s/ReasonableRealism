@@ -18,7 +18,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CarpetBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +32,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Weeds: show up on bare farmland next to crops, grow tall, and spread to nearby farmland (or as grass onto
  * grass blocks). They are slow to clear by hand and wear down the tool used. Carpet over farmland keeps them
- * down, mostly.
+ * out entirely: they neither spawn nor spread under it, and can't push it off.
  */
 public class CropWeedsBlock extends CropBlock {
 	public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
@@ -107,19 +106,15 @@ public class CropWeedsBlock extends CropBlock {
 		}
 		if(validPlacements.isEmpty()) return;
 		BlockPos p = validPlacements.get(rand.nextInt(validPlacements.size()));
-		if(world.getBlockState(p).getBlock() instanceof CarpetBlock) {
-			if(rand.nextInt(4) != 0) return;
-			world.destroyBlock(p, true);
-		}
 		if(world.getBlockState(p.below()).is(Blocks.FARMLAND))
 			world.setBlock(p, HarderFarming.ModBlocks.crop_weeds.defaultBlockState(), 3);
 		else
 			world.setBlock(p, Blocks.GRASS.defaultBlockState(), 3);
 	}
 
+	/** Only open farmland: a carpet (or anything else) over it keeps weeds out. */
 	private static boolean canPlantWeeds(Level world, BlockPos pos) {
-		BlockState growing = world.getBlockState(pos);
-		return growing.isAir() || growing.getBlock() instanceof CarpetBlock;
+		return world.getBlockState(pos).isAir();
 	}
 
 	/** Tough to pull: fast only with a good tool, and a slow grind by hand. */

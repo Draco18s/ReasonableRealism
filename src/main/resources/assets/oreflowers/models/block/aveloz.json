@@ -1,7 +1,0 @@
-{
-    "parent": "minecraft:block/cross",
-    "textures": {
-        "cross": "oreflowers:item/aveloz"
-    },
-    "render_type": "minecraft:cutout"
-}

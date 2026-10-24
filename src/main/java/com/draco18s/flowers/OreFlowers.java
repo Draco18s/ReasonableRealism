@@ -12,6 +12,7 @@ import com.draco18s.flowers.block.TwoTallFlower;
 import com.draco18s.flowers.item.StickyBlobItem;
 import com.draco18s.flowers.util.OreDataStore;
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
@@ -20,17 +21,25 @@ import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraftforge.common.PlantType;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -48,14 +57,9 @@ public class OreFlowers {
 	public static final OreDataStore oreData = new OreDataStore();
 
 	public OreFlowers() {
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FlowersConfig.SPEC);
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = oreData;
-		OreFlowerDictator.defaultDictator = new OreFlowerDictator(200, 30);
-		OreFlowerDictator.closeDictator = new OreFlowerDictator(200, 15);
-		OreFlowerDictator.rareDictator = new OreFlowerDictator(400, 30);
-		OreFlowerDictator.closeRareDictator = new OreFlowerDictator(400, 15);
-		OreFlowerDictator.commonDictator = new OreFlowerDictator(100, 30);
-		OreFlowerDictator.closeCommonDictator = new OreFlowerDictator(100, 15);
 
 		EasyRegistry.registerItem(StickyBlobItem::new, getRL("sticky_goo"));
 
@@ -89,6 +93,7 @@ public class OreFlowers {
 	 * The values are: plants per cluster, cluster width, and the bonemeal "high concentration" threshold.
 	 */
 	static void registerOres() {
+		FlowersConfig.applyDictators();
 		FlowerDataHandler flowers = new FlowerDataHandler();
 		addOre(flowers, "iron",      8, 11, 7, OreFlowerDictator.defaultDictator,   "poorjoe", "red_sorrel");
 		addOre(flowers, "gold",      9, 11, 6, OreFlowerDictator.defaultDictator,   "horsetail", null);
@@ -111,7 +116,7 @@ public class OreFlowers {
 	}
 
 	private static void addOre(FlowerDataHandler flowers, String ore, int numFlowers, int clusterSize, int threshold, OreFlowerDictator dictator, @Nullable String flower, @Nullable String desertFlower) {
-		TagKey<Block> tag = BlockTags.create(new ResourceLocation("forge", "ores/" + ore));
+		TagKey<Block> tag = BlockTags.create(HardLib.getRL("forge", "ores/" + ore));
 		for(Holder<Block> holder : BuiltInRegistries.BLOCK.getTagOrEmpty(tag)) {
 			Block block = holder.value();
 			// Hard ores count by density; a vanilla-style ore block counts as about half a full hard ore block.
@@ -140,6 +145,24 @@ public class OreFlowers {
 		public static final Item aveloz = null;
 	}
 
+	/** The ore flowers and sticky goo, then every other flower (vanilla's and other mods'). */
+	@SubscribeEvent
+	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
+		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+			.title(Component.translatable("itemGroup." + MODID))
+			.icon(() -> new ItemStack(FLOWERS.get("poorjoe").get()))
+			.displayItems((params, output) -> {
+				FLOWERS.values().forEach(flower -> output.accept(flower.get()));
+				output.accept(ModItems.sticky_goo);
+				for(Item item : ForgeRegistries.ITEMS) {
+					if(item instanceof BlockItem blockItem && (blockItem.getBlock() instanceof FlowerBlock || blockItem.getBlock() instanceof TallFlowerBlock)
+							&& !MODID.equals(ForgeRegistries.ITEMS.getKey(item).getNamespace()) && item.isEnabled(params.enabledFeatures())) {
+						output.accept(item);
+					}
+				}
+			}));
+	}
+
 	@SubscribeEvent
 	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
 		if(event.getTab() == CreativeModeTabs.NATURAL_BLOCKS) {
@@ -150,7 +173,7 @@ public class OreFlowers {
 		}
 	}
 
-	private static ResourceLocation getRL(String name) {
-		return new ResourceLocation(MODID, name);
+	public static ResourceLocation getRL(String name) {
+		return HardLib.getRL(MODID, name);
 	}
 }

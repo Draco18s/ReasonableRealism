@@ -1,7 +1,5 @@
 package com.draco18s.hardlib;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +30,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
@@ -44,7 +41,6 @@ public class EasyRegistry {
 	private static List<Tuple<ResourceLocation, Supplier<MenuType<?>>>> menusToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<MenuType<?>>>>());
 	private static Map<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation, Supplier<?>>>> miscReg = Collections.synchronizedMap(new HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation,Supplier<?>>>>());
 	private static List<RegistryObject<Item>> regItems = Collections.synchronizedList(new ArrayList<RegistryObject<Item>>());
-	private static Method CriterionRegister;
 	
 	static void registerEventBus(IEventBus modEventBus) {
 		modEventBus.register(EasyRegistry.class);
@@ -92,19 +88,12 @@ public class EasyRegistry {
 	}
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * Registers an advancement criterion trigger. CriteriaTriggers keeps them in a plain HashMap, so call this on the
+	 * main thread (in common setup, from enqueueWork). Triggers must be registered before advancements load.
+	 */
 	public static <T extends CriterionTrigger<?>> T registerAdvancementTrigger(T trigger) {
-		if(CriterionRegister == null) {
-			//Class<?> persistentClass = trigger.getClass().getGenericSuperclass().getClass();
-			CriterionRegister = ObfuscationReflectionHelper.findMethod(CriteriaTriggers.class, "register", CriterionTrigger.class);
-			CriterionRegister.setAccessible(true);
-		}
-		try {
-			trigger = (T) CriterionRegister.invoke(null, trigger);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			System.out.println("Failed to register trigger " + trigger.getId() + "!");
-			e.printStackTrace();
-		}
-		return trigger;
+		return CriteriaTriggers.register(trigger);
 	}
 	
 	// I used to think that I was bold

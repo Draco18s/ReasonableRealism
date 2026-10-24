@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.AdvancementEarnedTrigger;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
@@ -42,11 +43,14 @@ public class HardLib {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		EasyRegistry.registerEventBus(modEventBus);
 		modEventBus.addListener((FMLCommonSetupEvent event) -> {
-			HardLibAPI.Advancements.MILL_BUILT = (MillstoneTrigger) EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
-			HardLibAPI.Advancements.FOUND_ORE = (FoundOreTrigger) EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
-			HardLibAPI.Advancements.BLOCK_BREAK = (BreakBlockTrigger) EasyRegistry.registerAdvancementTrigger(new BreakBlockTrigger());
-			HardLibAPI.Advancements.WORLD_TIME = (WorldTimeTrigger) EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
-			HardLibAPI.Advancements.DISTANCE_TRAVELED = (DistanceTraveledTrigger) EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
+			event.enqueueWork(() -> {
+				HardLibAPI.Advancements.MILL_BUILT = EasyRegistry.registerAdvancementTrigger(new MillstoneTrigger());
+				HardLibAPI.Advancements.FOUND_ORE = EasyRegistry.registerAdvancementTrigger(new FoundOreTrigger());
+				HardLibAPI.Advancements.BLOCK_BREAK = EasyRegistry.registerAdvancementTrigger(new BreakBlockTrigger());
+				HardLibAPI.Advancements.WORLD_TIME = EasyRegistry.registerAdvancementTrigger(new WorldTimeTrigger());
+				HardLibAPI.Advancements.DISTANCE_TRAVELED = EasyRegistry.registerAdvancementTrigger(new DistanceTraveledTrigger());
+				HardLibAPI.Advancements.ADVANCEMENT_EARNED = EasyRegistry.registerAdvancementTrigger(new AdvancementEarnedTrigger());
+			});
 			CogHelper.unpackConfigs();
 		});
 		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
@@ -70,7 +74,21 @@ public class HardLib {
 	}
 
 
-	private ResourceLocation getRL(String string) {
-		return new ResourceLocation(MODID, string);
+	/** hardlib:name. Each mod has the same helper for its own namespace. */
+	public static ResourceLocation getRL(String name) {
+		return getRL(MODID, name);
+	}
+
+	/**
+	 * Every ResourceLocation in these mods is made here or in {@link #parseRL(String)}: 1.21 replaces the
+	 * constructors with factory methods, so only these two need to change.
+	 */
+	public static ResourceLocation getRL(String namespace, String path) {
+		return new ResourceLocation(namespace, path);
+	}
+
+	/** Parses "namespace:path"; a bare path is in the minecraft namespace. */
+	public static ResourceLocation parseRL(String id) {
+		return new ResourceLocation(id);
 	}
 }

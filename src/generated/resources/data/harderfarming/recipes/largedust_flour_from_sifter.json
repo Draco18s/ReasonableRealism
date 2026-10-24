@@ -1,0 +1,12 @@
+{
+  "type": "harderores:sifting",
+  "ingredientQuantity": 8,
+  "ingredients": [
+    {
+      "item": "harderfarming:tinydust_flour"
+    }
+  ],
+  "result": {
+    "item": "harderfarming:largedust_flour"
+  }
+}

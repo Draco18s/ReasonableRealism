@@ -1,0 +1,25 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:bone_meal"
+        },
+        "title": {
+            "translate": "achievement.prospecting"
+        },
+        "description": {
+            "translate": "achievement.prospecting.desc"
+        }
+    },
+    "parent": "oreflowers:an_indication",
+    "criteria": {
+        "found_ore": {
+            "trigger": "oreflowers:found_ore",
+            "conditions": {}
+        }
+    },
+    "requirements": [
+        [
+            "found_ore"
+        ]
+    ]
+}

@@ -1,5 +1,7 @@
 package com.draco18s.hardlib.api.advancement;
 
+import com.draco18s.hardlib.HardLib;
+
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -49,6 +51,11 @@ public abstract class HardLibCriteriaTrigger<T extends ICriterionTriggerInstance
 		this.listeners.remove(playerAdvancementsIn);
 	}
 
+	/** True if any of the player's unfinished advancements use this trigger (worth building a context for). */
+	public final boolean hasListeners(ServerPlayer player) {
+		return listeners.containsKey(player.getAdvancements());
+	}
+
 	public final void trigger(ServerPlayer player, LootContext ctx) {
 		CriterionListener<T> enterblocktrigger$listeners = listeners.get(player.getAdvancements());
 
@@ -60,7 +67,7 @@ public abstract class HardLibCriteriaTrigger<T extends ICriterionTriggerInstance
 	@Nullable
 	public static Block deserializeBlock(JsonObject json) {
 		if (json.has("block")) {
-			ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "block"));
+			ResourceLocation resourcelocation = HardLib.parseRL(GsonHelper.getAsString(json, "block"));
 			return ForgeRegistries.BLOCKS.getValue(resourcelocation);
 		} else {
 			return null;

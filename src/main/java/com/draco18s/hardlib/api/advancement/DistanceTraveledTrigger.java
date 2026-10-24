@@ -13,9 +13,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class DistanceTraveledTrigger extends HardLibCriteriaTrigger<DistanceTraveledTrigger.Instance> {
-	private static final ResourceLocation ID = new ResourceLocation(HardLib.MODID, "distance_traveled");
+	private static final ResourceLocation ID = HardLib.getRL("distance_traveled");
 	public static LootContextParam<Float> DISTANCE = new LootContextParam<Float>(ID);
-	public static LootContextParam<TravelType> TRAVEL = new LootContextParam<TravelType>(new ResourceLocation("hardlib", "travel_type"));
+	public static LootContextParam<TravelType> TRAVEL = new LootContextParam<TravelType>(HardLib.getRL("travel_type"));
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(DistanceTraveledTrigger.TRAVEL).required(DistanceTraveledTrigger.DISTANCE).build();
 
 	@Override

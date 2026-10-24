@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
@@ -149,7 +150,7 @@ public class RecipeTagOutput extends ShapedRecipe {
 	}
 
 	public static class Serializer implements RecipeSerializer<RecipeTagOutput> {
-		public static final ResourceLocation ID = new ResourceLocation("hardlib", "tag_output");
+		public static final ResourceLocation ID = HardLib.getRL("tag_output");
 
 		@Override
 		public RecipeTagOutput fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -161,7 +162,7 @@ public class RecipeTagOutput extends ShapedRecipe {
 			int j = astring.length;
 			NonNullList<Ingredient> ingredientsList = RecipeUtils.dissolvePattern(astring, keyMap, i, j);
 			String tagname = GsonHelper.getAsString(GsonHelper.getAsJsonObject(json, "result"), "tag", "minecraft:air");
-			return new RecipeTagOutput(recipeId, group, craftingbookcategory, new ResourceLocation(tagname), i, j, ingredientsList);
+			return new RecipeTagOutput(recipeId, group, craftingbookcategory, HardLib.parseRL(tagname), i, j, ingredientsList);
 		}
 
 		@Override
@@ -175,7 +176,7 @@ public class RecipeTagOutput extends ShapedRecipe {
 				ingredientsList.set(k, Ingredient.fromNetwork(buffer));
 			}
 			CraftingBookCategory craftingbookcategory = buffer.readEnum(CraftingBookCategory.class);
-			ResourceLocation result = new ResourceLocation(buffer.readUtf());
+			ResourceLocation result = HardLib.parseRL(buffer.readUtf());
 
 			return new RecipeTagOutput(recipeId, group, craftingbookcategory, result, i, j, ingredientsList);
 		}

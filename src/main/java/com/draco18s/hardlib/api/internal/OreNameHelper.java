@@ -1,5 +1,8 @@
 package com.draco18s.hardlib.api.internal;
 
+import com.draco18s.harderores.HarderOres;
+import com.draco18s.hardlib.HardLib;
+
 import org.apache.logging.log4j.util.TriConsumer;
 
 import net.minecraft.resources.ResourceLocation;
@@ -29,13 +32,13 @@ public class OreNameHelper {
 				
 				ResourceLocation vanillaStoneTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stoneName);
 				ResourceLocation vanillaOriginalOreTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stone_+ore+"_ore");
-				ResourceLocation harderOreBlockName = new ResourceLocation("harderores", "ore_hard"+stone_+ore);
+				ResourceLocation harderOreBlockName = HarderOres.getRL("ore_hard"+stone_+ore);
 				callback.accept(vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName);
 			}
 		}
 	}
 
 	private static ResourceLocation mcRL(String path) {
-		return new ResourceLocation("minecraft", path);
+		return HardLib.getRL("minecraft", path);
 	}
 }

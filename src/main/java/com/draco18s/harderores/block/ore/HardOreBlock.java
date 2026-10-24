@@ -2,21 +2,34 @@ package com.draco18s.harderores.block.ore;
 
 import java.awt.Color;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class HardOreBlock extends Block implements IBlockMultiBreak {
@@ -56,7 +69,8 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 
 	@Override
 	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-		if(player.isCreative() && !player.isCrouching()) {
+		// Silk touch takes the whole block, density and all (the loot table copies the density onto the item).
+		if((player.isCreative() && !player.isCrouching()) || EnchantmentHelper.hasSilkTouch(player.getMainHandItem())) {
 			return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 		}
 		int val = Math.max(state.getValue(BlockProperties.ORE_DENSITY) - metaChange, 0);
@@ -67,54 +81,57 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 	}
 
-	/*@Override
-	public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		if(player != null && player.abilities.isCreativeMode && player.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
-			if(!world.isRemote) {
-				int m = state.get(BlockProperties.ORE_DENSITY);
-				m = m - (player.isSneaking()?1:4);
-				if(m < 1)
-					m += 16;
-				world.setBlockState(pos, state.with(BlockProperties.ORE_DENSITY, m), 3);
-			}
-			return true;
+	/** Creative tool: right-click with an empty hand to lower the density by 4 (by 1 while sneaking), wrapping 1 to 16. */
+	@Override
+	@Deprecated
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if(!player.getAbilities().instabuild || !player.getItemInHand(hand).isEmpty()) {
+			return InteractionResult.PASS;
 		}
-		return false;
+		if(!world.isClientSide) {
+			int m = state.getValue(BlockProperties.ORE_DENSITY) - (player.isShiftKeyDown() ? 1 : 4);
+			if(m < 1) m += 16;
+			world.setBlock(pos, state.setValue(BlockProperties.ORE_DENSITY, m), 3);
+		}
+		return InteractionResult.sidedSuccess(world.isClientSide);
+	}
+
+	/** Like Block.playerDestroy, but the drops come out of an open face: the block is usually still there. */
+	@Override
+	public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity be, ItemStack tool) {
+		player.awardStat(Stats.BLOCK_MINED.get(this));
+		player.causeFoodExhaustion(0.005F);
+		if(world instanceof ServerLevel level) {
+			getDrops(state, level, pos, be, player, tool).forEach(stack -> spawnOnOpenFace(level, pos, stack));
+			state.spawnAfterBreak(level, pos, tool, true);
+		}
 	}
 
 	public static final Direction[] DROP_SEARCH_DIRECTIONS = {Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.DOWN};
 
-	public static void tspawnAsEntity(World worldIn, BlockPos pos, ItemStack stack) {
-		if (!worldIn.isRemote && worldIn.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && !worldIn.restoringBlockSnapshots) { // do not drop items while restoring blockstates, prevents item dupe
-			//if (captureDrops.get()) {
-			//	capturedDrops.get().add(stack);
-			//	return;
-			//}
-			//float f = 0.5F;
-			double d0 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-			double d1 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-			double d2 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
-			if(!worldIn.getBlockState(pos).isSolid()) {
-				ItemEntity entityitem = new ItemEntity(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
-				entityitem.setDefaultPickupDelay();
-				worldIn.addEntity(entityitem);
+	/** Drops at the block if it's gone, else just outside its first open face (straight down if it has none). */
+	public static void spawnOnOpenFace(Level world, BlockPos pos, ItemStack stack) {
+		if(world.isClientSide || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) || world.restoringBlockSnapshots) return;
+		RandomSource rand = world.getRandom();
+		double d0 = rand.nextFloat() * 0.5F + 0.25D;
+		double d1 = rand.nextFloat() * 0.5F + 0.25D;
+		double d2 = rand.nextFloat() * 0.5F + 0.25D;
+		if(!world.getBlockState(pos).canOcclude()) {
+			ItemEntity entityitem = new ItemEntity(world, pos.getX() + d0, pos.getY() + d1, pos.getZ() + d2, stack);
+			entityitem.setDefaultPickUpDelay();
+			world.addFreshEntity(entityitem);
+			return;
+		}
+		for(Direction dir : DROP_SEARCH_DIRECTIONS) {
+			if(!world.getBlockState(pos.relative(dir)).canOcclude() || dir == Direction.DOWN) {
+				ItemEntity entityitem = new ItemEntity(world, pos.getX() + d0 + dir.getStepX(), pos.getY() + (dir.getStepY() != 0 ? 0.05D : d1) + dir.getStepY(), pos.getZ() + d2 + dir.getStepZ(), stack);
+				entityitem.setDeltaMovement(rand.nextDouble() * 0.1D * dir.getStepX(), 0.1D, rand.nextDouble() * 0.1D * dir.getStepZ());
+				entityitem.setDefaultPickUpDelay();
+				world.addFreshEntity(entityitem);
 				return;
 			}
-			else {
-				for(Direction dir : DROP_SEARCH_DIRECTIONS) {
-					if(!worldIn.getBlockState(pos.offset(dir)).isSolid() || dir == Direction.DOWN) {
-						ItemEntity entityitem = new ItemEntity(worldIn, (double)pos.getX() + d0+dir.getXOffset(), (double)pos.getY() + (dir.getYOffset() != 0 ? 0.05D : d1)+dir.getYOffset(), (double)pos.getZ() + d2+dir.getZOffset(), stack);
-						double signX = Math.signum(dir.getXOffset());
-						double signZ = Math.signum(dir.getZOffset());
-						entityitem.setMotion((worldIn.rand.nextDouble() * 0.1D) * signX, 0.1D, (worldIn.rand.nextDouble() * 0.1D) * signZ);
-						entityitem.setDefaultPickupDelay();
-						worldIn.addEntity(entityitem);
-						return;
-					}
-				}
-			}
 		}
-	}*/
+	}
 
 	@Override
 	public int getDensityChangeOnBreak(LevelReader worldIn, BlockPos pos, BlockState state) {

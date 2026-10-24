@@ -51,7 +51,8 @@ public class RailBridgeBlock extends BaseRailBlock {
 	public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
 		BlockPos blockpos = pos.relative(Direction.DOWN);
 		BlockState blockstate = world.getBlockState(blockpos);
-		return !blockstate.isFaceSturdy(world, blockpos, Direction.UP, SupportType.RIGID) || isRail(blockstate);// || isRail( world.getBlockState(pos.relative(Direction.UP)));
+		// A bridge spans open space: not on a solid block, not on a rail, and not under one (1.12's rule).
+		return !blockstate.isFaceSturdy(world, blockpos, Direction.UP, SupportType.RIGID) && !isRail(blockstate) && !isRail(world.getBlockState(pos.above()));
 	}
 
 	@Override

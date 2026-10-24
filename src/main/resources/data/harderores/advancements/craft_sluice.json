@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderores:sluice"
+        },
+        "title": {
+            "translate": "achievement.craftSluice"
+        },
+        "description": {
+            "translate": "achievement.craftSluice.desc"
+        }
+    },
+    "parent": "oreflowers:growing_search",
+    "criteria": {
+        "craft_sluice": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "harderores:sluice"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "craft_sluice"
+        ]
+    ]
+}

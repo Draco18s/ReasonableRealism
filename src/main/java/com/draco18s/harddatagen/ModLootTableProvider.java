@@ -8,6 +8,7 @@ import com.draco18s.farming.HarderFarming;
 import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.loot.function.HarderSetCount;
+import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.advancements.critereon.EntityFlagsPredicate;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer.Builder;
+import net.minecraft.world.level.storage.loot.functions.CopyBlockState;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
@@ -87,14 +89,14 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropOtherOrSilkTouch(HarderOres.ModBlocks.ore_limonite, HarderOres.ModItems.orechunk_limonite);
 			dropOtherOrSilkTouch(HarderFarming.ModBlocks.ore_salt, HarderFarming.ModItems.salt_chunk);
 			
-			dropsOreChunks(HarderOres.ModBlocks.ore_hardcopper, HarderOres.ModItems.orechunk_copper);
+			dropsOreChunks(HarderOres.ModBlocks.ore_hardcopper, Items.RAW_COPPER);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddiamond, HarderOres.ModItems.orechunk_diamond);
-			dropsOreChunks(HarderOres.ModBlocks.ore_hardgold, HarderOres.ModItems.orechunk_gold);
-			dropsOreChunks(HarderOres.ModBlocks.ore_hardiron, HarderOres.ModItems.orechunk_iron);
-			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_copper, HarderOres.ModItems.orechunk_copper);
+			dropsOreChunks(HarderOres.ModBlocks.ore_hardgold, Items.RAW_GOLD);
+			dropsOreChunks(HarderOres.ModBlocks.ore_hardiron, Items.RAW_IRON);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_copper, Items.RAW_COPPER);
 			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_diamond, HarderOres.ModItems.orechunk_diamond);
-			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_gold, HarderOres.ModItems.orechunk_gold);
-			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_iron, HarderOres.ModItems.orechunk_iron);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_gold, Items.RAW_GOLD);
+			dropsOreChunks(HarderOres.ModBlocks.ore_harddeepslate_iron, Items.RAW_IRON);
 			
 			dropSelf(HarderOres.ModBlocks.machine_sifter);
 			dropSelf(HarderOres.ModBlocks.packager);
@@ -134,8 +136,12 @@ public class ModLootTableProvider extends LootTableProvider {
 			return LootItem.lootTableItem(item).apply(applyExplosionCondition(block, SetItemCountFunction.setCount(ConstantValue.exactly(1.0F))));
 		}
 
+		/** Silk touch takes the whole block, keeping its density on the item; otherwise it drops raw ore. */
 		private void dropsOreChunks(Block block, Item chunk) {
-			add(block, createSelfDropDispatchTable(block, HAS_SILK_TOUCH, oreToChunk(block, chunk, 6)));
+			add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(
+					LootItem.lootTableItem(block).when(HAS_SILK_TOUCH)
+						.apply(CopyBlockState.copyState(block).copy(BlockProperties.ORE_DENSITY))
+						.otherwise(oreToChunk(block, chunk, 6)))));
 		}
 
 		private LootPoolEntryContainer.Builder<?> oreToChunk(Block oreHardiron, Item orechunkIron, float divisor) {

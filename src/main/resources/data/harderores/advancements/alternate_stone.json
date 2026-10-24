@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:diorite"
+        },
+        "title": {
+            "translate": "achievement.mineDiorite"
+        },
+        "description": {
+            "translate": "achievement.mineDiorite.desc"
+        }
+    },
+    "parent": "minecraft:story/mine_stone",
+    "criteria": {
+        "craft_sifter": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:diorite"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "craft_sifter"
+        ]
+    ]
+}

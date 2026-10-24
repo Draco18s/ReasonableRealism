@@ -1,5 +1,7 @@
 package com.draco18s.hardlib.api.advancement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -29,10 +31,15 @@ public class CriterionListener<T extends ICriterionTriggerInstanceTester>  {
 	}
 	
 	public void trigger(LootContext ctx) {
+		// Collected first: completing a criterion unregisters its listener, which would break the iteration.
+		List<CriterionTrigger.Listener<T>> met = new ArrayList<CriterionTrigger.Listener<T>>();
 		for (CriterionTrigger.Listener<T> listener : this.listeners) {
 			if(listener.getTriggerInstance().test(ctx)) {
-				listener.run(playerAdvancements);
+				met.add(listener);
 			}
+		}
+		for (CriterionTrigger.Listener<T> listener : met) {
+			listener.run(playerAdvancements);
 		}
 	}
 }

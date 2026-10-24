@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.draco18s.farming.FarmingConfig;
 import com.draco18s.farming.HarderFarming;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
@@ -36,7 +37,7 @@ public class RawLeatherModifier extends LootModifier {
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
 		// Mob drops only; leather in chests or from fishing stays leather.
-		if(!context.getQueriedLootTableId().getPath().startsWith("entities/")) {
+		if(!FarmingConfig.doRawLeather.get() || !context.getQueriedLootTableId().getPath().startsWith("entities/")) {
 			return generatedLoot;
 		}
 		if(!generatedLoot.removeIf(st -> st.is(Items.LEATHER))) {

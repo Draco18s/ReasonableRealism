@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class WorldTimeTrigger extends HardLibCriteriaTrigger<WorldTimeTrigger.Instance> {
-	private static final ResourceLocation ID = new ResourceLocation(HardLib.MODID, "total_world_time");
+	private static final ResourceLocation ID = HardLib.getRL("total_world_time");
 	public static LootContextParam<Float> TIME = new LootContextParam<Float>(ID);
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(WorldTimeTrigger.TIME).build();
 

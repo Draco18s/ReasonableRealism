@@ -8,7 +8,6 @@ import com.draco18s.harderores.entity.capability.MillableItemsHandler;
 import com.draco18s.harderores.entity.capability.MillstoneMechanicalPowerHandler;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
-import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -69,7 +67,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 				case UP:
 					return millpos.canAcceptInput ? (LazyOptional<T>)input : LazyOptional.empty();
 				case DOWN:
-					return millpos.canAcceptOutput ? (LazyOptional<T>)input : LazyOptional.empty();
+					return millpos.canAcceptOutput ? (LazyOptional<T>)output : LazyOptional.empty();
 				default:
 					return millpos == MillstoneOrientation.CENTER ? (LazyOptional<T>)input : LazyOptional.empty();
 			}
@@ -155,38 +153,11 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	}
 
 	private float calcAndGetPower() {
-		Level world = level;
-		if(world.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());
-		int numBlocksOut = 0;
-		BlockPos p = worldPosition;
-		Direction searchDir = Direction.UP;
-		do {
-			p = p.relative(searchDir,1);
-			if(world.getBlockState(p).getBlock() == HarderOres.ModBlocks.machine_axel) {
-				if(world.getBlockState(p).getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.UP) {
-					searchDir = Direction.UP;
-				}
-				else if(searchDir == Direction.UP) {
-					searchDir = world.getBlockState(p).getValue(BlockStateProperties.HORIZONTAL_FACING);
-				}
-				numBlocksOut++;
-			}
-			else {
-				p = p.relative(searchDir.getOpposite());
-				break;
-			}
-		} while(numBlocksOut <= 8);
-		BlockState s = world.getBlockState(p);
-		if(s.getBlock() == HarderOres.ModBlocks.machine_axel && s.getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB) {
-			BlockEntity te = world.getBlockEntity(p);
-			IMechanicalPower pow = te.getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir).orElse(null);
-			if(pow != null) {
-				powerUser.setRawPower(pow.getRawPower());
-				return Math.max(powerUser.getScaledPower(powerUser.getRawPower()),0);
-			}
-		}
-
-		return 0;
+		if(level.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());
+		IMechanicalPower pow = AxelNetwork.findPowerSource(level, worldPosition);
+		if(pow == null) return 0;
+		powerUser.setRawPower(pow.getRawPower());
+		return Math.max(powerUser.getScaledPower(powerUser.getRawPower()),0);
 	}
 	
 	public boolean canGrind(MillstoneOrientation millpos) {

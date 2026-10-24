@@ -24,6 +24,15 @@
                   }
                 }
               ],
+              "functions": [
+                {
+                  "block": "harderores:ore_hardcopper",
+                  "function": "minecraft:copy_state",
+                  "properties": [
+                    "ore_density"
+                  ]
+                }
+              ],
               "name": "harderores:ore_hardcopper"
             },
             {
@@ -39,7 +48,7 @@
                   "function": "harderores:set_count"
                 }
               ],
-              "name": "harderores:orechunk_copper"
+              "name": "minecraft:raw_copper"
             }
           ]
         }

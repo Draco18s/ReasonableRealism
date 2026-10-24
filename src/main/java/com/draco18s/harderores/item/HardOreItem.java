@@ -31,6 +31,6 @@ public class HardOreItem extends BlockItem {
 		}
 		CompoundTag compoundtag1 = compoundtag.getCompound("BlockStateTag");
 		String s1 = compoundtag1.getString(BlockProperties.ORE_DENSITY.getName());
-		tooltip.add(Component.translatable("harderores.ore_density", "Ore Density %s".formatted(s1), new Object[] {s1}));
+		tooltip.add(Component.translatable("harderores.ore_density", s1));
 	}
 }

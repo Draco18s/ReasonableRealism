@@ -24,6 +24,15 @@
                   }
                 }
               ],
+              "functions": [
+                {
+                  "block": "harderores:ore_hardiron",
+                  "function": "minecraft:copy_state",
+                  "properties": [
+                    "ore_density"
+                  ]
+                }
+              ],
               "name": "harderores:ore_hardiron"
             },
             {
@@ -39,7 +48,7 @@
                   "function": "harderores:set_count"
                 }
               ],
-              "name": "harderores:orechunk_iron"
+              "name": "minecraft:raw_iron"
             }
           ]
         }

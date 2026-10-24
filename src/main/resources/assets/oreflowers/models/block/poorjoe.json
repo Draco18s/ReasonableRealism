@@ -1,7 +1,0 @@
-{
-    "parent": "minecraft:block/cross",
-    "textures": {
-        "cross": "oreflowers:item/poorjoe"
-    },
-    "render_type": "minecraft:cutout"
-}

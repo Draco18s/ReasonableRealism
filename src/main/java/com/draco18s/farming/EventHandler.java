@@ -5,6 +5,7 @@ import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.DiggerItem;
@@ -27,10 +28,6 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber(modid = HarderFarming.MODID)
 public class EventHandler {
-	public static boolean doSlowCrops = true;
-	public static boolean doBiomeCrops = true;
-	/** The most a poor climate can slow growth: 1 in (10 + this) growth ticks succeeds. */
-	public static int cropsWorst = 16;
 
 	@SubscribeEvent
 	public static void onEntityAttack(LivingHurtEvent event) {
@@ -53,9 +50,32 @@ public class EventHandler {
 	 * Slows every plant with an age property (crops, stems, sugar cane, cocoa, nether wart, berry bushes...).
 	 * Growth is helped by the right neighbors and by a climate that suits the plant.
 	 */
+	/**
+	 * Crop Rotation: harvesting a crop whose row (the same crop on both sides one way, not the other) runs between
+	 * other crops, with no bare farmland or weeds around it. (1.11 granted it to the nearest player; the break event
+	 * knows who harvested.)
+	 */
+	@SubscribeEvent
+	public static void onCropHarvest(BlockEvent.BreakEvent event) {
+		if(!(event.getPlayer() instanceof ServerPlayer player) || HarderFarming.ModTriggers.crop_rotation == null) return;
+		Block crop = event.getState().getBlock();
+		if(!(crop instanceof CropBlock) || crop instanceof CropWeedsBlock) return;
+		LevelAccessor world = event.getLevel();
+		BlockPos pos = event.getPos();
+		for(BlockPos p : BlockPos.betweenClosed(pos.offset(-1, 0, -1), pos.offset(1, 0, 1))) {
+			BlockState state = world.getBlockState(p);
+			if((state.getBlock() instanceof CropWeedsBlock || state.isAir()) && world.getBlockState(p.below()).is(Blocks.FARMLAND)) return;
+		}
+		boolean rowNS = world.getBlockState(pos.north()).is(crop) && world.getBlockState(pos.south()).is(crop);
+		boolean rowEW = world.getBlockState(pos.east()).is(crop) && world.getBlockState(pos.west()).is(crop);
+		if(rowNS ^ rowEW) {
+			HarderFarming.ModTriggers.crop_rotation.trigger(player);
+		}
+	}
+
 	@SubscribeEvent
 	public static void onCropGrowPre(BlockEvent.CropGrowEvent.Pre event) {
-		if(!doSlowCrops) return;
+		if(!FarmingConfig.doSlowCrops.get()) return;
 		LevelAccessor world = event.getLevel();
 		BlockState state = event.getState();
 		IntegerProperty ageProp = getAgeProperty(state);
@@ -126,7 +146,7 @@ public class EventHandler {
 			}
 		}
 		int rr = 0;
-		if(doBiomeCrops) {
+		if(FarmingConfig.doBiomeCrops.get()) {
 			rr = climatePenalty(world, pos, bio, block);
 		}
 		rr += 2*inc;
@@ -177,7 +197,7 @@ public class EventHandler {
 		int rr = (int) Math.round((Math.pow(t-1.5f,4)*0.6f)+(t*t*2)-((r*r*-2.2)-0.3f*Math.pow(r+2f,4)+7));
 		if(rr < 0) rr--;
 		if(rr < -8) rr = -8;
-		if(rr > cropsWorst) rr = cropsWorst;
+		if(rr > FarmingConfig.cropsWorst.get()) rr = FarmingConfig.cropsWorst.get();
 		return rr;
 	}
 }

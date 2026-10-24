@@ -16,7 +16,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class BreakBlockTrigger extends HardLibCriteriaTrigger<BreakBlockTrigger.Instance> {
-	private static final ResourceLocation ID = new ResourceLocation(HardLib.MODID, "break_block");
+	private static final ResourceLocation ID = HardLib.getRL("break_block");
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(LootContextParams.BLOCK_STATE).build();
 
 	@Override

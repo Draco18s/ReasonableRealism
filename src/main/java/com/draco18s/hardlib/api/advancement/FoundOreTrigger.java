@@ -1,5 +1,7 @@
 package com.draco18s.hardlib.api.advancement;
 
+import com.draco18s.flowers.OreFlowers;
+
 import com.google.gson.JsonObject;
 
 import net.minecraft.advancements.critereon.DeserializationContext;
@@ -10,7 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class FoundOreTrigger extends HardLibCriteriaTrigger<FoundOreTrigger.Instance> {
-    private static final ResourceLocation ID = new ResourceLocation("oreflowers","found_ore");
+    private static final ResourceLocation ID = OreFlowers.getRL("found_ore");
 	public static LootContextParam<Integer> ORE_COUNT = new LootContextParam<Integer>(ID);
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(FoundOreTrigger.ORE_COUNT).build();
 

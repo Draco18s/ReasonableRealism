@@ -3,7 +3,7 @@
   "ingredientQuantity": 8,
   "ingredients": [
     {
-      "tag": "harderores:dust/tiny/iron"
+      "tag": "forge:dust/tiny/iron"
     }
   ],
   "result": {

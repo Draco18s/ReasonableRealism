@@ -24,6 +24,15 @@
                   }
                 }
               ],
+              "functions": [
+                {
+                  "block": "harderores:ore_harddeepslate_gold",
+                  "function": "minecraft:copy_state",
+                  "properties": [
+                    "ore_density"
+                  ]
+                }
+              ],
               "name": "harderores:ore_harddeepslate_gold"
             },
             {
@@ -39,7 +48,7 @@
                   "function": "harderores:set_count"
                 }
               ],
-              "name": "harderores:orechunk_gold"
+              "name": "minecraft:raw_gold"
             }
           ]
         }

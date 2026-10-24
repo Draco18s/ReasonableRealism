@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "oreflowers:block/aveloz_down"
+    },
+    "half=upper": {
+      "model": "oreflowers:block/aveloz"
+    }
+  }
+}

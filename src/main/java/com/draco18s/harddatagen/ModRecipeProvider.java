@@ -2,8 +2,6 @@ package com.draco18s.harddatagen;
 
 import java.util.function.Consumer;
 
-import org.antlr.v4.runtime.atn.SemanticContext.Predicate;
-
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harddatagen.custom.GrindingRecipeBuilder;
@@ -19,7 +17,6 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -160,6 +157,22 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.pattern("sss")
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.PISTON).build()))
 			.save(finishedRecipeConsumer);
+		// The sifter and sluice recipes are 1.14's (whose sluice recipe made a sifter by mistake).
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, HarderOres.ModBlocks.machine_sifter)
+			.define('P', ItemTags.PLANKS)
+			.define('B', Items.BUCKET)
+			.define('b', Items.IRON_BARS)
+			.pattern("PBP")
+			.pattern("PbP")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_iron, HarderOres.ModItems.tinydust_gold, HarderOres.ModItems.tinydust_copper).build()))
+			.save(finishedRecipeConsumer);
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, HarderOres.ModItems.sluice)
+			.define('P', ItemTags.PLANKS)
+			.define('s', Tags.Items.RODS_WOODEN)
+			.pattern("sss")
+			.pattern("PPP")
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.GRAVEL).build()))
+			.save(finishedRecipeConsumer);
 	}
 
 	private void Farming(Consumer<FinishedRecipe> finishedRecipeConsumer) {
@@ -215,35 +228,25 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.WHEAT).build()))
 			.save(finishedRecipeConsumer);
 		
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_copper, 2)
-			.requires(HarderOres.ModItems.orechunk_copper)
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_copper).build()))
-			.save(finishedRecipeConsumer);
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_gold, 2)
-			.requires(HarderOres.ModItems.orechunk_gold)
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_gold).build()))
-			.save(finishedRecipeConsumer);
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_iron, 2)
-			.requires(HarderOres.ModItems.orechunk_iron)
-			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.orechunk_iron).build()))
-			.save(finishedRecipeConsumer);	
 
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.largedust_copper, 2)
+		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_copper, 2)
 			.requires(Items.RAW_COPPER)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.RAW_COPPER).build()))
 			.save(finishedRecipeConsumer);
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.largedust_iron, 2)
+		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_iron, 2)
 			.requires(Items.RAW_IRON)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.RAW_IRON).build()))
 			.save(finishedRecipeConsumer);
-		GrindingRecipeBuilder.grind(HarderOres.ModItems.largedust_gold, 2)
+		GrindingRecipeBuilder.grind(HarderOres.ModItems.tinydust_gold, 2)
 			.requires(Items.RAW_GOLD)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.RAW_GOLD).build()))
 			.save(finishedRecipeConsumer);
 		
-		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_copper, HarderOres.ModItems.copper_nugget, 0.08f);
-		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_gold, Items.GOLD_NUGGET, 0.08f);
-		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_iron, Items.IRON_NUGGET, 0.08f);
+		// Raw ore is a hard ore's small yield (1.14's ore chunk), so it smelts to a nugget; the vanilla raw ore to
+		// ingot recipes are disabled (data/minecraft/recipes/*_from_*_raw_*.json).
+		cook(finishedRecipeConsumer, Items.RAW_COPPER, HarderOres.ModItems.copper_nugget, 0.08f);
+		cook(finishedRecipeConsumer, Items.RAW_GOLD, Items.GOLD_NUGGET, 0.08f);
+		cook(finishedRecipeConsumer, Items.RAW_IRON, Items.IRON_NUGGET, 0.08f);
 		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_limonite, Items.RAW_IRON, 0.08f);
 	}
 
@@ -255,10 +258,10 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 		String name = ForgeRegistries.ITEMS.getKey(output).getPath() + "_from_%s_" + ForgeRegistries.ITEMS.getKey(input).getPath();
 		SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, output, experience, 200)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(input).build()))
-			.save(finishedRecipeConsumer, new ResourceLocation(HarderOres.MODID, String.format(name, "smelting")));
+			.save(finishedRecipeConsumer, HarderOres.getRL(String.format(name, "smelting")));
 		SimpleCookingRecipeBuilder.blasting(Ingredient.of(input), RecipeCategory.MISC, output, experience, 100)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(input).build()))
-			.save(finishedRecipeConsumer, new ResourceLocation(HarderOres.MODID, String.format(name, "blasting")));
+			.save(finishedRecipeConsumer, HarderOres.getRL(String.format(name, "blasting")));
 	}
 
 	private void Dusts(Consumer<FinishedRecipe> finishedRecipeConsumer) {
@@ -288,16 +291,24 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_iron).build()))
 			.save(finishedRecipeConsumer);
 		
+		SifterRecipeBuilder.sift(HarderFarming.ModItems.largedust_flour, 1, 8)
+			.requires(HarderFarming.ModItems.tinydust_flour)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModItems.tinydust_flour).build()))
+			.save(finishedRecipeConsumer);
+		SifterRecipeBuilder.sift(Items.SUGAR, 1, 8)
+			.requires(HarderFarming.ModItems.tinydust_sugar)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderFarming.ModItems.tinydust_sugar).build()))
+			.save(finishedRecipeConsumer);
 		SifterRecipeBuilder.sift(HarderOres.ModItems.largedust_copper, 1, 8)
-			.requires(new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/copper")))
+			.requires(HarderOres.Tags.Items.TINY_COPPER_DUST)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_copper).build()))
 			.save(finishedRecipeConsumer);
 		SifterRecipeBuilder.sift(HarderOres.ModItems.largedust_gold, 1, 8)
-			.requires(new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/gold")))
+			.requires(HarderOres.Tags.Items.TINY_GOLD_DUST)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_gold).build()))
 			.save(finishedRecipeConsumer);
 		SifterRecipeBuilder.sift(HarderOres.ModItems.largedust_iron, 1, 8)
-			.requires(new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HarderOres.MODID, "dust/tiny/iron")))
+			.requires(HarderOres.Tags.Items.TINY_IRON_DUST)
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_iron).build()))
 			.save(finishedRecipeConsumer);
 		

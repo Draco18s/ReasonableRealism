@@ -2,7 +2,7 @@
   "type": "harderores:grinding",
   "ingredients": [
     {
-      "item": "harderores:orechunk_iron"
+      "item": "minecraft:raw_iron"
     }
   ],
   "result": {

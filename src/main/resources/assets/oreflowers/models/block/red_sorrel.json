@@ -1,7 +1,0 @@
-{
-    "parent": "minecraft:block/cross",
-    "textures": {
-        "cross": "oreflowers:item/red_sorrel"
-    },
-    "render_type": "minecraft:cutout"
-}

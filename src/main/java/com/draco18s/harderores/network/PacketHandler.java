@@ -2,7 +2,6 @@ package com.draco18s.harderores.network;
 
 import com.draco18s.harderores.HarderOres;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -16,7 +15,7 @@ public final class PacketHandler
 	}
 	private static final String PROTOCOL_VERSION = Integer.toString(1);
 	private static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
-			.named(new ResourceLocation(HarderOres.MODID, "main_channel"))
+			.named(HarderOres.getRL("main_channel"))
 			.clientAcceptedVersions(PROTOCOL_VERSION::equals)
 			.serverAcceptedVersions(PROTOCOL_VERSION::equals)
 			.networkProtocolVersion(() -> PROTOCOL_VERSION)

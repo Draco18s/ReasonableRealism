@@ -8,11 +8,9 @@ import com.draco18s.harderores.entity.capability.PackableItemsHandler;
 import com.draco18s.harderores.entity.capability.PackagerMechanicalPowerHandler;
 import com.draco18s.harderores.inventory.PackagerContainerMenu;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.block.state.BlockProperties;
-import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
-import com.draco18s.hardlib.api.internal.inventory.ModContainerBlockEnity;
+import com.draco18s.hardlib.api.internal.inventory.ModContainerBlockEntity;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
 import net.minecraft.core.BlockPos;
@@ -26,9 +24,7 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -40,7 +36,7 @@ import net.minecraftforge.items.wrapper.CombinedInvWrapper;
  * Pressure packager: packs items (9 ingots into a block, ice into packed ice...) using mechanical power from a
  * windvane hub, reached up a column of axels like the millstone's. Harder inputs and outputs take longer.
  */
-public class PackagerBlockEntity extends ModContainerBlockEnity {
+public class PackagerBlockEntity extends ModContainerBlockEntity {
 	private static final int PACK_TIME = 100;
 	protected final ItemStackHandler inputSlots = new PackableItemsHandler();
 	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
@@ -164,39 +160,13 @@ public class PackagerBlockEntity extends ModContainerBlockEnity {
 		outputSlots.insertItem(0, result.copy(), false);
 	}
 
-	/** Follows axels up (and along) from the packager to a windvane hub, like the millstone. */
+	/** Power from the windvane hub at the top of the packager's axels. */
 	private float calcAndGetPower() {
 		if(level.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());
-		int numBlocksOut = 0;
-		BlockPos p = worldPosition;
-		Direction searchDir = Direction.UP;
-		do {
-			p = p.relative(searchDir,1);
-			BlockState axel = level.getBlockState(p);
-			if(axel.getBlock() == HarderOres.ModBlocks.machine_axel) {
-				if(axel.getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.UP) {
-					searchDir = Direction.UP;
-				}
-				else if(searchDir == Direction.UP) {
-					searchDir = axel.getValue(BlockStateProperties.HORIZONTAL_FACING);
-				}
-				numBlocksOut++;
-			}
-			else {
-				p = p.relative(searchDir.getOpposite());
-				break;
-			}
-		} while(numBlocksOut <= 8);
-		BlockState s = level.getBlockState(p);
-		if(s.getBlock() == HarderOres.ModBlocks.machine_axel && s.getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB) {
-			BlockEntity te = level.getBlockEntity(p);
-			IMechanicalPower pow = te == null ? null : te.getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir).orElse(null);
-			if(pow != null) {
-				powerUser.setRawPower(pow.getRawPower());
-				return Math.max(powerUser.getScaledPower(powerUser.getRawPower()),0);
-			}
-		}
-		return 0;
+		IMechanicalPower pow = AxelNetwork.findPowerSource(level, worldPosition);
+		if(pow == null) return 0;
+		powerUser.setRawPower(pow.getRawPower());
+		return Math.max(powerUser.getScaledPower(powerUser.getRawPower()),0);
 	}
 
 	@SuppressWarnings("unchecked")

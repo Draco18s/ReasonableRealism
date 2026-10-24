@@ -3,33 +3,30 @@ package com.draco18s.harderores.enchantment;
 import com.draco18s.harderores.HarderOres;
 
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.common.ToolActions;
 
-public class VeinCrackerEnchantment extends Enchantment {
-
+/** Breaking a hard ore block also takes a layer off neighboring blocks of the same ore. */
+public class VeinCrackerEnchantment extends PickaxeEnchantment {
 	public VeinCrackerEnchantment(EquipmentSlot[] slots) {
-		super(Enchantment.Rarity.RARE, EnchantmentCategory.DIGGER, slots);
+		super(Rarity.UNCOMMON, slots);
 	}
 
 	@Override
 	public int getMaxLevel() {
-		return 4;
+		return 3;
 	}
 
 	@Override
-	public int getMinCost(int par1) {
-		return 1 + 10 * par1;
+	public int getMinCost(int level) {
+		return 5 + 8 * level;
 	}
 
 	@Override
-	public int getMaxCost(int par1) {
-		return getMinCost(par1) + 15;
+	public int getMaxCost(int level) {
+		return getMinCost(level) + 15;
 	}
-	
+
 	@Override
 	protected boolean checkCompatibility(Enchantment other) {
 		boolean ret = super.checkCompatibility(other);
@@ -37,10 +34,5 @@ public class VeinCrackerEnchantment extends Enchantment {
 		ret &= other != Enchantments.SILK_TOUCH;
 		ret &= other != HarderOres.ModEnchantments.shatter;
 		return ret;
-	}
-	
-	@Override
-	public boolean canEnchant(ItemStack stack) {
-		return super.canEnchant(stack) || stack.canPerformAction(ToolActions.PICKAXE_DIG);
 	}
 }

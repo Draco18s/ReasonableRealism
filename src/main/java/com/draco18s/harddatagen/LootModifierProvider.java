@@ -3,7 +3,7 @@ package com.draco18s.harddatagen;
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.farming.loot.GrassLootModifier;
 import com.draco18s.farming.loot.RawLeatherModifier;
-import com.draco18s.harderfarming.loot.TemperatureCheck;
+import com.draco18s.farming.loot.TemperatureCheck;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Blocks;

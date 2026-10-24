@@ -7,8 +7,6 @@ import com.draco18s.industry.inventory.WoodHopperContainerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -33,7 +31,7 @@ public class DistributorBlockEntity extends AbstractHopper implements ICustomCon
 
 	@Override
 	protected Component getDefaultName() {
-		return MutableComponent.create(new TranslatableContents("expindustry:machine_distributor.name", "Distributor", TranslatableContents.NO_ARGS));
+		return Component.translatable("container.expindustry.machine_distributor");
 	}
 
 	@Override

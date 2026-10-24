@@ -1,10 +1,8 @@
 {
+  "itemGroup.harderores": "Harder Ores",
   "item.harderores.orechunk_limonite": "Raw Limonite Ore",
-  "item.harderores.orechunk_iron": "Iron Ore Chunk",
-  "item.harderores.orechunk_gold": "Gold Ore Chunk",
   "item.harderores.orechunk_diamond": "Raw Uncut Diamond",
   "item.harderores.orechunk_tin": "Tin Ore Chunk",
-  "item.harderores.orechunk_copper": "Copper Ore Chunk",
   "item.harderores.orechunk_lead": "Lead Ore Chunk",
   "item.harderores.orechunk_uranium": "Uranium Ore Chunk",
   "item.harderores.orechunk_silver": "Silver Ore Chunk",
@@ -31,15 +29,17 @@
 
   "item.harderores.largedust_iron": "Iron Dust",
   "item.harderores.largedust_gold": "Gold Dust",
+  "item.harderores.largedust_copper": "Copper Dust",
+  "item.harderores.copper_nugget": "Copper Nugget",
   "item.harderores.largedust_flour": "Flour",
 
   "item.harderores.iron_nugget": "Iron Nugget",
   "item.harderores.orecart": "Ore Minecart",
 
-  "item.harderores.diamondstud_pickaxe": "Diamond Studded Pickaxe",
-  "item.harderores.diamondstud_axe": "Diamond Studded Axe",
-  "item.harderores.diamondstud_shovel": "Diamond Studded Shovel",
-  "item.harderores.diamondstud_hoe": "Diamond Studded Hoe",
+  "item.harderores.diamond_studded_pick": "Diamond Studded Pickaxe",
+  "item.harderores.diamond_studded_axe": "Diamond Studded Axe",
+  "item.harderores.diamond_studded_shovel": "Diamond Studded Shovel",
+  "item.harderores.diamond_studded_hoe": "Diamond Studded Hoe",
 
   "block.harderores.ore_limonite": "Limonite Ore",
   "block.harderores.ore_hardiron": "Hard Iron Ore",
@@ -80,9 +80,9 @@
   "block.harderores.orechunk_dummy_quartz": "Packaged Blue Quartz Ore",
 
   "block.harderores.machine_millstone": "Millstone",
-  "block.harderores.axel": "Axel",
-  "block.harderores.windvane": "Wind Vane",
-  "block.harderores.sifter": "Sifter",
+  "block.harderores.machine_axel": "Axel",
+  "block.harderores.machine_windvane": "Wind Vane",
+  "block.harderores.machine_sifter": "Sifter",
   "block.harderores.sluice": "Sluice",
   "block.harderores.packager": "Pressure Packager",
 

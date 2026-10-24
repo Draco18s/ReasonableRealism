@@ -1,5 +1,7 @@
 package com.draco18s.hardlib.api.advancement;
 
+import com.draco18s.harderores.HarderOres;
+
 import com.google.gson.JsonObject;
 
 import net.minecraft.advancements.critereon.DeserializationContext;
@@ -10,7 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class MillstoneTrigger extends HardLibCriteriaTrigger<MillstoneTrigger.Instance> {
-	private static final ResourceLocation ID = new ResourceLocation("harderores","millstone_grind");
+	private static final ResourceLocation ID = HarderOres.getRL("millstone_grind");
 	public static LootContextParam<Float> POWER = new LootContextParam<Float>(ID);
 	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(MillstoneTrigger.POWER).build();
 

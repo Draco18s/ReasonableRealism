@@ -1,5 +1,6 @@
 package com.draco18s.industry.client.gui;
 
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.industry.inventory.ExtHopperContainerMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class ExtHopperGuiContainer extends AbstractContainerScreen<ExtHopperContainerMenu> {
-	private static final ResourceLocation HOPPER_LOCATION = new ResourceLocation("textures/gui/container/hopper.png");
+	private static final ResourceLocation HOPPER_LOCATION = HardLib.parseRL("textures/gui/container/hopper.png");
 
 	public ExtHopperGuiContainer(ExtHopperContainerMenu p_97741_, Inventory p_97742_, Component p_97743_) {
 		super(p_97741_, p_97742_, p_97743_);

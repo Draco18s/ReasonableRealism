@@ -14,11 +14,11 @@ import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
+import com.draco18s.hardlib.math.MathUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
@@ -42,9 +42,8 @@ public class FlowerDataHandler implements IFlowerData {
 		BlockPos surface = world.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR_WG, pos);
 		RandomSource r = RandomSource.create(surface.asLong());
 		if(r.nextInt(dictator.spawnChance) != 0) return;
-		float angle = r.nextFloat() * Mth.TWO_PI;
-		float dist = Mth.sqrt(r.nextFloat()) * dictator.spawnDistance;
-		BlockPos clusterPos = surface.offset(Math.round(Mth.cos(angle) * dist), 0, Math.round(Mth.sin(angle) * dist));
+		float[] u = MathUtils.RandomInUnitCircle(r);
+		BlockPos clusterPos = surface.offset(Math.round(u[0] * dictator.spawnDistance), 0, Math.round(u[1] * dictator.spawnDistance));
 		if(!canWrite(world, clusterPos)) return;
 		clusterPos = world.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR_WG, clusterPos);
 		for(OreFlowerData dat : entry.getB()) {

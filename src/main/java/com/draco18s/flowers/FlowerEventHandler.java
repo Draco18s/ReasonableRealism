@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.draco18s.flowers.util.ChunkOreCounter;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
 import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
@@ -12,6 +13,7 @@ import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
 import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.Level;
@@ -20,6 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.level.ChunkDataEvent;
@@ -31,8 +35,6 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber(modid = OreFlowers.MODID)
 public class FlowerEventHandler {
-	/** How many 8-block slices below a bonemealed block are searched for ore. */
-	private static final int SCAN_SLICES = 4;
 	private static final RandomSource rand = RandomSource.create();
 
 	@SubscribeEvent
@@ -57,6 +59,9 @@ public class FlowerEventHandler {
 	public static void onBonemeal(BonemealEvent event) {
 		Level world = event.getLevel();
 		if(world.isClientSide || event.getEntity() == null) return;
+		// Dispensers use a fake player: they only grow ore flowers if the config allows, and much more rarely.
+		boolean machine = event.getEntity() instanceof FakePlayer;
+		if(machine && !FlowersConfig.poopBonemealFlowers.get()) return;
 		BlockState block = event.getBlock();
 		boolean sand = block.is(Blocks.SAND) || block.is(Blocks.RED_SAND);
 		if(!sand && !block.is(Blocks.GRASS_BLOCK)) return;
@@ -64,18 +69,24 @@ public class FlowerEventHandler {
 		Map<BlockWrapper, Tuple<OreFlowerDictator, List<OreFlowerData>>> list = HardLibAPI.oreFlowers.getOreList();
 		for(BlockWrapper ore : list.keySet()) {
 			int count = 0;
-			for(int scanLevel = 0; scanLevel < SCAN_SLICES; scanLevel++) {
+			for(int scanLevel = 0; scanLevel < FlowersConfig.scanDepthSlices.get(); scanLevel++) {
 				count += HardLibAPI.oreData.getOreData(world, pos.below(scanLevel * 8), ore);
 			}
 			if(count <= 0) continue;
+			if(!machine && event.getEntity() instanceof ServerPlayer player && HardLibAPI.Advancements.FOUND_ORE != null) {
+				LootContext ctx = new LootContext.Builder(player.getLevel())
+						.withParameter(FoundOreTrigger.ORE_COUNT, count)
+						.create(FoundOreTrigger.requiredParams);
+				HardLibAPI.Advancements.FOUND_ORE.trigger(player, ctx);
+			}
 			// More ore, more flowers, but only logarithmically; rich deposits also get guaranteed ones.
 			count = (int)Math.min(Math.round(Math.log(count)), 10);
 			while(--count >= 0) {
 				for(OreFlowerData data : list.get(ore).getB()) {
-					if(count >= data.highConcentrationThreshold) {
+					if(count >= data.highConcentrationThreshold && !machine) {
 						HardLibAPI.oreFlowers.doSpawnFlowerCluster(world, pos, data.flower, rand, 1, 7);
 					}
-					if(rand.nextBoolean()) {
+					if(rand.nextBoolean() && (!machine || rand.nextInt(128) == 0)) {
 						HardLibAPI.oreFlowers.doSpawnFlowerCluster(world, pos, data.flower, rand, 1, 7);
 					}
 				}
@@ -85,7 +96,7 @@ public class FlowerEventHandler {
 			// Sand isn't bonemealable in vanilla; here it grows dead bushes too (and uses up the bonemeal).
 			event.setResult(Result.ALLOW);
 			for(int count = rand.nextInt(4) + 3; --count >= 0;) {
-				if(rand.nextBoolean()) {
+				if(rand.nextBoolean() && (!machine || rand.nextInt(128) == 0)) {
 					HardLibAPI.oreFlowers.doSpawnFlowerCluster(world, pos, Blocks.DEAD_BUSH.defaultBlockState(), rand, 1, 7);
 				}
 			}

@@ -27,6 +27,6 @@ public class ButcherKnife extends DiggerItem {
 	@Override
 	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
-		tooltip.add(Component.translatable("tooltip.harderfarming:damagebonus", 10));
+		tooltip.add(Component.translatable("tooltip.harderfarming.damagebonus", 10));
 	}
 }

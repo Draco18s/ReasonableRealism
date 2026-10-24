@@ -1,6 +1,6 @@
-{
-	"block.expindustry:machine_wood_hopper":"Holztrichter"	"block.expindustry:machine_distributor":"Verteiler",	"block.expindustry:machine_cart_loader":"Lorenbelader",	"block.expindustry:machine_filter":"Filternder Trichter",	"block.expindustry:type_rail":"Lorenart-Sensorschiene",	"block.expindustry:rail_bridge":"Schienenbrücke",	"block.expindustry:rail_bridge_powered":"Antriebsschienenbrücke",	"block.expindustry:machine_foundry":"Gießerei",
-	"item.expindustry:casting_mold":"Gussform",
+{	"container.expindustry.machine_distributor":"Verteiler",	"container.expindustry.machine_wood_hopper":"Holztrichter",
+	"block.expindustry.machine_wood_hopper":"Holztrichter",	"block.expindustry.machine_distributor":"Verteiler",	"block.expindustry.machine_cart_loader":"Lorenbelader",	"block.expindustry.machine_filter":"Filternder Trichter",	"block.expindustry.type_rail":"Lorenart-Sensorschiene",	"block.expindustry.rail_bridge":"Schienenbrücke",	"block.expindustry.powered_rail_bridge":"Antriebsschienenbrücke",	"block.expindustry.machine_foundry":"Gießerei",
+	"item.expindustry.casting_mold":"Gussform",
 
 	"Modify the %2$s value for other languages.":"The number refers to which fragment of a split string.",
 	"In English the mold tooltip displays its imprint of \"Iron Pickaxe\" as \"Pickaxe\".":"The 2 in %2$s is what makes it display the second word.",

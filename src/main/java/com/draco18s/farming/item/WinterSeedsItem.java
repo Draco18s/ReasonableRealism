@@ -20,6 +20,6 @@ public class WinterSeedsItem extends ItemNameBlockItem {
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
 		super.appendHoverText(stack, world, tooltip, flag);
-		tooltip.add(Component.translatable("tooltip.harderfarming:growsColdWeather"));
+		tooltip.add(Component.translatable("tooltip.harderfarming.growsColdWeather"));
 	}
 }

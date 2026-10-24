@@ -4,15 +4,18 @@ import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.client.gui.PackagerScreen;
 import com.draco18s.harderores.client.gui.SifterScreen;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.internal.OreNameHelper;
+import com.draco18s.hardlib.client.AdvancementLinks;
 
 import dev.lukebemish.dynamicassetgenerator.api.ResourceCache;
 import dev.lukebemish.dynamicassetgenerator.api.client.AssetResourceCache;
 import dev.lukebemish.dynamicassetgenerator.api.client.generators.TextureGenerator;
 import dev.lukebemish.dynamicassetgenerator.api.client.generators.texsources.TextureReader;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.particle.ParticleEngine.SpriteParticleRegistration;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -33,7 +36,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @EventBusSubscriber(modid = HarderOres.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEventHandler {
 	public static final AssetResourceCache ASSET_CACHE = ResourceCache.register(
-			new AssetResourceCache(new ResourceLocation(HarderOres.MODID, "assets")));
+			new AssetResourceCache(HarderOres.getRL("assets")));
 	static
 	{
 		initializeClient();
@@ -41,18 +44,22 @@ public class ClientEventHandler {
   
 	@SubscribeEvent
 	public static void registerParticles(RegisterParticleProvidersEvent event) {
-		MutableSpriteSet set = new MutableSpriteSet();
-		//event.registerSpecial(HarderOres.ModParticleTypes.prospector_dust, ProspectorParticle::new);
-		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_dust, set);
-		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_radar, set);
+		// Prospector: the dust shows at the broken stone (one per ore type found), the radar marks each ore block.
+		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_dust, ProspectorDustProvider::new);
+		event.registerSpriteSet(HarderOres.ModParticleTypes.prospector_radar, ProspectorRadarProvider::new);
 	}
-	
-	static class MutableSpriteSet implements SpriteParticleRegistration<BlockParticleOption> {
+
+	record ProspectorDustProvider(SpriteSet sprites) implements ParticleProvider<BlockParticleOption> {
 		@Override
-		public ParticleProvider<BlockParticleOption> create(SpriteSet sprites) {
-			return (opt, world, x, y, z, dx, dy, dz) -> {
-				return new ProspectorParticleRadar(opt, world, x, y, z, dx, dy, dz, sprites);
-			};
+		public Particle createParticle(BlockParticleOption opt, ClientLevel world, double x, double y, double z, double dx, double dy, double dz) {
+			return new ProspectorParticleDust(opt, world, x, y, z, dx, dy, dz, sprites);
+		}
+	}
+
+	record ProspectorRadarProvider(SpriteSet sprites) implements ParticleProvider<BlockParticleOption> {
+		@Override
+		public Particle createParticle(BlockParticleOption opt, ClientLevel world, double x, double y, double z, double dx, double dy, double dz) {
+			return new ProspectorParticleRadar(opt, world, x, y, z, dx, dy, dz, sprites);
 		}
 	}
 
@@ -64,6 +71,8 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
+			// Acquire Hardware also needs Just a Nugget (see data/minecraft/advancements/story/smelt_iron.json).
+			AdvancementLinks.add(HarderOres.getRL("iron_nuggets"), HardLib.parseRL("minecraft:story/smelt_iron"));
 			MenuScreens.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
 			MenuScreens.register(HarderOres.ModContainerTypes.packager, PackagerScreen::new);
 			ItemPropertyFunction f = (stack, world, entity, seed) -> {
@@ -88,7 +97,7 @@ public class ClientEventHandler {
 				HarderOres.ModBlocks.ore_harddeepslate_iron
 			};
 			for(Block blk : oreBlocks) {
-				ItemProperties.register(blk.asItem(), new ResourceLocation(HarderOres.MODID,BlockProperties.ORE_DENSITY.getName()), f);
+				ItemProperties.register(blk.asItem(), HarderOres.getRL(BlockProperties.ORE_DENSITY.getName()), f);
 			}
 		});
 	}
@@ -100,7 +109,7 @@ public class ClientEventHandler {
 	}
 
 	public static void genOverlayTextures(ResourceLocation base, ResourceLocation name, ResourceLocation outLoc) {
-		ResourceLocation overlayTex = new ResourceLocation(HarderOres.MODID, "block/ore/overlay");
+		ResourceLocation overlayTex = HarderOres.getRL("block/ore/overlay");
 		for(int i=1;i<=16;i++) {
 			String sfx = "_" + i;
 			genOverlayTexture(base, overlayTex.withSuffix(sfx), outLoc.withSuffix(sfx).withPrefix("block/"));

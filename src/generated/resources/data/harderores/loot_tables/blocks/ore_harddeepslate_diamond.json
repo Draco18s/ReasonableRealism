@@ -24,6 +24,15 @@
                   }
                 }
               ],
+              "functions": [
+                {
+                  "block": "harderores:ore_harddeepslate_diamond",
+                  "function": "minecraft:copy_state",
+                  "properties": [
+                    "ore_density"
+                  ]
+                }
+              ],
               "name": "harderores:ore_harddeepslate_diamond"
             },
             {

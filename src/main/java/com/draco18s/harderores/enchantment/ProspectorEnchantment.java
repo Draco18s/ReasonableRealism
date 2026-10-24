@@ -1,25 +1,18 @@
 package com.draco18s.harderores.enchantment;
 
-import java.util.function.Predicate;
-
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.common.ToolActions;
 
-public class ProspectorEnchantment extends Enchantment {
-
+/**
+ * Breaking stone with it shows nearby hard ore (particles); at level III it sometimes turns up a little dust.
+ * Works on a pickaxe, or on a compass held in the off hand.
+ */
+public class ProspectorEnchantment extends PickaxeEnchantment {
 	public ProspectorEnchantment(EquipmentSlot[] slots) {
-		super(Enchantment.Rarity.RARE, EnchantmentCategory.create("DIGGER_COMPASS", new Predicate<Item>() {
-			@Override
-			public boolean test(Item itemIn) {
-				return itemIn == Items.COMPASS;
-			}
-		}), slots);
+		super(Rarity.RARE, slots);
 	}
 
 	@Override
@@ -28,24 +21,22 @@ public class ProspectorEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinCost(int p_44679_) {
-		return 15 * p_44679_ - 5;
+	public int getMinCost(int level) {
+		return 15 * level - 5;
 	}
 
 	@Override
-	public int getMaxCost(int p_44691_) {
-		return getMinCost(p_44691_) + 15;
+	public int getMaxCost(int level) {
+		return getMinCost(level) + 15;
 	}
 
 	@Override
 	protected boolean checkCompatibility(Enchantment other) {
-		boolean ret = super.checkCompatibility(other);
-		ret |= other != Enchantments.BLOCK_FORTUNE;
-		return ret;
+		return super.checkCompatibility(other) && other != Enchantments.BLOCK_FORTUNE;
 	}
 
 	@Override
 	public boolean canEnchant(ItemStack stack) {
-		return super.canEnchant(stack) || stack.canPerformAction(ToolActions.PICKAXE_DIG);
+		return super.canEnchant(stack) || stack.is(Items.COMPASS);
 	}
 }

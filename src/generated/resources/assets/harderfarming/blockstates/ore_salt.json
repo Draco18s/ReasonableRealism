@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "harderores:block/ore_salt"
+      "model": "harderfarming:block/ore_salt"
     }
   }
 }

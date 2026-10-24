@@ -8,8 +8,6 @@ import com.draco18s.industry.inventory.WoodHopperContainerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +32,7 @@ public class WoodenHopperBlockEntity extends AbstractHopper implements ICustomCo
 
 	@Override
 	protected Component getDefaultName() {
-		return MutableComponent.create(new TranslatableContents("expindustry:machine_wood_hopper.name", "Wooden Hopper", TranslatableContents.NO_ARGS));
+		return Component.translatable("container.expindustry.machine_wood_hopper");
 	}
 	
 	@Override

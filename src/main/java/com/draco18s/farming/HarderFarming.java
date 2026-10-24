@@ -1,41 +1,60 @@
 package com.draco18s.farming;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.draco18s.farming.block.CropWeedsBlock;
 import com.draco18s.farming.block.CropWinterWheatBlock;
+import com.draco18s.farming.block.SaltOreBlock;
 import com.draco18s.farming.block.TannerBlock;
 import com.draco18s.farming.entity.TannerBlockEntity;
+import com.draco18s.farming.integration.HarvestcraftIntegration;
 import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.farming.item.ClimateGaugeItem;
 import com.draco18s.farming.item.WinterSeedsItem;
 import com.draco18s.farming.loot.GrassLootModifier;
 import com.draco18s.farming.loot.RawLeatherModifier;
+import com.draco18s.farming.loot.TemperatureCheck;
 import com.draco18s.farming.util.CropManager;
-import com.draco18s.harderfarming.block.SaltOreBlock;
-import com.draco18s.harderfarming.loot.TemperatureCheck;
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CaveVinesBlock;
+import net.minecraft.world.level.block.CocoaBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
+import net.minecraft.world.level.block.StemBlock;
+import net.minecraft.world.level.block.SugarCaneBlock;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
@@ -47,8 +66,9 @@ public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FarmingConfig.SPEC);
 		HardLibAPI.hardCrops = new CropManager();
-		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"));
+		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"), new Item.Properties());
 		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
 		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
@@ -80,14 +100,19 @@ public class HarderFarming {
 	
 	public static class Tags {
 		public static class Blocks{
-			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation("minecraft", "mineable/knife"));
+			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, HardLib.getRL("minecraft", "mineable/knife"));
 		}
 		public static class Items {
 			/** What a tanning rack accepts as salt. */
-			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge", "dusts/salt"));
+			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("forge", "dusts/salt"));
 		}
 	}
 	
+	public static class ModTriggers {
+		/** Harvesting a crop planted in rows between different crops (see EventHandler.onCropHarvest). */
+		public static PlayerTrigger crop_rotation;
+	}
+
 	public static class ModLootConditionTypes {
 		public static RegistryObject<LootItemConditionType> can_snow = null;
 	}
@@ -142,6 +167,35 @@ public class HarderFarming {
 	}
 	
 	@SubscribeEvent
+	public static void registerCreativeTab(CreativeModeTabEvent.Register event) {
+		event.registerCreativeModeTab(getRL("creative_tab"), builder -> builder
+			.title(Component.translatable("itemGroup." + MODID))
+			.icon(() -> new ItemStack(ModItems.winter_wheat_seeds))
+			.displayItems((params, output) -> {
+				Set<Item> items = new LinkedHashSet<Item>();
+				Collections.addAll(items, ModItems.winter_wheat_seeds, ModItems.weed_seeds, ModItems.tinydust_flour, ModItems.largedust_flour,
+						ModItems.tinydust_sugar, ModBlocks.ore_salt.asItem(), ModItems.salt_chunk, ModItems.salt, ModItems.tanner, ModItems.raw_leather,
+						ModItems.butcher_knife, ModItems.thermometer, ModItems.hydrometer);
+				// Then the rest of farming: tools, bone meal, and every plantable crop (vanilla's and other mods'), then produce.
+				Collections.addAll(items, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE,
+						Items.BONE_MEAL, Items.COMPOSTER, Items.HAY_BLOCK);
+				for(Item item : ForgeRegistries.ITEMS) {
+					if(item instanceof BlockItem blockItem && isCropBlock(blockItem.getBlock())) {
+						items.add(item);
+					}
+				}
+				Collections.addAll(items, Items.WHEAT, Items.BEETROOT, Items.PUMPKIN, Items.MELON, Items.MELON_SLICE);
+				items.stream().filter(item -> item.isEnabled(params.enabledFeatures())).forEach(output::accept);
+			}));
+	}
+
+	/** Blocks grown from a planted item: crops, stems, cocoa, nether wart, sugar cane, berries. */
+	private static boolean isCropBlock(Block block) {
+		return block instanceof CropBlock || block instanceof StemBlock || block instanceof CocoaBlock || block instanceof NetherWartBlock
+				|| block instanceof SugarCaneBlock || block instanceof SweetBerryBushBlock || block instanceof CaveVinesBlock;
+	}
+
+	@SubscribeEvent
 	public static void addItemsToCreativeTab(final CreativeModeTabEvent.BuildContents event) {
 		CreativeModeTab tab = event.getTab();
 		if(tab == CreativeModeTabs.FOOD_AND_DRINKS) {
@@ -160,13 +214,18 @@ public class HarderFarming {
 			event.accept(ModItems.raw_leather);
 		}
 		if(tab == CreativeModeTabs.NATURAL_BLOCKS) {
+			event.accept(ModBlocks.ore_salt);
 			event.accept(ModItems.weed_seeds);
 		}
 	}
 
 	@SubscribeEvent
 	public static void onCommonSetup(final FMLCommonSetupEvent event) {
-		event.enqueueWork(HarderFarming::registerCropData);
+		event.enqueueWork(() -> {
+			registerCropData();
+			HarvestcraftIntegration.registerCrops();
+			ModTriggers.crop_rotation = EasyRegistry.registerAdvancementTrigger(new PlayerTrigger(getRL("crop_rotation")));
+		});
 	}
 
 	/**
@@ -187,7 +246,7 @@ public class HarderFarming {
 		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new CropWeatherOffsets(0.6f,-0.1f,0,0));//Cool and wet
 	}
 
-	private static ResourceLocation getRL(String name) {
-		return new ResourceLocation(MODID, name);
+	public static ResourceLocation getRL(String name) {
+		return HardLib.getRL(MODID, name);
 	}
 }

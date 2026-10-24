@@ -6,8 +6,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.block.SluiceBlock;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
@@ -22,11 +24,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -35,14 +38,19 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.ModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("unused")
 public class ModBlockStateProvider extends BlockStateProvider {
 	protected final ExistingFileHelper fileHelper;
 	protected Map<ResourceLocation, Supplier<JsonElement>> map1;
 	BiConsumer<ResourceLocation, Supplier<JsonElement>> biconsumer;
+	private final String modid;
+
+	/** One provider per mod: modid picks which mod's blocks it generates, and the namespace of relative model names. */
 	public ModBlockStateProvider(PackOutput output, String modid, ExistingFileHelper exFileHelper) {
 		super(output, modid, exFileHelper);
+		this.modid = modid;
 		fileHelper = exFileHelper;
 		map1 = Maps.newHashMap();
 		biconsumer = (p_125123_, p_125124_) -> {
@@ -55,33 +63,75 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 	@Override
 	protected void registerStatesAndModels() {
+		switch(modid) {
+			case ExpandedIndustry.MODID -> industry();
+			case HarderOres.MODID -> harderOres();
+			case HarderFarming.MODID -> farming();
+			case OreFlowers.MODID -> flowers();
+			default -> throw new IllegalArgumentException("No block states for " + modid);
+		}
+	}
+
+	private void industry() {
 		createPassiveRail(ExpandedIndustry.ModBlocks.rail_bridge,
-				new ResourceLocation(ExpandedIndustry.MODID, ModelProvider.BLOCK_FOLDER + "/rail_bridge"),
-				new ResourceLocation("minecraft", ModelProvider.BLOCK_FOLDER + "/oak_planks"));
+				ExpandedIndustry.getRL(ModelProvider.BLOCK_FOLDER + "/rail_bridge"),
+				HardLib.getRL("minecraft", ModelProvider.BLOCK_FOLDER + "/oak_planks"));
 		createActiveRail(ExpandedIndustry.ModBlocks.powered_rail_bridge,
-				new ResourceLocation(ExpandedIndustry.MODID, ModelProvider.BLOCK_FOLDER + "/rail_bridge_powered"),
-				new ResourceLocation("minecraft", ModelProvider.BLOCK_FOLDER + "/oak_planks"));
-		
+				ExpandedIndustry.getRL(ModelProvider.BLOCK_FOLDER + "/rail_bridge_powered"),
+				HardLib.getRL("minecraft", ModelProvider.BLOCK_FOLDER + "/oak_planks"));
+		extHopper(ExpandedIndustry.ModBlocks.machine_wood_hopper, ExpandedIndustry.getRL("wood_hopper"));
+		extHopper(ExpandedIndustry.ModBlocks.machine_distributor, ExpandedIndustry.getRL("distributor"));
+	}
+
+	private void harderOres() {
 		millstone(HarderOres.ModBlocks.machine_millstone,
-				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/mill"));
+				HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/mill"));
 
 		simpleBlockWithItem(HarderOres.ModBlocks.ore_limonite, simpleOre(HarderOres.ModBlocks.ore_limonite));
-		simpleBlockWithItem(HarderFarming.ModBlocks.ore_salt, simpleOre(HarderFarming.ModBlocks.ore_salt));
 		
 		genHardOres();
 		
-		sluicemodel(HarderOres.ModBlocks.sluice, prebuiltModel(new ResourceLocation(HarderOres.MODID,"sluice-1")));
-		simpleBlockWithItem(HarderOres.ModBlocks.machine_sifter, prebuiltModel(new ResourceLocation(HarderOres.MODID,"machine_sifter")));
+		sluicemodel(HarderOres.ModBlocks.sluice, prebuiltModel(HarderOres.getRL("sluice-1")));
+		simpleBlockWithItem(HarderOres.ModBlocks.machine_sifter, prebuiltModel(HarderOres.getRL("machine_sifter")));
 		simpleBlockWithItem(HarderOres.ModBlocks.packager, models().cubeTop("packager",
-				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/packager-side"),
-				new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/packager-top")));
-		extHopper(ExpandedIndustry.ModBlocks.machine_wood_hopper, new ResourceLocation(ExpandedIndustry.MODID, "wood_hopper"));
-		extHopper(ExpandedIndustry.ModBlocks.machine_distributor, new ResourceLocation(ExpandedIndustry.MODID, "distributor"));
+				HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/packager-side"),
+				HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/packager-top")));
 		axel(HarderOres.ModBlocks.machine_axel);
 		windvane(HarderOres.ModBlocks.machine_windvane);
-		
+	}
+
+	private void farming() {
+		simpleBlockWithItem(HarderFarming.ModBlocks.ore_salt, simpleOre(HarderFarming.ModBlocks.ore_salt));
 		crops((CropBlock)HarderFarming.ModBlocks.crop_winter_wheat, "block/winter_wheat_stage_", "winter_wheat_stage_");
 		weeds((CropBlock)HarderFarming.ModBlocks.crop_weeds);
+	}
+
+	/**
+	 * Flowers are crosses of their item texture. Two-tall ones use "<name>1" for the lower half, and blooming ones
+	 * use it for the not-blooming phase (bloom=false shows the "_bloom" model, as 1.14 did).
+	 */
+	private void flowers() {
+		for(Map.Entry<String, RegistryObject<Block>> entry : OreFlowers.FLOWERS.entrySet()) {
+			String name = entry.getKey();
+			Block block = entry.getValue().get();
+			ModelFile main = flowerModel(name, name);
+			if(block.defaultBlockState().hasProperty(BlockProperties.BLOOM_PHASE)) {
+				ModelFile other = flowerModel(name + "_bloom", name + "1");
+				getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder().modelFile(state.getValue(BlockProperties.BLOOM_PHASE) ? main : other).build());
+			}
+			else if(block instanceof DoublePlantBlock) {
+				ModelFile lower = flowerModel(name + "_down", name + "1");
+				getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder().modelFile(state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER ? main : lower).build());
+			}
+			else {
+				simpleBlock(block, main);
+			}
+			createSimpleFlatItemModel(block, HardLib.getRL(modid, ModelProvider.ITEM_FOLDER + "/" + name));
+		}
+	}
+
+	private ModelFile flowerModel(String name, String texture) {
+		return models().cross(name, HardLib.getRL(modid, ModelProvider.ITEM_FOLDER + "/" + texture)).renderType("cutout");
 	}
 
 	/** Weeds have 16 ages but 8 stages of growth to show; the later ages all look fully grown. */
@@ -89,7 +139,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		getVariantBuilder(block).forAllStates(state -> {
 			int stage = Math.min(state.getValue(block.getAgeProperty()), 7);
 			return new ConfiguredModel[] { new ConfiguredModel(models().crop(HarderFarming.MODID + ":block/weeds_stage_" + stage,
-					new ResourceLocation(HarderFarming.MODID, ModelProvider.BLOCK_FOLDER + "/weeds_stage_" + stage)).renderType("cutout")) };
+					HarderFarming.getRL(ModelProvider.BLOCK_FOLDER + "/weeds_stage_" + stage)).renderType("cutout")) };
 		});
 	}
 
@@ -204,58 +254,58 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			ResourceLocation edgeName = registryName.withSuffix("_side");
 			switch(v) {
 				case NONE:
-					model = new ConfiguredModel(models().withExistingParent(registryName.toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(registryName.toString(), HardLib.parseRL("cube_column"))
 						.texture("end", textureName.withSuffix("_generic"))
 						.texture("side", textureName.withSuffix("_side")));
 					break;
 				case CENTER:
-					model = new ConfiguredModel(models().withExistingParent(registryName.withSuffix("_center").toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(registryName.withSuffix("_center").toString(), HardLib.parseRL("cube_column"))
 							.texture("end", textureName.withSuffix("_center"))
 							.texture("side", textureName.withSuffix("_side")));
 					break;
 				case EAST:
-					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), HardLib.parseRL("cube_column"))
 							.texture("end", textureName.withSuffix("_edge"))
 							.texture("side", textureName.withSuffix("_side")));
 					break;
 				case NORTH:
-					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), HardLib.parseRL("cube_column"))
 							.texture("end", textureName.withSuffix("_edge"))
 							.texture("side", textureName.withSuffix("_side")),0,270,false);
 					break;
 				case NORTH_EAST:
-					/*model = new ConfiguredModel(models().getExistingFile(new ResourceLocation("harderores","block/test.obj")));
+					/*model = new ConfiguredModel(models().getExistingFile(HarderOres.getRL("block/test.obj")));
 					*/
-					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), new ResourceLocation("cube_bottom_top"))
+					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), HardLib.parseRL("cube_bottom_top"))
 							.texture("bottom", textureName.withSuffix("_corner2"))
 							.texture("top", textureName.withSuffix("_corner"))
 							.texture("side", textureName.withSuffix("_side")));
 					break;
 				case NORTH_WEST:
-					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), new ResourceLocation("cube_bottom_top"))
+					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), HardLib.parseRL("cube_bottom_top"))
 							.texture("bottom", textureName.withSuffix("_corner2"))
 							.texture("top", textureName.withSuffix("_corner"))
 							.texture("side", textureName.withSuffix("_side")),0,270,false);
 					break;
 				case SOUTH:
-					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), HardLib.parseRL("cube_column"))
 							.texture("end", textureName.withSuffix("_edge"))
 							.texture("side", textureName.withSuffix("_side")),0,90,false);
 					break;
 				case SOUTH_EAST:
-					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), new ResourceLocation("cube_bottom_top"))
+					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), HardLib.parseRL("cube_bottom_top"))
 							.texture("bottom", textureName.withSuffix("_corner2"))
 							.texture("top", textureName.withSuffix("_corner"))
 							.texture("side", textureName.withSuffix("_side")),0,90,false);
 					break;
 				case SOUTH_WEST:
-					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), new ResourceLocation("cube_bottom_top"))
+					model = new ConfiguredModel(models().withExistingParent(cornerName.toString(), HardLib.parseRL("cube_bottom_top"))
 							.texture("bottom", textureName.withSuffix("_corner2"))
 							.texture("top", textureName.withSuffix("_corner"))
 							.texture("side", textureName.withSuffix("_side")),0,180,false);
 					break;
 				case WEST:
-					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), new ResourceLocation("cube_column"))
+					model = new ConfiguredModel(models().withExistingParent(edgeName.toString(), HardLib.parseRL("cube_column"))
 							.texture("end", textureName.withSuffix("_edge"))
 							.texture("side", textureName.withSuffix("_side")),0,180,false);
 					break;
@@ -267,8 +317,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		getVariantBuilder(block).forAllStates(f);
 		//this.simpleBlockItem(block, null);
 		this.itemModels().cubeColumn(registryName.toString(),
-				new ResourceLocation(HarderOres.MODID,ModelProvider.BLOCK_FOLDER + "/mill_side"),
-				new ResourceLocation(HarderOres.MODID,ModelProvider.BLOCK_FOLDER + "/mill_top"));
+				HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/mill_side"),
+				HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/mill_top"));
 	}
 
 	private ModelFile prebuiltModel(ResourceLocation resourceLocation) {
@@ -281,23 +331,23 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			switch(state.getValue(HopperBlock.FACING)) {
 				case DOWN :
 					model = new ConfiguredModel(models().getExistingFile(
-							new ResourceLocation(ExpandedIndustry.MODID,"hopper")), 0, 180, true);
+							ExpandedIndustry.getRL("hopper")), 0, 180, true);
 					return new ConfiguredModel[] {model};
 				case EAST :
 					model = new ConfiguredModel(models().getExistingFile(
-							new ResourceLocation(ExpandedIndustry.MODID,"hopper_side")), 0, 90, true);
+							ExpandedIndustry.getRL("hopper_side")), 0, 90, true);
 					return new ConfiguredModel[] {model};
 				case NORTH :
 					model = new ConfiguredModel(models().getExistingFile(
-							new ResourceLocation(ExpandedIndustry.MODID,"hopper_side")), 0, 0, true);
+							ExpandedIndustry.getRL("hopper_side")), 0, 0, true);
 					return new ConfiguredModel[] {model};
 				case SOUTH :
 					model = new ConfiguredModel(models().getExistingFile(
-							new ResourceLocation(ExpandedIndustry.MODID,"hopper_side")), 0, 180, true);
+							ExpandedIndustry.getRL("hopper_side")), 0, 180, true);
 					return new ConfiguredModel[] {model};
 				case WEST :
 					model = new ConfiguredModel(models().getExistingFile(
-							new ResourceLocation(ExpandedIndustry.MODID,"hopper_side")), 0, 270, true);
+							ExpandedIndustry.getRL("hopper_side")), 0, 270, true);
 					return new ConfiguredModel[] {model};
 				default :
 					throw new RuntimeException("Invalid hopper block state!");
@@ -315,13 +365,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			switch(state.getValue(BlockStateProperties.RAIL_SHAPE_STRAIGHT)) {
 				case NORTH_SOUTH:
 					model = new ConfiguredModel(models().withExistingParent(registryName.toString(),
-							new ResourceLocation(ExpandedIndustry.MODID,"rail_bridge_base"))
+							ExpandedIndustry.getRL("rail_bridge_base"))
 							.texture("rail", railTexture)
 							.texture("supports", supportTexture), 0, 0, false);
 					return new ConfiguredModel[] {model};
 				case EAST_WEST:
 					model = new ConfiguredModel(models().withExistingParent(registryName.toString(),
-							new ResourceLocation(ExpandedIndustry.MODID,"rail_bridge_base"))
+							ExpandedIndustry.getRL("rail_bridge_base"))
 							.texture("rail", railTexture)
 							.texture("supports", supportTexture), 0, 90, false);
 					return new ConfiguredModel[] {model};
@@ -336,7 +386,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 	private void createActiveRail(Block block, ResourceLocation railTexture, ResourceLocation supportTexture) {
 		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
-		ResourceLocation railTextureOn = new ResourceLocation(railTexture.getNamespace(), railTexture.getPath() + "_on");
+		ResourceLocation railTextureOn = HardLib.getRL(railTexture.getNamespace(), railTexture.getPath() + "_on");
 
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			boolean isPowered = state.getValue(BlockStateProperties.POWERED);
@@ -344,18 +394,18 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			switch(state.getValue(BlockStateProperties.RAIL_SHAPE_STRAIGHT)) {
 				case NORTH_SOUTH:
 					model = new ConfiguredModel(models().withExistingParent(registryName.toString(),
-							new ResourceLocation(ExpandedIndustry.MODID,"rail_bridge_base"))
+							ExpandedIndustry.getRL("rail_bridge_base"))
 							.texture("rail", isPowered ? railTexture : railTextureOn)
 							.texture("supports", supportTexture), 0, 0, false);
 					return new ConfiguredModel[] {model};
 				case EAST_WEST:
 					model = new ConfiguredModel(models().withExistingParent(registryName.toString(),
-							new ResourceLocation(ExpandedIndustry.MODID,"rail_bridge_base"))
+							ExpandedIndustry.getRL("rail_bridge_base"))
 							.texture("rail", isPowered ? railTexture : railTextureOn)
 							.texture("supports", supportTexture), 0, 90, false);
 					return new ConfiguredModel[] {model};
 				default:
-					model = new ConfiguredModel(models().getExistingFile(new ResourceLocation("minecraft:air")));
+					model = new ConfiguredModel(models().getExistingFile(HardLib.parseRL("minecraft:air")));
 					return new ConfiguredModel[] { model };
 			}
 		};
@@ -370,12 +420,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 	public ModelFile simpleOre(Block block) {
 		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
-		return models().cubeAll(registryName.getPath(), new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","")));
+		return models().cubeAll(registryName.getPath(), HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","")));
 	}
 
 	public ModelFile variantOre(Block block, String suffix) {
 		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
-		return models().cubeAll(registryName.getPath(), new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","") + suffix));
+		return models().cubeAll(registryName.getPath(), HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","") + suffix));
 	}
 
 	private void crops(CropBlock block, String modelName, String textureName) {
@@ -388,7 +438,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		modelName = registryName.getNamespace() + ":" + modelName;
 		ConfiguredModel[] models = new ConfiguredModel[1];
 		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(block.getAgeProperty()),
-				new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(block.getAgeProperty()))
+				HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + textureName + state.getValue(block.getAgeProperty()))
 				).renderType("cutout"));
 		return models;
 	}
@@ -409,7 +459,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private BlockModelBuilder hardOreSingleModel(String name, ResourceLocation baseRL, ResourceLocation overlayRL) {
-		return models().withExistingParent(name, new ResourceLocation(HarderOres.MODID, ModelProvider.BLOCK_FOLDER + "/hard_ore"))
+		return models().withExistingParent(name, HarderOres.getRL(ModelProvider.BLOCK_FOLDER + "/hard_ore"))
 				.texture("all", baseRL)
 				.texture("overlay", overlayRL);
 	}
@@ -418,21 +468,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
-			.texture("layer0", new ResourceLocation(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + registryName.getPath()));
+			.texture("layer0", HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + registryName.getPath()));
 	}
 
 	private void createSimpleFlatItemModel(Block block, ResourceLocation itemTexture) {
 		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
-			.texture("layer0", new ResourceLocation(itemTexture.getNamespace(), itemTexture.getPath()));
+			.texture("layer0", HardLib.getRL(itemTexture.getNamespace(), itemTexture.getPath()));
 	}
 
 	private void createSimpleFlatItemModel(Block block, String directory, ResourceLocation itemTexture) {
 		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
-			.texture("layer0", new ResourceLocation(itemTexture.getNamespace(), directory + "/" + itemTexture.getPath()));
+			.texture("layer0", HardLib.getRL(itemTexture.getNamespace(), directory + "/" + itemTexture.getPath()));
 	}
 
 	private <T extends Comparable<T>> ItemModelBuilder createVariantItemModel(Block block, Property<T> property, Function<? super Property.Value<T>, Float> converter, Function<? super Property.Value<T>, String> nameConverter) {
@@ -442,10 +492,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
 		property.getAllValues().forEach(value ->{
 			//ResourceLocation harderOreBlockName = new ResourceLocation(HarderOres.MODID, "ore_hard"+stone_+ore);
 			ModelFile model16 = new ModelFile.ExistingModelFile(
-					new ResourceLocation(registryName.getNamespace(),
-							ModelProvider.BLOCK_FOLDER + "/" +  registryName.getPath() + nameConverter.apply(value)), fileHelper);
+					HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" +  registryName.getPath() + nameConverter.apply(value)), fileHelper);
 			modelNormal.override()
-				.predicate(new ResourceLocation(HarderOres.MODID,BlockProperties.ORE_DENSITY.getName()), converter.apply(value))
+				.predicate(HarderOres.getRL(BlockProperties.ORE_DENSITY.getName()), converter.apply(value))
 				.model(model16)
 				.end();
 		});

@@ -17,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -88,6 +90,12 @@ public class AxelBlock extends ModEntityBlock {
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
 		return state.getValue(BlockProperties.AXEL_ORIENTATION) == AxelOrientation.HUB ? new AxelBlockEntity(pos, state) : null;
+	}
+
+	/** The hub measures the wind its vanes catch every tick; without this the axels never carry any power. */
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
+		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_axel, AxelBlockEntity::tick);
 	}
 	
 	public void checkPlacement(Level worldIn, BlockPos pos, BlockState stateIn) {

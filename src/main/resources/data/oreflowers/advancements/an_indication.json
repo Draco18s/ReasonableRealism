@@ -1,0 +1,58 @@
+{
+    "display": {
+        "icon": {
+            "item": "oreflowers:tansy"
+        },
+        "title": {
+            "translate": "achievement.oreFlowers"
+        },
+        "description": {
+            "translate": "achievement.oreFlowers.desc"
+        }
+    },
+    "parent": "minecraft:adventure/root",
+    "criteria": {
+        "ore_flower": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "oreflowers:poorjoe",
+                            "oreflowers:vallozia",
+                            "oreflowers:hauman",
+                            "oreflowers:leadplant",
+                            "oreflowers:red_amaranth",
+                            "oreflowers:shrub_violet",
+                            "oreflowers:affine",
+                            "oreflowers:clover",
+                            "oreflowers:camellia",
+                            "oreflowers:malva",
+                            "oreflowers:melastoma",
+                            "oreflowers:broadleaf_arrowhead",
+                            "oreflowers:horsetail",
+                            "oreflowers:red_sorrel",
+                            "oreflowers:copper_flower",
+                            "oreflowers:sheeps_fescue",
+                            "oreflowers:primrose",
+                            "oreflowers:rapeseed",
+                            "oreflowers:milkwort",
+                            "oreflowers:madwort",
+                            "oreflowers:zilla",
+                            "oreflowers:marigold",
+                            "oreflowers:tansy",
+                            "oreflowers:flame_lily",
+                            "oreflowers:chandelier_tree",
+                            "oreflowers:aveloz"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "ore_flower"
+        ]
+    ]
+}

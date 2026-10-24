@@ -1,4 +1,9 @@
 {
+    "achievement.oreFlowers": "An Indication",
+    "achievement.oreFlowers.desc": "Find an ore indicator plant",
+    "achievement.prospecting": "A Growing Search",
+    "achievement.prospecting.desc": "Grow an ore indicator plant",
+    "itemGroup.oreflowers": "Flowers",
     "block.oreflowers.poorjoe": "Poor Joe",
     "block.oreflowers.vallozia": "Vallozia",
     "block.oreflowers.hauman": "Hauman",

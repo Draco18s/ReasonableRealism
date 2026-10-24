@@ -8,31 +8,37 @@ import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.entity.capability.SiftableItemsHandler;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.hardlib.api.HardLibAPI;
-import com.draco18s.hardlib.api.internal.inventory.ModContainerBlockEnity;
+import com.draco18s.hardlib.api.internal.inventory.ModContainerBlockEntity;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
-public class SifterBlockEntity extends ModContainerBlockEnity {
+public class SifterBlockEntity extends ModContainerBlockEntity {
 	private static final int SiftTime = 40;
+	/** Ticks between pulls from the inventory above and pickups of items on top (a hopper's cooldown). */
+	private static final int PULL_INTERVAL = 8;
 	private int siftTime;
 	private int activeSlot;
 	protected final ItemStackHandler inputSlots = new SiftableItemsHandler(2);
@@ -73,7 +79,7 @@ public class SifterBlockEntity extends ModContainerBlockEnity {
 
 	@Override
 	protected Component getDefaultName() {
-		return MutableComponent.create(new TranslatableContents("harderores:sifter.name", "Sifter", TranslatableContents.NO_ARGS));
+		return Component.translatable("container.harderores.sifter");
 	}
 
 	@Override
@@ -83,7 +89,10 @@ public class SifterBlockEntity extends ModContainerBlockEnity {
 
 	public static void tick(Level world, BlockPos pos, BlockState state, SifterBlockEntity sifter) {
 		if(world.getBlockState(pos).getBlock() != sifter.getBlockState().getBlock()) return;
-		suckItems();
+		if(!world.isClientSide && world.getGameTime() % PULL_INTERVAL == 0) {
+			sifter.pullFromAbove();
+			sifter.suckItems();
+		}
 		if(sifter.siftTime > 0) {
 			--sifter.siftTime;
 			setChanged(world, pos, state);
@@ -149,8 +158,32 @@ public class SifterBlockEntity extends ModContainerBlockEnity {
 		return true;
 	}
 
-	private static void suckItems() {
+	/** Takes siftable items out of the inventory above (such as a millstone's output), like a hopper. */
+	private void pullFromAbove() {
+		BlockEntity above = level.getBlockEntity(worldPosition.above());
+		if(above == null) return;
+		above.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN).ifPresent(source -> {
+			for(int s = 0; s < source.getSlots(); s++) {
+				ItemStack available = source.extractItem(s, 64, true);
+				if(available.isEmpty()) continue;
+				int accepted = available.getCount() - ItemHandlerHelper.insertItemStacked(inputSlots, available, true).getCount();
+				if(accepted <= 0) continue;
+				ItemHandlerHelper.insertItemStacked(inputSlots, source.extractItem(s, accepted, false), false);
+				setChanged();
+			}
+		});
+	}
 
+	/** Picks up siftable items lying on top of the sifter (a millstone with air under it drops its output). */
+	private void suckItems() {
+		AABB box = new AABB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), worldPosition.getX() + 1, worldPosition.getY() + 1.25, worldPosition.getZ() + 1);
+		for(ItemEntity ent : level.getEntitiesOfClass(ItemEntity.class, box, EntitySelector.ENTITY_STILL_ALIVE)) {
+			ItemStack rest = ItemHandlerHelper.insertItemStacked(inputSlots, ent.getItem().copy(), false);
+			if(rest.getCount() == ent.getItem().getCount()) continue;
+			if(rest.isEmpty()) ent.discard();
+			else ent.setItem(rest);
+			setChanged();
+		}
 	}
 
 	protected static void setChanged(Level p_155233_, BlockPos p_155234_, BlockState p_155235_) {

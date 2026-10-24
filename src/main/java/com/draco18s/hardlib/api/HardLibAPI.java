@@ -1,5 +1,6 @@
 package com.draco18s.hardlib.api;
 
+import com.draco18s.hardlib.api.advancement.AdvancementEarnedTrigger;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
 import com.draco18s.hardlib.api.advancement.FoundOreTrigger;
@@ -95,5 +96,12 @@ public class HardLibAPI {
 		 *  <b>RAIL</b>
 		 */
 		public static DistanceTraveledTrigger DISTANCE_TRAVELED;
+		/**
+		 * Fired by HardLib whenever a player earns an advancement (and on login, for ones already earned). Json details:<br>
+		 * hardlib:advancement_earned {<br>
+		 * &nbsp;&nbsp; advancement:id<br>
+		 * }<br>
+		 */
+		public static AdvancementEarnedTrigger ADVANCEMENT_EARNED;
 	}
 }

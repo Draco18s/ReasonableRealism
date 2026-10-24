@@ -1,0 +1,147 @@
+{
+    "display": {
+        "icon": {
+            "item": "harderfarming:thermometer"
+        },
+        "title": {
+            "translate": "achievement.craftThermometer"
+        },
+        "description": {
+            "translate": "achievement.craftThermometer.desc"
+        }
+    },
+    "parent": "minecraft:husbandry/plant_seed",
+    "criteria": {
+        "has_hydrometer": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "harderfarming:hydrometer"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_thermometer": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "harderfarming:thermometer"
+                        ]
+                    }
+                ]
+            }
+        },
+        "snowy_taiga": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:snowy_taiga"
+                    }
+                }
+            }
+        },
+        "snowy_plains": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:snowy_plains"
+                    }
+                }
+            }
+        },
+        "ice_spikes": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:ice_spikes"
+                    }
+                }
+            }
+        },
+        "frozen_river": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:frozen_river"
+                    }
+                }
+            }
+        },
+        "windswept_forest": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:windswept_forest"
+                    }
+                }
+            }
+        },
+        "grove": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:grove"
+                    }
+                }
+            }
+        },
+        "snowy_slopes": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:snowy_slopes"
+                    }
+                }
+            }
+        },
+        "frozen_peaks": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:frozen_peaks"
+                    }
+                }
+            }
+        },
+        "jagged_peaks": {
+            "trigger": "minecraft:location",
+            "conditions": {
+                "player": {
+                    "location": {
+                        "biome": "minecraft:jagged_peaks"
+                    }
+                }
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_hydrometer",
+            "has_thermometer"
+        ],
+        [
+            "snowy_taiga",
+            "snowy_plains",
+            "ice_spikes",
+            "frozen_river",
+            "windswept_forest",
+            "grove",
+            "snowy_slopes",
+            "frozen_peaks",
+            "jagged_peaks"
+        ]
+    ]
+}

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
+import com.draco18s.hardlib.HardLib;
 import com.draco18s.industry.block.DistributorBlock;
 import com.draco18s.industry.block.PoweredRailBridgeBlock;
 import com.draco18s.industry.block.RailBridgeBlock;
@@ -54,7 +55,7 @@ public class ExpandedIndustry {
 		block = new FilterBlock();
 		EasyRegistry.registerBlock(block, "machine_filter", new Item.Properties().group(ItemGroup.DECORATIONS));
 		EasyRegistry.registerTileEntity(TileEntityType.Builder.create(FilterTileEntity::new, block), ExpandedIndustry.MODID, "machine_filter");
-		EasyRegistry.registerOther(IForgeContainerType.create(FilterContainer::new), new ResourceLocation(ExpandedIndustry.MODID,"machine_filter"));
+		EasyRegistry.registerOther(IForgeContainerType.create(FilterContainer::new), getRL("machine_filter"));
 `		*/
 
 		RegistryObject<Block> wood_hopper;
@@ -71,8 +72,8 @@ public class ExpandedIndustry {
 		//EasyRegistry.registerOther(IForgeContainerType.create(ExtHopperContainer::new), new ResourceLocation(ExpandedIndustry.MODID,"machine_wood_hopper"));
 	}
 
-	private static ResourceLocation getRL(String name) {
-		return new ResourceLocation(MODID, name);
+	public static ResourceLocation getRL(String name) {
+		return HardLib.getRL(MODID, name);
 	}
 
 	@SubscribeEvent
@@ -178,10 +179,10 @@ public class ExpandedIndustry {
 		/*@SuppressWarnings("deprecation")
 		@SubscribeEvent
 		public static void onRegisterDim(@Nonnull final RegisterDimensionsEvent event) {
-			if(!DimensionManager.getRegistry().containsKey(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension")))
-				ModDimensionType.FILTER_DIMENSION = DimensionManager.registerDimension(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension"), ModDims.FILTER_DIMENSION, null, false);
+			if(!DimensionManager.getRegistry().containsKey(getRL("filter_dimension")))
+				ModDimensionType.FILTER_DIMENSION = DimensionManager.registerDimension(getRL("filter_dimension"), ModDims.FILTER_DIMENSION, null, false);
 			else
-				ModDimensionType.FILTER_DIMENSION = DimensionManager.getRegistry().getValue(new ResourceLocation(ExpandedIndustry.MODID,"filter_dimension")).orElse(null);
+				ModDimensionType.FILTER_DIMENSION = DimensionManager.getRegistry().getValue(getRL("filter_dimension")).orElse(null);
 		}*/
 	}
 }
