@@ -29,6 +29,7 @@ import com.draco18s.harderores.proxy.ClientProxy;
 import com.draco18s.harderores.recipe.GrindingRecipe;
 import com.draco18s.harderores.recipe.OreProcessingRecipes;
 import com.draco18s.harderores.recipe.SiftingRecipe;
+import com.draco18s.hardlib.CogHelper;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
 import com.draco18s.hardlib.api.HardLibAPI;
@@ -95,6 +96,8 @@ public class HarderOres {
 			replaceOreGenerators();
 		});*/
 		PacketHandler.register();
+		CogHelper.addCogModule("HarderVanillaOres.xml");
+		CogHelper.addCogModule("HarderLimonite.xml");
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
 		//HardLibAPI.hardOres = new OreBlockInfo();
 		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of(Material.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());

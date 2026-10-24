@@ -48,6 +48,9 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            // CustomOreGen's mixin refmap uses SRG names; remap it to the official names used in dev.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'harderores'
@@ -65,6 +68,9 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
+            // CustomOreGen's mixin refmap uses SRG names; remap it to the official names used in dev.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             property 'forge.enabledGameTestNamespaces', 'harderores'
 
@@ -84,6 +90,9 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
+            // CustomOreGen's mixin refmap uses SRG names; remap it to the official names used in dev.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             property 'forge.enabledGameTestNamespaces', 'harderores'
 
@@ -100,6 +109,9 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
+            // CustomOreGen's mixin refmap uses SRG names; remap it to the official names used in dev.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'harderores', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
@@ -120,10 +132,10 @@ repositories {
     // Put repositories for dependencies here
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
+    // CustomOreGen: a build of the 1.19.4 port, copied in as libs/customoregen-1.19.4.jar.
+    flatDir {
+        dir 'libs'
+    }
 	maven {
 		url "https://maven.lukebemish.dev/releases/"
 	}
@@ -137,6 +149,8 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.4-45.1.0'
+    // Harder Ores' ore generation comes from CustomOreGen modules (see hardlib.CogHelper).
+    implementation fg.deobf('blank:customoregen:1.19.4')
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
