@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.08,
+  "ingredient": {
+    "item": "harderores:tinydust_gold"
+  },
+  "result": "minecraft:gold_nugget"
+}

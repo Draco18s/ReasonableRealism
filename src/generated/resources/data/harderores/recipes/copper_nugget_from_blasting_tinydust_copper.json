@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.08,
+  "ingredient": {
+    "item": "harderores:tinydust_copper"
+  },
+  "result": "harderores:copper_nugget"
+}

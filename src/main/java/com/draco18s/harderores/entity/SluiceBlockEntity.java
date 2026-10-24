@@ -22,7 +22,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class SluiceBlockEntity extends ModBlockEntity {
-	private static final int cycleLength = 25;
+	private static final int cycleLength = 125;
 	private static final Ingredient CHUNKS = Ingredient.of(HarderOres.Tags.Items.ORE_CHUNKS);
 	private static final Ingredient DUSTS = Ingredient.of(HarderOres.Tags.Items.TINY_ORE_DUSTS);
 	

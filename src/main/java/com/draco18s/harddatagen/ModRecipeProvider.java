@@ -192,13 +192,24 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(Items.RAW_GOLD).build()))
 			.save(finishedRecipeConsumer);
 		
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_copper), RecipeCategory.MISC, HarderOres.ModItems.copper_nugget, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_gold), RecipeCategory.MISC, Items.GOLD_NUGGET, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
-	
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_copper), RecipeCategory.MISC, HarderOres.ModItems.copper_nugget, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_gold), RecipeCategory.MISC, Items.GOLD_NUGGET, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_copper, HarderOres.ModItems.copper_nugget, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_gold, Items.GOLD_NUGGET, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_iron, Items.IRON_NUGGET, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.orechunk_limonite, Items.RAW_IRON, 0.08f);
+	}
+
+	/**
+	 * Smelting and blasting recipes for one input, like vanilla's ores. Ids are named for both items,
+	 * since several inputs cook to the same output (ore chunks and tiny dusts both make nuggets).
+	 */
+	private void cook(Consumer<FinishedRecipe> finishedRecipeConsumer, Item input, Item output, float experience) {
+		String name = ForgeRegistries.ITEMS.getKey(output).getPath() + "_from_%s_" + ForgeRegistries.ITEMS.getKey(input).getPath();
+		SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, output, experience, 200)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(input).build()))
+			.save(finishedRecipeConsumer, new ResourceLocation(HarderOres.MODID, String.format(name, "smelting")));
+		SimpleCookingRecipeBuilder.blasting(Ingredient.of(input), RecipeCategory.MISC, output, experience, 100)
+			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(input).build()))
+			.save(finishedRecipeConsumer, new ResourceLocation(HarderOres.MODID, String.format(name, "blasting")));
 	}
 
 	private void Dusts(Consumer<FinishedRecipe> finishedRecipeConsumer) {
@@ -241,12 +252,11 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", inventoryTrigger(ItemPredicate.Builder.item().of(HarderOres.ModItems.tinydust_iron).build()))
 			.save(finishedRecipeConsumer);
 		
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_copper), RecipeCategory.MISC, HarderOres.ModItems.copper_nugget, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_iron), RecipeCategory.MISC, Items.IRON_NUGGET, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_gold), RecipeCategory.MISC, Items.GOLD_NUGGET, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_copper), RecipeCategory.MISC, Items.COPPER_INGOT, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_iron), RecipeCategory.MISC, Items.IRON_INGOT, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.tinydust_gold), RecipeCategory.MISC, Items.GOLD_INGOT, 0.08f, 200);
-		SimpleCookingRecipeBuilder.smelting(Ingredient.of(HarderOres.ModItems.orechunk_limonite), RecipeCategory.MISC, Items.RAW_IRON, 0.08f, 200);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.tinydust_copper, HarderOres.ModItems.copper_nugget, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.tinydust_iron, Items.IRON_NUGGET, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.tinydust_gold, Items.GOLD_NUGGET, 0.08f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.largedust_copper, Items.COPPER_INGOT, 0.1f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.largedust_iron, Items.IRON_INGOT, 0.1f);
+		cook(finishedRecipeConsumer, HarderOres.ModItems.largedust_gold, Items.GOLD_INGOT, 0.1f);
 	}
 }

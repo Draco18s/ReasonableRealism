@@ -24,6 +24,8 @@ public class ModItemModelProvider extends ItemModelProvider {
 		simpleItem(HarderFarming.ModItems.tinydust_flour, getRL("flour_dust_sm"));
 		simpleItem(HarderFarming.ModItems.largedust_flour, getRL("flour_dust_lg"));
 		simpleItem(HarderFarming.ModItems.winter_wheat_seeds);
+		simpleItem(HarderFarming.ModItems.salt);
+		simpleItem(HarderFarming.ModItems.salt_chunk);
 		
 		simpleItem(HarderOres.ModItems.diamond_studded_pick, getRL("diamond_stud_pickaxe"));
 		simpleItem(HarderOres.ModItems.diamond_studded_axe, getRL("diamond_stud_axe"));
