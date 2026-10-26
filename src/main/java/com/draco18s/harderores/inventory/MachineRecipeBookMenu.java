@@ -109,7 +109,9 @@ public abstract class MachineRecipeBookMenu<R extends MachineRecipe> extends Rec
 			ItemStack stack = getSlot(i).getItem();
 			if(!stack.isEmpty()) {
 				getSlot(i).set(ItemStack.EMPTY);
-				inventory.placeItemBackInInventory(stack);
+				// No slot packet (as vanilla's recipe placement): the ingredient may come straight back out of the
+				// same slot, and broadcastChanges below sends what's there in the end.
+				inventory.placeItemBackInInventory(stack, false);
 			}
 		}
 		Ingredient ingredient = recipe.getIngredients().get(0);
