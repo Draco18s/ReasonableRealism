@@ -1,6 +1,7 @@
 package com.draco18s.harderores.entity;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.harderores.HarderOres;
@@ -15,8 +16,6 @@ import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,10 +25,14 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Pressure packager: packs items (9 ingots into a block, ice into packed ice...) using mechanical power from a
@@ -37,14 +40,14 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
  */
 public class PackagerBlockEntity extends ModContainerBlockEntity {
 	private static final int PACK_TIME = 100;
-	protected final ItemStackHandler inputSlots = new PackableItemsHandler();
-	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
-	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
+	protected final ItemStacksResourceHandler inputSlots = new PackableItemsHandler();
+	protected final ItemStacksResourceHandler outputSlots = new ItemStacksResourceHandler(1);
+	protected final OutputItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 	protected final RawMechanicalPowerHandler powerUser = new PackagerMechanicalPowerHandler();
 
-	public final IItemHandler input = inputSlots;
-	public final IItemHandler output = outputHandler;
-	public final IItemHandler all = new CombinedInvWrapper(inputSlots,outputHandler);
+	public final ResourceHandler<ItemResource> input = inputSlots;
+	public final ResourceHandler<ItemResource> output = outputHandler;
+	public final ResourceHandler<ItemResource> all = new CombinedResourceHandler<>(inputSlots,outputHandler);
 
 	private float packTime;
 	private float timeMod = 1;
@@ -109,7 +112,7 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 	private void startPacking(int slot) {
 		activeSlot = slot;
 		packTime = PACK_TIME;
-		ItemStack in = inputSlots.getStackInSlot(slot);
+		ItemStack in = ItemUtil.getStack(inputSlots, slot);
 		ItemStack out = HardLibAPI.oreMachines.getPressurePackResult(in, true);
 		timeMod = Math.max(Math.max(inputHardness(in), outputHardness(out)), 1);
 	}
@@ -138,30 +141,33 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 	}
 
 	private int firstPackableSlot() {
-		for(int s = 0; s < inputSlots.getSlots(); s++) {
+		for(int s = 0; s < inputSlots.size(); s++) {
 			if(canPack(s)) return s;
 		}
 		return -1;
 	}
 
 	private boolean canPack(int slot) {
-		ItemStack stack = inputSlots.getStackInSlot(slot);
+		ItemStack stack = ItemUtil.getStack(inputSlots, slot);
 		if(stack.isEmpty()) return false;
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(stack, true);
-		return !result.isEmpty() && outputSlots.insertItem(0, result, true).isEmpty();
+		return !result.isEmpty() && ItemUtil.insertItemReturnRemaining(outputSlots, 0, result, true, null).isEmpty();
 	}
 
 	private void packItem(int slot) {
 		if(!canPack(slot)) return;
-		ItemStack stack = inputSlots.getStackInSlot(slot);
+		ItemStack stack = ItemUtil.getStack(inputSlots, slot);
 		ItemStack result = HardLibAPI.oreMachines.getPressurePackResult(stack, true);
-		inputSlots.extractItem(slot, HardLibAPI.oreMachines.getPressurePackAmount(stack), false);
-		outputSlots.insertItem(0, result.copy(), false);
+		try (Transaction tx = Transaction.openRoot()) {
+			inputSlots.extract(slot, ItemResource.of(stack), HardLibAPI.oreMachines.getPressurePackAmount(stack), tx);
+			outputSlots.insert(0, ItemResource.of(result), result.getCount(), tx);
+			tx.commit();
+		}
 	}
 
 	/** Power from the windvane hub at the top of the packager's axels. */
 	private float calcAndGetPower() {
-		if(level.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());
+		if(level.isClientSide()) return powerUser.getScaledPower(powerUser.getRawPower());
 		IMechanicalPower pow = AxelNetwork.findPowerSource(level, worldPosition);
 		if(pow == null) return 0;
 		powerUser.setRawPower(pow.getRawPower());
@@ -169,7 +175,7 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 	}
 
 	@Override
-	public IItemHandler getItemHandler(@Nullable Direction side) {
+	public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction side) {
 		if(side == null || level == null || level.getBlockState(worldPosition).getBlock() != getBlockState().getBlock()) {
 			return all;
 		}
@@ -183,38 +189,27 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 		}
 	}
 
-	@NonNull
 	@Override
-	protected IItemHandlerModifiable getInventory(@Nullable Direction direction) {
-		if(direction == null) {
-			return new CombinedInvWrapper(inputSlots,outputSlots);
-		}
-		switch(direction) {
-			case UP:
-				return inputSlots;
-			case DOWN:
-				return outputHandler;
-			default:
-				return EMPTY_HANDLER;
-		}
+	protected List<ItemStacksResourceHandler> getInventories() {
+		return List.of(inputSlots, outputSlots);
 	}
 
 
 	@Override
-	protected void modSave(CompoundTag nbt, HolderLookup.Provider registries) {
-		nbt.put("harderores:power", powerUser.serializeNBT(registries));
-		nbt.put("harderores:inputSlot", inputSlots.serializeNBT(registries));
-		nbt.put("harderores:outputSlot", outputSlots.serializeNBT(registries));
-		nbt.putFloat("harderores:packTime", packTime);
-		nbt.putFloat("harderores:timeMod", timeMod);
+	protected void modSave(ValueOutput output) {
+		powerUser.serialize(output.child("harderores:power"));
+		inputSlots.serialize(output.child("harderores:inputSlot"));
+		outputSlots.serialize(output.child("harderores:outputSlot"));
+		output.putFloat("harderores:packTime", packTime);
+		output.putFloat("harderores:timeMod", timeMod);
 	}
 
 	@Override
-	protected void modLoad(CompoundTag nbt, HolderLookup.Provider registries) {
-		powerUser.deserializeNBT(registries, nbt.getCompound("harderores:power"));
-		inputSlots.deserializeNBT(registries, nbt.getCompound("harderores:inputSlot"));
-		outputSlots.deserializeNBT(registries, nbt.getCompound("harderores:outputSlot"));
-		packTime = nbt.getFloat("harderores:packTime");
-		timeMod = Math.max(nbt.getFloat("harderores:timeMod"), 1);
+	protected void modLoad(ValueInput input) {
+		powerUser.deserialize(input.childOrEmpty("harderores:power"));
+		inputSlots.deserialize(input.childOrEmpty("harderores:inputSlot"));
+		outputSlots.deserialize(input.childOrEmpty("harderores:outputSlot"));
+		packTime = input.getFloatOr("harderores:packTime", 0);
+		timeMod = Math.max(input.getFloatOr("harderores:timeMod", 0), 1);
 	}
 }

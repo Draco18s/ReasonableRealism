@@ -5,13 +5,12 @@ import java.awt.Color;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.world.level.block.Block;
 
-public class ProspectorParticleDust extends TextureSheetParticle {
+public class ProspectorParticleDust extends SingleQuadParticle {
 	private final SpriteSet sprites;
 
 	public ProspectorParticleDust(BlockParticleOption options, ClientLevel p_107239_, double p_107240_, double p_107241_, double p_107242_, double p_107243_, double p_107244_, double p_107245_, SpriteSet spriteSet) {
@@ -26,7 +25,7 @@ public class ProspectorParticleDust extends TextureSheetParticle {
 	}
 
 	public ProspectorParticleDust(ClientLevel p_107239_, double p_107240_, double p_107241_, double p_107242_, double p_107243_, double p_107244_, double p_107245_, SpriteSet spriteSet) {
-		super(p_107239_, p_107240_, p_107241_, p_107242_, p_107243_, p_107244_, p_107245_);
+		super(p_107239_, p_107240_, p_107241_, p_107242_, p_107243_, p_107244_, p_107245_, spriteSet.first());
 		this.rCol = 0.25f;
 		this.gCol = 0.25f;
 		this.bCol = 1;
@@ -66,12 +65,12 @@ public class ProspectorParticleDust extends TextureSheetParticle {
 	}
 
 	@Override
-	protected int getLightColor(float p_107249_) {
+	protected int getLightCoords(float p_107249_) {
 		return 0xFFFFFF;
 	}
 
 	@Override
-	public ParticleRenderType getRenderType() {
-		return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+	protected SingleQuadParticle.Layer getLayer() {
+		return SingleQuadParticle.Layer.OPAQUE;
 	}
 }

@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:block/cross",
-  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "oreflowers:item/flame_lily"
+    "cross": "oreflowers:block/flame_lily"
   }
 }

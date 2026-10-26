@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:gold_nugget_from_smelting_raw_gold"
+        "recipes": "harderores:gold_nugget_from_smelting_raw_gold"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

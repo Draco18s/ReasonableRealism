@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:block/cross",
-  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "oreflowers:item/camellia"
+    "cross": "oreflowers:block/camellia"
   }
 }

@@ -1,0 +1,169 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "harderfarming:item/leather",
+      "sprite": "harderfarming:block/leather"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "minecraft:item/leather",
+      "sprite": "harderfarming:block/cured_leather"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/affine",
+      "sprite": "oreflowers:block/affine"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/aveloz",
+      "sprite": "oreflowers:block/aveloz"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/aveloz1",
+      "sprite": "oreflowers:block/aveloz1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/broadleaf_arrowhead",
+      "sprite": "oreflowers:block/broadleaf_arrowhead"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/camellia",
+      "sprite": "oreflowers:block/camellia"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/chandelier_tree",
+      "sprite": "oreflowers:block/chandelier_tree"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/chandelier_tree1",
+      "sprite": "oreflowers:block/chandelier_tree1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/clover",
+      "sprite": "oreflowers:block/clover"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/copper_flower",
+      "sprite": "oreflowers:block/copper_flower"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/flame_lily",
+      "sprite": "oreflowers:block/flame_lily"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/flame_lily1",
+      "sprite": "oreflowers:block/flame_lily1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/hauman",
+      "sprite": "oreflowers:block/hauman"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/horsetail",
+      "sprite": "oreflowers:block/horsetail"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/horsetail1",
+      "sprite": "oreflowers:block/horsetail1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/leadplant",
+      "sprite": "oreflowers:block/leadplant"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/madwort",
+      "sprite": "oreflowers:block/madwort"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/malva",
+      "sprite": "oreflowers:block/malva"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/marigold",
+      "sprite": "oreflowers:block/marigold"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/melastoma",
+      "sprite": "oreflowers:block/melastoma"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/milkwort",
+      "sprite": "oreflowers:block/milkwort"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/poorjoe",
+      "sprite": "oreflowers:block/poorjoe"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/primrose",
+      "sprite": "oreflowers:block/primrose"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/rapeseed",
+      "sprite": "oreflowers:block/rapeseed"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/red_amaranth",
+      "sprite": "oreflowers:block/red_amaranth"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/red_sorrel",
+      "sprite": "oreflowers:block/red_sorrel"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/sheeps_fescue",
+      "sprite": "oreflowers:block/sheeps_fescue"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/shrub_violet",
+      "sprite": "oreflowers:block/shrub_violet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/tansy",
+      "sprite": "oreflowers:block/tansy"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/tansy1",
+      "sprite": "oreflowers:block/tansy1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/vallozia",
+      "sprite": "oreflowers:block/vallozia"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "oreflowers:item/zilla",
+      "sprite": "oreflowers:block/zilla"
+    }
+  ]
+}

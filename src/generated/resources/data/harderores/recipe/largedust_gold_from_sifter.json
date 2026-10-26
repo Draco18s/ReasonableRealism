@@ -1,10 +1,6 @@
 {
   "type": "harderores:sifting",
   "ingredientQuantity": 8,
-  "ingredients": {
-    "tag": "c:dust/tiny/gold"
-  },
-  "result": {
-    "item": "harderores:largedust_gold"
-  }
+  "ingredients": "#c:dust/tiny/gold",
+  "result": "harderores:largedust_gold"
 }

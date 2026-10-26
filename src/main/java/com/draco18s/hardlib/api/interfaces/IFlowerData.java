@@ -8,10 +8,10 @@ import javax.annotation.Nullable;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
+import com.draco18s.hardlib.util.Tuple;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

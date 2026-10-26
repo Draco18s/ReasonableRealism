@@ -23,7 +23,7 @@ public class DistributorBlockEntity extends AbstractHopper implements ICustomCon
 	
 	@Override
 	public void openGUI(ServerPlayer player) {
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			player.openMenu(this, getBlockPos());
 		}
 	}

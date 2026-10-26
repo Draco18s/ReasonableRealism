@@ -11,14 +11,14 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class TwoTallFlower extends TallFlowerBlock {
 	protected final FlowerSoil type;
 
-	public TwoTallFlower(FlowerSoil plantType) {
-		super(SimpleFlower.flowerProperties());
+	public TwoTallFlower(FlowerSoil plantType, Properties properties) {
+		super(SimpleFlower.flowerProperties(properties));
 		type = plantType;
 	}
 
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		Vec3 offset = state.getOffset(level, pos);
+		Vec3 offset = state.getOffset(pos);
 		return SimpleFlower.FLOWER_AABB.move(offset.x, offset.y, offset.z);
 	}
 

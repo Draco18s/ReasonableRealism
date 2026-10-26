@@ -20,7 +20,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.Tags;
 
 public class HardLibAPI {
-	public static final TagKey<Item> STONE_ANY = Tags.Items.STONES;
+	public static final TagKey<Item> STONE_ANY = Tags.BlockItems.STONES.item();
 	
 	public static IHardOres hardOres;
 	public static IHardOreProcessing oreMachines;
@@ -33,7 +33,7 @@ public class HardLibAPI {
 		public static RecipeSerializer<?> TAG_OUTPUT;
 	}	
 	//public static class ModItemTags {
-		//public static TagKey<Item> STONE = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new ResourceLocation(HardLib.MODID, "stone"));
+		//public static TagKey<Item> STONE = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, new Identifier(HardLib.MODID, "stone"));
 	//}
 
 	/**

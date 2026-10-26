@@ -17,13 +17,13 @@ public class ImageOverlay {
 
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < w; y++) {
-				int overlayC = oImg.getPixelRGBA(x/os,y/os);
+				int overlayC = oImg.getPixel(x/os,y/os);
 				// Alpha below 0.1: that part of the ore shows through.
 				if((overlayC >>> 24) < 26) {
-					outImg.setPixelRGBA(x, y, overlayC);
+					outImg.setPixel(x, y, overlayC);
 				}
 				else {
-					outImg.setPixelRGBA(x, y, rImg.getPixelRGBA(x/rs,y/rs));
+					outImg.setPixel(x, y, rImg.getPixel(x/rs,y/rs));
 				}
 			}
 		}

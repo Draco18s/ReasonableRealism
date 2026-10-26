@@ -11,19 +11,18 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HopperBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class DistributorBlock extends HopperBlock {
 
-	public DistributorBlock() {
-		super(BlockBehaviour.Properties.ofFullCopy(Blocks.HOPPER));
+	/** Made from a copy of the hopper's properties (see the registration). */
+	public DistributorBlock(Properties props) {
+		super(props);
 	}
 	
 	@Override
@@ -34,12 +33,12 @@ public class DistributorBlock extends HopperBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, ExpandedIndustry.ModTileEntities.machine_distributor, DistributorBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, ExpandedIndustry.ModTileEntities.machine_distributor, DistributorBlockEntity::tick);
 	}
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-		if (!world.isClientSide) {
+		if (!world.isClientSide()) {
 			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
 			if (tileEntity != null) {
 				tileEntity.openGUI((ServerPlayer) player);

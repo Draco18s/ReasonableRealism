@@ -10,15 +10,15 @@ import com.draco18s.hardlib.HardLib;
 
 import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidget;
 import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.client.multiplayer.ClientAdvancements;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 /**
  * Extra connector lines on the advancements screen, for advancements that need a second parent (vanilla draws only
@@ -28,14 +28,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
  */
 @EventBusSubscriber(modid = HardLib.MODID, value = Dist.CLIENT)
 public class AdvancementLinks {
-	private record Link(ResourceLocation parent, ResourceLocation child) { }
+	private record Link(Identifier parent, Identifier child) { }
 
 	private static final List<Link> LINKS = Collections.synchronizedList(new ArrayList<Link>());
 	/** Widgets already given their link, for the screen currently open (a new screen makes new widgets). */
 	private static final Map<AdvancementWidget, Boolean> LINKED = new WeakHashMap<AdvancementWidget, Boolean>();
 
 	/** Draw a line from parent to child as if parent were also child's tree parent. Both must be in the same tab. */
-	public static void add(ResourceLocation parent, ResourceLocation child) {
+	public static void add(Identifier parent, Identifier child) {
 		LINKS.add(new Link(parent, child));
 	}
 
@@ -45,8 +45,8 @@ public class AdvancementLinks {
 		ClientAdvancements advancements = Minecraft.getInstance().getConnection().getAdvancements();
 		synchronized(LINKS) {
 			for(Link link : LINKS) {
-				AdvancementNode parent = advancements.getTree().get(link.parent());
-				AdvancementNode child = advancements.getTree().get(link.child());
+				AdvancementNode parent = advancements.tree().get(link.parent());
+				AdvancementNode child = advancements.tree().get(link.child());
 				if(parent == null || child == null || child.holder().value().display().isEmpty()) continue;
 				AdvancementWidget parentWidget = screen.getAdvancementWidget(parent);
 				AdvancementWidget childWidget = screen.getAdvancementWidget(child);
@@ -64,13 +64,13 @@ public class AdvancementLinks {
 		private final AdvancementWidget to;
 
 		LinkWidget(AdvancementWidget from, AdvancementWidget to, AdvancementNode toAdvancement) {
-			super(null, Minecraft.getInstance(), toAdvancement, toAdvancement.holder().value().display().get());
+			super(Minecraft.getInstance(), toAdvancement, toAdvancement.holder().value().display().get());
 			this.from = from;
 			this.to = to;
 		}
 
 		@Override
-		public void drawConnectivity(GuiGraphics graphics, int x, int y, boolean dropShadow) {
+		public void extractConnectivity(GuiGraphicsExtractor graphics, int x, int y, boolean dropShadow) {
 			int i = x + from.getX() + 13;
 			int j = x + from.getX() + 26 + 4;
 			int k = y + from.getY() + 13;
@@ -78,19 +78,19 @@ public class AdvancementLinks {
 			int i1 = y + to.getY() + 13;
 			int color = dropShadow ? -16777216 : -1;
 			if(dropShadow) {
-				graphics.hLine(j, i, k - 1, color);
-				graphics.hLine(j + 1, i, k, color);
-				graphics.hLine(j, i, k + 1, color);
-				graphics.hLine(l, j - 1, i1 - 1, color);
-				graphics.hLine(l, j - 1, i1, color);
-				graphics.hLine(l, j - 1, i1 + 1, color);
-				graphics.vLine(j - 1, i1, k, color);
-				graphics.vLine(j + 1, i1, k, color);
+				graphics.horizontalLine(j, i, k - 1, color);
+				graphics.horizontalLine(j + 1, i, k, color);
+				graphics.horizontalLine(j, i, k + 1, color);
+				graphics.horizontalLine(l, j - 1, i1 - 1, color);
+				graphics.horizontalLine(l, j - 1, i1, color);
+				graphics.horizontalLine(l, j - 1, i1 + 1, color);
+				graphics.verticalLine(j - 1, i1, k, color);
+				graphics.verticalLine(j + 1, i1, k, color);
 			}
 			else {
-				graphics.hLine(j, i, k, color);
-				graphics.hLine(l, j, i1, color);
-				graphics.vLine(j, i1, k, color);
+				graphics.horizontalLine(j, i, k, color);
+				graphics.horizontalLine(l, j, i1, color);
+				graphics.verticalLine(j, i1, k, color);
 			}
 		}
 	}

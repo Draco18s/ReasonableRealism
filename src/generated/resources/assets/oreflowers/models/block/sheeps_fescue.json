@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:block/cross",
-  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "oreflowers:item/sheeps_fescue"
+    "cross": "oreflowers:block/sheeps_fescue"
   }
 }

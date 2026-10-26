@@ -6,14 +6,15 @@ import java.util.List;
 import com.draco18s.farming.HarderFarming;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -39,8 +40,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class CropWeedsBlock extends CropBlock {
 	public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
 
-	public CropWeedsBlock() {
-		super(Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).randomTicks().strength(2, 0).noCollission().sound(SoundType.CROP));
+	public CropWeedsBlock(Properties props) {
+		super(props.mapColor(MapColor.PLANT).pushReaction(PushReaction.POPPED).randomTicks().strength(2, 0).noCollision().sound(SoundType.CROP));
 	}
 
 	@Override
@@ -125,21 +126,23 @@ public class CropWeedsBlock extends CropBlock {
 	public float getDestroyProgress(BlockState state, Player player, BlockGetter world, BlockPos pos) {
 		float hardness = state.getDestroySpeed(world, pos);
 		ItemStack s = player.getMainHandItem();
-		if(!(s.getItem() instanceof TieredItem tiered)) {
+		Tool tool = s.get(DataComponents.TOOL);
+		if(tool == null) {
 			return 1f / 90;
 		}
-		hardness += tiered.getTier().getSpeed();
+		// The tool's best speed (what its tier's speed was).
+		hardness += tool.rules().stream().flatMap(rule -> rule.speed().stream()).max(Float::compare).orElse(tool.defaultMiningSpeed());
 		// Efficiency adds level^2+1 to this attribute (since 1.21), as it used to add here.
 		hardness += (float)player.getAttributeValue(Attributes.MINING_EFFICIENCY);
 		return hardness / state.getDestroySpeed(world, pos) / 45;
 	}
 
 	@Override
-	public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+	public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
 		ItemStack stack = player.getMainHandItem();
-		if(stack.getItem() instanceof TieredItem) {
-			stack.hurtAndBreak(stack.getItem() instanceof HoeItem ? 1 : 2, player, EquipmentSlot.MAINHAND);
+		if(stack.has(DataComponents.TOOL)) {
+			stack.hurtAndBreak(stack.is(ItemTags.HOES) ? 1 : 2, player, EquipmentSlot.MAINHAND);
 		}
-		return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+		return super.onDestroyedByPlayer(state, world, pos, player, toolStack, willHarvest, fluid);
 	}
 }

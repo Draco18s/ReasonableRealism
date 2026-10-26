@@ -9,14 +9,14 @@ import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class AxelBlockEntity extends ModBlockEntity {
 	private int[][] lightArray;
@@ -34,10 +34,10 @@ public class AxelBlockEntity extends ModBlockEntity {
 	}
 	
 	private int checkAirVolumeFull(BlockPos pos, Direction dir) {
-		if(level.isClientSide) return 750;
+		if(level.isClientSide()) return 750;
 		ServerLevel serverLevel = (ServerLevel) level;
 		
-		RandomSource rand = level.random;
+		RandomSource rand = level.getRandom();
 		int i = rand.nextInt(10);
 		int k = rand.nextInt(5);
 		
@@ -55,13 +55,13 @@ public class AxelBlockEntity extends ModBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
-		tag.put("harderores:power", powerSupply.serializeNBT(registries));
+	protected void modSave(ValueOutput output) {
+		powerSupply.serialize(output.child("harderores:power"));
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
-		powerSupply.deserializeNBT(registries, tag.getCompound("harderores:power"));
+	protected void modLoad(ValueInput input) {
+		powerSupply.deserialize(input.childOrEmpty("harderores:power"));
 	}
 	
 	/** The power the axle supplies (see HarderOres' capability registration). */

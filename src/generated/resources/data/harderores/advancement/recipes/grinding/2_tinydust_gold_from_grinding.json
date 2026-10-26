@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:2_tinydust_gold_from_grinding"
+        "recipes": "harderores:2_tinydust_gold_from_grinding"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

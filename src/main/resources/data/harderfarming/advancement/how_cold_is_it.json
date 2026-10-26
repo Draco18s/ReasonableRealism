@@ -40,8 +40,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:snowy_taiga"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:snowy_taiga"
+                        }
                     }
                 }
             }
@@ -50,8 +54,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:snowy_plains"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:snowy_plains"
+                        }
                     }
                 }
             }
@@ -60,8 +68,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:ice_spikes"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:ice_spikes"
+                        }
                     }
                 }
             }
@@ -70,8 +82,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:frozen_river"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:frozen_river"
+                        }
                     }
                 }
             }
@@ -80,8 +96,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:windswept_forest"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:windswept_forest"
+                        }
                     }
                 }
             }
@@ -90,8 +110,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:grove"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:grove"
+                        }
                     }
                 }
             }
@@ -100,8 +124,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:snowy_slopes"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:snowy_slopes"
+                        }
                     }
                 }
             }
@@ -110,8 +138,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:frozen_peaks"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:frozen_peaks"
+                        }
                     }
                 }
             }
@@ -120,8 +152,12 @@
             "trigger": "minecraft:location",
             "conditions": {
                 "player": {
-                    "location": {
-                        "biomes": "minecraft:jagged_peaks"
+                    "type": "minecraft:entity_properties",
+                    "entity": "this",
+                    "predicate": {
+                        "location": {
+                            "biomes": "minecraft:jagged_peaks"
+                        }
                     }
                 }
             }

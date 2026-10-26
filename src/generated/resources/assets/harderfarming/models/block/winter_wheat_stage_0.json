@@ -1,6 +1,5 @@
 {
   "parent": "minecraft:block/crop",
-  "render_type": "minecraft:cutout",
   "textures": {
     "crop": "harderfarming:block/winter_wheat_stage_0"
   }

@@ -1,5 +1,7 @@
 package com.draco18s.harderores.block;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -35,8 +38,8 @@ public class AxelBlock extends ModEntityBlock {
 	public static final VoxelShape NORTH = 	axel(2, 2, 0, 14, 14, 16);
 	public static final VoxelShape GEARS = gearBox();
 	
-	public AxelBlock() {
-		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
+	public AxelBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
 		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.AXEL_ORIENTATION, AxelOrientation.NONE).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
 	}
 
@@ -79,7 +82,7 @@ public class AxelBlock extends ModEntityBlock {
 	}
 	
 	@Override
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block p_60512_, BlockPos p_60513_, boolean p_60514_) {
+	protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block p_60512_, @Nullable Orientation orientation, boolean p_60514_) {
 		this.checkPlacement(world, pos, state);
 	}
 
@@ -96,7 +99,7 @@ public class AxelBlock extends ModEntityBlock {
 	/** The hub measures the wind its vanes catch every tick; without this the axels never carry any power. */
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_axel, AxelBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_axel, AxelBlockEntity::tick);
 	}
 	
 	public void checkPlacement(Level worldIn, BlockPos pos, BlockState stateIn) {

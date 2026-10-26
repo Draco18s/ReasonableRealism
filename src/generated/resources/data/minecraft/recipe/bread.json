@@ -1,16 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
-    "w": {
-      "item": "harderfarming:largedust_flour"
-    }
+    "w": "harderfarming:largedust_flour"
   },
   "pattern": [
     "www"
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:bread"
   }
 }

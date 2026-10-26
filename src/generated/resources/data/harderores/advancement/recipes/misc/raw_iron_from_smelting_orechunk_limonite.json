@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:raw_iron_from_smelting_orechunk_limonite"
+        "recipes": "harderores:raw_iron_from_smelting_orechunk_limonite"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

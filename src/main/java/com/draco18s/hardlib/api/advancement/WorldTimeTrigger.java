@@ -4,15 +4,15 @@ import com.draco18s.hardlib.HardLib;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class WorldTimeTrigger extends HardLibCriteriaTrigger<WorldTimeTrigger.Instance> {
-	public static final ResourceLocation ID = HardLib.getRL("total_world_time");
-	public static LootContextParam<Float> TIME = new LootContextParam<Float>(ID);
-	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(WorldTimeTrigger.TIME).build();
+	public static final Identifier ID = HardLib.getRL("total_world_time");
+	public static ContextKey<Float> TIME = new ContextKey<Float>(ID);
+	public static ContextKeySet requiredParams = new ContextKeySet.Builder().required(WorldTimeTrigger.TIME).build();
 
 	@Override
 	public Codec<Instance> codec() {
@@ -27,7 +27,7 @@ public class WorldTimeTrigger extends HardLibCriteriaTrigger<WorldTimeTrigger.In
 
 		@Override
 		public boolean test(LootParams params) {
-			return params.getParameter(TIME) >= duration;
+			return params.contextMap().getOrThrow(TIME) >= duration;
 		}
 	}
 }

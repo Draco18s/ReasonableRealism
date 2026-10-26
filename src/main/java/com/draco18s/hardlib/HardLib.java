@@ -16,31 +16,28 @@ import com.draco18s.hardlib.api.recipe.RecipeTagOutput;
 import com.draco18s.hardlib.proxy.ClientProxy;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
+import com.draco18s.hardlib.util.Tuple;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
 @Mod(HardLib.MODID)
 public class HardLib {
 	public static final String MODID = "hardlib";
 	public static final Logger LOGGER = LogManager.getLogger();
-	public static final IProxy PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new ServerProxy();
+	public static final IProxy PROXY = FMLEnvironment.getDist().isClient() ? new ClientProxy() : new ServerProxy();
 
 
 	public HardLib(IEventBus modEventBus) {
@@ -52,23 +49,17 @@ public class HardLib {
 		HardLibAPI.Advancements.DISTANCE_TRAVELED = EasyRegistry.registerAdvancementTrigger(DistanceTraveledTrigger.ID, new DistanceTraveledTrigger());
 		HardLibAPI.Advancements.ADVANCEMENT_EARNED = EasyRegistry.registerAdvancementTrigger(AdvancementEarnedTrigger.ID, new AdvancementEarnedTrigger());
 		modEventBus.addListener((FMLCommonSetupEvent event) -> CogHelper.unpackConfigs());
-		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
+		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<Identifier, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> RecipeTagOutput.SERIALIZER));
 
 		IEventBus forgeBus = NeoForge.EVENT_BUS;
-		forgeBus.addListener(HardLib::onAddDebugReloadListener);
+		forgeBus.addListener(HardLib::onServerDataLoaded);
 	}
 
-	private static void onAddDebugReloadListener(final AddReloadListenerEvent event)
+	/** The machines' recipe tables are rebuilt once a data (re)load is done (the recipe manager is complete then). */
+	private static void onServerDataLoaded(final TagsUpdatedEvent.ServerDataLoad event)
 	{
-		event.addListener(new ResourceReloader(event.getServerResources()));
-	}
-
-	private record ResourceReloader(ReloadableServerResources serverResources) implements ResourceManagerReloadListener {
-		@Override
-		public void onResourceManagerReload(ResourceManager man) {
-			if(HardLibAPI.oreMachines != null) {
-				HardLibAPI.oreMachines.update(serverResources.getRecipeManager());
-			}
+		if(HardLibAPI.oreMachines != null) {
+			HardLibAPI.oreMachines.update(event.getServerResources().getRecipeManager());
 		}
 	}
 
@@ -83,20 +74,20 @@ public class HardLib {
 				.map(holder -> EnchantmentHelper.getItemEnchantmentLevel(holder, stack)).orElse(0);
 	}
 
-	public static ResourceLocation getRL(String name) {
+	public static Identifier getRL(String name) {
 		return getRL(MODID, name);
 	}
 
 	/**
-	 * Every ResourceLocation in these mods is made here or in {@link #parseRL(String)}: 1.21 replaces the
+	 * Every Identifier in these mods is made here or in {@link #parseRL(String)}: 1.21 replaces the
 	 * constructors with factory methods, so only these two need to change.
 	 */
-	public static ResourceLocation getRL(String namespace, String path) {
-		return ResourceLocation.fromNamespaceAndPath(namespace, path);
+	public static Identifier getRL(String namespace, String path) {
+		return Identifier.fromNamespaceAndPath(namespace, path);
 	}
 
 	/** Parses "namespace:path"; a bare path is in the minecraft namespace. */
-	public static ResourceLocation parseRL(String id) {
-		return ResourceLocation.parse(id);
+	public static Identifier parseRL(String id) {
+		return Identifier.parse(id);
 	}
 }

@@ -10,12 +10,11 @@ import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
+import com.draco18s.hardlib.util.Tuple;
 
-import CustomOreGen.Util.CogOreGenEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -23,13 +22,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.entity.player.BonemealEvent;
-import net.neoforged.neoforge.event.level.ChunkDataEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.entity.player.BonemealEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+
+import CustomOreGen.Util.CogOreGenEvent;
 
 @EventBusSubscriber(modid = OreFlowers.MODID)
 public class FlowerEventHandler {
@@ -38,7 +37,7 @@ public class FlowerEventHandler {
 	@SubscribeEvent
 	public static void onTagsUpdated(TagsUpdatedEvent event) {
 		// Ores are registered by tag, so the list is (re)built whenever the server's tags load.
-		if(event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+		if(event instanceof TagsUpdatedEvent.ServerDataLoad) {
 			OreFlowers.registerOres();
 		}
 	}
@@ -49,14 +48,14 @@ public class FlowerEventHandler {
 		IFlowerData flowers = HardLibAPI.oreFlowers;
 		if(flowers.getOreList().isEmpty()) return;
 		ChunkAccess chunk = event.getChunk();
-		OreFlowers.oreData.putChunk(event.getRegion(), chunk.getPos(),
+		OreFlowers.oreData.putChunk(chunk,
 				ChunkOreCounter.count(chunk, flowers, (pos, ore) -> flowers.trySpawnFlowerCluster(event.getRegion(), pos, ore)));
 	}
 
 	@SubscribeEvent
 	public static void onBonemeal(BonemealEvent event) {
 		Level world = event.getLevel();
-		if(world.isClientSide) return;
+		if(world.isClientSide()) return;
 		// Dispensers have no player: they only grow ore flowers if the config allows, and much more rarely.
 		boolean machine = event.getPlayer() == null;
 		if(machine && !FlowersConfig.poopBonemealFlowers.get()) return;
@@ -72,7 +71,7 @@ public class FlowerEventHandler {
 			}
 			if(count <= 0) continue;
 			if(!machine && event.getPlayer() instanceof ServerPlayer player && HardLibAPI.Advancements.FOUND_ORE != null) {
-				LootParams ctx = new LootParams.Builder(player.serverLevel())
+				LootParams ctx = new LootParams.Builder(player.level())
 						.withParameter(FoundOreTrigger.ORE_COUNT, count)
 						.create(FoundOreTrigger.requiredParams);
 				HardLibAPI.Advancements.FOUND_ORE.trigger(player, ctx);
@@ -101,44 +100,13 @@ public class FlowerEventHandler {
 		}
 	}
 
-	/** Only chunks being loaded as full chunks know their level here; the rest are recounted in onChunkLoad. */
-	@SubscribeEvent
-	public static void onChunkDataLoad(ChunkDataEvent.Load event) {
-		LevelAccessor world = event.getLevel();
-		if(world == null || world.isClientSide()) return;
-		OreFlowers.oreData.loadChunk(world, event.getChunk().getPos(), event.getData());
-	}
-
 	@SubscribeEvent
 	public static void onChunkLoad(ChunkEvent.Load event) {
 		LevelAccessor world = event.getLevel();
 		if(world == null || world.isClientSide() || !(event.getChunk() instanceof LevelChunk chunk)) return;
-		OreFlowers.oreData.chunkLoaded(world, chunk.getPos());
-		if(!OreFlowers.oreData.hasChunk(world, chunk.getPos()) && !HardLibAPI.oreFlowers.getOreList().isEmpty()) {
+		if(!OreFlowers.oreData.hasChunk(chunk) && !HardLibAPI.oreFlowers.getOreList().isEmpty()) {
 			// Generated before ore data existed (or its data was lost): count it now, without spawning flowers.
-			OreFlowers.oreData.putChunk(world, chunk.getPos(), ChunkOreCounter.count(chunk, HardLibAPI.oreFlowers, null));
-		}
-	}
-
-	@SubscribeEvent
-	public static void onChunkSave(ChunkDataEvent.Save event) {
-		LevelAccessor world = event.getLevel();
-		if(world == null || world.isClientSide()) return;
-		OreFlowers.oreData.saveChunk(world, event.getChunk().getPos(), event.getData());
-	}
-
-	@SubscribeEvent
-	public static void onChunkUnload(ChunkEvent.Unload event) {
-		LevelAccessor world = event.getLevel();
-		if(world == null || world.isClientSide() || !(event.getChunk() instanceof LevelChunk)) return;
-		// Forge posts this just before saving the chunk (if it has changes), and the save still needs the data.
-		OreFlowers.oreData.unloadChunk(world, event.getChunk().getPos(), event.getChunk().isUnsaved());
-	}
-
-	@SubscribeEvent
-	public static void onLevelUnload(LevelEvent.Unload event) {
-		if(!event.getLevel().isClientSide()) {
-			OreFlowers.oreData.unloadLevel(event.getLevel());
+			OreFlowers.oreData.putChunk(chunk, ChunkOreCounter.count(chunk, HardLibAPI.oreFlowers, null));
 		}
 	}
 }

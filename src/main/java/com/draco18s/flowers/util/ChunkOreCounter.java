@@ -10,6 +10,7 @@ import com.draco18s.hardlib.api.interfaces.IFlowerData;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,21 +22,21 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
  * slice below it (as 1.12 did), so ore just under a slice still shows a little.
  */
 public class ChunkOreCounter {
-	private static final int SLICES_PER_SECTION = LevelChunkSection.SECTION_HEIGHT / OreDataStore.SLICE_HEIGHT;
+	private static final int SLICES_PER_SECTION = SectionPos.SECTION_SIZE / OreDataStore.SLICE_HEIGHT;
 
 	/**
 	 * @param onOre - called for every ore block found (worldgen uses it to spawn flowers), or null
 	 */
 	public static OreDataStore.ChunkOres count(ChunkAccess chunk, IFlowerData flowers, @Nullable BiConsumer<BlockPos, BlockWrapper> onOre) {
 		int sliceCount = chunk.getSectionsCount() * SLICES_PER_SECTION;
-		int minY = chunk.getMinBuildHeight();
+		int minY = chunk.getMinY();
 		ChunkPos cpos = chunk.getPos();
 		Map<Block, int[]> raw = new HashMap<Block, int[]>();
 
 		for(int s = 0; s < chunk.getSectionsCount(); s++) {
 			LevelChunkSection section = chunk.getSection(s);
 			if(section.hasOnlyAir() || !section.getStates().maybeHas(state -> flowers.getOreWrapper(state.getBlock()) != null)) continue;
-			for(int y = 0; y < LevelChunkSection.SECTION_HEIGHT; y++) {
+			for(int y = 0; y < SectionPos.SECTION_SIZE; y++) {
 				int slice = s * SLICES_PER_SECTION + y / OreDataStore.SLICE_HEIGHT;
 				for(int z = 0; z < 16; z++) {
 					for(int x = 0; x < 16; x++) {
@@ -44,7 +45,7 @@ public class ChunkOreCounter {
 						if(ore == null) continue;
 						raw.computeIfAbsent(state.getBlock(), b -> new int[sliceCount])[slice] += ore.getOreValue(state);
 						if(onOre != null) {
-							onOre.accept(new BlockPos(cpos.getMinBlockX() + x, minY + s * LevelChunkSection.SECTION_HEIGHT + y, cpos.getMinBlockZ() + z), ore);
+							onOre.accept(new BlockPos(cpos.getMinBlockX() + x, minY + s * SectionPos.SECTION_SIZE + y, cpos.getMinBlockZ() + z), ore);
 						}
 					}
 				}

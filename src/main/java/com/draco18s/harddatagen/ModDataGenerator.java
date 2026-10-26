@@ -1,58 +1,45 @@
 package com.draco18s.harddatagen;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
-import com.draco18s.hardlib.api.internal.OreNameHelper;
 import com.draco18s.industry.ExpandedIndustry;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.PackOutput;
-import net.minecraft.server.packs.PackType;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@EventBusSubscriber(modid = HarderOres.MODID, bus = EventBusSubscriber.Bus.MOD)
+/**
+ * Data for all of the mods. The client data run makes everything (models need the client); the server run makes
+ * the rest. Loot tables and recipes (with their advancements) are registry entries made here, written out by a
+ * datapack entries provider.
+ */
+@EventBusSubscriber(modid = HarderOres.MODID)
 public class ModDataGenerator {
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
-		DataGenerator generator = event.getGenerator();
-		ExistingFileHelper fileHelper = event.getExistingFileHelper();
-		PackOutput packOutput = generator.getPackOutput();
-		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-		
-		if(event.includeClient()) {
-			generator.addProvider(true, new ModLootTableProvider(packOutput, lookupProvider));
-			for(String modid : new String[] {ExpandedIndustry.MODID, HarderOres.MODID, HarderFarming.MODID, OreFlowers.MODID}) {
-				generator.addProvider(true, new ModBlockStateProvider(packOutput, modid, fileHelper));
-				generator.addProvider(true, new ModItemModelProvider(packOutput, modid, fileHelper));
-			}
+	public static void gatherClientData(GatherDataEvent.Client event) {
+		for(String modid : new String[] {ExpandedIndustry.MODID, HarderOres.MODID, HarderFarming.MODID, OreFlowers.MODID}) {
+			event.createProvider(output -> new ModModelProvider(output, modid));
 		}
-		if(event.includeServer()) {
-			BlockTagsProvider blockTagProvider = new ModBlockTagProvider(packOutput, lookupProvider, HarderOres.MODID, fileHelper);
-			generator.addProvider(true, blockTagProvider);
-			generator.addProvider(true, new ModItemsTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), HarderOres.MODID, fileHelper));
-			generator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
-			generator.addProvider(true, new LootModifierProvider(packOutput, lookupProvider));
-		}
-		addVirtualPackContents(fileHelper);
+		gatherServer(event);
 	}
 
-	private static void addVirtualPackContents(ExistingFileHelper fileHelper) {
-	    final String PATH_PREFIX = "textures/block";
-	    final String PATH_SUFFIX = ".png";
-	    
-	    OreNameHelper.DoForTextureNames((vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName)->{
-	    	for(int i=1; i<=16; i++)
-				fileHelper.trackGenerated(harderOreBlockName.withSuffix("_"+i), PackType.CLIENT_RESOURCES, PATH_SUFFIX, PATH_PREFIX);
-	    });
+	@SubscribeEvent
+	public static void gatherServerData(GatherDataEvent.Server event) {
+		gatherServer(event);
+	}
+
+	private static void gatherServer(GatherDataEvent event) {
+		RegistrySetBuilder reloadable = new RegistrySetBuilder()
+				.add(Registries.LOOT_TABLE, ModLootTableProvider.create())
+				.add(RecipeProvider.asBootstrap(ModRecipeProvider::new));
+		event.createProvider(output -> DatapackBuiltinEntriesProvider.forReloadableLayer(output, "Loot tables and recipes",
+				event.getWorldLookupProvider(), event.getReloadableLookupProvider(), reloadable, null));
+		event.createBlockAndItemTags(ModBlockTagProvider::new, ModItemsTagProvider::new);
+		event.createProvider(LootModifierProvider::new);
 	}
 }

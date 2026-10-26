@@ -25,8 +25,8 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public class WoodenHopperBlock extends HopperBlock {
 
-	public WoodenHopperBlock() {
-		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 4).sound(SoundType.WOOD).requiresCorrectToolForDrops());
+	public WoodenHopperBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 4).sound(SoundType.WOOD).requiresCorrectToolForDrops());
 	}
 
 	@Override
@@ -37,12 +37,12 @@ public class WoodenHopperBlock extends HopperBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, ExpandedIndustry.ModTileEntities.machine_wood_hopper, WoodenHopperBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, ExpandedIndustry.ModTileEntities.machine_wood_hopper, WoodenHopperBlockEntity::tick);
 	}
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-		if (!world.isClientSide) {
+		if (!world.isClientSide()) {
 			final ICustomContainer tileEntity = (ICustomContainer)world.getBlockEntity(pos);
 			if (tileEntity != null) {
 				tileEntity.openGUI((ServerPlayer) player);

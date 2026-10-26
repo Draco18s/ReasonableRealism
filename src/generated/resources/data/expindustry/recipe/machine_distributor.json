@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "h": {
-      "item": "minecraft:hopper"
-    },
-    "i": {
-      "item": "minecraft:iron_ingot"
-    },
-    "p": {
-      "tag": "minecraft:planks"
-    }
+    "h": "minecraft:hopper",
+    "i": "minecraft:iron_ingot",
+    "p": "#minecraft:planks"
   },
   "pattern": [
     " h ",
@@ -18,7 +12,6 @@
     "ppp"
   ],
   "result": {
-    "count": 1,
     "id": "expindustry:machine_distributor"
   }
 }

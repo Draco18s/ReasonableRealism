@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:sluice"
+        "recipes": "harderores:sluice"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

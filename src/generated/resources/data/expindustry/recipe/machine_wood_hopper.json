@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "p": {
-      "tag": "minecraft:planks"
-    }
+    "p": "#minecraft:planks"
   },
   "pattern": [
     "p p",
@@ -12,7 +10,6 @@
     " p "
   ],
   "result": {
-    "count": 1,
     "id": "expindustry:machine_wood_hopper"
   }
 }

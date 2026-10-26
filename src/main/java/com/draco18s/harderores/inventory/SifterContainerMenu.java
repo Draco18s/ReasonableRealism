@@ -11,21 +11,20 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class SifterContainerMenu extends MachineRecipeBookMenu<SiftingRecipe> {
 	private ContainerData data;
 
 	public SifterContainerMenu(int p_39640_, Inventory p_39641_) {
-		this(p_39640_, p_39641_, new ItemStackHandler(2), new OutputItemStackHandler(new ItemStackHandler(1)), new SimpleContainer(3), new SimpleContainerData(1));
+		this(p_39640_, p_39641_, new ItemStacksResourceHandler(2), new OutputItemStackHandler(new ItemStacksResourceHandler(1)), new SimpleContainer(3), new SimpleContainerData(1));
 	}
 
 	public SifterContainerMenu(int p_38852_, int size) {
 		super(HarderOres.ModContainerTypes.machine_sifter, p_38852_, size, 166, HarderOres.RecipeTypes.SIFTING);
 	}
 
-	public SifterContainerMenu(int p_39640_, Inventory p_39641_, IItemHandler inputs, IItemHandler outputs, Container container, ContainerData containerdata) {
+	public SifterContainerMenu(int p_39640_, Inventory p_39641_, ItemStacksResourceHandler inputs, OutputItemStackHandler outputs, Container container, ContainerData containerdata) {
 		super(HarderOres.ModContainerTypes.machine_sifter, p_39640_, 166, p_39641_, container, HarderOres.RecipeTypes.SIFTING);
 		
 		addSlot(new SlotDust(inputs, 0, 71, 13));

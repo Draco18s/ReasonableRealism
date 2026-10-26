@@ -1,13 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
-    "s": {
-      "tag": "c:rods/wooden"
-    },
-    "t": {
-      "item": "minecraft:string"
-    }
+    "s": "#c:rods/wooden",
+    "t": "minecraft:string"
   },
   "pattern": [
     "sss",
@@ -15,7 +10,6 @@
     "s s"
   ],
   "result": {
-    "count": 1,
     "id": "harderfarming:tanner"
   }
 }

@@ -1,37 +1,17 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    },
-    {
-      "item": "harderfarming:tinydust_sugar"
-    }
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar",
+    "harderfarming:tinydust_sugar"
   ],
   "result": {
-    "count": 1,
     "id": "minecraft:sugar"
   }
 }

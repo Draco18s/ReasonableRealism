@@ -17,7 +17,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:machine_sifter"
+        "recipes": "harderores:machine_sifter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

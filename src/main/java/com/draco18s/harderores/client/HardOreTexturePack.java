@@ -1,12 +1,15 @@
 package com.draco18s.harderores.client;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -17,18 +20,21 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
+import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.InclusiveRange;
 
 /**
  * A built-in resource pack whose hard ore textures are made as they're loaded: for each density, the stone texture
@@ -41,17 +47,17 @@ public class HardOreTexturePack implements PackResources {
 	private static final PackLocationInfo LOCATION = new PackLocationInfo(ID, Component.literal("Harder Ores textures"), PackSource.BUILT_IN, Optional.empty());
 	/** Always on and out of the way: below the user's packs, so a pack can still replace a generated texture outright. */
 	private static final PackSelectionConfig SELECTION = new PackSelectionConfig(true, Pack.Position.BOTTOM, true);
-	private static final ResourceLocation OVERLAY = HarderOres.getRL("textures/block/ore/overlay");
+	private static final Identifier OVERLAY = HarderOres.getRL("textures/block/ore/overlay");
 	private static final int DENSITIES = 16;
 
 	/** Generated texture (as a resource path) to the stone texture it is cut from. */
-	private final Map<ResourceLocation, Source> textures = new LinkedHashMap<ResourceLocation, Source>();
+	private final Map<Identifier, Source> textures = new LinkedHashMap<Identifier, Source>();
 
-	private record Source(ResourceLocation stone, ResourceLocation overlay) { }
+	private record Source(Identifier stone, Identifier overlay) { }
 
 	private HardOreTexturePack() {
 		OreNameHelper.DoForTextureNames((vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName) -> {
-			ResourceLocation stone = vanillaStoneTexture.withPath(path -> "textures/" + path + ".png");
+			Identifier stone = vanillaStoneTexture.withPath(path -> "textures/" + path + ".png");
 			for(int i = 1; i <= DENSITIES; i++) {
 				String sfx = "_" + i;
 				textures.put(harderOreBlockName.withPath(path -> "textures/block/" + path + sfx + ".png"),
@@ -64,20 +70,20 @@ public class HardOreTexturePack implements PackResources {
 	public static Pack create() {
 		return Pack.readMetaAndCreate(LOCATION, new Pack.ResourcesSupplier() {
 			@Override
-			public PackResources openPrimary(PackLocationInfo location) {
+			public PackMetadataResources openMetadata(PackLocationInfo location) {
 				return new HardOreTexturePack();
 			}
 
 			@Override
-			public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
-				return new HardOreTexturePack();
+			public Stream<PackResources> openResources(PackLocationInfo location, Pack.Metadata metadata) {
+				return Stream.of(new HardOreTexturePack());
 			}
 		}, PackType.CLIENT_RESOURCES, SELECTION);
 	}
 
 	@Override
 	@Nullable
-	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+	public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
 		Source source = type == PackType.CLIENT_RESOURCES ? textures.get(location) : null;
 		return source == null ? null : () -> generate(source);
 	}
@@ -106,11 +112,14 @@ public class HardOreTexturePack implements PackResources {
 		ResourceManager resources = Minecraft.getInstance().getResourceManager();
 		try(NativeImage stone = read(resources, source.stone()); NativeImage overlay = read(resources, source.overlay());
 				NativeImage combined = ImageOverlay.combinedImage(stone, overlay)) {
-			return new ByteArrayInputStream(combined.asByteArray());
+			// (Written as a PNG: writeToChannel is opened up by Hard Lib's access transformer.)
+			ByteArrayOutputStream png = new ByteArrayOutputStream();
+			if(!combined.writeToChannel(Channels.newChannel(png))) throw new IOException("Couldn't write " + source.stone() + " with " + source.overlay());
+			return new ByteArrayInputStream(png.toByteArray());
 		}
 	}
 
-	private static NativeImage read(ResourceManager resources, ResourceLocation location) throws IOException {
+	private static NativeImage read(ResourceManager resources, Identifier location) throws IOException {
 		Resource resource = resources.getResource(location).orElseThrow(() -> new IOException("Missing texture " + location));
 		try(InputStream in = resource.open()) {
 			return NativeImage.read(in);
@@ -126,10 +135,10 @@ public class HardOreTexturePack implements PackResources {
 	@Override
 	@SuppressWarnings("unchecked")
 	@Nullable
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) {
-		if(!serializer.getMetadataSectionName().equals(PackMetadataSection.TYPE.getMetadataSectionName())) return null;
+	public <T> T getMetadataSection(MetadataSectionType<T> type) {
+		if(!type.name().equals(PackMetadataSection.CLIENT_TYPE.name())) return null;
 		return (T)new PackMetadataSection(Component.literal("Hard ore textures, made from the current stone textures"),
-				SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), Optional.empty());
+				new InclusiveRange<PackFormat>(SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES)));
 	}
 
 	@Override

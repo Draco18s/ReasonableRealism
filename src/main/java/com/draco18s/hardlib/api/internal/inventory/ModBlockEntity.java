@@ -3,11 +3,12 @@ package com.draco18s.hardlib.api.internal.inventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public abstract class ModBlockEntity extends BlockEntity {
 
@@ -28,35 +29,29 @@ public abstract class ModBlockEntity extends BlockEntity {
 	}
 	
 	@Override
-	protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-		super.saveAdditional(nbt, registries);
-		modSave(nbt, registries);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		modSave(output);
 	}
 
 	@Override
-	protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
-		super.loadAdditional(nbt, registries);
-		modLoad(nbt, registries);
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		modLoad(input);
 	}
 
+	/** The client gets what is saved; NeoForge's default onDataPacket and handleUpdateTag load it. */
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-		CompoundTag nbtTag = new CompoundTag();
-		modSave(nbtTag, registries);
-		return nbtTag;
+		return saveCustomOnly(registries);
 	}
 
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket(){
 	    return ClientboundBlockEntityDataPacket.create(this);
 	}
-
-	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries){
-	    modLoad(pkt.getTag(), registries);
-	}
 	
-	protected abstract void modSave(CompoundTag tag, HolderLookup.Provider registries);
+	protected abstract void modSave(ValueOutput output);
 
-	protected abstract void modLoad(CompoundTag tag, HolderLookup.Provider registries);
+	protected abstract void modLoad(ValueInput input);
 }

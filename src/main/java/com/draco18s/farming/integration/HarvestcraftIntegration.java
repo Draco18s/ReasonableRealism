@@ -11,7 +11,7 @@ import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -83,7 +83,7 @@ public class HarvestcraftIntegration {
 		crop(offsets, "seaweed", 0.2f, 0.0f, 0, 0);
 		int matched = 0;
 		for(Map.Entry<ResourceKey<Block>, Block> entry : BuiltInRegistries.BLOCK.entrySet()) {
-			ResourceLocation id = entry.getKey().location();
+			Identifier id = entry.getKey().identifier();
 			if(!isHarvestcraft(id.getNamespace())) continue;
 			CropWeatherOffsets off = offsets.get(cropName(id.getPath()));
 			if(off != null) {

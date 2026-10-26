@@ -18,8 +18,8 @@ import net.minecraft.world.level.material.MapColor;
 
 public class SifterBlock extends ModEntityBlock {
 
-	public SifterBlock() {
-		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
+	public SifterBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2).sound(SoundType.WOOD));
 	}
 
 	@Override
@@ -30,6 +30,6 @@ public class SifterBlock extends ModEntityBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_sifter, SifterBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_sifter, SifterBlockEntity::tick);
 	}
 }

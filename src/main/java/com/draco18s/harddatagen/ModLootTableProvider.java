@@ -3,7 +3,6 @@ package com.draco18s.harddatagen;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import com.draco18s.farming.HarderFarming;
 import com.draco18s.flowers.OreFlowers;
@@ -12,13 +11,13 @@ import com.draco18s.harderores.loot.function.HarderSetCount;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.industry.ExpandedIndustry;
 
-import net.minecraft.advancements.critereon.EntityFlagsPredicate;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
+import net.minecraft.advancements.predicates.StatePropertiesPredicate;
+import net.minecraft.advancements.predicates.entity.EntityFlagsPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.core.Holder;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -36,20 +35,22 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer.Bui
 import net.minecraft.world.level.storage.loot.functions.CopyBlockState;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.predicates.MatchBlock;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-public class ModLootTableProvider extends LootTableProvider {
-	public ModLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries)
-	{
-		super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)), registries);
+/** Block loot tables: registry entries made at data generation now (see ModDataGenerator). */
+public class ModLootTableProvider {
+	public static LootTableProvider create() {
+		return new LootTableProvider(Set.of(), List.of(new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)));
 	}
 
 	private static class BlockLootTable extends BlockLootSubProvider {
-		public BlockLootTable(HolderLookup.Provider registries) { super(Set.of(), FeatureFlags.VANILLA_SET, registries); }
+		public BlockLootTable(LootTableSubProvider.Context context) { super(Set.of(), FeatureFlags.VANILLA_SET, context); }
 
 		@Override
 		protected Iterable<Block> getKnownBlocks() {
@@ -107,7 +108,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropSelf(HarderOres.ModBlocks.machine_windvane);
 			dropSelf(HarderOres.ModBlocks.sluice);
 			
-			LootItemCondition.Builder cropMinAge = LootItemBlockStatePropertyCondition.hasBlockStateProperties(HarderFarming.ModBlocks.crop_winter_wheat).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, 7));
+			LootItemCondition.Builder cropMinAge = MatchBlock.blockMatches(this.blocks, HarderFarming.ModBlocks.crop_winter_wheat, StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, 7));
 			add(HarderFarming.ModBlocks.crop_winter_wheat, createCropDrops(HarderFarming.ModBlocks.crop_winter_wheat, Items.WHEAT, HarderFarming.ModItems.winter_wheat_seeds, cropMinAge));
 			dropOther(HarderFarming.ModBlocks.crop_weeds, HarderFarming.ModItems.weed_seeds);
 			dropSelf(HarderFarming.ModBlocks.tanner);
@@ -121,12 +122,12 @@ public class ModLootTableProvider extends LootTableProvider {
 				}
 			}
 			// Aveloz sap is an irritant: it only comes away whole if harvested carefully.
-			LootItemCondition.Builder careful = LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-					EntityPredicate.Builder.entity().flags(EntityFlagsPredicate.Builder.flags().setCrouching(true)))
-					.or(HAS_SHEARS).or(hasSilkTouch());
-			LootItemCondition.Builder lowerHalf = LootItemBlockStatePropertyCondition.hasBlockStateProperties(OreFlowers.ModBlocks.aveloz)
-					.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
-			add(OreFlowers.ModBlocks.aveloz, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
+			LootItemCondition.Builder careful = AnyOfCondition.anyOf(LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+					EntityPredicate.Builder.entity().flags(EntityFlagsPredicate.Builder.flags().setCrouching(true))))
+					.or(hasShears()).or(hasSilkTouch());
+			LootItemCondition.Builder lowerHalf = MatchBlock.blockMatches(this.blocks, OreFlowers.ModBlocks.aveloz,
+					StatePropertiesPredicate.Builder.properties().hasProperty(DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
+			add(OreFlowers.ModBlocks.aveloz, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
 					.add(LootItem.lootTableItem(OreFlowers.ModBlocks.aveloz).when(careful).when(lowerHalf))));
 		}
 
@@ -135,25 +136,21 @@ public class ModLootTableProvider extends LootTableProvider {
 		}
 
 		private Builder<?> itemToBuilder(Block block, ItemLike item) {
-			return LootItem.lootTableItem(item).apply(applyExplosionCondition(block, SetItemCountFunction.setCount(ConstantValue.exactly(1.0F))));
+			return LootItem.lootTableItem(item).apply(applyExplosionCondition(block, SetItemCountFunction.setCount(ContextIntProviders.exactly(1))));
 		}
 
 		/** Silk touch takes the whole block, keeping its density on the item; otherwise it drops raw ore. */
 		private void dropsOreChunks(Block block, Item chunk) {
-			add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(
+			add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
 					LootItem.lootTableItem(block).when(hasSilkTouch())
 						.apply(CopyBlockState.copyState(block).copy(BlockProperties.ORE_DENSITY))
 						.otherwise(oreToChunk(block, chunk, 6)))));
 		}
 
 		private LootPoolEntryContainer.Builder<?> oreToChunk(Block oreHardiron, Item orechunkIron, float divisor) {
-			return LootItem.lootTableItem(orechunkIron).apply(applyExplosionCondition(orechunkIron, HarderSetCount.addHardOreCount(ConstantValue.exactly(divisor))));
+			return LootItem.lootTableItem(orechunkIron).apply(applyExplosionCondition(orechunkIron, HarderSetCount.addHardOreCount(Holder.direct(new ConstantValue(divisor)))));
 		}
 
-		protected static LootTable.Builder createSelfDropDispatchTable(Block block, LootItemCondition.Builder conditionMet, LootPoolEntryContainer.Builder<?> otherwise) {
-			return LootTable.lootTable().withPool(
-					LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(
-							LootItem.lootTableItem(block).when(conditionMet).otherwise(otherwise)));
-		}
+		// (createSelfDropDispatchTable is BlockLootSubProvider's, now that conditions are holders.)
 	}
 }

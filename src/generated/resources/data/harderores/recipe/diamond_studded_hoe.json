@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "d": {
-      "item": "harderores:orechunk_diamond"
-    },
-    "i": {
-      "item": "minecraft:iron_ingot"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "d": "harderores:orechunk_diamond",
+    "i": "minecraft:iron_ingot",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "di",
@@ -18,7 +12,6 @@
     " s"
   ],
   "result": {
-    "count": 1,
     "id": "harderores:diamond_studded_hoe"
   }
 }

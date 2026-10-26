@@ -9,8 +9,6 @@ import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -21,9 +19,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class SluiceBlockEntity extends ModBlockEntity {
 	private static final int cycleLength = 125;
@@ -45,8 +48,8 @@ public class SluiceBlockEntity extends ModBlockEntity {
 				new SluiceOre(2, List.of(Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE), Items.REDSTONE));
 	}
 	
-	protected ItemStackHandler inputSlot = new ItemStackHandler(1);
-	protected ItemStackHandler inputHandler = inputSlot;
+	protected ItemStacksResourceHandler inputSlot = new ItemStacksResourceHandler(1);
+	protected ItemStacksResourceHandler inputHandler = inputSlot;
 	protected int timer;
 	protected RandomSource rand;
 
@@ -74,7 +77,11 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	}
 
 	private void subtractDirt() {
-		inputSlot.extractItem(0, 1, false);
+		if(inputSlot.getResource(0).isEmpty()) return;
+		try (Transaction tx = Transaction.openRoot()) {
+			inputSlot.extract(0, inputSlot.getResource(0), 1, tx);
+			tx.commit();
+		}
 	}
 
 	/**
@@ -82,8 +89,8 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	 * its milled dust, sometimes the raw drop or a double, depending on what's being sluiced (1.12's rules).
 	 */
 	private void doFilter() {
-		if(level.isClientSide) return;
-		ItemStack input = inputSlot.getStackInSlot(0);
+		if(level.isClientSide()) return;
+		ItemStack input = ItemUtil.getStack(inputSlot, 0);
 		boolean gravel = input.is(Items.GRAVEL);
 		boolean sand = input.is(ItemTags.SAND);
 		List<SluiceOre> ores = ores();
@@ -151,7 +158,7 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	private void mergeStacks(ItemStack stack) {
 		if(stack.isEmpty()) return;
 		
-		if(level.isClientSide) return;
+		if(level.isClientSide()) return;
 		float rx = 0.4F + rand.nextFloat()*0.2f;
 		float ry = rand.nextFloat() * 0.25F + 0.25F;
 		float rz = 0.4F + rand.nextFloat()*0.2f;
@@ -165,7 +172,7 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	}
 
 	private void suckItems() {
-		if(!inputSlot.getStackInSlot(0).isEmpty()) return;
+		if(!inputSlot.getResource(0).isEmpty()) return;
 		List<ItemEntity> ents = level.getEntitiesOfClass(ItemEntity.class, getAABB(worldPosition));
 		for(ItemEntity ent : ents) {
 			ItemStack stack = ent.getItem();
@@ -173,10 +180,10 @@ public class SluiceBlockEntity extends ModBlockEntity {
 				continue;
 			}
 			ItemStack stack2 = stack.split(1);
-			inputSlot.insertItem(0, stack2, false);
+			inputSlot.set(0, ItemResource.of(stack2), stack2.getCount());
 			break;
 		}
-		if(!inputSlot.getStackInSlot(0).isEmpty()) {
+		if(!inputSlot.getResource(0).isEmpty()) {
 			timer = 25 * cycleLength;
 		}
 	}
@@ -187,12 +194,12 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
-		tag.put("harderores:inputslot", inputSlot.serializeNBT(registries));
+	protected void modSave(ValueOutput output) {
+		inputSlot.serialize(output.child("harderores:inputslot"));
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
-		inputSlot.deserializeNBT(registries, tag.getCompound("harderores:inputslot"));
+	protected void modLoad(ValueInput input) {
+		inputSlot.deserialize(input.childOrEmpty("harderores:inputslot"));
 	}
 }

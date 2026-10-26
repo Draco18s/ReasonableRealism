@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:2_bone_meal_from_grinding"
+        "recipes": "minecraft:2_bone_meal_from_grinding"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

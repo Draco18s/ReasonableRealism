@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "expindustry:machine_wood_hopper"
+        "recipes": "expindustry:machine_wood_hopper"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,5 +1,7 @@
 package com.draco18s.industry.block;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +14,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -20,8 +23,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class PoweredRailBridgeBlock extends PoweredRailBlock {
 	protected static final VoxelShape THICK_FLAT_AABB = Block.box(0.0D, -2.0D, 0.0D, 16.0D, 2.0D, 16.0D);
 
-	public PoweredRailBridgeBlock() {
-		super(Block.Properties.of().pushReaction(PushReaction.DESTROY).noCollission().strength(0.7F).sound(SoundType.METAL));
+	public PoweredRailBridgeBlock(Properties props) {
+		super(props.pushReaction(PushReaction.POPPED).noCollision().strength(0.7F).sound(SoundType.METAL));
 	}
 
 	@Override
@@ -45,8 +48,8 @@ public class PoweredRailBridgeBlock extends PoweredRailBlock {
 
 	@Override
 	@Deprecated
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-		if (!world.isClientSide) {
+	protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean isMoving) {
+		if (!world.isClientSide()) {
 			if(!canSurvive(state, world, pos)) {
 				//this.dropBlockAsItem(world, pos, state, 0);
 				world.destroyBlock(pos, true);

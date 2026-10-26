@@ -1,29 +1,17 @@
 package com.draco18s.farming.client;
 
 import com.draco18s.farming.HarderFarming;
-import com.draco18s.farming.item.ClimateGaugeItem;
-import com.draco18s.hardlib.HardLib;
 
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent;
 
-@EventBusSubscriber(modid = HarderFarming.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = HarderFarming.MODID, value = Dist.CLIENT)
 public class ClientEventHandler {
+	/** The thermometer and hydrometer models pick a frame from this property (see their item models). */
 	@SubscribeEvent
-	public static void onClientSetup(FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			// The thermometer and hydrometer models pick a frame from the "time" property.
-			registerGauge(HarderFarming.ModItems.thermometer);
-			registerGauge(HarderFarming.ModItems.hydrometer);
-		});
-	}
-
-	private static void registerGauge(Item item) {
-		ClimateGaugeItem gauge = (ClimateGaugeItem)item;
-		ItemProperties.register(item, HardLib.parseRL("time"), (stack, level, entity, seed) -> gauge.getFrame(stack, level, entity));
+	public static void registerItemProperties(RegisterRangeSelectItemModelPropertyEvent event) {
+		event.register(HarderFarming.getRL("climate"), ClimateGaugeProperty.MAP_CODEC);
 	}
 }

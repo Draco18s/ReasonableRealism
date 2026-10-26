@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:largedust_gold"
+        "recipes": "harderores:largedust_gold"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,0 +1,124 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "entries": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_1"
+        },
+        "threshold": 1.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_2"
+        },
+        "threshold": 2.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_3"
+        },
+        "threshold": 3.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_4"
+        },
+        "threshold": 4.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_5"
+        },
+        "threshold": 5.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_6"
+        },
+        "threshold": 6.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_7"
+        },
+        "threshold": 7.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_8"
+        },
+        "threshold": 8.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_9"
+        },
+        "threshold": 9.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_10"
+        },
+        "threshold": 10.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_11"
+        },
+        "threshold": 11.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_12"
+        },
+        "threshold": 12.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_13"
+        },
+        "threshold": 13.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_14"
+        },
+        "threshold": 14.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_15"
+        },
+        "threshold": 15.0
+      },
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "harderores:block/ore_harddiamond_16"
+        },
+        "threshold": 16.0
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "harderores:block/ore_harddiamond_16"
+    },
+    "property": "harderores:ore_density"
+  }
+}

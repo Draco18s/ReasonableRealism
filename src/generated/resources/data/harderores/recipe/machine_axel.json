@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "S": {
-      "tag": "minecraft:logs"
-    }
+    "S": "#minecraft:logs"
   },
   "pattern": [
     "SSS"

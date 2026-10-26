@@ -2,6 +2,7 @@ package com.draco18s.flowers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -20,11 +21,12 @@ import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
+import com.draco18s.hardlib.util.Tuple;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
@@ -34,20 +36,23 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.TallFlowerBlock;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 /**
  * Flowers that grow over ore deposits. Each ore has a plains flower and a desert one; the rest are decorative
  * (1.12 used them for other mods' ores).
  */
 @Mod(OreFlowers.MODID)
-@EventBusSubscriber(modid = OreFlowers.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = OreFlowers.MODID)
 public class OreFlowers {
 	public static final String MODID = "oreflowers";
 
@@ -57,11 +62,13 @@ public class OreFlowers {
 
 	public OreFlowers() {
 		registerCreativeTab();
-		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FlowersConfig.SPEC);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.LOCAL, FlowersConfig.SPEC);
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = oreData;
 
 		EasyRegistry.registerItem(StickyBlobItem::new, getRL("sticky_goo"));
+		// Each chunk's ore counts are kept on the chunk.
+		EasyRegistry.registerOther(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, new Tuple<Identifier, Supplier<AttachmentType<?>>>(getRL("ore_data"), () -> OreDataStore.ORE_DATA));
 
 		String[] plains = {
 				"poorjoe",//iron
@@ -69,22 +76,22 @@ public class OreFlowers {
 				"hauman", "leadplant", "red_amaranth", "shrub_violet", "affine", "clover", "camellia", "malva", "melastoma", "broadleaf_arrowhead",
 		};
 		for(String name : plains) {
-			registerFlower(() -> new SimpleFlower(FlowerSoil.PLAINS), name);
+			registerFlower(props -> new SimpleFlower(FlowerSoil.PLAINS, props), name);
 		}
-		registerFlower(() -> new BloomingFlower(FlowerSoil.PLAINS), "horsetail");//gold
+		registerFlower(props -> new BloomingFlower(FlowerSoil.PLAINS, props), "horsetail");//gold
 
 		String[] desert = {
 				"red_sorrel",//iron
 				"copper_flower", "sheeps_fescue", "primrose", "rapeseed", "milkwort", "madwort", "zilla", "marigold",
 		};
 		for(String name : desert) {
-			registerFlower(() -> new SimpleFlower(FlowerSoil.DESERT), name);
+			registerFlower(props -> new SimpleFlower(FlowerSoil.DESERT, props), name);
 		}
 
-		registerFlower(() -> new TwoTallFlower(FlowerSoil.PLAINS), "tansy");
-		registerFlower(() -> new TwoTallFlower(FlowerSoil.PLAINS), "flame_lily");//redstone
-		registerFlower(() -> new TwoTallFlower(FlowerSoil.DESERT), "chandelier_tree");//diamond
-		registerFlower(() -> new TwoTallFlower(FlowerSoil.DESERT), "aveloz");//redstone
+		registerFlower(props -> new TwoTallFlower(FlowerSoil.PLAINS, props), "tansy");
+		registerFlower(props -> new TwoTallFlower(FlowerSoil.PLAINS, props), "flame_lily");//redstone
+		registerFlower(props -> new TwoTallFlower(FlowerSoil.DESERT, props), "chandelier_tree");//diamond
+		registerFlower(props -> new TwoTallFlower(FlowerSoil.DESERT, props), "aveloz");//redstone
 	}
 
 	/**
@@ -129,7 +136,7 @@ public class OreFlowers {
 		}
 	}
 
-	private static void registerFlower(Supplier<Block> block, String name) {
+	private static void registerFlower(Function<BlockBehaviour.Properties, Block> block, String name) {
 		FLOWERS.put(name, EasyRegistry.registerBlock(block, getRL(name), new Item.Properties()));
 	}
 
@@ -172,7 +179,7 @@ public class OreFlowers {
 		}
 	}
 
-	public static ResourceLocation getRL(String name) {
+	public static Identifier getRL(String name) {
 		return HardLib.getRL(MODID, name);
 	}
 }

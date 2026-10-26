@@ -1,12 +1,6 @@
 {
   "type": "harderores:packing",
   "ingredientQuantity": 9,
-  "ingredients": [
-    {
-      "item": "minecraft:ice"
-    }
-  ],
-  "result": {
-    "item": "minecraft:packed_ice"
-  }
+  "ingredients": "minecraft:ice",
+  "result": "minecraft:packed_ice"
 }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:sugar_from_sifter"
+        "recipes": "minecraft:sugar_from_sifter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

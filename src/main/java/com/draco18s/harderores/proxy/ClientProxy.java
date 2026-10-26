@@ -34,8 +34,7 @@ public class ClientProxy implements IProxy {
 		ToClientMessageOreParticles msg= ((ToClientMessageOreParticles)message);
 		for(BlockPos pos : msg.oresAt) {
 			BlockState state = p.level().getBlockState(pos);
-			BlockParticleOption opts = new BlockParticleOption(HarderOres.ModParticleTypes.prospector_radar, state);
-			opts.setPos(pos);
+			BlockParticleOption opts = new BlockParticleOption(HarderOres.ModParticleTypes.prospector_radar, state, pos);
 			spawnParticlesAtCenter(p.level(), pos, opts, UniformInt.of(0, 2));//.spawnParticleBelow(p.level(), pos, p.level().random, opts);
 			if(!states.contains(state.getBlock())) {
 				states.add(state.getBlock());
@@ -47,7 +46,7 @@ public class ClientProxy implements IProxy {
 
 	private void spawnParticlesAtCenter(Level world, BlockPos pos, ParticleOptions opts, UniformInt randQnt) {
 		Vec3 vec3 = Vec3.atCenterOf(pos);
-		int i = randQnt.sample(world.random);
+		int i = randQnt.sample(world.getRandom());
 		for(int j = 0; j < 1 && j < i; ++j) {
 			double d0 = vec3.x;
 			double d1 = vec3.y;

@@ -1,37 +1,17 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    },
-    {
-      "item": "harderfarming:tinydust_flour"
-    }
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour",
+    "harderfarming:tinydust_flour"
   ],
   "result": {
-    "count": 1,
     "id": "harderfarming:largedust_flour"
   }
 }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:machine_millstone"
+        "recipes": "harderores:machine_millstone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,5 +1,6 @@
 package com.draco18s.farming.loot;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -22,6 +23,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 /**
  * Animals drop rawhide instead of leather: 3-5 of it, plus one more per level of Looting, in place of whatever
  * leather the loot table rolled. Leather comes from curing it on a tanning rack.
@@ -29,8 +32,8 @@ import net.neoforged.neoforge.common.loot.LootModifier;
 public class RawLeatherModifier extends LootModifier {
 	public static final Supplier<MapCodec<RawLeatherModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, RawLeatherModifier::new)));
 
-	public RawLeatherModifier(LootItemCondition[] conditionsIn) {
-		super(conditionsIn);
+	public RawLeatherModifier(Optional<Holder<LootItemCondition>> condition, int priority) {
+		super(condition, priority);
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public class RawLeatherModifier extends LootModifier {
 		if(!generatedLoot.removeIf(st -> st.is(Items.LEATHER))) {
 			return generatedLoot;
 		}
-		int looting = context.getParamOrNull(LootContextParams.ATTACKING_ENTITY) instanceof LivingEntity killer
+		int looting = context.getOptional(LootContextParams.ATTACKING_ENTITY) instanceof LivingEntity killer
 				? HardLib.getEnchantmentLevel(context.getLevel().registryAccess(), Enchantments.LOOTING, killer.getMainHandItem()) : 0;
 		int count = 3 + context.getRandom().nextInt(3) + context.getRandom().nextInt(looting + 1);
 		generatedLoot.add(new ItemStack(HarderFarming.ModItems.raw_leather, count));

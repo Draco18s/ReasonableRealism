@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:block/cross",
-  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "oreflowers:item/copper_flower"
+    "cross": "oreflowers:block/copper_flower"
   }
 }

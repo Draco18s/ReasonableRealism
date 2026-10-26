@@ -1,37 +1,17 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
   "ingredients": [
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    },
-    {
-      "item": "harderores:tinydust_copper"
-    }
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper",
+    "harderores:tinydust_copper"
   ],
   "result": {
-    "count": 1,
     "id": "harderores:largedust_copper"
   }
 }

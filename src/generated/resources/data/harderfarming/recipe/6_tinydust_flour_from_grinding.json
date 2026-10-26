@@ -1,10 +1,6 @@
 {
   "type": "harderores:grinding",
   "count": 6,
-  "ingredients": {
-    "item": "minecraft:wheat"
-  },
-  "result": {
-    "item": "harderfarming:tinydust_flour"
-  }
+  "ingredients": "minecraft:wheat",
+  "result": "harderfarming:tinydust_flour"
 }

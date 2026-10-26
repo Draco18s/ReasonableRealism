@@ -5,24 +5,24 @@ import java.util.Map;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.advancement.AdvancementEarnedTrigger;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
-import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
 import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger;
+import com.draco18s.hardlib.api.advancement.DistanceTraveledTrigger.TravelType;
 import com.draco18s.hardlib.api.advancement.WorldTimeTrigger;
 
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.CriterionProgress;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /** Fires HardLib's block, time, distance and advancement-earned triggers. */
@@ -48,8 +48,8 @@ public class AdvancementEvents {
 	public static void onAdvancementProgress(AdvancementEvent.AdvancementProgressEvent event) {
 		if(event.getProgressType() != AdvancementEvent.AdvancementProgressEvent.ProgressType.REVOKE) return;
 		if(!(event.getEntity() instanceof ServerPlayer player) || event.getAdvancementProgress().isDone()) return;
-		ResourceLocation revoked = event.getAdvancement().id();
-		for(AdvancementHolder advancement : player.server.getAdvancements().getAllAdvancements()) {
+		Identifier revoked = event.getAdvancement().id();
+		for(AdvancementHolder advancement : player.level().getServer().getAdvancements().getAllAdvancements()) {
 			for(Map.Entry<String, Criterion<?>> criterion : advancement.value().criteria().entrySet()) {
 				if(criterion.getValue().triggerInstance() instanceof AdvancementEarnedTrigger.Instance earned && revoked.equals(earned.advancement())) {
 					CriterionProgress progress = player.getAdvancements().getOrStartProgress(advancement).getCriterion(criterion.getKey());
@@ -66,7 +66,7 @@ public class AdvancementEvents {
 	public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
 		if(!(event.getEntity() instanceof ServerPlayer player) || HardLibAPI.Advancements.ADVANCEMENT_EARNED == null) return;
 		if(!HardLibAPI.Advancements.ADVANCEMENT_EARNED.hasListeners(player)) return;
-		for(AdvancementHolder advancement : player.server.getAdvancements().getAllAdvancements()) {
+		for(AdvancementHolder advancement : player.level().getServer().getAdvancements().getAllAdvancements()) {
 			if(player.getAdvancements().getOrStartProgress(advancement).isDone()) {
 				triggerEarned(player, advancement);
 			}
@@ -75,16 +75,16 @@ public class AdvancementEvents {
 
 	private static void triggerEarned(ServerPlayer player, AdvancementHolder advancement) {
 		if(HardLibAPI.Advancements.ADVANCEMENT_EARNED == null || !HardLibAPI.Advancements.ADVANCEMENT_EARNED.hasListeners(player)) return;
-		LootParams ctx = new LootParams.Builder(player.serverLevel())
+		LootParams ctx = new LootParams.Builder(player.level())
 				.withParameter(AdvancementEarnedTrigger.ADVANCEMENT, advancement.id())
 				.create(AdvancementEarnedTrigger.requiredParams);
 		HardLibAPI.Advancements.ADVANCEMENT_EARNED.trigger(player, ctx);
 	}
 
 	@SubscribeEvent
-	public static void onBlockBreak(BlockEvent.BreakEvent event) {
+	public static void onBlockBreak(BreakBlockEvent event) {
 		if(!(event.getPlayer() instanceof ServerPlayer player) || HardLibAPI.Advancements.BLOCK_BREAK == null) return;
-		LootParams ctx = new LootParams.Builder(player.serverLevel())
+		LootParams ctx = new LootParams.Builder(player.level())
 				.withParameter(LootContextParams.BLOCK_STATE, event.getState())
 				.create(BreakBlockTrigger.requiredParams);
 		HardLibAPI.Advancements.BLOCK_BREAK.trigger(player, ctx);
@@ -93,9 +93,9 @@ public class AdvancementEvents {
 	@SubscribeEvent
 	public static void onPlayerTick(PlayerTickEvent.Post event) {
 		if(!(event.getEntity() instanceof ServerPlayer player)) return;
-		long time = player.serverLevel().getGameTime();
+		long time = player.level().getGameTime();
 		if(time % TIME_INTERVAL == 0 && HardLibAPI.Advancements.WORLD_TIME != null) {
-			LootParams ctx = new LootParams.Builder(player.serverLevel())
+			LootParams ctx = new LootParams.Builder(player.level())
 					.withParameter(WorldTimeTrigger.TIME, (float)time)
 					.create(WorldTimeTrigger.requiredParams);
 			HardLibAPI.Advancements.WORLD_TIME.trigger(player, ctx);
@@ -114,8 +114,8 @@ public class AdvancementEvents {
 	}
 
 	/** The statistic is in centimeters; the trigger's distance is in blocks. */
-	private static void triggerDistance(ServerPlayer player, ServerStatsCounter stats, ResourceLocation stat, TravelType type) {
-		LootParams ctx = new LootParams.Builder(player.serverLevel())
+	private static void triggerDistance(ServerPlayer player, ServerStatsCounter stats, Identifier stat, TravelType type) {
+		LootParams ctx = new LootParams.Builder(player.level())
 				.withParameter(DistanceTraveledTrigger.DISTANCE, stats.getValue(Stats.CUSTOM.get(stat)) / 100f)
 				.withParameter(DistanceTraveledTrigger.TRAVEL, type)
 				.create(DistanceTraveledTrigger.requiredParams);

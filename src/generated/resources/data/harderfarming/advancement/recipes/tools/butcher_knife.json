@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderfarming:butcher_knife"
+        "recipes": "harderfarming:butcher_knife"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

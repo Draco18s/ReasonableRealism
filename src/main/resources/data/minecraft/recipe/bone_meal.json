@@ -1,14 +1,12 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:false"
+      "type": "neoforge:never"
     }
   ],
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:bone"
-    }
+    "minecraft:bone"
   ],
   "result": {
     "id": "minecraft:bone_meal",

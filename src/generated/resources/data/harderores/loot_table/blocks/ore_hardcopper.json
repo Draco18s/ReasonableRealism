@@ -2,60 +2,37 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:alternatives",
           "children": [
             {
               "type": "minecraft:item",
-              "conditions": [
-                {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "predicates": {
-                      "minecraft:enchantments": [
-                        {
-                          "enchantments": "minecraft:silk_touch",
-                          "levels": {
-                            "min": 1
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              ],
-              "functions": [
-                {
-                  "block": "harderores:ore_hardcopper",
-                  "function": "minecraft:copy_state",
-                  "properties": [
-                    "ore_density"
-                  ]
-                }
-              ],
+              "condition": "minecraft:tool/can_silk_touch",
+              "modifier": {
+                "type": "minecraft:copy_state",
+                "block": "harderores:ore_hardcopper",
+                "properties": [
+                  "ore_density"
+                ]
+              },
               "name": "harderores:ore_hardcopper"
             },
             {
               "type": "minecraft:item",
-              "functions": [
-                {
-                  "conditions": [
-                    {
-                      "condition": "minecraft:survives_explosion"
-                    }
-                  ],
-                  "divisor": 6.0,
-                  "function": "harderores:set_count"
-                }
-              ],
+              "modifier": {
+                "type": "harderores:set_count",
+                "condition": {
+                  "type": "minecraft:survives_explosion"
+                },
+                "divisor": 6.0
+              },
               "name": "minecraft:raw_copper"
             }
           ]
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "harderores:blocks/ore_hardcopper"

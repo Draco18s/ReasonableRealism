@@ -2,17 +2,16 @@ package com.draco18s.harderores.entity.capability;
 
 import com.draco18s.hardlib.api.HardLibAPI;
 
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
-public class MillableItemsHandler extends ItemStackHandler {
+public class MillableItemsHandler extends ItemStacksResourceHandler {
 	public MillableItemsHandler(int size) {
 		super(size);
 	}
 
 	@Override
-	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-		if(HardLibAPI.oreMachines.getMillResult(stack).isEmpty()) return stack;
-		return super.insertItem(slot, stack, simulate);
+	public boolean isValid(int index, ItemResource resource) {
+		return !HardLibAPI.oreMachines.getMillResult(resource.toStack()).isEmpty();
 	}
 }

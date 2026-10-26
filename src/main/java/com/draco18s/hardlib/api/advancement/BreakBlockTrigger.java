@@ -7,19 +7,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.advancements.predicates.StatePropertiesPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class BreakBlockTrigger extends HardLibCriteriaTrigger<BreakBlockTrigger.Instance> {
-	public static final ResourceLocation ID = HardLib.getRL("break_block");
-	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(LootContextParams.BLOCK_STATE).build();
+	public static final Identifier ID = HardLib.getRL("break_block");
+	public static ContextKeySet requiredParams = new ContextKeySet.Builder().required(LootContextParams.BLOCK_STATE).build();
 
 	@Override
 	public Codec<Instance> codec() {
@@ -41,7 +41,7 @@ public class BreakBlockTrigger extends HardLibCriteriaTrigger<BreakBlockTrigger.
 
 		@Override
 		public boolean test(LootParams params) {
-			BlockState state = params.getParameter(LootContextParams.BLOCK_STATE);
+			BlockState state = params.contextMap().getOrThrow(LootContextParams.BLOCK_STATE);
 			if (this.block.isPresent() && !state.is(this.block.get())) {
 				return false;
 			}

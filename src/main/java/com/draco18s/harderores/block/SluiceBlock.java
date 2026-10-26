@@ -27,6 +27,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -39,8 +40,8 @@ public class SluiceBlock extends ModEntityBlock {
 	public static final VoxelShape NEARLY_BLOCK = box(0,0,0,16,15,16);
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 9);
 
-	public SluiceBlock() {
-		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava());
+	public SluiceBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava());
 		registerDefaultState(this.stateDefinition.any().setValue(LEVEL, 0));		
 	}
 	
@@ -52,8 +53,8 @@ public class SluiceBlock extends ModEntityBlock {
 
 	@Override
 	@Deprecated
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, BlockPos neighborPos, boolean isMoving) {
-		super.neighborChanged(state, world, pos, neighbor, neighborPos, isMoving);
+	protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, @Nullable Orientation orientation, boolean isMoving) {
+		super.neighborChanged(state, world, pos, neighbor, orientation, isMoving);
 		BlockState newState = getUpdatedState(world, pos, state);
 		world.setBlock(pos, newState, 3);
 		if(newState.getValue(LEVEL) > 1) {
@@ -174,6 +175,6 @@ public class SluiceBlock extends ModEntityBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.sluice, SluiceBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.sluice, SluiceBlockEntity::tick);
 	}
 }

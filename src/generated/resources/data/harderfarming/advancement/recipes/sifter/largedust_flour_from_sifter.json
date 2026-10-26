@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderfarming:largedust_flour_from_sifter"
+        "recipes": "harderfarming:largedust_flour_from_sifter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

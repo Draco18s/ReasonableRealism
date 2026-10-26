@@ -4,17 +4,17 @@ import com.draco18s.hardlib.HardLib;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class DistanceTraveledTrigger extends HardLibCriteriaTrigger<DistanceTraveledTrigger.Instance> {
-	public static final ResourceLocation ID = HardLib.getRL("distance_traveled");
-	public static LootContextParam<Float> DISTANCE = new LootContextParam<Float>(ID);
-	public static LootContextParam<TravelType> TRAVEL = new LootContextParam<TravelType>(HardLib.getRL("travel_type"));
-	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(DistanceTraveledTrigger.TRAVEL).required(DistanceTraveledTrigger.DISTANCE).build();
+	public static final Identifier ID = HardLib.getRL("distance_traveled");
+	public static ContextKey<Float> DISTANCE = new ContextKey<Float>(ID);
+	public static ContextKey<TravelType> TRAVEL = new ContextKey<TravelType>(HardLib.getRL("travel_type"));
+	public static ContextKeySet requiredParams = new ContextKeySet.Builder().required(DistanceTraveledTrigger.TRAVEL).required(DistanceTraveledTrigger.DISTANCE).build();
 
 	@Override
 	public Codec<Instance> codec() {
@@ -30,7 +30,7 @@ public class DistanceTraveledTrigger extends HardLibCriteriaTrigger<DistanceTrav
 
 		@Override
 		public boolean test(LootParams params) {
-			return params.getParameter(TRAVEL) == type && params.getParameter(DISTANCE) >= distance;
+			return params.contextMap().getOrThrow(TRAVEL) == type && params.contextMap().getOrThrow(DISTANCE) >= distance;
 		}
 	}
 

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "oreflowers:1_sticky_goo_from_grinding"
+        "recipes": "oreflowers:1_sticky_goo_from_grinding"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:iron_ingot_from_blasting_largedust_iron"
+        "recipes": "harderores:iron_ingot_from_blasting_largedust_iron"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

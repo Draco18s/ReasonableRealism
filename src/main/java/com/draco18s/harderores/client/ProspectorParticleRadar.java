@@ -2,23 +2,23 @@ package com.draco18s.harderores.client;
 
 import java.awt.Color;
 
+import com.draco18s.harderores.HarderOres;
 import com.draco18s.hardlib.api.interfaces.IBlockMultiBreak;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.world.level.block.Block;
 
-public class ProspectorParticleRadar extends TextureSheetParticle {
+public class ProspectorParticleRadar extends SingleQuadParticle {
 	private final SpriteSet sprites;
 
 	public ProspectorParticleRadar(BlockParticleOption options, ClientLevel p_107239_, double p_107240_, double p_107241_, double p_107242_, double p_107243_, double p_107244_, double p_107245_, SpriteSet spriteSet) {
@@ -33,7 +33,7 @@ public class ProspectorParticleRadar extends TextureSheetParticle {
 	}
 
 	public ProspectorParticleRadar(ClientLevel p_107239_, double p_107240_, double p_107241_, double p_107242_, double p_107243_, double p_107244_, double p_107245_, SpriteSet spriteSet) {
-		super(p_107239_, p_107240_, p_107241_, p_107242_, p_107243_, p_107244_, p_107245_);
+		super(p_107239_, p_107240_, p_107241_, p_107242_, p_107243_, p_107244_, p_107245_, spriteSet.first());
 		this.rCol = 0.25f;
 		this.gCol = 0.25f;
 		this.bCol = 1;
@@ -59,28 +59,20 @@ public class ProspectorParticleRadar extends TextureSheetParticle {
 	}
 
 	@Override
-	protected int getLightColor(float p_107249_) {
+	protected int getLightCoords(float p_107249_) {
 		return 0xFFFFFF;
 	}
 
 	@Override
-	public ParticleRenderType getRenderType() {
+	protected SingleQuadParticle.Layer getLayer() {
 		return ALWAYS_ON_TOP;
 	}
 
-    @SuppressWarnings("deprecation")
-	ParticleRenderType ALWAYS_ON_TOP = new ParticleRenderType() {
-		public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
-	    	  RenderSystem.disableDepthTest();
-	    	  RenderSystem.depthMask(false);
-	          RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-	          RenderSystem.enableBlend();
-	          RenderSystem.defaultBlendFunc();
-	          return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-	      }
-
-	      public String toString() {
-	         return "ALWAYS_ON_TOP";
-	      }
-	   };
+	/** Translucent particles seen through blocks: no depth test, no depth writes (see ClientEventHandler, which registers it). */
+	public static final RenderPipeline ALWAYS_ON_TOP_PIPELINE = RenderPipeline.builder(RenderPipelines.PARTICLE_SNIPPET)
+			.withLocation(HarderOres.getRL("pipeline/prospector_radar"))
+			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+			.build();
+	private static final SingleQuadParticle.Layer ALWAYS_ON_TOP = new SingleQuadParticle.Layer(true, TextureAtlas.LOCATION_PARTICLES, ALWAYS_ON_TOP_PIPELINE);
 }

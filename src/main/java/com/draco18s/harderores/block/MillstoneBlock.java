@@ -9,17 +9,18 @@ import com.draco18s.hardlib.api.advancement.MillstoneTrigger;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 import com.draco18s.hardlib.api.internal.block.ModEntityBlock;
-import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,14 +30,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class MillstoneBlock extends ModEntityBlock {
 
-	public MillstoneBlock() {
-		super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(2).sound(SoundType.STONE).requiresCorrectToolForDrops());
+	public MillstoneBlock(Properties props) {
+		super(props.mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(2).sound(SoundType.STONE).requiresCorrectToolForDrops());
 		registerDefaultState(this.stateDefinition.any().setValue(BlockProperties.MILL_ORIENTATION, MillstoneOrientation.NONE));
 	}
 
@@ -53,38 +57,40 @@ public class MillstoneBlock extends ModEntityBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> betType) {
-		return level.isClientSide ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_millstone, MillstoneBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(betType, HarderOres.ModBlockEntities.machine_millstone, MillstoneBlockEntity::tick);
 	}
 
 	@Deprecated
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	protected InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		MillstoneOrientation mill = state.getValue(BlockProperties.MILL_ORIENTATION);
-		if(!mill.canAcceptInput || heldItem.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if(!mill.canAcceptInput || heldItem.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND;
 		BlockEntity be = world.getBlockEntity(pos);
-		IItemHandler inventory = be instanceof MillstoneBlockEntity millstone ? millstone.getItemHandler(Direction.UP) : null;
-		if(inventory == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		ItemStack stack = heldItem.copy();
-		stack.setCount(1);
-		stack = inventory.insertItem(0, stack, true);
-		if(stack.isEmpty()) {
-			inventory.insertItem(0, heldItem.split(1), false);
+		ResourceHandler<ItemResource> inventory = be instanceof MillstoneBlockEntity millstone ? millstone.getItemHandler(Direction.UP) : null;
+		if(inventory == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		boolean inserted;
+		try (Transaction tx = Transaction.openRoot()) {
+			inserted = inventory.insert(0, ItemResource.of(heldItem), 1, tx) == 1;
+			if(inserted) tx.commit();
+		}
+		if(inserted) {
+			heldItem.shrink(1);
 			
 			MillstoneOrientation millpos = world.getBlockState(pos).getValue(BlockProperties.MILL_ORIENTATION);
 			MillstoneBlockEntity center = (MillstoneBlockEntity)world.getBlockEntity(be.getBlockPos().offset(millpos.offset.getX(), 0, millpos.offset.getZ()));
 
 			if(center != null && center.getPower() > 0) {
 				if(player instanceof ServerPlayer sPlayer) {
-					LootParams.Builder bld = new LootParams.Builder(sPlayer.serverLevel())
+					LootParams.Builder bld = new LootParams.Builder(sPlayer.level())
 							.withParameter(MillstoneTrigger.POWER, center.getPower());
 					LootParams ctx = bld.create(MillstoneTrigger.requiredParams);
 					HardLibAPI.Advancements.MILL_BUILT.trigger(sPlayer, ctx);
 				}
 			}
 			
-			return ItemInteractionResult.CONSUME;
+			return InteractionResult.CONSUME;
 		}
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	/*public static final VoxelShape CORNER_SE = box(0,0,0,10,16,10);
@@ -119,7 +125,7 @@ public class MillstoneBlock extends ModEntityBlock {
 
 	@Deprecated
 	@Override
-	public BlockState updateShape(BlockState thisCurState, Direction dir, BlockState state2, LevelAccessor world, BlockPos thisPos, BlockPos pos2) {
+	protected BlockState updateShape(BlockState thisCurState, LevelReader world, ScheduledTickAccess ticks, BlockPos thisPos, Direction dir, BlockPos pos2, BlockState state2, RandomSource random) {
 		if(world.getBlockState(thisPos).getBlock() != this) return world.getBlockState(thisPos);
 		if(!checkPlacement(world, thisPos)) {
 			Iterable<BlockPos> list = BlockPos.betweenClosed(thisPos.offset(-1,0,-1), thisPos.offset(1,0,1));//.map(BlockPos::toImmutable).collect(Collectors.toList());
@@ -133,7 +139,7 @@ public class MillstoneBlock extends ModEntityBlock {
 		return world.getBlockState(thisPos);
 	}
 	
-	protected boolean checkPlacement(LevelAccessor iworld, BlockPos pos) {
+	protected boolean checkPlacement(LevelReader iworld, BlockPos pos) {
 		if(iworld instanceof Level world) {
 			//World world = (World)iworld;
 			BlockState state;// = this.getDefaultState();
@@ -162,9 +168,10 @@ public class MillstoneBlock extends ModEntityBlock {
 	
 	@Deprecated
 	@Override
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, BlockPos fromPos, boolean isMoving) {
-		super.neighborChanged(state,world,pos,neighbor,fromPos,isMoving);
-		if(neighbor == this && state.getValue(BlockProperties.MILL_ORIENTATION) != MillstoneOrientation.NONE && world.getBlockState(fromPos).isAir()) {
+	protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbor, @Nullable Orientation orientation, boolean isMoving) {
+		super.neighborChanged(state, world, pos, neighbor, orientation, isMoving);
+		// (Which neighbor changed isn't passed any more; checkPlacement finds whether a part of the mill is gone.)
+		if(neighbor == this && state.getValue(BlockProperties.MILL_ORIENTATION) != MillstoneOrientation.NONE) {
 			BlockPos offset = state.getValue(BlockProperties.MILL_ORIENTATION).offset;
 			BlockPos centerPos = pos.offset(offset.getX(),offset.getY(),offset.getZ());
 			if(!checkPlacement(world, centerPos)) {
@@ -178,15 +185,5 @@ public class MillstoneBlock extends ModEntityBlock {
 		}
 	}
 	
-	@Deprecated
-	@Override
-	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() != newState.getBlock()) {
-			BlockEntity blockentity = world.getBlockEntity(pos);
-			if(blockentity instanceof MillstoneBlockEntity mill) {
-				InventoryUtils.dropItemHandlerContents(mill.getItemHandler(null), world, pos);
-			}
-			super.onRemove(state, world, pos, newState, isMoving);
-		}
-	}
+	// Its contents drop from MillstoneBlockEntity.preRemoveSideEffects.
 }

@@ -23,11 +23,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 /**
  * The mining enchantments (1.12's behavior). Pulverize works in the hard ores' loot function (HarderSetCount).
@@ -44,14 +44,14 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent
-	public static void blockBreak(BlockEvent.BreakEvent event) {
+	public static void blockBreak(BreakBlockEvent event) {
 		Player harvester = event.getPlayer();
 		if(harvester == null || harvester.isCreative() || !(event.getLevel() instanceof ServerLevel world)) return;
 		BlockState state = event.getState();
 		BlockPos pos = event.getPos();
 		if(!state.hasProperty(BlockProperties.ORE_DENSITY)) {
 			// (Material.STONE before 1.20: natural stone and ores.)
-			if(state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(Tags.Blocks.ORES)) {
+			if(state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(Tags.BlockItems.ORES.block())) {
 				prospect(world, pos, (ServerPlayer)harvester);
 			}
 			return;
@@ -84,10 +84,10 @@ public class EventHandler {
 	}
 
 	/** Breaks one layer of a hard ore block as the player would, with its drops; the tool wears 3 times in 4. */
-	private static float mineOnce(BlockEvent.BreakEvent event, ServerLevel world, BlockPos pos, BlockState state, Player harvester,
+	private static float mineOnce(BreakBlockEvent event, ServerLevel world, BlockPos pos, BlockState state, Player harvester,
 			ItemStack mainStack, ItemStack originalStack, int exp, float rollover) {
 		boolean canHarvest = state.canHarvestBlock(world, pos, harvester);
-		boolean removed = state.onDestroyedByPlayer(world, pos, harvester, canHarvest, world.getFluidState(pos));
+		boolean removed = state.onDestroyedByPlayer(world, pos, harvester, mainStack, canHarvest, world.getFluidState(pos));
 		if(removed) {
 			state.getBlock().destroy(world, pos, state);
 		}
@@ -100,7 +100,7 @@ public class EventHandler {
 			rollover -= 1;
 		}
 		if(removed && canHarvest) {
-			state.getBlock().playerDestroy(world, harvester, pos, state, world.getBlockEntity(pos), originalStack);
+			state.getBlock().playerDestroy(world, (ServerPlayer)harvester, pos, state, world.getBlockEntity(pos), originalStack);
 		}
 		if(removed && exp > 0) {
 			ExperienceOrb.award(world, Vec3.atCenterOf(pos), exp);

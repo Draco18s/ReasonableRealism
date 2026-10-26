@@ -2,44 +2,46 @@ package com.draco18s.hardlib.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 //import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.neoforge.client.extensions.IBakedModelExtension;
-import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 
 public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveResourceReloadListener*/ {
 
 	INSTANCE;
 
-	private final Map<ResourceLocation, UnbakedModel> cache = new HashMap<ResourceLocation, UnbakedModel>();
-	private final Map<ResourceLocation, IBakedModelExtension> bakedCache = new HashMap<ResourceLocation, IBakedModelExtension>();
+	private final Map<Identifier, UnbakedModel> cache = new HashMap<Identifier, UnbakedModel>();
+	private final Map<Identifier, BlockStateModel> bakedCache = new HashMap<Identifier, BlockStateModel>();
 	//private ModelState l;
 	
 	public static final ModelState DEFAULTMODELSTATE = new ModelState() {
 		
 	};
 	public static final VertexFormat DEFAULTVERTEXFORMAT = DefaultVertexFormat.BLOCK;
-	public static final Function<ResourceLocation, TextureAtlasSprite> DEFAULTTEXTUREGETTER = new Function<ResourceLocation, TextureAtlasSprite>() {
+	public static final Function<Identifier, TextureAtlasSprite> DEFAULTTEXTUREGETTER = new Function<Identifier, TextureAtlasSprite>() {
 		@Override
-		public TextureAtlasSprite apply(ResourceLocation texture) {
-			return Minecraft.getInstance().getTextureAtlas(texture).apply(texture);
+		public TextureAtlasSprite apply(Identifier texture) {
+			// (Block textures; atlases are looked up through the atlas manager now.)
+			return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS).getSprite(texture);
 		}
 	};
 
-	public UnbakedModel getOrLoadModel(ResourceLocation location)
+	public UnbakedModel getOrLoadModel(Identifier location)
 	{
 		UnbakedModel model = cache.get(location);
 		if(model == null)
@@ -58,12 +60,12 @@ public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveRes
 		return model;
 	}
 
-	public IBakedModelExtension getModel(ResourceLocation key) {
+	public BlockStateModel getModel(Identifier key) {
 		return bakedCache.get(key);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, ModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
-		IBakedModelExtension model = getModel(key);
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, ModelState state, VertexFormat format, Function<Identifier, TextureAtlasSprite> textureGetter) {
+		BlockStateModel model = getModel(key);
 		if(model == null) {
 			//TextureAtlasSprite sprite = null;//ModelRotation.X0_Y0;
 			//model = getOrLoadModel(location).bake(null, null, state, location); //.bake(bakery, textureGetter, sprite, format);
@@ -73,35 +75,35 @@ public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveRes
 		return model;
 	}
 
-	/*public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, VertexFormat format) {
+	/*public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, IModelState state, VertexFormat format) {
 		return getOrLoadModel(bakery, key, location, state, format, DEFAULTTEXTUREGETTER);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, IModelState state, Function<Identifier, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, state, DEFAULTVERTEXFORMAT, textureGetter);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, VertexFormat format, Function<Identifier, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, format, textureGetter);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, IModelState state) {
 		return getOrLoadModel(bakery, key, location, state, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, VertexFormat format) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, format, DEFAULTTEXTUREGETTER);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location, Function<Identifier, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, textureGetter);
 	}
 
-	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location) {
+	public BlockStateModel getOrLoadModel(ModelBakery bakery, Identifier key, Identifier location) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}
 
-	public IBakedModelExtension getOrLoadBakedModel(ModelBakery bakery, ResourceLocation location) {
+	public BlockStateModel getOrLoadBakedModel(ModelBakery bakery, Identifier location) {
 		return getOrLoadModel(bakery, location, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}*/
 
@@ -112,7 +114,7 @@ public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveRes
 	}
 
 	//@Override
-	public void onResourceManagerReload(ResourceManager resourceManager, Predicate<ResourceType> resourcePredicate) {
+	public void onResourceManagerReload(ResourceManager resourceManager, Predicate<PackType> resourcePredicate) {
 		cache.clear();
 		bakedCache.clear();
 	}

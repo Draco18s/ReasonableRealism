@@ -6,7 +6,7 @@ import net.minecraft.world.level.material.MapColor;
 
 public class SaltOreBlock extends Block {
 
-	public SaltOreBlock() {
-		super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(1, 2.5f));
+	public SaltOreBlock(Properties props) {
+		super(props.mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(1, 2.5f));
 	}
 }

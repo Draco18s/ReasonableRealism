@@ -2,16 +2,17 @@ package com.draco18s.hardlib.api.advancement;
 
 import com.draco18s.flowers.OreFlowers;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class FoundOreTrigger extends HardLibCriteriaTrigger<FoundOreTrigger.Instance> {
-	public static final ResourceLocation ID = OreFlowers.getRL("found_ore");
-	public static LootContextParam<Integer> ORE_COUNT = new LootContextParam<Integer>(ID);
-	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(FoundOreTrigger.ORE_COUNT).build();
+	public static final Identifier ID = OreFlowers.getRL("found_ore");
+	public static ContextKey<Integer> ORE_COUNT = new ContextKey<Integer>(ID);
+	public static ContextKeySet requiredParams = new ContextKeySet.Builder().required(FoundOreTrigger.ORE_COUNT).build();
 
 	@Override
 	public Codec<Instance> codec() {
@@ -19,11 +20,11 @@ public class FoundOreTrigger extends HardLibCriteriaTrigger<FoundOreTrigger.Inst
 	}
 
 	public record Instance() implements ICriterionTriggerInstanceTester {
-		public static final Codec<Instance> CODEC = Codec.unit(new Instance());
+		public static final Codec<Instance> CODEC = MapCodec.unitCodec(new Instance());
 
 		@Override
 		public boolean test(LootParams params) {
-			return params.getParameter(ORE_COUNT) > 0;
+			return params.contextMap().getOrThrow(ORE_COUNT) > 0;
 		}
 	}
 }

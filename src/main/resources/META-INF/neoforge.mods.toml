@@ -3,12 +3,15 @@ loaderVersion="[4,)"
 license="All rights reserved"
 showAsResourcePack=false
 
+# Opens up the vanilla code these mods need (see the file).
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 [[mods]]
     modId="hardlib"
     version="1.0.0.0"
     displayName="Hardlib"
     displayURL="neoforged.net"
-    logoFile="logo.png"
     credits="."
     authors="Draco18s"
     description='''
@@ -19,14 +22,14 @@ showAsResourcePack=false
 	[[dependencies.hardlib]]
 		modId="neoforge"
 		type="required"
-		versionRange="[21.1,)"
+		versionRange="[26.3,)"
 		ordering="NONE"
 		side="BOTH"
 
 	[[dependencies.hardlib]]
 		modId="minecraft"
 		type="required"
-		versionRange="[1.21.1,1.21.2)"
+		versionRange="[26.3,26.4)"
 		ordering="NONE"
 		side="BOTH"
 		
@@ -39,7 +42,7 @@ showAsResourcePack=false
 	[[dependencies.expindustry]] #optional
 	    modId="neoforge"
 	    type="required"
-		versionRange="[21.1,)"
+		versionRange="[26.3,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.expindustry]] #optional
@@ -51,7 +54,7 @@ showAsResourcePack=false
 	[[dependencies.expindustry]]
 	    modId="minecraft"
 	    type="required"
-		versionRange="[1.21.1,1.21.2)"
+		versionRange="[26.3,26.4)"
 	    ordering="NONE"
 	    side="BOTH"
 		
@@ -66,7 +69,7 @@ showAsResourcePack=false
 	[[dependencies.harderores]] #optional
 	    modId="neoforge"
 	    type="required"
-		versionRange="[21.1,)"
+		versionRange="[26.3,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderores]] #optional
@@ -78,7 +81,7 @@ showAsResourcePack=false
 	[[dependencies.harderores]]
 	    modId="minecraft"
 	    type="required"
-		versionRange="[1.21.1,1.21.2)"
+		versionRange="[26.3,26.4)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderores]]
@@ -98,7 +101,7 @@ showAsResourcePack=false
 	[[dependencies.harderfarming]] #optional
 	    modId="neoforge"
 	    type="required"
-		versionRange="[21.1,)"
+		versionRange="[26.3,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.harderfarming]] #optional
@@ -110,7 +113,7 @@ showAsResourcePack=false
 	[[dependencies.harderfarming]]
 	    modId="minecraft"
 	    type="required"
-		versionRange="[1.21.1,1.21.2)"
+		versionRange="[26.3,26.4)"
 	    ordering="NONE"
 	    side="BOTH"
 
@@ -123,7 +126,7 @@ showAsResourcePack=false
 	[[dependencies.oreflowers]] #optional
 	    modId="neoforge"
 	    type="required"
-		versionRange="[21.1,)"
+		versionRange="[26.3,)"
 	    ordering="NONE"
 	    side="BOTH"
 	[[dependencies.oreflowers]] #optional
@@ -135,6 +138,6 @@ showAsResourcePack=false
 	[[dependencies.oreflowers]]
 	    modId="minecraft"
 	    type="required"
-		versionRange="[1.21.1,1.21.2)"
+		versionRange="[26.3,26.4)"
 	    ordering="NONE"
 	    side="BOTH"

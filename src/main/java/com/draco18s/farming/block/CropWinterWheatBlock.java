@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -17,15 +16,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.data.worldgen.TerrainProvider;
 import net.minecraft.util.CubicSpline;*/
-import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Coordinate;
-import net.minecraft.world.level.levelgen.DensityFunctions.Spline.Point;
-import net.minecraft.world.level.levelgen.DensityFunctions;
-import net.minecraft.world.level.levelgen.NoiseRouterData;
 
 public class CropWinterWheatBlock extends CropBlock {
 
-	public CropWinterWheatBlock() {
-		super(Properties.ofFullCopy(Blocks.WHEAT));
+	/** Made from a copy of wheat's properties (see the registration). */
+	public CropWinterWheatBlock(Properties props) {
+		super(props);
 	}
 
 	protected ItemLike getBaseSeedId() {

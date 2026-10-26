@@ -1,8 +1,8 @@
 package com.draco18s.harderores.network;
 
-
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
@@ -24,7 +24,7 @@ public final class PacketHandler
 
 	public static void sendNonLocal(IMessage msg, EntityPlayerMP player)
 	{
-		if (player.server.isDedicatedServer() || !player.getName().equals(player.server.getServerOwner()))
+		if (player.level().getServer().isDedicatedServer() || !player.getName().equals(player.level().getServer().getServerOwner()))
 		{
 			HANDLER.sendTo(msg, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
 		}
@@ -36,7 +36,7 @@ public final class PacketHandler
 	 */
 	public static void sendToServer(CustomPacketPayload msg)
 	{
-		PacketDistributor.sendToServer(msg);
+		ClientPacketDistributor.sendToServer(msg);
 	}
 	
 	/**

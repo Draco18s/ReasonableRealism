@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:block/cross",
-  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "oreflowers:item/chandelier_tree"
+    "cross": "oreflowers:block/chandelier_tree"
   }
 }

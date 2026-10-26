@@ -1,50 +1,43 @@
 package com.draco18s.hardlib.api.internal.inventory;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * ItemStackHandler wrapper that allows for all the usual inventory item manipulation except
+ * Item handler wrapper that allows for all the usual inventory item manipulation except
  * that when exposed externally (GUI, hopper, etc.), items may not be inserted, only extracted.
+ * As an IndexModifier it still sets the hidden handler's contents directly (for menu slots).
  * @author Draco18s
  *
  */
-public class OutputItemStackHandler extends ItemStackHandler {
-	private final ItemStackHandler internalSlot;
+public class OutputItemStackHandler extends DelegatingResourceHandler<ItemResource> implements IndexModifier<ItemResource> {
+	private final ItemStacksResourceHandler internalSlot;
 
-	public OutputItemStackHandler(ItemStackHandler hidden) {
-		super();
+	public OutputItemStackHandler(ItemStacksResourceHandler hidden) {
+		super(hidden);
 		internalSlot = hidden;
 	}
 
 	@Override
-	public void setSize(int size) {
-		stacks = NonNullList.<ItemStack>withSize(size, ItemStack.EMPTY);
+	public void set(int index, ItemResource resource, int amount) {
+		internalSlot.set(index, resource, amount);
 	}
 
 	@Override
-	public void setStackInSlot(int slot, ItemStack stack) {
-		internalSlot.setStackInSlot(slot, stack);
+	public boolean isValid(int index, ItemResource resource) {
+		return false;
 	}
 
 	@Override
-	public int getSlots() {
-		return internalSlot.getSlots();
+	public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+		return 0;
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
-		return internalSlot.getStackInSlot(slot);
-	}
-
-	@Override
-	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-		return stack;
-	}
-
-	@Override
-	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		return internalSlot.extractItem(slot, amount, simulate);
+	public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+		return 0;
 	}
 }

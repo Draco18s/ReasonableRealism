@@ -15,12 +15,12 @@ import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 import com.draco18s.hardlib.math.MathUtils;
+import com.draco18s.hardlib.util.Tuple;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -94,7 +94,7 @@ public class FlowerDataHandler implements IFlowerData {
 	private static boolean canWrite(LevelAccessor world, BlockPos pos) {
 		if(world instanceof WorldGenRegion region) {
 			ChunkPos center = region.getCenter();
-			return Math.abs(SectionPos.blockToSectionCoord(pos.getX()) - center.x) <= 1 && Math.abs(SectionPos.blockToSectionCoord(pos.getZ()) - center.z) <= 1;
+			return Math.abs(SectionPos.blockToSectionCoord(pos.getX()) - center.x()) <= 1 && Math.abs(SectionPos.blockToSectionCoord(pos.getZ()) - center.z()) <= 1;
 		}
 		return world.hasChunkAt(pos);
 	}

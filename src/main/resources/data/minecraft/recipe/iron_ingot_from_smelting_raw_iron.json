@@ -1,13 +1,11 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:false"
+      "type": "neoforge:never"
     }
   ],
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "minecraft:raw_iron"
-  },
+  "ingredient": "minecraft:raw_iron",
   "result": {
     "id": "minecraft:iron_ingot"
   },

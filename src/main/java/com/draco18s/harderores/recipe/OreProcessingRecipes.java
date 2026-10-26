@@ -1,11 +1,10 @@
 package com.draco18s.harderores.recipe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -17,13 +16,14 @@ import com.draco18s.harderores.HarderOres;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.google.common.collect.Maps;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Holder;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -35,23 +35,37 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	//private static Map<Supplier<TagKey<Item>>, ItemStack> millRecipes2 = Maps.<Supplier<TagKey<Item>>, ItemStack>newHashMap();
 	//private static Map<ItemStack, ItemStack> siftRecipes = Maps.<ItemStack, ItemStack>newHashMap();
 	//private static Map<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack> siftRecipes2 = Maps.<Tuple<Supplier<TagKey<Item>>, Integer>, ItemStack>newHashMap();
-	private List<SiftingRecipe> siftRecipes;
-	private List<GrindingRecipe> millRecipes;
+	// Recipes are only on the server since 1.21.2; a client of a remote server finds none (an integrated
+	// server's are shared with its client).
+	private List<SiftingRecipe> siftRecipes = List.of();
+	private List<GrindingRecipe> millRecipes = List.of();
 	private static Map<ItemStack, ItemStack> packingRecipes = Maps.<ItemStack, ItemStack>newLinkedHashMap();
 	private static List<Block> sluiceRecipes = new ArrayList<Block>();
 	public static OreProcessingRecipes SERVER_INSTANCE;
-	private RegistryAccess registryAccess;
 
 	public OreProcessingRecipes() {
 		SERVER_INSTANCE = this;
 	}
 
 	public void update(RecipeManager man) {
-		siftRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.SIFTING).stream().map(RecipeHolder::value).toList();
-		millRecipes = man.getAllRecipesFor(HarderOres.RecipeTypes.GRINDING).stream().map(RecipeHolder::value).toList();
+		siftRecipes = man.recipeMap().byType(HarderOres.RecipeTypes.SIFTING).stream().map(RecipeHolder::value).toList();
+		millRecipes = man.recipeMap().byType(HarderOres.RecipeTypes.GRINDING).stream().map(RecipeHolder::value).toList();
 
-		registryAccess = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-		updatePackingRecipes(man);
+		// The packing table holds item stacks, which can't be made until items have their components back
+		// (after the data load that calls this), so it's built when first needed.
+		synchronized(this) {
+			pendingPacking = man;
+		}
+	}
+
+	/** Recipes whose packing table hasn't been built yet. */
+	private RecipeManager pendingPacking;
+
+	private synchronized void ensurePackingRecipes() {
+		if(pendingPacking != null) {
+			updatePackingRecipes(pendingPacking);
+			pendingPacking = null;
+		}
 	}
 
 	/**
@@ -61,19 +75,20 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	 */
 	private void updatePackingRecipes(RecipeManager man) {
 		packingRecipes.clear();
-		for(RecipeHolder<PackingRecipe> holder : man.getAllRecipesFor(HarderOres.RecipeTypes.PACKING)) {
+		for(RecipeHolder<PackingRecipe> holder : man.recipeMap().byType(HarderOres.RecipeTypes.PACKING)) {
 			PackingRecipe recipe = holder.value();
-			ItemStack result = recipe.getResultItem(registryAccess);
-			for(ItemStack in : recipe.getIngredients().get(0).getItems()) {
-				packingRecipes.putIfAbsent(in.copyWithCount(recipe.getIngredientQuantity()), result);
-			}
+			ItemStack result = recipe.getResultItem();
+			recipe.getIngredient().items().forEach(in -> packingRecipes.putIfAbsent(new ItemStack(in, recipe.getIngredientQuantity()), result));
 		}
-		for(RecipeHolder<CraftingRecipe> holder : man.getAllRecipesFor(RecipeType.CRAFTING)) {
+		for(RecipeHolder<CraftingRecipe> holder : man.recipeMap().byType(RecipeType.CRAFTING)) {
 			CraftingRecipe recipe = holder.value();
-			List<Ingredient> ingredients = recipe.getIngredients().stream().filter(i -> !i.isEmpty()).toList();
+			// The ingredients of the filled slots; a recipe with empty slots has more slots than ingredients.
+			PlacementInfo placement = recipe.placementInfo();
+			List<Ingredient> ingredients = placement.ingredients();
 			int size = ingredients.size();
-			if(size != 4 && size != 9 || size != recipe.getIngredients().size()) continue;
-			ItemStack result = recipe.getResultItem(registryAccess);
+			if(size != 4 && size != 9 || size != placement.slotsToIngredientIndex().size()) continue;
+			// Crafting results are only reached through the recipe's display now.
+			ItemStack result = recipe.display().stream().findFirst().map(display -> display.result().resolveForFirstStack(NO_CONTEXT)).orElse(ItemStack.EMPTY);
 			if(result.isEmpty() || result.getCount() >= size) continue;
 			if(result.is(Items.OAK_TRAPDOOR) || result.is(Items.IRON_TRAPDOOR) || result.is(Items.CRAFTING_TABLE)) continue;
 			Set<Item> items = itemsOf(ingredients.get(0));
@@ -87,13 +102,16 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	private static Set<Item> itemsOf(Ingredient ingredient) {
-		return Arrays.stream(ingredient.getItems()).map(ItemStack::getItem).collect(Collectors.toSet());
+		return ingredient.items().map(Holder::value).collect(Collectors.toSet());
 	}
+
+	/** Resolving a crafting result needs no level. */
+	private static final ContextMap NO_CONTEXT = ContextMap.EMPTY;
 
 	@Override
 	public int getSiftAmount(ItemStack stack) {
 		Optional<SiftingRecipe> recip = siftRecipes.stream().filter(
-				rec -> rec.getIngredients().parallelStream().anyMatch(ing -> ing.test(stack))
+				rec -> rec.getIngredient().test(stack)
 				).findAny();
 		if(recip.isEmpty()) return 8;
 		return recip.get().getIngredientQuantity();
@@ -103,12 +121,12 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	@Nonnull
 	public ItemStack getSiftResult(ItemStack stack, boolean checkStackSize) {
 		Optional<SiftingRecipe> recip = siftRecipes.stream().filter(
-				rec -> rec.getIngredients().stream().anyMatch(ing -> ing.test(stack))
+				rec -> rec.getIngredient().test(stack)
 				).findAny();
 		if(recip.isEmpty() || (checkStackSize && stack.getCount() < recip.get().getIngredientQuantity()))
 			return ItemStack.EMPTY;
 
-		return  recip.get().getResultItem(registryAccess).copy();
+		return  recip.get().getResultItem();
 	}
 
 	@Override
@@ -116,14 +134,12 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	public ItemStack getMillResult(ItemStack stack) {
 		Optional<GrindingRecipe> recip = millRecipes.stream().filter(
 				rec -> {
-					return rec.getIngredients().stream().anyMatch(ing -> {
-						return ing.test(stack);
-					});
+					return rec.getIngredient().test(stack);
 				}).findAny();
 		if(recip.isEmpty())
 			return ItemStack.EMPTY;
 
-		return  recip.get().getResultItem(registryAccess).copy();
+		return  recip.get().getResultItem();
 	}
 
 	private boolean compareItemStacks(ItemStack stack1, ItemStack stack2) {
@@ -170,6 +186,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	@Override
 	@Nonnull
 	public ItemStack getPressurePackResult(ItemStack stack, boolean checkStackSize) {
+		ensurePackingRecipes();
 		for (Entry<ItemStack, ItemStack> entry : packingRecipes.entrySet()) {
 			if (this.compareItemStacks(stack, entry.getKey(), checkStackSize)) {
 				return (ItemStack)entry.getValue();
@@ -179,6 +196,7 @@ public class OreProcessingRecipes implements IHardOreProcessing {
 	}
 
 	public int getPressurePackAmount(ItemStack stack) {
+		ensurePackingRecipes();
 		Iterator<Entry<ItemStack, ItemStack>> iterator = packingRecipes.entrySet().iterator();
 		Entry<ItemStack, ItemStack> entry;
 

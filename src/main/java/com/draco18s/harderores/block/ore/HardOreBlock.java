@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -20,7 +21,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -28,9 +28,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 public class HardOreBlock extends Block implements IBlockMultiBreak {
 	private final int metaChange;
@@ -49,8 +49,8 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-		return setNbtOnStack(super.getCloneItemStack(state, target, level, pos, player), BlockProperties.ORE_DENSITY, state);
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
+		return setNbtOnStack(super.getCloneItemStack(level, pos, state, includeData, player), BlockProperties.ORE_DENSITY, state);
 	}
 
 	/** Sets the state the item places (its block_state component, which was the BlockStateTag NBT). */
@@ -71,17 +71,17 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 	}
 
 	@Override
-	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+	public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
 		// Silk touch takes the whole block, density and all (the loot table copies the density onto the item).
 		if((player.isCreative() && !player.isCrouching()) || HardLib.getEnchantmentLevel(level.registryAccess(), Enchantments.SILK_TOUCH, player.getMainHandItem()) > 0) {
-			return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+			return super.onDestroyedByPlayer(state, level, pos, player, toolStack, willHarvest, fluid);
 		}
 		int val = Math.max(state.getValue(BlockProperties.ORE_DENSITY) - metaChange, 0);
         if(val > 0) {
-        	level.setBlock(pos, state.setValue(BlockProperties.ORE_DENSITY, val), level.isClientSide ? 11 : 3);
+        	level.setBlock(pos, state.setValue(BlockProperties.ORE_DENSITY, val), level.isClientSide() ? 11 : 3);
         	return true;
         }
-		return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+		return super.onDestroyedByPlayer(state, level, pos, player, toolStack, willHarvest, fluid);
 	}
 
 	/** Creative tool: right-click with an empty hand to lower the density by 4 (by 1 while sneaking), wrapping 1 to 16. */
@@ -91,17 +91,17 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 		if(!player.getAbilities().instabuild) {
 			return InteractionResult.PASS;
 		}
-		if(!world.isClientSide) {
+		if(!world.isClientSide()) {
 			int m = state.getValue(BlockProperties.ORE_DENSITY) - (player.isShiftKeyDown() ? 1 : 4);
 			if(m < 1) m += 16;
 			world.setBlock(pos, state.setValue(BlockProperties.ORE_DENSITY, m), 3);
 		}
-		return InteractionResult.sidedSuccess(world.isClientSide);
+		return InteractionResult.SUCCESS;
 	}
 
 	/** Like Block.playerDestroy, but the drops come out of an open face: the block is usually still there. */
 	@Override
-	public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity be, ItemStack tool) {
+	public void playerDestroy(ServerLevel world, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity be, ItemStack tool) {
 		player.awardStat(Stats.BLOCK_MINED.get(this));
 		player.causeFoodExhaustion(0.005F);
 		if(world instanceof ServerLevel level) {
@@ -114,7 +114,7 @@ public class HardOreBlock extends Block implements IBlockMultiBreak {
 
 	/** Drops at the block if it's gone, else just outside its first open face (straight down if it has none). */
 	public static void spawnOnOpenFace(Level world, BlockPos pos, ItemStack stack) {
-		if(world.isClientSide || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) || world.restoringBlockSnapshots) return;
+		if(!(world instanceof ServerLevel level) || stack.isEmpty() || !level.getGameRules().get(GameRules.BLOCK_DROPS) || world.restoringBlockSnapshots) return;
 		RandomSource rand = world.getRandom();
 		double d0 = rand.nextFloat() * 0.5F + 0.25D;
 		double d1 = rand.nextFloat() * 0.5F + 0.25D;

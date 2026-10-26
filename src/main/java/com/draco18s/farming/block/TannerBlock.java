@@ -7,12 +7,12 @@ import com.draco18s.farming.entity.TannerBlockEntity;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.farming.LeatherStatus;
 import com.draco18s.hardlib.api.internal.block.ModEntityBlock;
-import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,8 +32,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Tanning rack: hang a rawhide on either side to cure it into leather, and salt the top to speed it up.
@@ -43,8 +44,8 @@ public class TannerBlock extends ModEntityBlock {
 	public static final VoxelShape TANNER_AABB_SOUTH = box(0, 0, 3.2, 16, 16, 12.8);
 	public static final VoxelShape TANNER_AABB_WEST = box(3.2, 0, 0, 12.8, 16, 16);
 
-	public TannerBlock() {
-		super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 0).sound(SoundType.WOOD).noOcclusion());
+	public TannerBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2, 0).sound(SoundType.WOOD).noOcclusion());
 		registerDefaultState(this.stateDefinition.any()
 				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 				.setValue(BlockProperties.LEFT_LEATHER_STATE, LeatherStatus.NONE)
@@ -83,39 +84,36 @@ public class TannerBlock extends ModEntityBlock {
 	 */
 	@Override
 	@Deprecated
-	protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if(world.isClientSide) return ItemInteractionResult.SUCCESS;
+	protected InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if(world.isClientSide()) return InteractionResult.SUCCESS;
 		BlockEntity be = world.getBlockEntity(pos);
-		if(!(be instanceof TannerBlockEntity tanner)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		IItemHandler inven = tanner.getItemHandler(hit.getDirection());
-		if(inven != null && inven.getSlots() > 0) {
-			if(inven.getStackInSlot(0).isEmpty() && !heldItem.isEmpty()) {
-				ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
-				heldItem.setCount(remain.getCount());
+		if(!(be instanceof TannerBlockEntity tanner)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		ResourceHandler<ItemResource> inven = tanner.getItemHandler(hit.getDirection());
+		if(inven != null && inven.size() > 0) {
+			if(inven.getResource(0).isEmpty() && !heldItem.isEmpty()) {
+				try (Transaction tx = Transaction.openRoot()) {
+					heldItem.shrink(inven.insert(0, ItemResource.of(heldItem), heldItem.getCount(), tx));
+					tx.commit();
+				}
 			}
 			else if((heldItem.isEmpty() || heldItem.getItem() == Items.LEATHER) && hit.getDirection() != Direction.UP) {
-				ItemStack item = inven.extractItem(0, 1, false);
+				ItemResource resource = inven.getResource(0);
+				ItemStack item;
+				try (Transaction tx = Transaction.openRoot()) {
+					item = resource.isEmpty() ? ItemStack.EMPTY : resource.toStack(inven.extract(0, resource, 1, tx));
+					tx.commit();
+				}
 				if(!player.getInventory().add(item)) {
-					player.drop(item, false);
+					player.drop(item, false, Prediction.SERVER_ONLY);
 				}
 			}
 		}
 		tanner.setChanged();
 		tanner.updateBlockState();
-		return ItemInteractionResult.CONSUME;
+		return InteractionResult.CONSUME;
 	}
 
-	@Override
-	@Deprecated
-	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() != newState.getBlock()) {
-			BlockEntity blockentity = world.getBlockEntity(pos);
-			if(blockentity instanceof TannerBlockEntity tanner) {
-				InventoryUtils.dropItemHandlerContents(tanner.getItemHandler(null), world, pos);
-			}
-			super.onRemove(state, world, pos, newState, isMoving);
-		}
-	}
+	// Its contents drop from TannerBlockEntity.preRemoveSideEffects.
 
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -125,6 +123,6 @@ public class TannerBlock extends ModEntityBlock {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-		return level.isClientSide ? null : createTickerHelper(type, HarderFarming.ModBlockEntities.tanner, TannerBlockEntity::tick);
+		return level.isClientSide() ? null : createTickerHelper(type, HarderFarming.ModBlockEntities.tanner, TannerBlockEntity::tick);
 	}
 }

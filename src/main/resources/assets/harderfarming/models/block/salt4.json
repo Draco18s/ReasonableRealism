@@ -2,6 +2,7 @@
 	"render_type": "minecraft:cutout",
 	"__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
 	"textures": {
+		"particle": "harderfarming:block/saltblock",
 		"0": "harderfarming:block/saltblock"
 	},
 	"elements": [

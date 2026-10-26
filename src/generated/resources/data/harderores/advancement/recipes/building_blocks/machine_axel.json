@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:machine_axel"
+        "recipes": "harderores:machine_axel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

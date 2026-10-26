@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:iron_nugget_from_smelting_raw_iron"
+        "recipes": "harderores:iron_nugget_from_smelting_raw_iron"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

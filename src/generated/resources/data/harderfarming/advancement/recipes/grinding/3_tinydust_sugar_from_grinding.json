@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderfarming:3_tinydust_sugar_from_grinding"
+        "recipes": "harderfarming:3_tinydust_sugar_from_grinding"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

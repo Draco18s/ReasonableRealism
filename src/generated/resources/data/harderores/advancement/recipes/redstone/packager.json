@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:packager"
+        "recipes": "harderores:packager"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

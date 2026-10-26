@@ -1,6 +1,5 @@
 package com.draco18s.farming.entity;
 
-import java.util.ArrayList;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -10,20 +9,22 @@ import com.draco18s.farming.inventory.SaltSlotHandler;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.blockproperties.farming.LeatherStatus;
 import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
+import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 /**
  * Cures a rawhide on each side into leather in 2400 ticks, or 1200 while salted. One salt lasts 4800 ticks
@@ -33,11 +34,11 @@ public class TannerBlockEntity extends ModBlockEntity {
 	private static final int CURE_TIME = 2400;
 	private static final int SALT_TIME = 4800;
 
-	protected ItemStackHandler leftSlot = new LeatherSlotHandler();
-	protected ItemStackHandler rightSlot = new LeatherSlotHandler();
-	protected ItemStackHandler saltSlot = new SaltSlotHandler();
-	private final IItemHandler outputSlots = new CombinedInvWrapper(leftSlot, rightSlot);
-	private final IItemHandler everything = new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);
+	protected ItemStacksResourceHandler leftSlot = new LeatherSlotHandler();
+	protected ItemStacksResourceHandler rightSlot = new LeatherSlotHandler();
+	protected ItemStacksResourceHandler saltSlot = new SaltSlotHandler();
+	private final ResourceHandler<ItemResource> outputSlots = new CombinedResourceHandler<>(leftSlot, rightSlot);
+	private final ResourceHandler<ItemResource> everything = new CombinedResourceHandler<>(leftSlot, rightSlot, saltSlot);
 	protected int[] tanningTime = new int[]{0,0};
 	protected int saltTime;
 
@@ -58,14 +59,14 @@ public class TannerBlockEntity extends ModBlockEntity {
 		}
 	}
 
-	private boolean tickSlot(int i, ItemStackHandler slot) {
-		if(slot.getStackInSlot(0).getItem() != HarderFarming.ModItems.raw_leather) {
+	private boolean tickSlot(int i, ItemStacksResourceHandler slot) {
+		if(!slot.getResource(0).is(HarderFarming.ModItems.raw_leather)) {
 			tanningTime[i] = 0;
 			return false;
 		}
 		tanningTime[i] += useSalt() ? 2 : 1;
 		if(tanningTime[i] >= CURE_TIME) {
-			slot.setStackInSlot(0, new ItemStack(Items.LEATHER));
+			slot.set(0, ItemResource.of(Items.LEATHER), 1);
 			tanningTime[i] = 0;
 			return true;
 		}
@@ -76,13 +77,22 @@ public class TannerBlockEntity extends ModBlockEntity {
 		if(saltTime > 0) {
 			return true;
 		}
-		if(!saltSlot.getStackInSlot(0).isEmpty()) {
-			saltSlot.extractItem(0, 1, false);
+		if(!saltSlot.getResource(0).isEmpty()) {
+			try (Transaction tx = Transaction.openRoot()) {
+				saltSlot.extract(0, saltSlot.getResource(0), 1, tx);
+				tx.commit();
+			}
 			saltTime = SALT_TIME - 1;
 			updateBlockState();
 			return true;
 		}
 		return false;
+	}
+
+	/** The block is being removed: drop the hides and salt. */
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+		InventoryUtils.dropItemHandlerContents(everything, level, pos);
 	}
 
 	/** Shows the hides and the salt on the rack's model. */
@@ -97,18 +107,18 @@ public class TannerBlockEntity extends ModBlockEntity {
 		}
 	}
 
-	private static LeatherStatus getLeather(ItemStackHandler slot) {
-		ItemStack stack = slot.getStackInSlot(0);
-		if(stack.getItem() == HarderFarming.ModItems.raw_leather) return LeatherStatus.RAW;
-		if(stack.getItem() == Items.LEATHER) return LeatherStatus.CURED;
+	private static LeatherStatus getLeather(ItemStacksResourceHandler slot) {
+		ItemResource item = slot.getResource(0);
+		if(item.is(HarderFarming.ModItems.raw_leather)) return LeatherStatus.RAW;
+		if(item.is(Items.LEATHER)) return LeatherStatus.CURED;
 		return LeatherStatus.NONE;
 	}
 
 	public int getSalt() {
-		if(saltSlot.getStackInSlot(0).isEmpty()) {
+		if(saltSlot.getResource(0).isEmpty()) {
 			return (saltTime > 0) ? 1 : 0;
 		}
-		int size = saltSlot.getStackInSlot(0).getCount();
+		int size = saltSlot.getAmountAsInt(0);
 		if(size <= 2) return 2;
 		if(size <= 16) return 3;
 		if(size <= 32) return 4;
@@ -121,7 +131,7 @@ public class TannerBlockEntity extends ModBlockEntity {
 	 * With no side (or once the block is gone), everything.
 	 */
 	@Nullable
-	public IItemHandler getItemHandler(@Nullable Direction side) {
+	public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction side) {
 		if(side == null || level == null || level.getBlockState(worldPosition).getBlock() != getBlockState().getBlock()) {
 			return everything;
 		}
@@ -135,23 +145,23 @@ public class TannerBlockEntity extends ModBlockEntity {
 
 
 	@Override
-	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
-		tag.put("harderfarming:leftSlot", leftSlot.serializeNBT(registries));
-		tag.put("harderfarming:rightSlot", rightSlot.serializeNBT(registries));
-		tag.put("harderfarming:saltSlot", saltSlot.serializeNBT(registries));
-		tag.putIntArray("harderfarming:tanningTime", tanningTime);
-		tag.putInt("harderfarming:saltTime", saltTime);
+	protected void modSave(ValueOutput output) {
+		leftSlot.serialize(output.child("harderfarming:leftSlot"));
+		rightSlot.serialize(output.child("harderfarming:rightSlot"));
+		saltSlot.serialize(output.child("harderfarming:saltSlot"));
+		output.putIntArray("harderfarming:tanningTime", tanningTime);
+		output.putInt("harderfarming:saltTime", saltTime);
 	}
 
 	@Override
-	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
-		leftSlot.deserializeNBT(registries, tag.getCompound("harderfarming:leftSlot"));
-		rightSlot.deserializeNBT(registries, tag.getCompound("harderfarming:rightSlot"));
-		saltSlot.deserializeNBT(registries, tag.getCompound("harderfarming:saltSlot"));
-		tanningTime = tag.getIntArray("harderfarming:tanningTime");
+	protected void modLoad(ValueInput input) {
+		leftSlot.deserialize(input.childOrEmpty("harderfarming:leftSlot"));
+		rightSlot.deserialize(input.childOrEmpty("harderfarming:rightSlot"));
+		saltSlot.deserialize(input.childOrEmpty("harderfarming:saltSlot"));
+		tanningTime = input.getIntArray("harderfarming:tanningTime").orElse(new int[0]);
 		if(tanningTime.length < 2) {
 			tanningTime = new int[]{0,0};
 		}
-		saltTime = tag.getInt("harderfarming:saltTime");
+		saltTime = input.getIntOr("harderfarming:saltTime", 0);
 	}
 }

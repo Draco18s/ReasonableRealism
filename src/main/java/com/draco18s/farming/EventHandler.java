@@ -19,10 +19,10 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 
 @EventBusSubscriber(modid = HarderFarming.MODID)
@@ -55,7 +55,7 @@ public class EventHandler {
 	 * knows who harvested.)
 	 */
 	@SubscribeEvent
-	public static void onCropHarvest(BlockEvent.BreakEvent event) {
+	public static void onCropHarvest(BreakBlockEvent event) {
 		if(!(event.getPlayer() instanceof ServerPlayer player) || HarderFarming.ModTriggers.crop_rotation == null) return;
 		Block crop = event.getState().getBlock();
 		if(!(crop instanceof CropBlock) || crop instanceof CropWeedsBlock) return;

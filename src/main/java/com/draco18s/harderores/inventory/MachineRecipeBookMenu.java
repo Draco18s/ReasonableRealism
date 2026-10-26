@@ -4,13 +4,13 @@ import javax.annotation.Nonnull;
 
 import com.draco18s.harderores.recipe.MachineRecipe;
 
-import net.minecraft.network.protocol.game.ClientboundPlaceGhostRecipePacket;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
@@ -18,14 +18,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
 
 /**
  * A machine menu with a recipe book (the sifter, the packager): the player's inventory, then two input slots and an
  * output. (The player's slots come first, like CommonContainerMenu's, so the recipe book's placement is done here
  * rather than by vanilla's, which expects the recipe's slots to be first.)
  */
-public abstract class MachineRecipeBookMenu<R extends MachineRecipe> extends RecipeBookMenu<SingleRecipeInput, R> {
+public abstract class MachineRecipeBookMenu<R extends MachineRecipe> extends RecipeBookMenu {
 	/** The menu's slots: the player's 36, then these. */
 	public static final int FIRST_INPUT = 36, INPUTS = 2, OUTPUT = FIRST_INPUT + INPUTS;
 
@@ -98,21 +97,23 @@ public abstract class MachineRecipeBookMenu<R extends MachineRecipe> extends Rec
 	}
 
 	/**
-	 * A recipe clicked in the book: what's in the inputs goes back to the player, then the ingredient comes out of
-	 * their inventory, one job's worth (a stack's worth with shift). With none of it, the book shows a ghost instead.
+	 * A recipe clicked in the book (the server has checked the player knows it): what's in the inputs goes back to
+	 * the player, then the ingredient comes out of their inventory, one job's worth (a stack's worth with shift).
+	 * With none of it, the book shows a ghost instead.
 	 */
 	@Override
-	public void handlePlacement(boolean placeAll, RecipeHolder<?> holder, ServerPlayer player) {
-		if(!(holder.value() instanceof MachineRecipe recipe) || recipe.getType() != recipeType || !player.getRecipeBook().contains(holder)) return;
-		Inventory inventory = player.getInventory();
+	public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean allowDroppingItemsToClear, RecipeHolder<?> holder, ServerLevel level, Inventory inventory) {
+		if(!(holder.value() instanceof MachineRecipe recipe) || recipe.getType() != recipeType) return RecipeBookMenu.PostPlaceAction.NOTHING;
 		for(int i = FIRST_INPUT; i < OUTPUT; i++) {
 			ItemStack stack = getSlot(i).getItem();
 			if(!stack.isEmpty()) {
 				getSlot(i).set(ItemStack.EMPTY);
-				inventory.placeItemBackInInventory(stack);
+				// No slot packet (as vanilla's recipe placement): the ingredient may come straight back out of the
+				// same slot, and broadcastChanges below sends what's there in the end.
+				inventory.placeItemBackInInventory(stack, false, Prediction.SERVER_ONLY);
 			}
 		}
-		Ingredient ingredient = recipe.getIngredients().get(0);
+		Ingredient ingredient = recipe.getIngredient();
 		int wanted = placeAll ? Integer.MAX_VALUE : recipe.getIngredientQuantity();
 		for(int i = 0; i < FIRST_INPUT && wanted > 0; i++) {
 			ItemStack stack = getSlot(i).getItem();
@@ -129,56 +130,21 @@ public abstract class MachineRecipeBookMenu<R extends MachineRecipe> extends Rec
 			}
 			getSlot(i).setChanged();
 		}
-		if(getSlot(FIRST_INPUT).getItem().isEmpty() && getSlot(FIRST_INPUT + 1).getItem().isEmpty()) {
-			player.connection.send(new ClientboundPlaceGhostRecipePacket(containerId, holder));
-		}
 		broadcastChanges();
+		if(getSlot(FIRST_INPUT).getItem().isEmpty() && getSlot(FIRST_INPUT + 1).getItem().isEmpty()) {
+			return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+		}
+		return RecipeBookMenu.PostPlaceAction.NOTHING;
 	}
 
 	@Override
-	public void fillCraftSlotsStackedContents(StackedContents contents) {
+	public void fillCraftSlotsStackedContents(StackedItemContents contents) {
 		for(int i = FIRST_INPUT; i < OUTPUT; i++) {
 			contents.accountSimpleStack(getSlot(i).getItem());
 		}
 	}
 
-	@Override
-	public void clearCraftingContent() {
-		for(int i = FIRST_INPUT; i < OUTPUT; i++) {
-			getSlot(i).set(ItemStack.EMPTY);
-		}
-	}
-
-	@Override
-	public boolean recipeMatches(RecipeHolder<R> recipe) {
-		for(int i = FIRST_INPUT; i < OUTPUT; i++) {
-			if(recipe.value().getIngredients().get(0).test(getSlot(i).getItem())) return true;
-		}
-		return false;
-	}
-
-	@Override
-	public int getResultSlotIndex() {
-		return OUTPUT;
-	}
-
-	@Override
-	public int getGridWidth() {
-		return 1;
-	}
-
-	@Override
-	public int getGridHeight() {
-		return 1;
-	}
-
-	@Override
-	public int getSize() {
-		return INPUTS + 1;
-	}
-
-	@Override
-	public boolean shouldMoveToInventory(int slot) {
-		return slot != OUTPUT;
+	public Slot getResultSlot() {
+		return getSlot(OUTPUT);
 	}
 }

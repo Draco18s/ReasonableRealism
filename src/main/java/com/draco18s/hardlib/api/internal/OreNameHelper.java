@@ -5,8 +5,7 @@ import com.draco18s.hardlib.HardLib;
 
 import org.apache.logging.log4j.util.TriConsumer;
 
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.ModelProvider;
+import net.minecraft.resources.Identifier;
 
 public class OreNameHelper {
 	private static String[] oreNames = {
@@ -20,7 +19,7 @@ public class OreNameHelper {
 			"deepslate",
 	};
 	
-	public static void DoForTextureNames(TriConsumer<ResourceLocation,ResourceLocation,ResourceLocation> callback) {
+	public static void DoForTextureNames(TriConsumer<Identifier,Identifier,Identifier> callback) {
 		for(String ore : oreNames) {
 			for(String stone : stoneNames) {
 				String stoneName = stone;
@@ -30,15 +29,15 @@ public class OreNameHelper {
 					stone_ = "";
 				}
 				
-				ResourceLocation vanillaStoneTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stoneName);
-				ResourceLocation vanillaOriginalOreTexture = mcRL(ModelProvider.BLOCK_FOLDER + "/" + stone_+ore+"_ore");
-				ResourceLocation harderOreBlockName = HarderOres.getRL("ore_hard"+stone_+ore);
+				Identifier vanillaStoneTexture = mcRL("block/" + stoneName);
+				Identifier vanillaOriginalOreTexture = mcRL("block/" + stone_+ore+"_ore");
+				Identifier harderOreBlockName = HarderOres.getRL("ore_hard"+stone_+ore);
 				callback.accept(vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName);
 			}
 		}
 	}
 
-	private static ResourceLocation mcRL(String path) {
+	private static Identifier mcRL(String path) {
 		return HardLib.getRL("minecraft", path);
 	}
 }

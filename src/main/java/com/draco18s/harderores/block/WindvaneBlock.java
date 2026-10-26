@@ -6,7 +6,9 @@ import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -29,8 +31,8 @@ public class WindvaneBlock extends Block {
 	public static final VoxelShape UP = box(0.3D*16, 0.0D*16, 0.4D*16, 1.0D*16, 1.0D*16, 0.6D*16);
 	public static final VoxelShape DOWN = box(0.0D*16, 0.0D*16, 0.4D*16, 0.7D*16, 1.0D*16, 0.6D*16);
 
-	public WindvaneBlock() {
-		super(Properties.of().mapColor(MapColor.WOOL).ignitedByLava());
+	public WindvaneBlock(Properties props) {
+		super(props.mapColor(MapColor.WOOL).ignitedByLava());
 		registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.FACING, Direction.NORTH));
 	}
 	
@@ -54,7 +56,7 @@ public class WindvaneBlock extends Block {
 				if(shouldConnect(face, state2))
 					dir = face.getOpposite();
 			}
-			state2.handleNeighborChanged(world, pos2, this, pos, false);
+			state2.handleNeighborChanged(world, pos2, this, null, false);
 
 			pos2 = pos.relative(face, 2);
 			state2 = world.getBlockState(pos2);
@@ -62,7 +64,7 @@ public class WindvaneBlock extends Block {
 				if(shouldConnect(face, state2))
 					dir = face.getOpposite();
 			}
-			state2.handleNeighborChanged(world, pos2, this, pos, false);
+			state2.handleNeighborChanged(world, pos2, this, null, false);
 		}
 
 		return defaultBlockState().setValue(BlockStateProperties.FACING, dir);
@@ -78,22 +80,22 @@ public class WindvaneBlock extends Block {
 
 	@Override
 	@Deprecated
-	public void wasExploded(Level worldIn, BlockPos pos, Explosion explosionIn) {
+	public void wasExploded(ServerLevel worldIn, BlockPos pos, Explosion explosionIn) {
 		breakBlock(worldIn, pos, worldIn.getBlockState(pos));
 	}
 
 	@Override
-	public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid)
+	public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid)
 	{
 		breakBlock(world, pos, state);
-		return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+		return super.onDestroyedByPlayer(state, world, pos, player, toolStack, willHarvest, fluid);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void breakBlock(Level worldIn, BlockPos pos, BlockState state) {
 		for(Direction face : Direction.values()) {
-			worldIn.getBlockState(pos.relative(face, 1)).handleNeighborChanged(worldIn, pos.relative(face,1), this, pos, false);
-			worldIn.getBlockState(pos.relative(face, 2)).handleNeighborChanged(worldIn, pos.relative(face,2), this, pos, false);
+			worldIn.getBlockState(pos.relative(face, 1)).handleNeighborChanged(worldIn, pos.relative(face,1), this, null, false);
+			worldIn.getBlockState(pos.relative(face, 2)).handleNeighborChanged(worldIn, pos.relative(face,2), this, null, false);
 		}
 	}
 	

@@ -11,24 +11,6 @@
       "name": "HARDERORES_PACKAGER",
       "constructor": "()V",
       "parameters": []
-    },
-    {
-      "enum": "net/minecraft/client/RecipeBookCategories",
-      "name": "HARDERORES_SIFTING",
-      "constructor": "(Ljava/util/function/Supplier;)V",
-      "parameters": { "class": "com/draco18s/harderores/client/RecipeBookEnums", "field": "SIFTING" }
-    },
-    {
-      "enum": "net/minecraft/client/RecipeBookCategories",
-      "name": "HARDERORES_GRINDING",
-      "constructor": "(Ljava/util/function/Supplier;)V",
-      "parameters": { "class": "com/draco18s/harderores/client/RecipeBookEnums", "field": "GRINDING" }
-    },
-    {
-      "enum": "net/minecraft/client/RecipeBookCategories",
-      "name": "HARDERORES_PACKING",
-      "constructor": "(Ljava/util/function/Supplier;)V",
-      "parameters": { "class": "com/draco18s/harderores/client/RecipeBookEnums", "field": "PACKING" }
     }
   ]
 }

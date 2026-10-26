@@ -1,13 +1,13 @@
 package com.draco18s.industry.inventory;
 
+import com.draco18s.hardlib.api.internal.inventory.HandlerSlot;
 import com.draco18s.hardlib.api.internal.inventory.MaxSizeItemStackHandler;
 import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class WoodHopperContainerMenu extends ExtHopperContainerMenu {
 
@@ -19,10 +19,10 @@ public class WoodHopperContainerMenu extends ExtHopperContainerMenu {
 		super(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, windowID, size);
 	}
 
-	public WoodHopperContainerMenu(int windowID, Inventory playerInventory, IItemHandler inven, Container container) {
+	public WoodHopperContainerMenu(int windowID, Inventory playerInventory, ItemStacksResourceHandler inven, Container container) {
 		super(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, windowID, playerInventory, container);
 		for(int j = 0; j < 5; ++j) {
-			this.addSlot(new SlotItemHandler(inven, j, 44 + j * 18, 20));
+			this.addSlot(new HandlerSlot(inven, j, 44 + j * 18, 20));
 		}
 	}
 
@@ -45,7 +45,7 @@ public class WoodHopperContainerMenu extends ExtHopperContainerMenu {
 		super(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, windowID, 3);
 
 		for(int j = 0; j < 5; ++j) {
-			this.addSlot(new SlotItemHandler(inven, j, 44 + j * 18, 20));
+			this.addSlot(new HandlerSlot(inven, j, 44 + j * 18, 20));
 		}
 
 		for(int l = 0; l < 3; ++l) {

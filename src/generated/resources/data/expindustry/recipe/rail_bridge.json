@@ -2,19 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "r": {
-      "item": "minecraft:rail"
-    },
-    "s": {
-      "item": "minecraft:scaffolding"
-    }
+    "r": "minecraft:rail",
+    "s": "minecraft:scaffolding"
   },
   "pattern": [
     "r",
     "s"
   ],
   "result": {
-    "count": 1,
     "id": "expindustry:rail_bridge"
   }
 }

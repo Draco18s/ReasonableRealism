@@ -1,10 +1,6 @@
 {
   "type": "harderores:sifting",
   "ingredientQuantity": 8,
-  "ingredients": {
-    "tag": "c:dust/tiny/copper"
-  },
-  "result": {
-    "item": "harderores:largedust_copper"
-  }
+  "ingredients": "#c:dust/tiny/copper",
+  "result": "harderores:largedust_copper"
 }

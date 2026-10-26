@@ -1,13 +1,11 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:false"
+      "type": "neoforge:never"
     }
   ],
   "type": "minecraft:blasting",
-  "ingredient": {
-    "item": "minecraft:raw_gold"
-  },
+  "ingredient": "minecraft:raw_gold",
   "result": {
     "id": "minecraft:gold_ingot"
   },

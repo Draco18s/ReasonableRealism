@@ -1,13 +1,9 @@
 {
   "type": "minecraft:blasting",
-  "category": "misc",
   "cookingtime": 100,
   "experience": 0.08,
-  "ingredient": {
-    "item": "minecraft:raw_iron"
-  },
+  "ingredient": "minecraft:raw_iron",
   "result": {
-    "count": 1,
     "id": "minecraft:iron_nugget"
   }
 }

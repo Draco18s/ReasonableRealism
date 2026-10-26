@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:copper_ingot_from_smelting_largedust_copper"
+        "recipes": "harderores:copper_ingot_from_smelting_largedust_copper"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

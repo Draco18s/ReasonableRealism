@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:diamond_studded_axe"
+        "recipes": "harderores:diamond_studded_axe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,20 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "s": {
-      "tag": "c:rods/wooden"
-    }
+    "P": "#minecraft:planks",
+    "s": "#c:rods/wooden"
   },
   "pattern": [
     "sss",
     "PPP"
   ],
   "result": {
-    "count": 1,
     "id": "harderores:sluice"
   }
 }

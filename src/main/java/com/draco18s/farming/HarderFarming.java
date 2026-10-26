@@ -23,25 +23,25 @@ import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.ObjectHolder;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
+import com.draco18s.hardlib.util.Tuple;
 import com.mojang.serialization.MapCodec;
 
-import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.triggers.PlayerTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CaveVinesBlock;
 import net.minecraft.world.level.block.CocoaBlock;
 import net.minecraft.world.level.block.CropBlock;
@@ -50,9 +50,8 @@ import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.SugarCaneBlock;
 import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -61,37 +60,40 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @Mod(HarderFarming.MODID)
-@EventBusSubscriber(modid = HarderFarming.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = HarderFarming.MODID)
 public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
 		registerCreativeTab();
-		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FarmingConfig.SPEC);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.LOCAL, FarmingConfig.SPEC);
 		HardLibAPI.hardCrops = new CropManager();
 		ModTriggers.crop_rotation = EasyRegistry.registerAdvancementTrigger(getRL("crop_rotation"), new PlayerTrigger());
 		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"), new Item.Properties());
-		DeferredHolder<Block, Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
-		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
-		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
+		DeferredHolder<Block, Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.WHEAT), getRL("crop_winter_wheat"));
+		EasyRegistry.registerItem(props -> new ButcherKnife(ToolMaterial.IRON, props), getRL("butcher_knife"));
+		EasyRegistry.registerItem(props -> new WinterSeedsItem(wheat.get(), props), getRL("winter_wheat_seeds"));
 		DeferredHolder<Block, Block> weeds = EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
-		EasyRegistry.registerItem(() -> new ItemNameBlockItem(weeds.get(), new Item.Properties()), getRL("weed_seeds"));
+		// Seeds are named as items, not after their crop block.
+		EasyRegistry.registerItem(props -> new BlockItem(weeds.get(), props.useItemDescriptionPrefix()), getRL("weed_seeds"));
 		DeferredHolder<Block, Block> tanner = EasyRegistry.registerBlock(TannerBlock::new, getRL("tanner"), new Item.Properties());
-		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(TannerBlockEntity::new, tanner.get()).build(null), getRL("tanner"));
+		EasyRegistry.registerTileEntity(() -> new BlockEntityType<>(TannerBlockEntity::new, tanner.get()), getRL("tanner"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Thermometer::new, getRL("thermometer"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Hydrometer::new, getRL("hydrometer"));
 		EasyRegistry.registerOther(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
-			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
+			new Tuple<Identifier,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
 		);
 		EasyRegistry.registerOther(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
-			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
+			new Tuple<Identifier,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
 		);
-		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemConditionType>>(
-				getRL("can_snow"),() -> new LootItemConditionType(TemperatureCheck.CODEC)));
+		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<Identifier,Supplier<MapCodec<? extends LootItemCondition>>>(
+				getRL("can_snow"),() -> TemperatureCheck.CODEC));
 		
 		String[] itemNames = {
 				"tinydust_sugar",
@@ -100,7 +102,7 @@ public class HarderFarming {
 				"raw_leather",
 		};
 		for(String it : itemNames) {
-			EasyRegistry.registerItem(() -> new Item(new Item.Properties()), getRL(it));
+			EasyRegistry.registerItem(Item::new, getRL(it));
 		}
 	}
 	
@@ -120,7 +122,7 @@ public class HarderFarming {
 	}
 
 	public static class ModLootConditionTypes {
-		public static DeferredHolder<LootItemConditionType, LootItemConditionType> can_snow = null;
+		public static DeferredHolder<MapCodec<? extends LootItemCondition>, MapCodec<? extends LootItemCondition>> can_snow = null;
 	}
 	
 	public static class ModBlocks {
@@ -202,7 +204,7 @@ public class HarderFarming {
 
 	@SubscribeEvent
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.tanner, TannerBlockEntity::getItemHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.tanner, TannerBlockEntity::getItemHandler);
 	}
 
 	@SubscribeEvent
@@ -255,7 +257,7 @@ public class HarderFarming {
 		HardLibAPI.hardCrops.putCropWeather(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new CropWeatherOffsets(0.6f,-0.1f,0,0));//Cool and wet
 	}
 
-	public static ResourceLocation getRL(String name) {
+	public static Identifier getRL(String name) {
 		return HardLib.getRL(MODID, name);
 	}
 }

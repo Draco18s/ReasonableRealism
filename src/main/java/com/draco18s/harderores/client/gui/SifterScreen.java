@@ -8,7 +8,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class SifterScreen extends TimedMachineScreen<SifterContainerMenu> {
 	public SifterScreen(SifterContainerMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title, HarderOres.getRL("textures/gui/sifter.png"), 40, Component.translatable("gui.harderores.recipebook.siftable"));
+		super(menu, inventory, title, HarderOres.getRL("textures/gui/sifter.png"), 40, Component.translatable("gui.harderores.recipebook.siftable"),
+				HarderOres.ModBlocks.machine_sifter, HarderOres.RecipeBookCategories.SIFTING);
 	}
 
 	@Override

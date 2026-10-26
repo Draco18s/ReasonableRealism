@@ -1,10 +1,6 @@
 {
   "type": "harderores:sifting",
   "ingredientQuantity": 8,
-  "ingredients": {
-    "tag": "c:dust/tiny/iron"
-  },
-  "result": {
-    "item": "harderores:largedust_iron"
-  }
+  "ingredients": "#c:dust/tiny/iron",
+  "result": "harderores:largedust_iron"
 }

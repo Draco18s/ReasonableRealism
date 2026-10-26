@@ -13,32 +13,35 @@ import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 import com.draco18s.hardlib.api.internal.inventory.ModBlockEntity;
 import com.draco18s.hardlib.api.internal.inventory.OutputItemStackHandler;
 import com.draco18s.hardlib.api.recipe.FakeContainer;
+import com.draco18s.hardlib.util.InventoryUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class MillstoneBlockEntity extends ModBlockEntity implements FakeContainer {
-	protected final ItemStackHandler inputSlots = new MillableItemsHandler(1);
-	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
-	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
+	protected final ItemStacksResourceHandler inputSlots = new MillableItemsHandler(1);
+	protected final ItemStacksResourceHandler outputSlots = new ItemStacksResourceHandler(1);
+	protected final OutputItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 	protected RawMechanicalPowerHandler powerUser = new MillstoneMechanicalPowerHandler();
 
-	public final IItemHandler input = inputSlots;
-	public final IItemHandler output = outputHandler;
-	public final IItemHandler all = new CombinedInvWrapper(inputSlots,outputHandler);
+	public final ResourceHandler<ItemResource> input = inputSlots;
+	public final ResourceHandler<ItemResource> output = outputHandler;
+	public final ResourceHandler<ItemResource> all = new CombinedResourceHandler<>(inputSlots,outputHandler);
 	
 	protected float grindTime = 0;
 	
@@ -48,7 +51,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 
 	/** The item handler capability: depends on the part of the mill this is (see HarderOres' capability registration). */
 	@Nullable
-	public IItemHandler getItemHandler(@Nullable Direction side) {
+	public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction side) {
 		if(level == null || level.getBlockState(worldPosition).getBlock() != HarderOres.ModBlocks.machine_millstone) return all;
 		MillstoneOrientation millpos = level.getBlockState(worldPosition).getValue(BlockProperties.MILL_ORIENTATION);
 		if(side == null) {
@@ -64,6 +67,12 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 		}
 	}
 
+	/** The block is being removed: drop what's in the mill. */
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+		InventoryUtils.dropItemHandlerContents(all, level, pos);
+	}
+
 	/** Only the center of the mill takes power. */
 	@Nullable
 	public IMechanicalPower getMechanicalPower(@Nullable Direction side) {
@@ -73,7 +82,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 
 	@Override
 	public ItemStack getItem(int slot) {
-		return inputSlots.getStackInSlot(slot);
+		return ItemUtil.getStack(inputSlots, slot);
 	}
 
 	public static void tick(Level world, BlockPos pos, BlockState state, MillstoneBlockEntity millstone) {
@@ -82,7 +91,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 			if(millstone.grindTime > 0) {
 				float pow = millstone.calcAndGetPower();
 				millstone.grindTime -= pow;
-				if(millstone.inputSlots.getStackInSlot(0).isEmpty()) {
+				if(millstone.inputSlots.getResource(0).isEmpty()) {
 					millstone.grindTime = 0;
 				}
 				else if (millstone.grindTime <= 0) {
@@ -102,32 +111,30 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 				//world.scheduleBlockUpdate(pos, blockType, 1, 10);
 				return;
 			}
-			else if(millstone.inputSlots.getStackInSlot(0).isEmpty()) return;
-			IItemHandler inven = world.getCapability(Capabilities.ItemHandler.BLOCK, millstone.worldPosition.offset(millpos.offset.getX(), 0, millpos.offset.getZ()), Direction.EAST);
-			if(inven == null) return;
-			ItemStack stack = millstone.inputSlots.getStackInSlot(0).copy();
-			stack.setCount(1);
-			if(! inven.insertItem(0, stack, true).isEmpty()) return;
-			millstone.inputSlots.insertItem(0,
-				inven.insertItem(0, 
-						millstone.inputSlots.extractItem(0, Integer.MAX_VALUE, false)
-						, false)
-				, false);
+			else if(millstone.inputSlots.getResource(0).isEmpty()) return;
+			ResourceHandler<ItemResource> inven = world.getCapability(Capabilities.Item.BLOCK, millstone.worldPosition.offset(millpos.offset.getX(), 0, millpos.offset.getZ()), Direction.EAST);
+			ResourceHandlerUtil.move(millstone.inputSlots, inven, resource -> true, Integer.MAX_VALUE, null);
 		}
 	}
 	
 	private void ejectOrInsert() {
-		if(!outputSlots.getStackInSlot(0).isEmpty() && (outputSlots.getStackInSlot(0).getCount() >= 8 || inputSlots.getStackInSlot(0).isEmpty())) {
-			if(!level.isClientSide) {
+		if(!outputSlots.getResource(0).isEmpty() && (outputSlots.getAmountAsInt(0) >= 8 || inputSlots.getResource(0).isEmpty())) {
+			if(!level.isClientSide()) {
 				BlockState s = level.getBlockState(worldPosition.below());
 				if(s.isAir()) {
-					RandomSource rand = level.random;
+					RandomSource rand = level.getRandom();
 					float rx = rand.nextFloat() * 0.6F + 0.2F;
 					float ry = rand.nextFloat() * 0.2F + 0.6F - 1;
 					float rz = rand.nextFloat() * 0.6F + 0.2F;
+					ItemResource resource = outputSlots.getResource(0);
+					int amount;
+					try (Transaction tx = Transaction.openRoot()) {
+						amount = outputSlots.extract(0, resource, 64, tx);
+						tx.commit();
+					}
 					ItemEntity itemEntity = new ItemEntity(level,
 							worldPosition.getX() + rx, worldPosition.getY() + ry, worldPosition.getZ() + rz,
-							outputSlots.extractItem(0, 64, false));
+							resource.toStack(amount));
 					level.addFreshEntity(itemEntity);
 					itemEntity.setDeltaMovement(0, -0.2F, 0);
 				}
@@ -137,9 +144,14 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 
 	private void grindItem(MillstoneOrientation millpos) {
 		if (canGrind(millpos)) {
-			ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlots.getStackInSlot(0)).copy();
-			inputSlots.extractItem(0, 1, false);
-			outputSlots.insertItem(0, result, false);
+			ItemStack result = HardLibAPI.oreMachines.getMillResult(ItemUtil.getStack(inputSlots, 0));
+			// Only grind when the output has room for all of the result (it used to be lost).
+			try (Transaction tx = Transaction.openRoot()) {
+				if(inputSlots.extract(0, inputSlots.getResource(0), 1, tx) == 1
+						&& outputSlots.insert(0, ItemResource.of(result), result.getCount(), tx) == result.getCount()) {
+					tx.commit();
+				}
+			}
 		}
 	}
 
@@ -148,7 +160,7 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	}
 
 	private float calcAndGetPower() {
-		if(level.isClientSide) return powerUser.getScaledPower(powerUser.getRawPower());
+		if(level.isClientSide()) return powerUser.getScaledPower(powerUser.getRawPower());
 		IMechanicalPower pow = AxelNetwork.findPowerSource(level, worldPosition);
 		if(pow == null) return 0;
 		powerUser.setRawPower(pow.getRawPower());
@@ -156,8 +168,8 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	}
 	
 	public boolean canGrind(MillstoneOrientation millpos) {
-		if(millpos != MillstoneOrientation.CENTER || inputSlots.getStackInSlot(0).isEmpty()) return false;
-		ItemStack result = HardLibAPI.oreMachines.getMillResult(inputSlots.getStackInSlot(0));
+		if(millpos != MillstoneOrientation.CENTER || inputSlots.getResource(0).isEmpty()) return false;
+		ItemStack result = HardLibAPI.oreMachines.getMillResult(ItemUtil.getStack(inputSlots, 0));
 		if(result.isEmpty()) return false;
 
 		return true;
@@ -168,19 +180,19 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	}
 
 	@Override
-	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {
-		tag.put("harderores:power", powerUser.serializeNBT(registries));
-		tag.put("harderores:inputslot", inputSlots.serializeNBT(registries));
-		tag.put("harderores:outputSlot", outputSlots.serializeNBT(registries));
-		tag.putFloat("harderores:grindTime", grindTime);
+	protected void modSave(ValueOutput output) {
+		powerUser.serialize(output.child("harderores:power"));
+		inputSlots.serialize(output.child("harderores:inputslot"));
+		outputSlots.serialize(output.child("harderores:outputSlot"));
+		output.putFloat("harderores:grindTime", grindTime);
 	}
 
 
 	@Override
-	protected void modLoad(CompoundTag tag, HolderLookup.Provider registries) {
-		powerUser.deserializeNBT(registries, tag.getCompound("harderores:power"));
-		inputSlots.deserializeNBT(registries, tag.getCompound("harderores:inputslot"));
-		outputSlots.deserializeNBT(registries, tag.getCompound("harderores:outputSlot"));
-		grindTime = tag.getFloat("harderores:grindTime");
+	protected void modLoad(ValueInput input) {
+		powerUser.deserialize(input.childOrEmpty("harderores:power"));
+		inputSlots.deserialize(input.childOrEmpty("harderores:inputslot"));
+		outputSlots.deserialize(input.childOrEmpty("harderores:outputSlot"));
+		grindTime = input.getFloatOr("harderores:grindTime", 0);
 	}
 }

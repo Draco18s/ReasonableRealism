@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "expindustry:rail_bridge"
+        "recipes": "expindustry:rail_bridge"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

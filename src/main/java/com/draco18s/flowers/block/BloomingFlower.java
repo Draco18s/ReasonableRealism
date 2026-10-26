@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 /** A flower that now and then switches between blooming and not. */
 public class BloomingFlower extends SimpleFlower {
 
-	public BloomingFlower(FlowerSoil plantType) {
-		super(plantType, flowerProperties().randomTicks());
+	public BloomingFlower(FlowerSoil plantType, Properties properties) {
+		super(plantType, properties.randomTicks());
 	}
 
 	@Override

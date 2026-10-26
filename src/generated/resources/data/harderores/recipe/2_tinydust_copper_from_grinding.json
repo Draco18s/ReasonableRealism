@@ -1,10 +1,6 @@
 {
   "type": "harderores:grinding",
   "count": 2,
-  "ingredients": {
-    "item": "minecraft:raw_copper"
-  },
-  "result": {
-    "item": "harderores:tinydust_copper"
-  }
+  "ingredients": "minecraft:raw_copper",
+  "result": "harderores:tinydust_copper"
 }

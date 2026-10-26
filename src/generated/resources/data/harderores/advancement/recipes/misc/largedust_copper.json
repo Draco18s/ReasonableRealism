@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:largedust_copper"
+        "recipes": "harderores:largedust_copper"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

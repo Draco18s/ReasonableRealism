@@ -1,13 +1,11 @@
 package com.draco18s.farming.item;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
-import com.mojang.serialization.JsonOps;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -15,25 +13,28 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.StemBlock;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 
 /**
  * Thermometer and hydrometer: show the local biome's temperature or rainfall as the item's "time" model
  * property, optionally as felt by a linked crop (right-click a crop to link it, anything else to unlink).
  */
 public abstract class ClimateGaugeItem extends Item {
-	protected ClimateGaugeItem() {
-		super(new Item.Properties());
+	protected ClimateGaugeItem(Item.Properties props) {
+		super(props);
 	}
 
 	/** The biome's base reading. */
@@ -46,16 +47,16 @@ public abstract class ClimateGaugeItem extends Item {
 	protected abstract int idleFrame();
 
 	/** The value for the "time" item property: 0-11, from cold/dry to hot/wet. */
-	public float getFrame(ItemStack stack, @Nullable Level world, @Nullable Entity entity) {
-		if(world == null && entity != null) {
-			world = entity.level();
+	public float getFrame(ItemStack stack, @Nullable Level world, @Nullable ItemOwner owner) {
+		if(world == null && owner != null) {
+			world = owner.level();
 		}
-		if(world == null || entity == null) {
+		if(world == null || owner == null) {
 			return idleFrame();
 		}
-		BlockPos pos = entity.blockPosition();
+		BlockPos pos = BlockPos.containing(owner.position());
 		float t = reading(world.getBiome(pos).value());
-		t += stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getFloat(offsetKey());
+		t += stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getFloatOr(offsetKey(), 0);
 		float n = Math.round((t + 0.35f) * 4);
 		return Math.max(Math.min(n, 11), 0);
 	}
@@ -79,31 +80,34 @@ public abstract class ClimateGaugeItem extends Item {
 		else {
 			stack.remove(DataComponents.CUSTOM_DATA);
 		}
-		return InteractionResult.sidedSuccess(context.getLevel().isClientSide);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-		super.appendHoverText(stack, context, tooltip, flag);
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+		super.appendHoverText(stack, context, display, tooltip, flag);
 		CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
 		if(tag.contains("linkedCropName")) {
-			tooltip.add(Component.translatable("tooltip.harderfarming.linkedcrop").withStyle(ChatFormatting.ITALIC)
-					.append(" ").append(Component.translatable(tag.getString("linkedCropName"))));
-			tooltip.add(Component.translatable("tooltip.harderfarming.unlink"));
+			tooltip.accept(Component.translatable("tooltip.harderfarming.linkedcrop").withStyle(ChatFormatting.ITALIC)
+					.append(" ").append(Component.translatable(tag.getStringOr("linkedCropName", ""))));
+			tooltip.accept(Component.translatable("tooltip.harderfarming.unlink"));
 		}
 		else {
-			tooltip.add(Component.translatable("tooltip.harderfarming.link"));
+			tooltip.accept(Component.translatable("tooltip.harderfarming.link"));
 		}
 	}
 
-	/** The block a stem grows: StemBlock keeps it private (since 1.20.3), but its codec still writes it out. */
+	/** The block a stem grows: StemBlock keeps it private (and blocks have no codecs to write it out any more). */
 	private static Block stemFruit(StemBlock stem) {
-		return StemBlock.CODEC.codec().encodeStart(JsonOps.INSTANCE, stem).result()
-				.map(json -> json.getAsJsonObject().get("fruit").getAsString())
-				.map(id -> BuiltInRegistries.BLOCK.get(HardLib.parseRL(id))).orElse(stem);
+		ResourceKey<Block> fruit = ObfuscationReflectionHelper.getPrivateValue(StemBlock.class, stem, "fruit");
+		return BuiltInRegistries.BLOCK.getOptional(fruit).orElse(stem);
 	}
 
 	public static class Thermometer extends ClimateGaugeItem {
+		public Thermometer(Item.Properties props) {
+			super(props);
+		}
+
 		@Override
 		protected float reading(Biome biome) {
 			return biome.getModifiedClimateSettings().temperature();
@@ -121,6 +125,10 @@ public abstract class ClimateGaugeItem extends Item {
 	}
 
 	public static class Hydrometer extends ClimateGaugeItem {
+		public Hydrometer(Item.Properties props) {
+			super(props);
+		}
+
 		@Override
 		protected float reading(Biome biome) {
 			return biome.getModifiedClimateSettings().downfall();

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "harderores:machine_windvane"
+        "recipes": "harderores:machine_windvane"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

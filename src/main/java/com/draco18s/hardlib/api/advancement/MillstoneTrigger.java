@@ -2,16 +2,17 @@ package com.draco18s.hardlib.api.advancement;
 
 import com.draco18s.harderores.HarderOres;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 public class MillstoneTrigger extends HardLibCriteriaTrigger<MillstoneTrigger.Instance> {
-	public static final ResourceLocation ID = HarderOres.getRL("millstone_grind");
-	public static LootContextParam<Float> POWER = new LootContextParam<Float>(ID);
-	public static LootContextParamSet requiredParams = LootContextParamSet.builder().required(MillstoneTrigger.POWER).build();
+	public static final Identifier ID = HarderOres.getRL("millstone_grind");
+	public static ContextKey<Float> POWER = new ContextKey<Float>(ID);
+	public static ContextKeySet requiredParams = new ContextKeySet.Builder().required(MillstoneTrigger.POWER).build();
 
 	@Override
 	public Codec<Instance> codec() {
@@ -19,11 +20,11 @@ public class MillstoneTrigger extends HardLibCriteriaTrigger<MillstoneTrigger.In
 	}
 
 	public record Instance() implements ICriterionTriggerInstanceTester {
-		public static final Codec<Instance> CODEC = Codec.unit(new Instance());
+		public static final Codec<Instance> CODEC = MapCodec.unitCodec(new Instance());
 
 		@Override
 		public boolean test(LootParams params) {
-			return params.getParameter(POWER) > 0;
+			return params.contextMap().getOrThrow(POWER) > 0;
 		}
 	}
 }

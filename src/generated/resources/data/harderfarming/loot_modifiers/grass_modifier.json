@@ -1,21 +1,24 @@
 {
   "type": "harderfarming:grass_modifier",
-  "conditions": [
-    {
-      "condition": "minecraft:any_of",
-      "terms": [
-        {
-          "block": "minecraft:tall_grass",
-          "condition": "minecraft:block_state_property"
-        },
-        {
-          "block": "minecraft:short_grass",
-          "condition": "minecraft:block_state_property"
-        }
-      ]
-    },
-    {
-      "condition": "harderfarming:can_snow"
-    }
-  ]
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:any_of",
+        "terms": [
+          {
+            "type": "minecraft:match_block",
+            "blocks": "minecraft:tall_grass"
+          },
+          {
+            "type": "minecraft:match_block",
+            "blocks": "minecraft:short_grass"
+          }
+        ]
+      },
+      {
+        "type": "harderfarming:can_snow"
+      }
+    ]
+  }
 }

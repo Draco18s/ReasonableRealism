@@ -1,6 +1,5 @@
 package com.draco18s.flowers.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
@@ -16,33 +15,22 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SimpleFlower extends BushBlock {
-
-	/** Blocks are only written by codec for vanilla's block type listing; this one has no parameters to write. */
-	private final MapCodec<SimpleFlower> codec = MapCodec.unit(this);
-
-	@Override
-	protected MapCodec<? extends BushBlock> codec() {
-		return codec;
-	}
 	protected final FlowerSoil type;
 	protected static final VoxelShape FLOWER_AABB = Block.box(4.8, 0.0, 4.8, 11.2, 16.0, 11.2);
 
-	public SimpleFlower(FlowerSoil plantType) {
-		this(plantType, flowerProperties());
-	}
-
 	public SimpleFlower(FlowerSoil plantType, Properties properties) {
-		super(properties);
+		super(flowerProperties(properties));
 		type = plantType;
 	}
 
-	public static Properties flowerProperties() {
-		return BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).noCollission().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ);
+	/** Sets a flower's properties. */
+	public static Properties flowerProperties(Properties properties) {
+		return properties.mapColor(MapColor.PLANT).pushReaction(PushReaction.POPPED).noCollision().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ);
 	}
 
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		Vec3 offset = state.getOffset(level, pos);
+		Vec3 offset = state.getOffset(pos);
 		return FLOWER_AABB.move(offset.x, offset.y, offset.z);
 	}
 

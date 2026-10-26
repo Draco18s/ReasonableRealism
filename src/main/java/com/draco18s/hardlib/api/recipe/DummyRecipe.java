@@ -1,10 +1,11 @@
 package com.draco18s.hardlib.api.recipe;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
@@ -17,8 +18,10 @@ public class DummyRecipe implements CraftingRecipe {
 		output = outp;
 	}
 
-	public static CraftingRecipe from(CraftingRecipe other, HolderLookup.Provider registries) {
-		DummyRecipe recipe = new DummyRecipe(other.getResultItem(registries));
+	/** Stands in for the recipe, with its result (read from its display, since results are only reached there now). */
+	public static CraftingRecipe from(CraftingRecipe other) {
+		ContextMap noContext = ContextMap.EMPTY;
+		DummyRecipe recipe = new DummyRecipe(other.display().stream().findFirst().map(display -> display.result().resolveForFirstStack(noContext)).orElse(ItemStack.EMPTY));
 		recipe.category = other.category();
 		return recipe;
 	}
@@ -29,22 +32,31 @@ public class DummyRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
+	public ItemStack assemble(CraftingInput inv) {
 		return ItemStack.EMPTY;
 	}
 
-	@Override
-	public boolean canCraftInDimensions(int w, int h) {
-		return false;
-	}
-
-	@Override
-	public ItemStack getResultItem(HolderLookup.Provider registries) {
+	public ItemStack getResultItem() {
 		return output;
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public boolean showNotification() {
+		return false;
+	}
+
+	@Override
+	public String group() {
+		return "";
+	}
+
+	@Override
+	public PlacementInfo placementInfo() {
+		return PlacementInfo.NOT_PLACEABLE;
+	}
+
+	@Override
+	public RecipeSerializer<? extends CraftingRecipe> getSerializer() {
 		return null;
 	}
 
