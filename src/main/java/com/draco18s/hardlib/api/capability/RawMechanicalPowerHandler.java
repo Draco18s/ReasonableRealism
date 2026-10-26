@@ -4,7 +4,7 @@ import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public class RawMechanicalPowerHandler implements IMechanicalPower, INBTSerializable<CompoundTag> {
 	protected int powerLevel;

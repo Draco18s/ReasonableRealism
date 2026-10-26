@@ -128,7 +128,7 @@ public class AxelBlock extends ModEntityBlock {
 				worldIn.scheduleTick(pos.relative(facing.getOpposite()), this, 2);
 			}
 			
-			if(worldIn.getBlockEntity(pos.below()) != null && worldIn.getBlockEntity(pos.below()).getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, Direction.DOWN).isPresent()) {
+			if(worldIn.getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, pos.below(), Direction.DOWN) != null) {
 				if(worldIn.getBlockState(pos.relative(facing)).getBlock() != this && worldIn.getBlockState(pos.relative(facing.getOpposite())).getBlock() == this) {
 					state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, facing.getOpposite());
 					worldIn.scheduleTick(pos.relative(facing.getOpposite()), this, 2);

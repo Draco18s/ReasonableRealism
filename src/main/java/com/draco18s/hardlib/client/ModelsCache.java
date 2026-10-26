@@ -17,15 +17,15 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraftforge.client.extensions.IForgeBakedModel;
-import net.minecraftforge.common.data.ExistingFileHelper.ResourceType;
+import net.neoforged.neoforge.client.extensions.IBakedModelExtension;
+import net.neoforged.neoforge.common.data.ExistingFileHelper.ResourceType;
 
 public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveResourceReloadListener*/ {
 
 	INSTANCE;
 
 	private final Map<ResourceLocation, UnbakedModel> cache = new HashMap<ResourceLocation, UnbakedModel>();
-	private final Map<ResourceLocation, IForgeBakedModel> bakedCache = new HashMap<ResourceLocation, IForgeBakedModel>();
+	private final Map<ResourceLocation, IBakedModelExtension> bakedCache = new HashMap<ResourceLocation, IBakedModelExtension>();
 	//private ModelState l;
 	
 	public static final ModelState DEFAULTMODELSTATE = new ModelState() {
@@ -58,12 +58,12 @@ public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveRes
 		return model;
 	}
 
-	public IForgeBakedModel getModel(ResourceLocation key) {
+	public IBakedModelExtension getModel(ResourceLocation key) {
 		return bakedCache.get(key);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, ModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
-		IForgeBakedModel model = getModel(key);
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, ModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+		IBakedModelExtension model = getModel(key);
 		if(model == null) {
 			//TextureAtlasSprite sprite = null;//ModelRotation.X0_Y0;
 			//model = getOrLoadModel(location).bake(null, null, state, location); //.bake(bakery, textureGetter, sprite, format);
@@ -73,35 +73,35 @@ public enum ModelsCache implements ResourceManagerReloadListener /*ISelectiveRes
 		return model;
 	}
 
-	/*public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, VertexFormat format) {
+	/*public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, VertexFormat format) {
 		return getOrLoadModel(bakery, key, location, state, format, DEFAULTTEXTUREGETTER);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, state, DEFAULTVERTEXFORMAT, textureGetter);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, format, textureGetter);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, IModelState state) {
 		return getOrLoadModel(bakery, key, location, state, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, VertexFormat format) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, format, DEFAULTTEXTUREGETTER);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, textureGetter);
 	}
 
-	public IForgeBakedModel getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location) {
+	public IBakedModelExtension getOrLoadModel(ModelBakery bakery, ResourceLocation key, ResourceLocation location) {
 		return getOrLoadModel(bakery, key, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}
 
-	public IForgeBakedModel getOrLoadBakedModel(ModelBakery bakery, ResourceLocation location) {
+	public IBakedModelExtension getOrLoadBakedModel(ModelBakery bakery, ResourceLocation location) {
 		return getOrLoadModel(bakery, location, location, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}*/
 

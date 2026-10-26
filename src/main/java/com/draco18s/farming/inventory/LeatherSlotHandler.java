@@ -3,7 +3,7 @@ package com.draco18s.farming.inventory;
 import com.draco18s.farming.HarderFarming;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 /** One side of a tanning rack: a single rawhide. */
 public class LeatherSlotHandler extends ItemStackHandler {

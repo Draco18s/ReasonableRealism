@@ -1,5 +1,5 @@
 {
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "flip_v": true,
   "parent": "block/block",
   "ambientocclusion": true,

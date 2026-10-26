@@ -1,6 +1,5 @@
 package com.draco18s.harderores.entity;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.harderores.HarderOres;
@@ -26,12 +25,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class MillstoneBlockEntity extends ModBlockEntity implements FakeContainer {
 	protected final ItemStackHandler inputSlots = new MillableItemsHandler(1);
@@ -39,10 +36,9 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 	protected RawMechanicalPowerHandler powerUser = new MillstoneMechanicalPowerHandler();
 
-	public LazyOptional<IItemHandler> input = LazyOptional.of(() -> inputSlots);
-	public LazyOptional<IItemHandler> output = LazyOptional.of(() -> outputHandler);
-	public LazyOptional<IItemHandler> all = LazyOptional.of(() -> new CombinedInvWrapper(inputSlots,outputHandler));
-	private final LazyOptional<RawMechanicalPowerHandler> powerUserholder = LazyOptional.of(() -> powerUser);
+	public final IItemHandler input = inputSlots;
+	public final IItemHandler output = outputHandler;
+	public final IItemHandler all = new CombinedInvWrapper(inputSlots,outputHandler);
 	
 	protected float grindTime = 0;
 	
@@ -50,30 +46,29 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 		super(HarderOres.ModBlockEntities.machine_millstone, pos, state);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		boolean notSelf = level.getBlockState(worldPosition).getBlock() != HarderOres.ModBlocks.machine_millstone;
-		if(cap == ForgeCapabilities.ITEM_HANDLER && notSelf) return (LazyOptional<T>)all;
-		if(notSelf ) return super.getCapability(cap, side);
+	/** The item handler capability: depends on the part of the mill this is (see HarderOres' capability registration). */
+	@Nullable
+	public IItemHandler getItemHandler(@Nullable Direction side) {
+		if(level == null || level.getBlockState(worldPosition).getBlock() != HarderOres.ModBlocks.machine_millstone) return all;
 		MillstoneOrientation millpos = level.getBlockState(worldPosition).getValue(BlockProperties.MILL_ORIENTATION);
-		if(cap == IMechanicalPower.MECHANICAL_POWER_CAPABILITY && millpos == MillstoneOrientation.CENTER) {
-			return (LazyOptional<T>)powerUserholder;
+		if(side == null) {
+			return all;
 		}
-		if(cap == ForgeCapabilities.ITEM_HANDLER) {
-			if(side == null) {
-				return (LazyOptional<T>)all;
-			}
-			switch(side) {
-				case UP:
-					return millpos.canAcceptInput ? (LazyOptional<T>)input : LazyOptional.empty();
-				case DOWN:
-					return millpos.canAcceptOutput ? (LazyOptional<T>)output : LazyOptional.empty();
-				default:
-					return millpos == MillstoneOrientation.CENTER ? (LazyOptional<T>)input : LazyOptional.empty();
-			}
+		switch(side) {
+			case UP:
+				return millpos.canAcceptInput ? input : null;
+			case DOWN:
+				return millpos.canAcceptOutput ? output : null;
+			default:
+				return millpos == MillstoneOrientation.CENTER ? input : null;
 		}
-		return super.getCapability(cap, side);
+	}
+
+	/** Only the center of the mill takes power. */
+	@Nullable
+	public IMechanicalPower getMechanicalPower(@Nullable Direction side) {
+		if(level == null || level.getBlockState(worldPosition).getBlock() != HarderOres.ModBlocks.machine_millstone) return null;
+		return level.getBlockState(worldPosition).getValue(BlockProperties.MILL_ORIENTATION) == MillstoneOrientation.CENTER ? powerUser : null;
 	}
 
 	@Override
@@ -108,17 +103,16 @@ public class MillstoneBlockEntity extends ModBlockEntity implements FakeContaine
 				return;
 			}
 			else if(millstone.inputSlots.getStackInSlot(0).isEmpty()) return;
-			BlockEntity centerTE = world.getBlockEntity(millstone.worldPosition.offset(millpos.offset.getX(), 0, millpos.offset.getZ()));
-			centerTE.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.EAST).ifPresent(inven ->{
-				ItemStack stack = millstone.inputSlots.getStackInSlot(0).copy();
-				stack.setCount(1);
-				if(! inven.insertItem(0, stack, true).isEmpty()) return;
-				millstone.inputSlots.insertItem(0,
-					inven.insertItem(0, 
-							millstone.inputSlots.extractItem(0, Integer.MAX_VALUE, false)
-							, false)
-					, false);
-			});
+			IItemHandler inven = world.getCapability(Capabilities.ItemHandler.BLOCK, millstone.worldPosition.offset(millpos.offset.getX(), 0, millpos.offset.getZ()), Direction.EAST);
+			if(inven == null) return;
+			ItemStack stack = millstone.inputSlots.getStackInSlot(0).copy();
+			stack.setCount(1);
+			if(! inven.insertItem(0, stack, true).isEmpty()) return;
+			millstone.inputSlots.insertItem(0,
+				inven.insertItem(0, 
+						millstone.inputSlots.extractItem(0, Integer.MAX_VALUE, false)
+						, false)
+				, false);
 		}
 	}
 	

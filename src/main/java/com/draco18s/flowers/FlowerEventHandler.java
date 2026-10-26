@@ -23,14 +23,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.event.entity.player.BonemealEvent;
-import net.minecraftforge.event.level.ChunkDataEvent;
-import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.entity.player.BonemealEvent;
+import net.neoforged.neoforge.event.level.ChunkDataEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = OreFlowers.MODID)
 public class FlowerEventHandler {
@@ -59,9 +58,9 @@ public class FlowerEventHandler {
 		Level world = event.getLevel();
 		if(world.isClientSide) return;
 		// Dispensers have no player: they only grow ore flowers if the config allows, and much more rarely.
-		boolean machine = event.getEntity() == null;
+		boolean machine = event.getPlayer() == null;
 		if(machine && !FlowersConfig.poopBonemealFlowers.get()) return;
-		BlockState block = event.getBlock();
+		BlockState block = event.getState();
 		boolean sand = block.is(Blocks.SAND) || block.is(Blocks.RED_SAND);
 		if(!sand && !block.is(Blocks.GRASS_BLOCK)) return;
 		BlockPos pos = event.getPos();
@@ -72,7 +71,7 @@ public class FlowerEventHandler {
 				count += HardLibAPI.oreData.getOreData(world, pos.below(scanLevel * 8), ore);
 			}
 			if(count <= 0) continue;
-			if(!machine && event.getEntity() instanceof ServerPlayer player && HardLibAPI.Advancements.FOUND_ORE != null) {
+			if(!machine && event.getPlayer() instanceof ServerPlayer player && HardLibAPI.Advancements.FOUND_ORE != null) {
 				LootParams ctx = new LootParams.Builder(player.serverLevel())
 						.withParameter(FoundOreTrigger.ORE_COUNT, count)
 						.create(FoundOreTrigger.requiredParams);
@@ -93,7 +92,7 @@ public class FlowerEventHandler {
 		}
 		if(sand) {
 			// Sand isn't bonemealable in vanilla; here it grows dead bushes too (and uses up the bonemeal).
-			event.setResult(Result.ALLOW);
+			event.setSuccessful(true);
 			for(int count = rand.nextInt(4) + 3; --count >= 0;) {
 				if(rand.nextBoolean() && (!machine || rand.nextInt(128) == 0)) {
 					HardLibAPI.oreFlowers.doSpawnFlowerCluster(world, pos, Blocks.DEAD_BUSH.defaultBlockState(), rand, 1, 7);

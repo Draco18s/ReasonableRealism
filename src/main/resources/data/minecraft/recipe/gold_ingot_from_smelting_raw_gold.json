@@ -1,7 +1,9 @@
 {
-  "forge:condition": {
-    "type": "forge:false"
-  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:false"
+    }
+  ],
   "type": "minecraft:smelting",
   "ingredient": {
     "item": "minecraft:raw_gold"

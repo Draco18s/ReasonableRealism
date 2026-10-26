@@ -28,14 +28,12 @@ import net.minecraft.world.level.block.entity.Hopper;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public abstract class AbstractHopper extends RandomizableContainerBlockEntity implements Hopper /*ICustomContainer, MenuProvider*/ {
 	protected ItemStackHandler inventory;
-	protected final LazyOptional<IItemHandler> inventoryHolder = LazyOptional.of(() -> inventory);
 	private int cooldownTime = -1;
 	//private long tickedGameTime;
 
@@ -129,7 +127,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 			});
 		}
 		else {
-			if (suckItems(hopper.level, hopper.worldPosition, hopper.getCapability(ForgeCapabilities.ITEM_HANDLER,Direction.DOWN).orElseThrow(() -> new IllegalArgumentException("Invalid LazyOptional, must not be empty")))) {
+			if (suckItems(hopper.level, hopper.worldPosition, hopper.inventory)) {
 				return true;
 			}
 
@@ -160,11 +158,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 
 	@Nullable
 	public static IItemHandler getInventoryAtPosition(Level world, BlockPos pos, Direction direction) {
-		BlockEntity tileentity = world.getBlockEntity(pos);
-		IItemHandler handler = null;
-		if (tileentity != null) {
-			handler = tileentity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction).orElse(null);
-		}
+		IItemHandler handler = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, direction);
 
 		/*List<Entity> list = world.getEntitiesInAABBexcluding((Entity)null, getAABB(pos), EntityPredicates.HAS_INVENTORY);
 		if (!list.isEmpty()) {
@@ -172,7 +166,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 		}*/
 		List<Entity> list = world.getEntities((Entity)null, getAABB(pos), EntitySelector.CONTAINER_ENTITY_SELECTOR);
         if (!list.isEmpty()) {
-           return list.get(world.random.nextInt(list.size())).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
+           return list.get(world.random.nextInt(list.size())).getCapability(Capabilities.ItemHandler.ENTITY);
         }
 
 		return handler;
@@ -277,6 +271,11 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 	@Override
 	public boolean isGridAligned() {
 		return true;
+	}
+
+	/** The item handler capability: the hopper's inventory, from any side (see ExpandedIndustry's capability registration). */
+	public IItemHandler getItemHandler(@Nullable Direction side) {
+		return inventory;
 	}
 
 	public IItemHandler getInventory() {

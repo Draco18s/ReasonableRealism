@@ -29,7 +29,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class SluiceBlock extends ModEntityBlock {
 	public static final VoxelShape THIN_SLAB = box(0,0,0,16,1,16);

@@ -26,15 +26,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class SifterBlockEntity extends ModContainerBlockEntity {
 	private static final int SiftTime = 40;
@@ -46,9 +44,9 @@ public class SifterBlockEntity extends ModContainerBlockEntity {
 	protected final ItemStackHandler outputSlots = new ItemStackHandler(1);
 	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 
-	public LazyOptional<IItemHandler> input = LazyOptional.of(() -> inputSlots);
-	public LazyOptional<IItemHandler> output = LazyOptional.of(() -> outputHandler);
-	public LazyOptional<IItemHandler> all = LazyOptional.of(() -> new CombinedInvWrapper(inputSlots,outputHandler));
+	public final IItemHandler input = inputSlots;
+	public final IItemHandler output = outputHandler;
+	public final IItemHandler all = new CombinedInvWrapper(inputSlots,outputHandler);
 
 	protected final ContainerData dataAccess = new ContainerData() {
 		public int get(int p_58431_) {
@@ -161,18 +159,16 @@ public class SifterBlockEntity extends ModContainerBlockEntity {
 
 	/** Takes siftable items out of the inventory above (such as a millstone's output), like a hopper. */
 	private void pullFromAbove() {
-		BlockEntity above = level.getBlockEntity(worldPosition.above());
-		if(above == null) return;
-		above.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN).ifPresent(source -> {
-			for(int s = 0; s < source.getSlots(); s++) {
-				ItemStack available = source.extractItem(s, 64, true);
-				if(available.isEmpty()) continue;
-				int accepted = available.getCount() - ItemHandlerHelper.insertItemStacked(inputSlots, available, true).getCount();
-				if(accepted <= 0) continue;
-				ItemHandlerHelper.insertItemStacked(inputSlots, source.extractItem(s, accepted, false), false);
-				setChanged();
-			}
-		});
+		IItemHandler source = level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.above(), Direction.DOWN);
+		if(source == null) return;
+		for(int s = 0; s < source.getSlots(); s++) {
+			ItemStack available = source.extractItem(s, 64, true);
+			if(available.isEmpty()) continue;
+			int accepted = available.getCount() - ItemHandlerHelper.insertItemStacked(inputSlots, available, true).getCount();
+			if(accepted <= 0) continue;
+			ItemHandlerHelper.insertItemStacked(inputSlots, source.extractItem(s, accepted, false), false);
+			setChanged();
+		}
 	}
 
 	/** Picks up siftable items lying on top of the sifter (a millstone with air under it drops its output). */
@@ -201,20 +197,18 @@ public class SifterBlockEntity extends ModContainerBlockEntity {
 		this.dataAccess.set(0, this.siftTime);
 	}*/
 
-	@SuppressWarnings({ "unchecked" })
-	@NonNull
 	@Override
-	protected <T> LazyOptional<T> getInventoryCapability(Capability<T> cap, @Nullable Direction side) {
+	public IItemHandler getItemHandler(@Nullable Direction side) {
 		if(side == null) {
-			return (LazyOptional<T>) all;
+			return all;
 		}
 		switch(side) {
 			case UP:
-				return (LazyOptional<T>) input;
+				return input;
 			case DOWN:
-				return (LazyOptional<T>) output;
+				return output;
 			default:
-				return LazyOptional.empty();
+				return null;
 		}
 	}
 

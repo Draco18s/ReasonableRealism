@@ -21,10 +21,12 @@ import com.draco18s.farming.util.CropManager;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.ObjectHolder;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -49,42 +51,43 @@ import net.minecraft.world.level.block.SugarCaneBlock;
 import net.minecraft.world.level.block.SweetBerryBushBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ObjectHolder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @Mod(HarderFarming.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = HarderFarming.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class HarderFarming {
 	public static final String MODID = "harderfarming";
 	
 	public HarderFarming() {
 		registerCreativeTab();
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FarmingConfig.SPEC);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FarmingConfig.SPEC);
 		HardLibAPI.hardCrops = new CropManager();
 		ModTriggers.crop_rotation = EasyRegistry.registerAdvancementTrigger(getRL("crop_rotation"), new PlayerTrigger());
 		EasyRegistry.registerBlock(SaltOreBlock::new, getRL("ore_salt"), new Item.Properties());
-		RegistryObject<Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
+		DeferredHolder<Block, Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(() -> new ButcherKnife(Tiers.IRON), getRL("butcher_knife"));
 		EasyRegistry.registerItem(() -> new WinterSeedsItem(wheat.get()), getRL("winter_wheat_seeds"));
-		RegistryObject<Block> weeds = EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
+		DeferredHolder<Block, Block> weeds = EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
 		EasyRegistry.registerItem(() -> new ItemNameBlockItem(weeds.get(), new Item.Properties()), getRL("weed_seeds"));
-		RegistryObject<Block> tanner = EasyRegistry.registerBlock(TannerBlock::new, getRL("tanner"), new Item.Properties());
+		DeferredHolder<Block, Block> tanner = EasyRegistry.registerBlock(TannerBlock::new, getRL("tanner"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(TannerBlockEntity::new, tanner.get()).build(null), getRL("tanner"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Thermometer::new, getRL("thermometer"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Hydrometer::new, getRL("hydrometer"));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
+		EasyRegistry.registerOther(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, 
 			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("grass_modifier"),GrassLootModifier.CODEC::get)	
 		);
-		EasyRegistry.registerOther(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
+		EasyRegistry.registerOther(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
 			new Tuple<ResourceLocation,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
 		);
 		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemConditionType>>(
@@ -103,11 +106,11 @@ public class HarderFarming {
 	
 	public static class Tags {
 		public static class Blocks{
-			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, HardLib.getRL("minecraft", "mineable/knife"));
+			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(Registries.BLOCK, HardLib.getRL("minecraft", "mineable/knife"));
 		}
 		public static class Items {
 			/** What a tanning rack accepts as salt. */
-			public static final TagKey<Item> SALT = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dusts/salt"));
+			public static final TagKey<Item> SALT = new TagKey<Item>(Registries.ITEM, HardLib.getRL("c", "dusts/salt"));
 		}
 	}
 	
@@ -117,56 +120,56 @@ public class HarderFarming {
 	}
 
 	public static class ModLootConditionTypes {
-		public static RegistryObject<LootItemConditionType> can_snow = null;
+		public static DeferredHolder<LootItemConditionType, LootItemConditionType> can_snow = null;
 	}
 	
 	public static class ModBlocks {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"crop_winter_wheat")
-		public static final Block crop_winter_wheat = null;
+		public static Block crop_winter_wheat;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_salt")
-		public static final Block ore_salt = null;
+		public static Block ore_salt;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"crop_weeds")
-		public static final Block crop_weeds = null;
+		public static Block crop_weeds;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"tanner")
-		public static final Block tanner = null;
+		public static Block tanner;
 	}
 
 	public static class ModBlockEntities {
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"tanner")
-		public static final BlockEntityType<TannerBlockEntity> tanner = null;
+		public static BlockEntityType<TannerBlockEntity> tanner;
 	}
 	
 	public static class ModItems {
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"winter_wheat_seeds")
-		public static final Item winter_wheat_seeds = null;
+		public static Item winter_wheat_seeds;
 
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tinydust_sugar")
-		public static final Item tinydust_sugar = null;
+		public static Item tinydust_sugar;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tinydust_flour")
-		public static final Item tinydust_flour = null;
+		public static Item tinydust_flour;
 
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_flour")
-		public static final Item largedust_flour = null;
+		public static Item largedust_flour;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"salt_chunk")
-		public static final Item salt_chunk = null;
+		public static Item salt_chunk;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"salt")
-		public static final Item salt = null;
+		public static Item salt;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"butcher_knife")
-		public static final Item butcher_knife = null;
+		public static Item butcher_knife;
 
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"weed_seeds")
-		public static final Item weed_seeds = null;
+		public static Item weed_seeds;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"raw_leather")
-		public static final Item raw_leather = null;
+		public static Item raw_leather;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"thermometer")
-		public static final Item thermometer = null;
+		public static Item thermometer;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"hydrometer")
-		public static final Item hydrometer = null;
+		public static Item hydrometer;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tanner")
-		public static final Item tanner = null;
+		public static Item tanner;
 	}
 	
 	private static void registerCreativeTab() {
@@ -181,7 +184,7 @@ public class HarderFarming {
 				// Then the rest of farming: tools, bone meal, and every plantable crop (vanilla's and other mods'), then produce.
 				Collections.addAll(items, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE,
 						Items.BONE_MEAL, Items.COMPOSTER, Items.HAY_BLOCK);
-				for(Item item : ForgeRegistries.ITEMS) {
+				for(Item item : BuiltInRegistries.ITEM) {
 					if(item instanceof BlockItem blockItem && isCropBlock(blockItem.getBlock())) {
 						items.add(item);
 					}
@@ -195,6 +198,11 @@ public class HarderFarming {
 	private static boolean isCropBlock(Block block) {
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof CocoaBlock || block instanceof NetherWartBlock
 				|| block instanceof SugarCaneBlock || block instanceof SweetBerryBushBlock || block instanceof CaveVinesBlock;
+	}
+
+	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.tanner, TannerBlockEntity::getItemHandler);
 	}
 
 	@SubscribeEvent

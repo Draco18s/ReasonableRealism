@@ -23,8 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class SluiceBlockEntity extends ModBlockEntity {
 	private static final int cycleLength = 125;
@@ -47,7 +46,7 @@ public class SluiceBlockEntity extends ModBlockEntity {
 	}
 	
 	protected ItemStackHandler inputSlot = new ItemStackHandler(1);
-	protected LazyOptional<ItemStackHandler> inputHandler = LazyOptional.of(() -> inputSlot);
+	protected ItemStackHandler inputHandler = inputSlot;
 	protected int timer;
 	protected RandomSource rand;
 

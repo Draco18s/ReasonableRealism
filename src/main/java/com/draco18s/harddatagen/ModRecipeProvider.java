@@ -12,6 +12,7 @@ import com.draco18s.industry.ExpandedIndustry;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -25,9 +26,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 
 @SuppressWarnings("unused")
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
@@ -121,7 +121,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 			.unlockedBy("has_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(Items.WHEAT)))
 			.save(finishedRecipeConsumer);
 		ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, HarderOres.ModBlocks.machine_millstone)
-			.define('S', Tags.Items.STONE)
+			.define('S', Tags.Items.STONES)
 			.define('A', HarderOres.ModBlocks.machine_axel)
 			.pattern("SSS")
 			.pattern("SAS")
@@ -152,7 +152,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 	
 	private void Machines(RecipeOutput finishedRecipeConsumer) {
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, HarderOres.ModBlocks.packager)
-			.define('s', Tags.Items.STONE)
+			.define('s', Tags.Items.STONES)
 			.define('p', Items.PISTON)
 			.pattern("sps")
 			.pattern("s s")
@@ -257,7 +257,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 	 * since several inputs cook to the same output (ore chunks and tiny dusts both make nuggets).
 	 */
 	private void cook(RecipeOutput finishedRecipeConsumer, Item input, Item output, float experience) {
-		String name = ForgeRegistries.ITEMS.getKey(output).getPath() + "_from_%s_" + ForgeRegistries.ITEMS.getKey(input).getPath();
+		String name = BuiltInRegistries.ITEM.getKey(output).getPath() + "_from_%s_" + BuiltInRegistries.ITEM.getKey(input).getPath();
 		SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, output, experience, 200)
 			.unlockedBy("has_item", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(input)))
 			.save(finishedRecipeConsumer, HarderOres.getRL(String.format(name, "smelting")));

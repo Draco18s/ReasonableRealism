@@ -9,12 +9,11 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraftforge.common.PlantType;
 
 /** A flower that now and then switches between blooming and not. */
 public class BloomingFlower extends SimpleFlower {
 
-	public BloomingFlower(PlantType plantType) {
+	public BloomingFlower(FlowerSoil plantType) {
 		super(plantType, flowerProperties().randomTicks());
 	}
 

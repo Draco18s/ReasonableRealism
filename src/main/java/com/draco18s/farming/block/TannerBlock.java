@@ -32,7 +32,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+
+import net.neoforged.neoforge.items.IItemHandler;
 
 /**
  * Tanning rack: hang a rawhide on either side to cure it into leather, and salt the top to speed it up.
@@ -86,8 +87,8 @@ public class TannerBlock extends ModEntityBlock {
 		if(world.isClientSide) return ItemInteractionResult.SUCCESS;
 		BlockEntity be = world.getBlockEntity(pos);
 		if(!(be instanceof TannerBlockEntity tanner)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		tanner.getCapability(ForgeCapabilities.ITEM_HANDLER, hit.getDirection()).ifPresent(inven -> {
-			if(inven.getSlots() == 0) return;
+		IItemHandler inven = tanner.getItemHandler(hit.getDirection());
+		if(inven != null && inven.getSlots() > 0) {
 			if(inven.getStackInSlot(0).isEmpty() && !heldItem.isEmpty()) {
 				ItemStack remain = inven.insertItem(0, heldItem.copy(), false);
 				heldItem.setCount(remain.getCount());
@@ -98,7 +99,7 @@ public class TannerBlock extends ModEntityBlock {
 					player.drop(item, false);
 				}
 			}
-		});
+		}
 		tanner.setChanged();
 		tanner.updateBlockState();
 		return ItemInteractionResult.CONSUME;
@@ -109,8 +110,8 @@ public class TannerBlock extends ModEntityBlock {
 	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockentity = world.getBlockEntity(pos);
-			if(blockentity != null) {
-				InventoryUtils.dropItemHandlerContents(blockentity.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null), world, pos);
+			if(blockentity instanceof TannerBlockEntity tanner) {
+				InventoryUtils.dropItemHandlerContents(tanner.getItemHandler(null), world, pos);
 			}
 			super.onRemove(state, world, pos, newState, isMoving);
 		}

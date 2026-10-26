@@ -14,7 +14,6 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.PlantType;
 
 public class SimpleFlower extends BushBlock {
 
@@ -25,14 +24,14 @@ public class SimpleFlower extends BushBlock {
 	protected MapCodec<? extends BushBlock> codec() {
 		return codec;
 	}
-	protected final PlantType type;
+	protected final FlowerSoil type;
 	protected static final VoxelShape FLOWER_AABB = Block.box(4.8, 0.0, 4.8, 11.2, 16.0, 11.2);
 
-	public SimpleFlower(PlantType plantType) {
+	public SimpleFlower(FlowerSoil plantType) {
 		this(plantType, flowerProperties());
 	}
 
-	public SimpleFlower(PlantType plantType, Properties properties) {
+	public SimpleFlower(FlowerSoil plantType, Properties properties) {
 		super(properties);
 		type = plantType;
 	}
@@ -52,13 +51,8 @@ public class SimpleFlower extends BushBlock {
 		return mayPlaceOn(type, state) || super.mayPlaceOn(state, level, pos);
 	}
 
-	/** Desert flowers grow on sand and terracotta (what Forge lets a desert plant survive on). */
-	static boolean mayPlaceOn(PlantType type, BlockState state) {
-		return type == PlantType.DESERT && (state.is(BlockTags.SAND) || state.is(BlockTags.TERRACOTTA));
-	}
-
-	@Override
-	public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-		return type;
+	/** Desert flowers grow on sand and terracotta (what Forge let a desert plant survive on). */
+	static boolean mayPlaceOn(FlowerSoil type, BlockState state) {
+		return type == FlowerSoil.DESERT && (state.is(BlockTags.SAND) || state.is(BlockTags.TERRACOTTA));
 	}
 }

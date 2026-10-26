@@ -19,6 +19,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -31,15 +32,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.client.model.generators.ModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.client.model.generators.ModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 @SuppressWarnings("unused")
 public class ModBlockStateProvider extends BlockStateProvider {
@@ -112,7 +112,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	 * use it for the not-blooming phase (bloom=false shows the "_bloom" model, as 1.14 did).
 	 */
 	private void flowers() {
-		for(Map.Entry<String, RegistryObject<Block>> entry : OreFlowers.FLOWERS.entrySet()) {
+		for(Map.Entry<String, DeferredHolder<Block, Block>> entry : OreFlowers.FLOWERS.entrySet()) {
 			String name = entry.getKey();
 			Block block = entry.getValue().get();
 			ModelFile main = flowerModel(name, name);
@@ -150,7 +150,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private void sluicemodel(Block block, ModelFile prebuiltModel) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			ConfiguredModel model = null;
 			int h = ((state.getValue(SluiceBlock.LEVEL) + 1) / 2) * 2 - 1;
@@ -159,12 +159,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			return new ConfiguredModel[] {model}; 
 		};
 		getVariantBuilder(block).forAllStates(f);
-		ResourceLocation registryName2 = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName2 = BuiltInRegistries.BLOCK.getKey(block);
 		//itemModels().withExistingParent(registryName2.toString(), registryName);
 	}
 
 	private void windvane(Block block) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			ConfiguredModel model = null;
 			Direction v = state.getValue(BlockStateProperties.FACING);
@@ -196,12 +196,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			return new ConfiguredModel[] {model}; 
 		};
 		getVariantBuilder(block).forAllStates(f);
-		ResourceLocation registryName2 = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName2 = BuiltInRegistries.BLOCK.getKey(block);
 		itemModels().withExistingParent(registryName2.toString(), registryName);
 	}
 
 	private void axel(Block block) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block).withPrefix(ModelProvider.BLOCK_FOLDER + "/");
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			ConfiguredModel model = null;
 			AxelOrientation v = state.getValue(BlockProperties.AXEL_ORIENTATION);
@@ -240,19 +240,19 @@ public class ModBlockStateProvider extends BlockStateProvider {
 			return new ConfiguredModel[] {model};
 		};
 		getVariantBuilder(block).forAllStates(f);
-		ResourceLocation registryName2 = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName2 = BuiltInRegistries.BLOCK.getKey(block);
 		itemModels().withExistingParent(registryName2.toString(), registryName);
 	}
 
 	private void genHardOres() {
 		OreNameHelper.DoForTextureNames((vanillaStoneTexture, vanillaOriginalOreTexture, harderOreBlockName)->{
-			Block blk = ForgeRegistries.BLOCKS.getValue(harderOreBlockName);
+			Block blk = BuiltInRegistries.BLOCK.get(harderOreBlockName);
 			hardOre(blk, harderOreBlockName.getPath(), vanillaOriginalOreTexture, harderOreBlockName.withPrefix(ModelProvider.BLOCK_FOLDER+"/"));
 	    });
 	}
 
 	private void millstone(Block block, ResourceLocation textureName) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			ConfiguredModel model = null;
 			MillstoneOrientation v = state.getValue(BlockProperties.MILL_ORIENTATION);
@@ -364,7 +364,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private void createPassiveRail(Block block, ResourceLocation railTexture, ResourceLocation supportTexture) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 
 		Function<BlockState, ConfiguredModel[]> f = state -> {
 			ConfiguredModel model;
@@ -391,7 +391,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private void createActiveRail(Block block, ResourceLocation railTexture, ResourceLocation supportTexture) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		ResourceLocation railTextureOn = HardLib.getRL(railTexture.getNamespace(), railTexture.getPath() + "_on");
 
 		Function<BlockState, ConfiguredModel[]> f = state -> {
@@ -420,17 +420,17 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	public ModelFile pillarBlockModel(Block block, ResourceLocation topTextureName, ResourceLocation sideTextureName) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		return models().cubeColumn(registryName.getPath(), topTextureName, sideTextureName);
 	}
 
 	public ModelFile simpleOre(Block block) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		return models().cubeAll(registryName.getPath(), HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","")));
 	}
 
 	public ModelFile variantOre(Block block, String suffix) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		return models().cubeAll(registryName.getPath(), HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/ore/" + registryName.getPath().replace("ore_","") + suffix));
 	}
 
@@ -440,7 +440,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private ConfiguredModel[] cropStates(BlockState state, CropBlock block, String modelName, String textureName) {
-		ResourceLocation registryName = ForgeRegistries.BLOCKS.getKey(block);
+		ResourceLocation registryName = BuiltInRegistries.BLOCK.getKey(block);
 		modelName = registryName.getNamespace() + ":" + modelName;
 		ConfiguredModel[] models = new ConfiguredModel[1];
 		models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(age(block)),
@@ -471,21 +471,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private void createSimpleFlatItemModel(Block block) {
-		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
+		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
 			.texture("layer0", HardLib.getRL(registryName.getNamespace(), ModelProvider.BLOCK_FOLDER + "/" + registryName.getPath()));
 	}
 
 	private void createSimpleFlatItemModel(Block block, ResourceLocation itemTexture) {
-		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
+		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
 			.texture("layer0", HardLib.getRL(itemTexture.getNamespace(), itemTexture.getPath()));
 	}
 
 	private void createSimpleFlatItemModel(Block block, String directory, ResourceLocation itemTexture) {
-		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(block.asItem());
+		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(block.asItem());
 		itemModels().getBuilder(registryName.toString())
 			.parent(new ModelFile.UncheckedModelFile("item/generated"))
 			.texture("layer0", HardLib.getRL(itemTexture.getNamespace(), directory + "/" + itemTexture.getPath()));
@@ -493,7 +493,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
 	private <T extends Comparable<T>> ItemModelBuilder createVariantItemModel(Block block, Property<T> property, Function<? super Property.Value<T>, Float> converter, Function<? super Property.Value<T>, String> nameConverter) {
 		Item item = block.asItem();
-		ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(item);
+		ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item);
 		ItemModelBuilder modelNormal = itemModels().getBuilder(registryName.toString());
 		property.getAllValues().forEach(value ->{
 			//ResourceLocation harderOreBlockName = new ResourceLocation(HarderOres.MODID, "ore_hard"+stone_+ore);

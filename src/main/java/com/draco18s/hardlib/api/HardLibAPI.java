@@ -11,22 +11,16 @@ import com.draco18s.hardlib.api.interfaces.IOreData;
 import com.draco18s.hardlib.api.interfaces.IHardCrops;
 import com.draco18s.hardlib.api.interfaces.IHardOreProcessing;
 import com.draco18s.hardlib.api.interfaces.IHardOres;
-import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 //import com.draco18s.hardlib.api.recipe.GrindingRecipe;
 //import com.draco18s.hardlib.api.recipe.SiftingRecipe;
 
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.neoforge.common.Tags;
 
 public class HardLibAPI {
-	public static final Capability<IMechanicalPower> MECHANICAL_POWER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
-	public static final TagKey<Item> STONE_ANY = Tags.Items.STONE;
+	public static final TagKey<Item> STONE_ANY = Tags.Items.STONES;
 	
 	public static IHardOres hardOres;
 	public static IHardOreProcessing oreMachines;

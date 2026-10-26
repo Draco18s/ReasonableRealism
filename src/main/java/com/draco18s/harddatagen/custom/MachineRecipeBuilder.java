@@ -21,7 +21,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.ingredients.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 /** Builds a MachineRecipe (sifting, grinding...) and the advancement that unlocks it. */
 public abstract class MachineRecipeBuilder<B extends MachineRecipeBuilder<B>> implements RecipeBuilder {

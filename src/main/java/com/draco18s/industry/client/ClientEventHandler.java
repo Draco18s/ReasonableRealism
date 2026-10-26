@@ -3,22 +3,19 @@ package com.draco18s.industry.client;
 import com.draco18s.industry.ExpandedIndustry;
 import com.draco18s.industry.client.gui.ExtHopperGuiContainer;
 
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEventHandler {
 	@SubscribeEvent
-	public static void registerClientGuiFactories(final FMLClientSetupEvent event) {
-		event.enqueueWork(() -> {
-			MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, ExtHopperGuiContainer::new);
-			MenuScreens.register(ExpandedIndustry.ModContainerTypes.machine_distributor, ExtHopperGuiContainer::new);
-			//ScreenManager.registerFactory(ExpandedIndustry.ModContainerTypes.machine_filter, FilterGuiContainer::new);
-			//ScreenManager.registerFactory(HarderOres.ModContainerTypes.packager, PackagerGuiContainer::new);
-		});
+	public static void registerScreens(final RegisterMenuScreensEvent event) {
+		event.register(ExpandedIndustry.ModContainerTypes.machine_wood_hopper, ExtHopperGuiContainer::new);
+		event.register(ExpandedIndustry.ModContainerTypes.machine_distributor, ExtHopperGuiContainer::new);
+		//ScreenManager.registerFactory(ExpandedIndustry.ModContainerTypes.machine_filter, FilterGuiContainer::new);
+		//ScreenManager.registerFactory(HarderOres.ModContainerTypes.packager, PackagerGuiContainer::new);
 	}
 }

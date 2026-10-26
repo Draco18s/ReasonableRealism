@@ -3,7 +3,7 @@ package com.draco18s.harderores.entity.capability;
 import com.draco18s.hardlib.api.HardLibAPI;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class MillableItemsHandler extends ItemStackHandler {
 	public MillableItemsHandler(int size) {

@@ -10,7 +10,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 /*import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.registries.Registries;
@@ -34,24 +34,24 @@ public class CropWinterWheatBlock extends CropBlock {
 
 	@Override
 	public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
-		Biome bio = world.getBiome(pos).get();
+		Biome bio = world.getBiome(pos).value();
 		if (world.getRawBrightness(pos, 0) < 9) return;
 		int i = this.getAge(state);
 		if (i >= this.getMaxAge()) return;
 		if(i == 0) {
 			if(bio.getBaseTemperature() <= 0.5) {
-				if (ForgeHooks.onCropsGrowPre(world, pos, state, true)) {
+				if (CommonHooks.canCropGrow(world, pos, state, true)) {
 					world.setBlock(pos, this.getStateForAge(i + 1), 2);
-					ForgeHooks.onCropsGrowPost(world, pos, state);
+					CommonHooks.fireCropGrowPost(world, pos, state);
 				}
 			}
 		}
 		else {
-			float f = getGrowthSpeed(this, world, pos);
+			float f = getGrowthSpeed(state, world, pos);
 
-			if (ForgeHooks.onCropsGrowPre(world, pos, state, rand.nextInt((int) (25.0F / f) + 1) == 0)) {
+			if (CommonHooks.canCropGrow(world, pos, state, rand.nextInt((int) (25.0F / f) + 1) == 0)) {
 				world.setBlock(pos, this.getStateForAge(i + 1), 2);
-				ForgeHooks.onCropsGrowPost(world, pos, state);
+				CommonHooks.fireCropGrowPost(world, pos, state);
 			}
 		}
 	}

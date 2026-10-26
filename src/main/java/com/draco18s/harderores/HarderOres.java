@@ -35,7 +35,9 @@ import com.draco18s.hardlib.EasyRegistry.IBlockItemFactory;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.ObjectHolder;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
+import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 import com.draco18s.hardlib.proxy.IProxy;
 import com.draco18s.hardlib.proxy.ServerProxy;
 import com.mojang.logging.LogUtils;
@@ -80,22 +82,23 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
-import net.minecraftforge.common.ForgeTier;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ObjectHolder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.SimpleTier;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 @Mod(HarderOres.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = HarderOres.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class HarderOres {
 	public static final String MODID = "harderores";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	public static final IProxy PROXY = DistExecutor.safeRunForDist(()->ClientProxy::new, ()->ServerProxy::new);
+	public static final IProxy PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new ServerProxy();
 
 	@SuppressWarnings("deprecation")
 	public HarderOres() {
@@ -105,11 +108,9 @@ public class HarderOres {
 			FlowerIntegration.registerFlowerGen();
 			replaceOreGenerators();
 		});*/
-		PacketHandler.register();
 		CogHelper.addCogModule("HarderVanillaOres.xml");
 		CogHelper.addCogModule("HarderLimonite.xml");
 		HardLibAPI.oreMachines = new OreProcessingRecipes();
-		RecipeBookTypes.init();
 		HardLibAPI.hardOres = new OreBlockInfo();
 		EasyRegistry.registerBlock(() -> new LimoniteBlock(Block.Properties.of().mapColor(MapColor.DIRT).strength(3, 1).sound(SoundType.WET_GRASS).requiresCorrectToolForDrops()), getRL("ore_limonite"), new Item.Properties());
 		
@@ -127,7 +128,7 @@ public class HarderOres {
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xfacf3b), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_GOLD_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_GOLD_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_gold"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 		EasyRegistry.registerBlockWithVariants(() -> new HardOreBlock(1, new Color(0xd8af93), Block.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(Blocks.DEEPSLATE_IRON_ORE.defaultDestroyTime() * hardMult, Blocks.DEEPSLATE_IRON_ORE.getExplosionResistance() * resistMult).sound(SoundType.STONE).requiresCorrectToolForDrops()), getRL("ore_harddeepslate_iron"), BlockProperties.ORE_DENSITY, blockItemFactory, new Item.Properties());
 
-		RegistryObject<Block> sluice = EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
+		DeferredHolder<Block, Block> sluice = EasyRegistry.registerBlock(SluiceBlock::new, getRL("sluice"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SluiceBlockEntity::new, sluice.get()).build(null), getRL("sluice"));
 		
 		String[] itemNames = {
@@ -148,30 +149,30 @@ public class HarderOres {
 		EasyRegistry.registerItem(() -> new ShovelItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 5.0F, -3.0F))), getRL("diamond_studded_shovel"));
 		EasyRegistry.registerItem(() -> new HoeItem(ModItemTiers.DIAMOND_STUD, new Item.Properties().attributes(DiggerItem.createAttributes(ModItemTiers.DIAMOND_STUD, 2, -0.5F))), getRL("diamond_studded_hoe"));
 		
-		RegistryObject<Block> sifter = EasyRegistry.registerBlock(SifterBlock::new, getRL("machine_sifter"), new Item.Properties());
+		DeferredHolder<Block, Block> sifter = EasyRegistry.registerBlock(SifterBlock::new, getRL("machine_sifter"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(SifterBlockEntity::new, sifter.get()).build(null), getRL("machine_sifter"));
 		EasyRegistry.registerMenuType(getRL("machine_sifter"),() -> new MenuType<>(SifterContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
-		RegistryObject<Block> millstone = EasyRegistry.registerBlock(MillstoneBlock::new, getRL("machine_millstone"), new Item.Properties());
+		DeferredHolder<Block, Block> millstone = EasyRegistry.registerBlock(MillstoneBlock::new, getRL("machine_millstone"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(MillstoneBlockEntity::new, millstone.get()).build(null), getRL("machine_millstone"));
-		RegistryObject<Block> axel = 
+		DeferredHolder<Block, Block> axel = 
 		EasyRegistry.registerBlock(AxelBlock::new, getRL("machine_axel"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(AxelBlockEntity::new, axel.get()).build(null), getRL("machine_axel"));
 		EasyRegistry.registerBlock(WindvaneBlock::new, getRL("machine_windvane"), new Item.Properties());
-		RegistryObject<Block> packager = EasyRegistry.registerBlock(PackagerBlock::new, getRL("packager"), new Item.Properties());
+		DeferredHolder<Block, Block> packager = EasyRegistry.registerBlock(PackagerBlock::new, getRL("packager"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(PackagerBlockEntity::new, packager.get()).build(null), getRL("packager"));
 		EasyRegistry.registerMenuType(getRL("packager"),() -> new MenuType<>(PackagerContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
 		
-		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getBlockParticleType(false)));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.PARTICLE_TYPES, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getBlockParticleType(false)));
+		EasyRegistry.registerOther(Registries.PARTICLE_TYPE, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getBlockParticleType(false)));
+		EasyRegistry.registerOther(Registries.PARTICLE_TYPE, new Tuple<ResourceLocation,Supplier<ParticleType<?>>>(getRL("prospector_radar"), () -> getBlockParticleType(false)));
 		
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_TYPES, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("packing"), () -> RecipeType.simple(getRL("packing"))));
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("packing"), () -> new PackingRecipe.Serializer()));
+		EasyRegistry.registerOther(Registries.RECIPE_TYPE, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("sifting"), () -> RecipeType.simple(getRL("sifting"))));
+		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("sifting"), () -> new SiftingRecipe.Serializer()));
+		EasyRegistry.registerOther(Registries.RECIPE_TYPE, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("grinding"), () -> RecipeType.simple(getRL("grinding"))));
+		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("grinding"), () -> new GrindingRecipe.Serializer()));
+		EasyRegistry.registerOther(Registries.RECIPE_TYPE, new Tuple<ResourceLocation,Supplier<RecipeType<?>>>(getRL("packing"), () -> RecipeType.simple(getRL("packing"))));
+		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<ResourceLocation,Supplier<RecipeSerializer<?>>>(getRL("packing"), () -> new PackingRecipe.Serializer()));
 		
 		LootFunctions.harderSetCountReg = EasyRegistry.registerOther(Registries.LOOT_FUNCTION_TYPE, new Tuple<ResourceLocation,Supplier<LootItemFunctionType<?>>>(
 				getRL("set_count"),() -> new LootItemFunctionType<>(HarderSetCount.CODEC)));
@@ -193,30 +194,27 @@ public class HarderOres {
 	}
 
 	public static class LootFunctions {
-		public static RegistryObject<LootItemFunctionType<?>> harderSetCountReg;
+		public static DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<?>> harderSetCountReg;
 	}
 	
 	public static class ModItemTiers {
 		public static final Supplier<Ingredient> stud_repair_item = () -> Ingredient.of(ModItems.orechunk_diamond);
-		public static final Tier DIAMOND_STUD = new ForgeTier(750, 7f, 2f, 5, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, stud_repair_item, BlockTags.NEEDS_DIAMOND_TOOL);
+		public static final Tier DIAMOND_STUD = new SimpleTier(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 750, 7f, 2f, 5, stud_repair_item);
 	}
 	
 	public static class RecipeTypes {
 		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"sifting")
-		public static RecipeType<SiftingRecipe> SIFTING = null;
+		public static RecipeType<SiftingRecipe> SIFTING;
 		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"grinding")
-		public static RecipeType<GrindingRecipe> GRINDING = null;
+		public static RecipeType<GrindingRecipe> GRINDING;
 		@ObjectHolder(registryName = "minecraft:recipe_type", value = MODID+":"+"packing")
-		public static RecipeType<PackingRecipe> PACKING = null;
+		public static RecipeType<PackingRecipe> PACKING;
 	}
 	
-	/** Recipe books of the sifter and packager screens (extending the enum, so made as early as possible). */
+	/** Recipe books of the sifter and packager screens (added to the enum by META-INF/enumextensions.json). */
 	public static class RecipeBookTypes {
-		public static final RecipeBookType SIFTER = RecipeBookType.create("HARDERORES_SIFTER");
-		public static final RecipeBookType PACKAGER = RecipeBookType.create("HARDERORES_PACKAGER");
-
-		/** Loads the class, adding the types, before anything lists RecipeBookType's values. */
-		static void init() { }
+		public static final RecipeBookType SIFTER = RecipeBookType.valueOf("HARDERORES_SIFTER");
+		public static final RecipeBookType PACKAGER = RecipeBookType.valueOf("HARDERORES_PACKAGER");
 	}
 
 	public static class RecipeSerializers {
@@ -282,109 +280,109 @@ public class HarderOres {
 			//public static final TagKey<Block> GRANULAR = new TagKey<Block>(ForgeRegistries.Keys.BLOCKS, new ResourceLocation(MODID, "granular"));
 		}
 		public static class Items {
-			public static final TagKey<Item> GRANULAR = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, getRL("granular"));
+			public static final TagKey<Item> GRANULAR = new TagKey<Item>(Registries.ITEM, getRL("granular"));
 			public static TagKey<Item> ORE_CHUNKS = ItemTags.create(HardLib.getRL("c", "raw_materials/nuggets"));
-			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/ore"));
-			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/copper"));
-			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/gold"));
-			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(ForgeRegistries.Keys.ITEMS, HardLib.getRL("c", "dust/tiny/iron"));
+			public static TagKey<Item> TINY_ORE_DUSTS = new TagKey<Item>(Registries.ITEM, HardLib.getRL("c", "dust/tiny/ore"));
+			public static TagKey<Item> TINY_COPPER_DUST = new TagKey<Item>(Registries.ITEM, HardLib.getRL("c", "dust/tiny/copper"));
+			public static TagKey<Item> TINY_GOLD_DUST = new TagKey<Item>(Registries.ITEM, HardLib.getRL("c", "dust/tiny/gold"));
+			public static TagKey<Item> TINY_IRON_DUST = new TagKey<Item>(Registries.ITEM, HardLib.getRL("c", "dust/tiny/iron"));
 		}
 	}
 
 	public static class ModBlocks {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_axel")
-		public static final Block machine_axel = null;
+		public static Block machine_axel;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_millstone")
-		public static final Block machine_millstone = null;
+		public static Block machine_millstone;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_windvane")
-		public static final Block machine_windvane = null;
+		public static Block machine_windvane;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_sifter")
-		public static final Block machine_sifter = null;
+		public static Block machine_sifter;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"packager")
-		public static final Block packager = null;
+		public static Block packager;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddiamond")
-		public static final Block ore_harddiamond = null;
+		public static Block ore_harddiamond;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_hardcopper")
-		public static final Block ore_hardcopper = null;
+		public static Block ore_hardcopper;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_hardiron")
-		public static final Block ore_hardiron = null;
+		public static Block ore_hardiron;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_hardgold")
-		public static final Block ore_hardgold = null;
+		public static Block ore_hardgold;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_limonite")
-		public static final Block ore_limonite = null;
+		public static Block ore_limonite;
 
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddeepslate_copper")
-		public static final Block ore_harddeepslate_copper = null;
+		public static Block ore_harddeepslate_copper;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddeepslate_diamond")
-		public static final Block ore_harddeepslate_diamond = null;
+		public static Block ore_harddeepslate_diamond;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddeepslate_iron")
-		public static final Block ore_harddeepslate_iron = null;
+		public static Block ore_harddeepslate_iron;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"ore_harddeepslate_gold")
-		public static final Block ore_harddeepslate_gold = null;
+		public static Block ore_harddeepslate_gold;
 
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"sluice")
-		public static final Block sluice = null;
+		public static Block sluice;
 		public static final Block sluice_output = null;
 	}
 
 	public static class ModItems {
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_pick")
-		public static final Item diamond_studded_pick = null;
+		public static Item diamond_studded_pick;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_axe")
-		public static final Item diamond_studded_axe = null;
+		public static Item diamond_studded_axe;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_shovel")
-		public static final Item diamond_studded_shovel = null;
+		public static Item diamond_studded_shovel;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_hoe")
-		public static final Item diamond_studded_hoe = null;
+		public static Item diamond_studded_hoe;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_diamond")
-		public static final Item orechunk_diamond = null;
+		public static Item orechunk_diamond;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"orechunk_limonite")
-		public static final Item orechunk_limonite = null;
+		public static Item orechunk_limonite;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_copper")
-		public static final Item largedust_copper = null;
+		public static Item largedust_copper;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_iron")
-		public static final Item largedust_iron = null;
+		public static Item largedust_iron;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"largedust_gold")
-		public static final Item largedust_gold = null;
+		public static Item largedust_gold;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tinydust_copper")
-		public static final Item tinydust_copper = null;
+		public static Item tinydust_copper;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tinydust_iron")
-		public static final Item tinydust_iron = null;
+		public static Item tinydust_iron;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"tinydust_gold")
-		public static final Item tinydust_gold = null;
+		public static Item tinydust_gold;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"copper_nugget")
-		public static final Item copper_nugget = null;
+		public static Item copper_nugget;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"sluice")
-		public static final Item sluice = null;
+		public static Item sluice;
 	}
 
 	public static class ModBlockEntities {
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_sifter")
 		public static BlockEntityType<SifterBlockEntity> machine_sifter;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_millstone")
-		public static final BlockEntityType<MillstoneBlockEntity> machine_millstone = null;
+		public static BlockEntityType<MillstoneBlockEntity> machine_millstone;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_axel")
-		public static final BlockEntityType<AxelBlockEntity> machine_axel = null;
+		public static BlockEntityType<AxelBlockEntity> machine_axel;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"sluice")
-		public static final BlockEntityType<SluiceBlockEntity> sluice = null;
+		public static BlockEntityType<SluiceBlockEntity> sluice;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"packager")
-		public static final BlockEntityType<PackagerBlockEntity> packager = null;
+		public static BlockEntityType<PackagerBlockEntity> packager;
 	}
 
 	public static class ModParticleTypes {
 		@ObjectHolder(registryName = "minecraft:particle_type", value = MODID+":"+"prospector_dust")
-		public static final ParticleType<BlockParticleOption> prospector_dust = null;
+		public static ParticleType<BlockParticleOption> prospector_dust;
 		@ObjectHolder(registryName = "minecraft:particle_type", value = MODID+":"+"prospector_radar")
-		public static final ParticleType<BlockParticleOption> prospector_radar = null;
+		public static ParticleType<BlockParticleOption> prospector_radar;
 	}
 
 	public static class ModContainerTypes {
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_sifter")
-		public static final MenuType<SifterContainerMenu> machine_sifter = null;
+		public static MenuType<SifterContainerMenu> machine_sifter;
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"packager")
-		public static final MenuType<PackagerContainerMenu> packager = null;
+		public static MenuType<PackagerContainerMenu> packager;
 	}
 
 	/** Data-driven since 1.21 (data/harderores/enchantment); read levels with HardLib.getEnchantmentLevel. */
@@ -454,6 +452,20 @@ public class HarderOres {
 			}));
 	}
 	
+	@SubscribeEvent
+	public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+		PacketHandler.register(event);
+	}
+
+	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.machine_sifter, SifterBlockEntity::getItemHandler);
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.packager, PackagerBlockEntity::getItemHandler);
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.machine_millstone, MillstoneBlockEntity::getItemHandler);
+		event.registerBlockEntity(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, ModBlockEntities.machine_millstone, MillstoneBlockEntity::getMechanicalPower);
+		event.registerBlockEntity(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, ModBlockEntities.machine_axel, AxelBlockEntity::getMechanicalPower);
+	}
+
 	@SubscribeEvent
 	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event)
     {

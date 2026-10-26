@@ -19,18 +19,17 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 
 @EventBusSubscriber(modid = HarderFarming.MODID)
 public class EventHandler {
 
 	@SubscribeEvent
-	public static void onEntityAttack(LivingHurtEvent event) {
+	public static void onEntityAttack(LivingIncomingDamageEvent event) {
 		LivingEntity enthurt = event.getEntity();
 		if(enthurt == null) return;
 		if(enthurt instanceof Animal animal && event.getSource().getEntity() instanceof LivingEntity hurtby) {
@@ -74,7 +73,7 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent
-	public static void onCropGrowPre(BlockEvent.CropGrowEvent.Pre event) {
+	public static void onCropGrowPre(CropGrowEvent.Pre event) {
 		if(!FarmingConfig.doSlowCrops.get()) return;
 		LevelAccessor world = event.getLevel();
 		BlockState state = event.getState();
@@ -102,11 +101,11 @@ public class EventHandler {
 		return null;
 	}
 
-	private static Result handleCrops(LevelAccessor world, BlockPos pos, BlockState state, Biome bio, IntegerProperty ageProp) {
+	private static CropGrowEvent.Pre.Result handleCrops(LevelAccessor world, BlockPos pos, BlockState state, Biome bio, IntegerProperty ageProp) {
 		int maxAge = ageProp.getPossibleValues().stream().max(Integer::compare).orElse(0);
 		int cropage = state.getValue(ageProp);
 		if(cropage >= maxAge) {
-			return Result.DEFAULT;
+			return CropGrowEvent.Pre.Result.DEFAULT;
 		}
 		int inc = 0;
 		Block block = state.getBlock();
@@ -168,9 +167,9 @@ public class EventHandler {
 		}
 
 		if(world.getRandom().nextInt(10+rr) != 0) {
-			return Result.DENY;
+			return CropGrowEvent.Pre.Result.DO_NOT_GROW;
 		}
-		return Result.DEFAULT;
+		return CropGrowEvent.Pre.Result.DEFAULT;
 	}
 
 	/**
@@ -184,12 +183,6 @@ public class EventHandler {
 		if(!world.canSeeSky(pos.above())) {
 			t = (t + 0.8f)/2f;
 			r = (r + 1)/2f;
-		}
-		if(block instanceof IPlantable plantable) {
-			Block plant = plantable.getPlant(world, pos).getBlock();
-			if(plant != Blocks.AIR) {
-				block = plant;
-			}
 		}
 		CropWeatherOffsets o = HardLibAPI.hardCrops.getCropOffsets(block);
 		if(o != null) {

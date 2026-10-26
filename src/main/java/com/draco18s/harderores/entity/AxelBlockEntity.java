@@ -1,5 +1,7 @@
 package com.draco18s.harderores.entity;
 
+import javax.annotation.Nullable;
+
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.hardlib.api.capability.RawMechanicalPowerHandler;
 import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
@@ -15,13 +17,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
 public class AxelBlockEntity extends ModBlockEntity {
 	private int[][] lightArray;
 	protected RawMechanicalPowerHandler powerSupply;
-	private LazyOptional<RawMechanicalPowerHandler> powerSupplyholder = LazyOptional.of(() -> powerSupply);
 
 	public AxelBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
 		super(HarderOres.ModBlockEntities.machine_axel, p_155229_, p_155230_);
@@ -65,11 +64,8 @@ public class AxelBlockEntity extends ModBlockEntity {
 		powerSupply.deserializeNBT(registries, tag.getCompound("harderores:power"));
 	}
 	
-	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-		if(capability == IMechanicalPower.MECHANICAL_POWER_CAPABILITY) {
-			return powerSupplyholder.cast();
-		}
-		return super.getCapability(capability, facing);
+	/** The power the axle supplies (see HarderOres' capability registration). */
+	public IMechanicalPower getMechanicalPower(@Nullable Direction facing) {
+		return powerSupply;
 	}
 }

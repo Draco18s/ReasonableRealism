@@ -3,13 +3,21 @@ package com.draco18s.harderores.network;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.draco18s.hardlib.HardLib;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public class ToClientMessageOreParticles {
+import com.draco18s.harderores.HarderOres;
+
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+public class ToClientMessageOreParticles implements CustomPacketPayload {
+	public static final Type<ToClientMessageOreParticles> TYPE = new Type<ToClientMessageOreParticles>(HarderOres.getRL("ore_particles"));
+	public static final StreamCodec<FriendlyByteBuf, ToClientMessageOreParticles> STREAM_CODEC = StreamCodec.of(
+			(buf, msg) -> encode(msg, buf), ToClientMessageOreParticles::decode);
+
 	public int effectID;
 	public BlockPos eventAt;
 	public List<BlockPos> oresAt;
@@ -47,11 +55,15 @@ public class ToClientMessageOreParticles {
 		return new ToClientMessageOreParticles(effectID, oresAt, eventAt);
 	}
 	
+	@Override
+	public Type<ToClientMessageOreParticles> type() {
+		return TYPE;
+	}
+
 	public static class Handler {
-		public static void handle(final ToClientMessageOreParticles message, CustomPayloadEvent.Context ctx) {
-			ctx.enqueueWork(() -> {
-				HardLib.PROXY.spawnParticles(message, ctx);
-			});
+		/** Runs on the client's main thread (NeoForge's default for payload handlers). */
+		public static void handle(final ToClientMessageOreParticles message, IPayloadContext ctx) {
+			HarderOres.PROXY.spawnParticles(message, ctx);
 		}
 	}
 }

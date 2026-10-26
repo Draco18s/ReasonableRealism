@@ -16,16 +16,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /**
  * The mining enchantments (1.12's behavior). Pulverize works in the hard ores' loot function (HarderSetCount).
@@ -56,7 +58,8 @@ public class EventHandler {
 		}
 		ItemStack mainStack = harvester.getMainHandItem();
 		ItemStack originalStack = mainStack.copy();
-		int exp = event.getExpToDrop();
+		// Each extra layer drops the experience the block itself would.
+		int exp = state.getExpDrop(world, pos, world.getBlockEntity(pos), harvester, mainStack);
 		float rollover = 0;
 
 		// Ore Breaker: extra layers off this block. The last layer is left for the break itself, which drops loot for
@@ -93,14 +96,14 @@ public class EventHandler {
 		if(rollover >= 0.75f) {
 			mainStack.mineBlock(world, state, pos, harvester);
 			if(mainStack.isEmpty() && !originalStack.isEmpty())
-				net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(harvester, mainStack, InteractionHand.MAIN_HAND);
+				net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(harvester, mainStack, InteractionHand.MAIN_HAND);
 			rollover -= 1;
 		}
 		if(removed && canHarvest) {
 			state.getBlock().playerDestroy(world, harvester, pos, state, world.getBlockEntity(pos), originalStack);
 		}
 		if(removed && exp > 0) {
-			event.setExpToDrop(event.getExpToDrop() + exp);
+			ExperienceOrb.award(world, Vec3.atCenterOf(pos), exp);
 		}
 		return rollover;
 	}

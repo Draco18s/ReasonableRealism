@@ -5,10 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
+import com.draco18s.hardlib.api.ObjectHolder;
 import com.draco18s.industry.block.DistributorBlock;
 import com.draco18s.industry.block.PoweredRailBridgeBlock;
 import com.draco18s.industry.block.RailBridgeBlock;
 import com.draco18s.industry.block.WoodenHopperBlock;
+import com.draco18s.industry.entity.AbstractHopper;
 import com.draco18s.industry.entity.DistributorBlockEntity;
 import com.draco18s.industry.entity.WoodenHopperBlockEntity;
 import com.draco18s.industry.inventory.DistributorContainerMenu;
@@ -29,21 +31,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 @Mod(ExpandedIndustry.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ExpandedIndustry {
 	public static final String MODID = "expindustry";
 	public static final Logger LOGGER = LogManager.getLogger();
 	
 	@ObjectHolder(registryName = "minecraft:blocks", value = MODID+":"+"creative_tab")
-	public static final CreativeModeTab tab = null;
+	public static CreativeModeTab tab;
 	
 	//public static final Material RAIL_BRIDGE = (new Material.Builder(MaterialColor.WOOD)).noCollider().nonSolid().build();//.notSolidBlocking()
 	
@@ -60,12 +63,12 @@ public class ExpandedIndustry {
 		EasyRegistry.registerOther(IForgeContainerType.create(FilterContainer::new), getRL("machine_filter"));
 `		*/
 
-		RegistryObject<Block> wood_hopper;
+		DeferredHolder<Block, Block> wood_hopper;
 		wood_hopper = EasyRegistry.registerBlock(WoodenHopperBlock::new, getRL("machine_wood_hopper"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(WoodenHopperBlockEntity::new, wood_hopper.get()).build(null), getRL("machine_wood_hopper"));
 		EasyRegistry.registerMenuType(getRL("machine_wood_hopper"),() -> new MenuType<>(WoodHopperContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
-		RegistryObject<Block> distributor = EasyRegistry.registerBlock(DistributorBlock::new, getRL("machine_distributor"), new Item.Properties());
+		DeferredHolder<Block, Block> distributor = EasyRegistry.registerBlock(DistributorBlock::new, getRL("machine_distributor"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> BlockEntityType.Builder.of(DistributorBlockEntity::new, distributor.get()).build(null), getRL("machine_distributor"));
 		EasyRegistry.registerMenuType(getRL("machine_distributor"),() -> new MenuType<>(DistributorContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
@@ -100,6 +103,12 @@ public class ExpandedIndustry {
 	}
 
 	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModTileEntities.machine_wood_hopper, AbstractHopper::getItemHandler);
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModTileEntities.machine_distributor, AbstractHopper::getItemHandler);
+	}
+
+	@SubscribeEvent
 	public static void addItemsToCreativeTab(final BuildCreativeModeTabContentsEvent event)
     {
 		ResourceKey<CreativeModeTab> tab = event.getTabKey();
@@ -113,38 +122,38 @@ public class ExpandedIndustry {
 	
 	public static class ModBlocks {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"rail_bridge")
-		public static final Block rail_bridge = null;
+		public static Block rail_bridge;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"powered_rail_bridge")
-		public static final Block powered_rail_bridge = null;
+		public static Block powered_rail_bridge;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_wood_hopper")
-		public static final Block machine_wood_hopper = null;
+		public static Block machine_wood_hopper;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"machine_distributor")
-		public static final Block machine_distributor = null;
+		public static Block machine_distributor;
 		//@ObjectHolder(registryName = "minecraft:blocks", value = MODID+"machine_filter")
 		//public static final Block machine_filter = null;
 	}
 
 	public static class ModItems {
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"machine_wood_hopper")
-		public static final Item machine_wood_hopper = null;
+		public static Item machine_wood_hopper;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"machine_distributor")
-		public static final Item machine_distributor = null;
+		public static Item machine_distributor;
 		//public static final Item machine_filter = null;
 	}
 
 	public static class ModTileEntities {
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_wood_hopper")
-		public static final BlockEntityType<WoodenHopperBlockEntity> machine_wood_hopper = null;
+		public static BlockEntityType<WoodenHopperBlockEntity> machine_wood_hopper;
 		@ObjectHolder(registryName = "minecraft:block_entity_type", value = MODID+":"+"machine_distributor")
-		public static final BlockEntityType<DistributorBlockEntity> machine_distributor = null;
+		public static BlockEntityType<DistributorBlockEntity> machine_distributor;
 		//public static final BlockEntityType<FilterTileEntity> machine_filter = null;
 	}
 
 	public static class ModContainerTypes {
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_wood_hopper")
-		public static final MenuType<WoodHopperContainerMenu> machine_wood_hopper = null;
+		public static MenuType<WoodHopperContainerMenu> machine_wood_hopper;
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_distributor")
-		public static final MenuType<DistributorContainerMenu> machine_distributor = null;
+		public static MenuType<DistributorContainerMenu> machine_distributor;
 		//public static final MenuType<FilterContainer> machine_filter = null;
 		//public static final ContainerType<SifterContainer> sifter = null;
 	}
@@ -165,7 +174,8 @@ public class ExpandedIndustry {
 		//public static DimensionType FILTER_DIMENSION = null;
 	}
 	
-	@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.MOD)
+	// (NeoForge rejects a subscriber with no handlers: restore the annotation with the handler.)
+	//@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.MOD)
 	private static class RegistrationMod {
 		/*@SubscribeEvent
 		public static void onRegisterDimType(@Nonnull final RegistryEvent.Register<ModDimension> event) {
@@ -175,7 +185,8 @@ public class ExpandedIndustry {
 		}*/
 	}
 	
-	@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.FORGE)
+	// (NeoForge rejects a subscriber with no handlers: restore the annotation with the handler.)
+	//@EventBusSubscriber(modid = ExpandedIndustry.MODID, bus = EventBusSubscriber.Bus.GAME)
 	private static class RegistrationForge {
 		/*@SuppressWarnings("deprecation")
 		@SubscribeEvent

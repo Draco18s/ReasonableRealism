@@ -7,12 +7,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.PlantType;
 
 public class TwoTallFlower extends TallFlowerBlock {
-	protected final PlantType type;
+	protected final FlowerSoil type;
 
-	public TwoTallFlower(PlantType plantType) {
+	public TwoTallFlower(FlowerSoil plantType) {
 		super(SimpleFlower.flowerProperties());
 		type = plantType;
 	}
@@ -26,10 +25,5 @@ public class TwoTallFlower extends TallFlowerBlock {
 	@Override
 	protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
 		return SimpleFlower.mayPlaceOn(type, state) || super.mayPlaceOn(state, level, pos);
-	}
-
-	@Override
-	public PlantType getPlantType(BlockGetter level, BlockPos pos) {
-		return type;
 	}
 }

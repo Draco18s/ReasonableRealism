@@ -21,7 +21,7 @@ public class TemperatureCheck implements LootItemCondition {
 	public boolean test(LootContext ctx) {
 		ServerLevel serverlevel = ctx.getLevel();
 		BlockPos blockpos = BlockPos.containing(ctx.getParam(LootContextParams.ORIGIN));
-		return serverlevel.getBiome(blockpos).get().coldEnoughToSnow(blockpos);
+		return serverlevel.getBiome(blockpos).value().coldEnoughToSnow(blockpos);
 	}
 
 	@Override

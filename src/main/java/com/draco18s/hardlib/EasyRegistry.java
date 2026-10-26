@@ -1,5 +1,6 @@
 package com.draco18s.hardlib;
 
+import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,13 +10,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.NotNull;
-
+import com.draco18s.hardlib.api.ObjectHolder;
 
 import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -29,12 +27,13 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 
 public class EasyRegistry {
 	private static List<Tuple<ResourceLocation, Supplier<Block>>> blocksToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<Block>>>());
@@ -42,29 +41,29 @@ public class EasyRegistry {
 	private static List<Tuple<ResourceLocation, Supplier<BlockEntityType<?>>>> tilesToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation,Supplier<BlockEntityType<?>>>>());
 	private static List<Tuple<ResourceLocation, Supplier<MenuType<?>>>> menusToReg = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<MenuType<?>>>>());
 	private static Map<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation, Supplier<?>>>> miscReg = Collections.synchronizedMap(new HashMap<ResourceKey<Registry<?>>, List<Tuple<ResourceLocation,Supplier<?>>>>());
-	private static List<RegistryObject<Item>> regItems = Collections.synchronizedList(new ArrayList<RegistryObject<Item>>());
+	private static List<DeferredHolder<Item, Item>> regItems = Collections.synchronizedList(new ArrayList<DeferredHolder<Item, Item>>());
 	
 	static void registerEventBus(IEventBus modEventBus) {
 		modEventBus.register(EasyRegistry.class);
 	}
 
-	public static RegistryObject<Block> registerBlock(Supplier<Block> block, ResourceLocation registryname) {
-		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
+	public static DeferredHolder<Block, Block> registerBlock(Supplier<Block> block, ResourceLocation registryname) {
+		DeferredHolder<Block, Block> ret = DeferredHolder.create(Registries.BLOCK, registryname);
 		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
 		return ret;
 	}
 	
-	public static RegistryObject<Block> registerBlock(Supplier<Block> block, ResourceLocation registryname, Item.Properties props) {
-		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
-		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+	public static DeferredHolder<Block, Block> registerBlock(Supplier<Block> block, ResourceLocation registryname, Item.Properties props) {
+		DeferredHolder<Block, Block> ret = DeferredHolder.create(Registries.BLOCK, registryname);
+		regItems.add(DeferredHolder.create(Registries.ITEM, registryname));
 		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
 		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, ()-> new BlockItem(ret.get(), props)));
 		return ret;
 	}
 	
 	public static <T extends BlockItem,U extends Comparable<U>> void registerBlockWithVariants(Supplier<Block> block, ResourceLocation registryname, Property<U> prop, IBlockItemFactory<T> blockItemCtor, Item.Properties props) {
-		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
-		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		DeferredHolder<Block, Block> ret = DeferredHolder.create(Registries.BLOCK, registryname);
+		regItems.add(DeferredHolder.create(Registries.ITEM, registryname));
 		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
 		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, () -> blockItemCtor.create(ret.get(), props)));
 	}
@@ -74,14 +73,14 @@ public class EasyRegistry {
 	}
 	
 	public static void registerBlock(Supplier<Block> block, ResourceLocation registryname, Function<Block,BlockItem> iBlock) {
-		RegistryObject<Block> ret = RegistryObject.createOptional(registryname, ForgeRegistries.Keys.BLOCKS, registryname.getNamespace());
-		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		DeferredHolder<Block, Block> ret = DeferredHolder.create(Registries.BLOCK, registryname);
+		regItems.add(DeferredHolder.create(Registries.ITEM, registryname));
 		blocksToReg.add(new Tuple<ResourceLocation, Supplier<Block>>(registryname, block));
 		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, () -> iBlock.apply(ret.get())));
 	}
 	
 	public static void registerItem(Supplier<Item> item, ResourceLocation registryname) {
-		regItems.add(RegistryObject.createOptional(registryname, ForgeRegistries.Keys.ITEMS, registryname.getNamespace()));
+		regItems.add(DeferredHolder.create(Registries.ITEM, registryname));
 		itemsToReg.add(new Tuple<ResourceLocation, Supplier<Item>>(registryname, item));
 	}
 	
@@ -99,7 +98,7 @@ public class EasyRegistry {
 	}
 	
 	/** Registers a creative tab (tabs are a registry since 1.20); the builder only needs its title, icon and items. */
-	public static RegistryObject<CreativeModeTab> registerCreativeTab(ResourceLocation id, Consumer<CreativeModeTab.Builder> tab) {
+	public static DeferredHolder<CreativeModeTab, CreativeModeTab> registerCreativeTab(ResourceLocation id, Consumer<CreativeModeTab.Builder> tab) {
 		return registerOther(Registries.CREATIVE_MODE_TAB, new Tuple<ResourceLocation, Supplier<CreativeModeTab>>(id, () -> {
 			CreativeModeTab.Builder builder = CreativeModeTab.builder();
 			tab.accept(builder);
@@ -112,7 +111,7 @@ public class EasyRegistry {
 	// Now all the stories have been told
 	// Except for one
 	@SuppressWarnings({ "unchecked" })
-	public static <T> RegistryObject<T> registerOther(ResourceKey<Registry<T>> registryKey, Tuple<ResourceLocation, Supplier<T>> supplier) {
+	public static <T> DeferredHolder<T, T> registerOther(ResourceKey<Registry<T>> registryKey, Tuple<ResourceLocation, Supplier<T>> supplier) {
 		if(!miscReg.containsKey(registryKey)) {
 			List<Tuple<ResourceLocation, Supplier<T>>> list = new ArrayList<Tuple<ResourceLocation, Supplier<T>>>();
 			// As the stars start to align
@@ -136,7 +135,7 @@ public class EasyRegistry {
 		@SuppressWarnings("rawtypes")
 		Tuple s = supplier;
 		miscReg.get(registryKey).add(s);
-		RegistryObject<T> ret = RegistryObject.createOptional(supplier.getA(), registryKey, supplier.getA().getNamespace());
+		DeferredHolder<T, T> ret = DeferredHolder.create(registryKey, supplier.getA());
 		return ret;
 	}
 
@@ -147,44 +146,58 @@ public class EasyRegistry {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SubscribeEvent
 	public static void onRegisterEvent(final RegisterEvent event) {
-		@NotNull ResourceKey<? extends Registry<?>> key = event.getRegistryKey();
-		if (key.equals(ForgeRegistries.Keys.BLOCKS)){
-			for(var it : blocksToReg) {
-				event.getForgeRegistry().register(it.getA(), it.getB().get());
-			}
-			return;
+		ResourceKey<? extends Registry<?>> key = event.getRegistryKey();
+		if (key.equals(Registries.BLOCK)) {
+			register(event, Registries.BLOCK, blocksToReg);
 		}
-		if (key.equals(ForgeRegistries.Keys.ITEMS)){
-			for(var it : itemsToReg) {
-				event.getForgeRegistry().register(it.getA(), it.getB().get());
-			}
-			return;
+		else if (key.equals(Registries.ITEM)) {
+			register(event, Registries.ITEM, itemsToReg);
 		}
-		if(key.equals(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES)) {
-			for(var it : tilesToReg) {
-				event.getForgeRegistry().register(it.getA(), it.getB().get());
-			}
-			return;
+		else if (key.equals(Registries.BLOCK_ENTITY_TYPE)) {
+			register(event, Registries.BLOCK_ENTITY_TYPE, tilesToReg);
 		}
-		if(key.equals(ForgeRegistries.Keys.MENU_TYPES)) {
-			for(var it : menusToReg) {
-				event.getForgeRegistry().register(it.getA(), it.getB().get());
-			}
-			return;
+		else if (key.equals(Registries.MENU)) {
+			register(event, Registries.MENU, menusToReg);
 		}
-		if(miscReg.containsKey(key)) {
-			boolean vanilla = (event.getForgeRegistry() == null);
-			List<Tuple<ResourceLocation, Supplier<?>>> list = miscReg.get(key);
-			for(Tuple<ResourceLocation, Supplier<?>> l : list) {
-				//vanilla is such a whore
-				if(vanilla) {
-					WritableRegistry reg = (WritableRegistry)event.getVanillaRegistry();
-					ResourceKey kk = ResourceKey.create(reg.key(), l.getA());
-					reg.register(kk , l.getB().get(), RegistrationInfo.BUILT_IN);
-				}
-				else {
-					event.getForgeRegistry().register(l.getA(), l.getB().get());
-				}
+		else if (miscReg.containsKey(key)) {
+			register(event, (ResourceKey)key, (List)miscReg.get(key));
+		}
+		fillObjectHolders(event);
+	}
+
+	private static <T> void register(RegisterEvent event, ResourceKey<? extends Registry<T>> key, List<Tuple<ResourceLocation, Supplier<T>>> entries) {
+		for(Tuple<ResourceLocation, Supplier<T>> entry : entries) {
+			event.register(key, entry.getA(), entry.getB());
+		}
+	}
+
+	/** Fields marked @ObjectHolder, by registry id (from the mods' scan data). */
+	private static Map<ResourceLocation, List<ModFileScanData.AnnotationData>> objectHolders;
+
+	/** Fills the @ObjectHolder fields for the registry just registered (everything of ours is in it by now). */
+	private static void fillObjectHolders(RegisterEvent event) {
+		if(objectHolders == null) {
+			objectHolders = new HashMap<ResourceLocation, List<ModFileScanData.AnnotationData>>();
+			for(ModFileScanData scan : ModList.get().getAllScanData()) {
+				scan.getAnnotatedBy(ObjectHolder.class, ElementType.FIELD).forEach(holder -> objectHolders
+						.computeIfAbsent(HardLib.parseRL((String)holder.annotationData().get("registryName")), k -> new ArrayList<ModFileScanData.AnnotationData>())
+						.add(holder));
+			}
+		}
+		Registry<?> registry = event.getRegistry();
+		for(ModFileScanData.AnnotationData holder : objectHolders.getOrDefault(event.getRegistryKey().location(), List.of())) {
+			ResourceLocation id = HardLib.parseRL((String)holder.annotationData().get("value"));
+			String field = holder.clazz().getClassName() + "." + holder.memberName();
+			if(!registry.containsKey(id)) {
+				HardLib.LOGGER.warn("Object holder {} names {}, which isn't registered in {}", field, id, registry.key().location());
+				continue;
+			}
+			try {
+				Class.forName(holder.clazz().getClassName(), true, EasyRegistry.class.getClassLoader())
+						.getField(holder.memberName()).set(null, registry.get(id));
+			}
+			catch(ReflectiveOperationException e) {
+				throw new IllegalStateException("Couldn't fill object holder " + field, e);
 			}
 		}
 	}
@@ -195,7 +208,7 @@ public class EasyRegistry {
 		if(event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			regItems.forEach(itm -> {
 				if(itm.get() instanceof TieredItem)
-					event.accept(itm);
+					event.accept(itm.get());
 			});
 			/*miscReg.forEach((reg,list) -> {
 				if(reg.equals(ForgeRegistries.Keys.ENCHANTMENTS)) {

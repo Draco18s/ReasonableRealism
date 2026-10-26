@@ -5,13 +5,13 @@ import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.hardlib.HardLib;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 @SuppressWarnings("unused")
 public class ModItemModelProvider extends ItemModelProvider {
@@ -31,7 +31,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 	}
 
 	private void farming() {
-		handheldItem(HarderFarming.ModItems.butcher_knife);
+		handheldTexturedItem(HarderFarming.ModItems.butcher_knife);
 		simpleItem(HarderFarming.ModItems.tinydust_sugar, getRL("sugar_dust_sm"));
 		simpleItem(HarderFarming.ModItems.tinydust_flour, getRL("flour_dust_sm"));
 		simpleItem(HarderFarming.ModItems.largedust_flour, getRL("flour_dust_lg"));
@@ -65,28 +65,28 @@ public class ModItemModelProvider extends ItemModelProvider {
 	}
 
 	private ItemModelBuilder simpleItem(Item item) {
-		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
+		ResourceLocation itemName = BuiltInRegistries.ITEM.getKey(item);
 		return withExistingParent(itemName.toString(),
 				HardLib.getRL("minecraft", "item/generated")).texture("layer0",
 				HardLib.getRL(itemName.getNamespace(), ITEM_FOLDER + "/" +  itemName.getPath()));
 	}
 
 	private ItemModelBuilder simpleItem(Item item, ResourceLocation texture) {
-		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
+		ResourceLocation itemName = BuiltInRegistries.ITEM.getKey(item);
 		return withExistingParent(itemName.toString(),
 				HardLib.getRL("minecraft", "item/generated")).texture("layer0",
 				HardLib.getRL(itemName.getNamespace(), ITEM_FOLDER + "/" +  texture.getPath()));
 	}
 
-	private ItemModelBuilder handheldItem(Item item) {
-		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
+	private ItemModelBuilder handheldTexturedItem(Item item) {
+		ResourceLocation itemName = BuiltInRegistries.ITEM.getKey(item);
 		return withExistingParent(itemName.toString(),
 				HardLib.parseRL("item/handheld")).texture("layer0",
 				HardLib.getRL(itemName.getNamespace(), ITEM_FOLDER + "/" + itemName.getPath()));
 	}
 
-	private ItemModelBuilder handheldItem(Item item, ResourceLocation texture) {
-		ResourceLocation itemName = ForgeRegistries.ITEMS.getKey(item);
+	private ItemModelBuilder handheldTexturedItem(Item item, ResourceLocation texture) {
+		ResourceLocation itemName = BuiltInRegistries.ITEM.getKey(item);
 		return withExistingParent(itemName.toString(),
 				HardLib.parseRL("item/handheld")).texture("layer0",
 				HardLib.getRL(itemName.getNamespace(), ITEM_FOLDER + "/" + itemName.getPath()));

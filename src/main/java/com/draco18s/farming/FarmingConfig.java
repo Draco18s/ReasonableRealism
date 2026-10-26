@@ -1,17 +1,17 @@
 package com.draco18s.farming;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /** config/harderfarming-common.toml */
 public class FarmingConfig {
-	public static final ForgeConfigSpec SPEC;
-	public static final ForgeConfigSpec.BooleanValue doRawLeather;
-	public static final ForgeConfigSpec.BooleanValue doSlowCrops;
-	public static final ForgeConfigSpec.BooleanValue doBiomeCrops;
-	public static final ForgeConfigSpec.IntValue cropsWorst;
+	public static final ModConfigSpec SPEC;
+	public static final ModConfigSpec.BooleanValue doRawLeather;
+	public static final ModConfigSpec.BooleanValue doSlowCrops;
+	public static final ModConfigSpec.BooleanValue doBiomeCrops;
+	public static final ModConfigSpec.IntValue cropsWorst;
 
 	static {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		builder.push("general");
 		doRawLeather = builder
 				.comment("If animals drop raw leather (which needs tanning) instead of leather")

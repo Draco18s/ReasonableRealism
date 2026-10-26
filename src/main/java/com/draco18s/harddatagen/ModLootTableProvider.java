@@ -40,7 +40,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModLootTableProvider extends LootTableProvider {
 	public ModLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries)
@@ -112,7 +112,7 @@ public class ModLootTableProvider extends LootTableProvider {
 			dropOther(HarderFarming.ModBlocks.crop_weeds, HarderFarming.ModItems.weed_seeds);
 			dropSelf(HarderFarming.ModBlocks.tanner);
 
-			for(RegistryObject<Block> flower : OreFlowers.FLOWERS.values()) {
+			for(DeferredHolder<Block, Block> flower : OreFlowers.FLOWERS.values()) {
 				if(flower.get() instanceof DoublePlantBlock) {
 					add(flower.get(), createSinglePropConditionTable(flower.get(), DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
 				}

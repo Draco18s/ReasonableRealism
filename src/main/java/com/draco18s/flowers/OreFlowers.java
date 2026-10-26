@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.draco18s.flowers.block.BloomingFlower;
+import com.draco18s.flowers.block.FlowerSoil;
 import com.draco18s.flowers.block.SimpleFlower;
 import com.draco18s.flowers.block.TwoTallFlower;
 import com.draco18s.flowers.item.StickyBlobItem;
@@ -14,6 +15,7 @@ import com.draco18s.flowers.util.OreDataStore;
 import com.draco18s.hardlib.EasyRegistry;
 import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.ObjectHolder;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
 import com.draco18s.hardlib.api.internal.BlockWrapper;
 import com.draco18s.hardlib.api.internal.OreFlowerData;
@@ -32,33 +34,30 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.TallFlowerBlock;
-import net.minecraftforge.common.PlantType;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ObjectHolder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 /**
  * Flowers that grow over ore deposits. Each ore has a plains flower and a desert one; the rest are decorative
  * (1.12 used them for other mods' ores).
  */
 @Mod(OreFlowers.MODID)
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = OreFlowers.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class OreFlowers {
 	public static final String MODID = "oreflowers";
 
 	/** Every flower block, in creative-tab order. */
-	public static final Map<String, RegistryObject<Block>> FLOWERS = new LinkedHashMap<String, RegistryObject<Block>>();
+	public static final Map<String, DeferredHolder<Block, Block>> FLOWERS = new LinkedHashMap<String, DeferredHolder<Block, Block>>();
 	public static final OreDataStore oreData = new OreDataStore();
 
 	public OreFlowers() {
 		registerCreativeTab();
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FlowersConfig.SPEC);
+		ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, FlowersConfig.SPEC);
 		HardLibAPI.oreFlowers = new FlowerDataHandler();
 		HardLibAPI.oreData = oreData;
 
@@ -70,22 +69,22 @@ public class OreFlowers {
 				"hauman", "leadplant", "red_amaranth", "shrub_violet", "affine", "clover", "camellia", "malva", "melastoma", "broadleaf_arrowhead",
 		};
 		for(String name : plains) {
-			registerFlower(() -> new SimpleFlower(PlantType.PLAINS), name);
+			registerFlower(() -> new SimpleFlower(FlowerSoil.PLAINS), name);
 		}
-		registerFlower(() -> new BloomingFlower(PlantType.PLAINS), "horsetail");//gold
+		registerFlower(() -> new BloomingFlower(FlowerSoil.PLAINS), "horsetail");//gold
 
 		String[] desert = {
 				"red_sorrel",//iron
 				"copper_flower", "sheeps_fescue", "primrose", "rapeseed", "milkwort", "madwort", "zilla", "marigold",
 		};
 		for(String name : desert) {
-			registerFlower(() -> new SimpleFlower(PlantType.DESERT), name);
+			registerFlower(() -> new SimpleFlower(FlowerSoil.DESERT), name);
 		}
 
-		registerFlower(() -> new TwoTallFlower(PlantType.PLAINS), "tansy");
-		registerFlower(() -> new TwoTallFlower(PlantType.PLAINS), "flame_lily");//redstone
-		registerFlower(() -> new TwoTallFlower(PlantType.DESERT), "chandelier_tree");//diamond
-		registerFlower(() -> new TwoTallFlower(PlantType.DESERT), "aveloz");//redstone
+		registerFlower(() -> new TwoTallFlower(FlowerSoil.PLAINS), "tansy");
+		registerFlower(() -> new TwoTallFlower(FlowerSoil.PLAINS), "flame_lily");//redstone
+		registerFlower(() -> new TwoTallFlower(FlowerSoil.DESERT), "chandelier_tree");//diamond
+		registerFlower(() -> new TwoTallFlower(FlowerSoil.DESERT), "aveloz");//redstone
 	}
 
 	/**
@@ -136,14 +135,14 @@ public class OreFlowers {
 
 	public static class ModBlocks {
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"aveloz")
-		public static final Block aveloz = null;
+		public static Block aveloz;
 	}
 
 	public static class ModItems {
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"sticky_goo")
-		public static final Item sticky_goo = null;
+		public static Item sticky_goo;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"aveloz")
-		public static final Item aveloz = null;
+		public static Item aveloz;
 	}
 
 	/** The ore flowers and sticky goo, then every other flower (vanilla's and other mods'). */
@@ -154,9 +153,9 @@ public class OreFlowers {
 			.displayItems((params, output) -> {
 				FLOWERS.values().forEach(flower -> output.accept(flower.get()));
 				output.accept(ModItems.sticky_goo);
-				for(Item item : ForgeRegistries.ITEMS) {
+				for(Item item : BuiltInRegistries.ITEM) {
 					if(item instanceof BlockItem blockItem && (blockItem.getBlock() instanceof FlowerBlock || blockItem.getBlock() instanceof TallFlowerBlock)
-							&& !MODID.equals(ForgeRegistries.ITEMS.getKey(item).getNamespace()) && item.isEnabled(params.enabledFeatures())) {
+							&& !MODID.equals(BuiltInRegistries.ITEM.getKey(item).getNamespace()) && item.isEnabled(params.enabledFeatures())) {
 						output.accept(item);
 					}
 				}

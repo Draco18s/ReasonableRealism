@@ -15,10 +15,10 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoublePlantBlock;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModBlockTagProvider extends BlockTagsProvider {
 	public ModBlockTagProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
@@ -28,7 +28,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 	@Override
 	protected void addTags(Provider provider) {
 		tag(BlockTags.RAILS).add(ExpandedIndustry.ModBlocks.rail_bridge);
-		for(RegistryObject<Block> flower : OreFlowers.FLOWERS.values()) {
+		for(DeferredHolder<Block, Block> flower : OreFlowers.FLOWERS.values()) {
 			tag(flower.get() instanceof DoublePlantBlock ? BlockTags.TALL_FLOWERS : BlockTags.SMALL_FLOWERS).add(flower.get());
 		}
 		tag(BlockTags.RAILS).add(ExpandedIndustry.ModBlocks.powered_rail_bridge);

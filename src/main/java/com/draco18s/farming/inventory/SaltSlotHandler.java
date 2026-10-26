@@ -3,7 +3,7 @@ package com.draco18s.farming.inventory;
 import com.draco18s.farming.HarderFarming;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 /** The salt on top of a tanning rack (anything tagged forge:dusts/salt). */
 public class SaltSlotHandler extends ItemStackHandler {

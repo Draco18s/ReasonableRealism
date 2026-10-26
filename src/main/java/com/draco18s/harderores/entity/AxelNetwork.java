@@ -10,7 +10,6 @@ import com.draco18s.hardlib.api.interfaces.IMechanicalPower;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
@@ -50,7 +49,6 @@ public final class AxelNetwork {
 		if(s.getBlock() != HarderOres.ModBlocks.machine_axel || s.getValue(BlockProperties.AXEL_ORIENTATION) != AxelOrientation.HUB) {
 			return null;
 		}
-		BlockEntity te = world.getBlockEntity(p);
-		return te == null ? null : te.getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, searchDir).orElse(null);
+		return world.getCapability(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, p, searchDir);
 	}
 }

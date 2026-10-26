@@ -18,12 +18,12 @@ import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.AdvancementEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /** Fires HardLib's block, time, distance and advancement-earned triggers. */
 @EventBusSubscriber(modid = HardLib.MODID)
@@ -91,8 +91,8 @@ public class AdvancementEvents {
 	}
 
 	@SubscribeEvent
-	public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if(event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) return;
+	public static void onPlayerTick(PlayerTickEvent.Post event) {
+		if(!(event.getEntity() instanceof ServerPlayer player)) return;
 		long time = player.serverLevel().getGameTime();
 		if(time % TIME_INTERVAL == 0 && HardLibAPI.Advancements.WORLD_TIME != null) {
 			LootParams ctx = new LootParams.Builder(player.serverLevel())

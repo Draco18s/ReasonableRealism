@@ -27,3 +27,6 @@ src/generated/resources/.cache/*
 
 # logs from command-line builds and runs
 *.log
+
+# CustomOreGen to build against: put a COG jar here (players download COG separately)
+/libs/

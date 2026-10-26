@@ -1,31 +1,22 @@
 package com.draco18s.harderores.network;
 
-import com.draco18s.harderores.HarderOres;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 public final class PacketHandler
 {
 	public static class EffectsIDs {
 		public static int PROSPECTING = 1;
 	}
-	private static final int PROTOCOL_VERSION = 1;
-	private static final SimpleChannel HANDLER = ChannelBuilder
-			.named(HarderOres.getRL("main_channel"))
-			.networkProtocolVersion(PROTOCOL_VERSION)
-			.simpleChannel();
+	private static final String PROTOCOL_VERSION = "1";
 
-	public static void register() {
-		int disc = 0;
-		HANDLER.messageBuilder(ToClientMessageOreParticles.class, disc, NetworkDirection.PLAY_TO_CLIENT)
-		.decoder(ToClientMessageOreParticles::decode)
-		.encoder(ToClientMessageOreParticles::encode)
-		.consumerMainThread(ToClientMessageOreParticles.Handler::handle)
-		.add();
+	/** Called from RegisterPayloadHandlersEvent (on Harder Ores' mod bus). */
+	public static void register(RegisterPayloadHandlersEvent event) {
+		event.registrar(PROTOCOL_VERSION)
+		.playToClient(ToClientMessageOreParticles.TYPE, ToClientMessageOreParticles.STREAM_CODEC, ToClientMessageOreParticles.Handler::handle);
 		//HANDLER.registerMessage(disc++, ToClientMessageOreParticles.class, ToClientMessageOreParticles::encode, ToClientMessageOreParticles::decode, ToClientMessageOreParticles.Handler::handle);
 	}
 
@@ -43,21 +34,21 @@ public final class PacketHandler
 	 * Sends a packet to the server.<br>
 	 * Must be called Client side. 
 	 */
-	public static <MSG> void sendToServer(MSG msg)
+	public static void sendToServer(CustomPacketPayload msg)
 	{
-		HANDLER.send(msg, PacketDistributor.SERVER.noArg());
+		PacketDistributor.sendToServer(msg);
 	}
 	
 	/**
 	 * Send a packet to a specific player.<br>
 	 * Must be called Server side. 
 	 */
-	public static <MSG> void sendTo(MSG msg, ServerPlayer player)
+	public static void sendTo(CustomPacketPayload msg, ServerPlayer player)
 	{
-		// (Fake players have no connection; Forge 1.21 dropped its FakePlayer class.)
+		// (Fake players have no connection.)
 		if (player.connection != null)
 		{
-			HANDLER.send(msg, PacketDistributor.PLAYER.with(player));
+			PacketDistributor.sendToPlayer(player, msg);
 		}
 	}
 }

@@ -5,9 +5,9 @@ import com.draco18s.industry.ExpandedIndustry;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class DistributorContainerMenu extends ExtHopperContainerMenu {
 	public DistributorContainerMenu(int windowID, Inventory p_39641_) {

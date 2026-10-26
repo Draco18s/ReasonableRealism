@@ -26,12 +26,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 /**
  * Pressure packager: packs items (9 ingots into a block, ice into packed ice...) using mechanical power from a
@@ -44,9 +42,9 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 	protected final ItemStackHandler outputHandler = new OutputItemStackHandler(outputSlots);
 	protected final RawMechanicalPowerHandler powerUser = new PackagerMechanicalPowerHandler();
 
-	public LazyOptional<IItemHandler> input = LazyOptional.of(() -> inputSlots);
-	public LazyOptional<IItemHandler> output = LazyOptional.of(() -> outputHandler);
-	public LazyOptional<IItemHandler> all = LazyOptional.of(() -> new CombinedInvWrapper(inputSlots,outputHandler));
+	public final IItemHandler input = inputSlots;
+	public final IItemHandler output = outputHandler;
+	public final IItemHandler all = new CombinedInvWrapper(inputSlots,outputHandler);
 
 	private float packTime;
 	private float timeMod = 1;
@@ -170,20 +168,18 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 		return Math.max(powerUser.getScaledPower(powerUser.getRawPower()),0);
 	}
 
-	@SuppressWarnings("unchecked")
-	@NonNull
 	@Override
-	protected <T> LazyOptional<T> getInventoryCapability(Capability<T> cap, @Nullable Direction side) {
+	public IItemHandler getItemHandler(@Nullable Direction side) {
 		if(side == null || level == null || level.getBlockState(worldPosition).getBlock() != getBlockState().getBlock()) {
-			return (LazyOptional<T>) all;
+			return all;
 		}
 		switch(side) {
 			case UP:
-				return (LazyOptional<T>) input;
+				return input;
 			case DOWN:
-				return (LazyOptional<T>) output;
+				return output;
 			default:
-				return LazyOptional.empty();
+				return null;
 		}
 	}
 
@@ -203,13 +199,6 @@ public class PackagerBlockEntity extends ModContainerBlockEntity {
 		}
 	}
 
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		input.invalidate();
-		output.invalidate();
-		all.invalidate();
-	}
 
 	@Override
 	protected void modSave(CompoundTag nbt, HolderLookup.Provider registries) {

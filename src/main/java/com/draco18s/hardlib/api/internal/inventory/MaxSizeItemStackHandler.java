@@ -1,6 +1,6 @@
 package com.draco18s.hardlib.api.internal.inventory;
 
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class MaxSizeItemStackHandler extends ItemStackHandler {
 	protected final int maxStackSize;

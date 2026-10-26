@@ -9,10 +9,10 @@ import com.draco18s.hardlib.HardLib;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Climate preferences for Pam's HarvestCraft crops (1.14's table; the season offsets are kept but unused). Crops are
@@ -82,7 +82,7 @@ public class HarvestcraftIntegration {
 		crop(offsets, "rice", -0.2f, -0.8f, 0, 0);
 		crop(offsets, "seaweed", 0.2f, 0.0f, 0, 0);
 		int matched = 0;
-		for(Map.Entry<ResourceKey<Block>, Block> entry : ForgeRegistries.BLOCKS.getEntries()) {
+		for(Map.Entry<ResourceKey<Block>, Block> entry : BuiltInRegistries.BLOCK.entrySet()) {
 			ResourceLocation id = entry.getKey().location();
 			if(!isHarvestcraft(id.getNamespace())) continue;
 			CropWeatherOffsets off = offsets.get(cropName(id.getPath()));

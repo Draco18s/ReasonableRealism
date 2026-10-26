@@ -20,12 +20,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity implements ICustomContainer {
 	public static ItemStackHandler EMPTY_HANDLER = new ItemStackHandler(0);
@@ -43,15 +40,9 @@ public abstract class ModContainerBlockEntity extends BaseContainerBlockEntity i
 		}
 	}
 	
-	public final <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
-		if(cap == ForgeCapabilities.ITEM_HANDLER) {
-			return getInventoryCapability(cap, side);
-		}
-		return super.getCapability(cap, side);
-	}
-	
-	@NonNull
-	protected abstract <T> LazyOptional<T> getInventoryCapability(Capability<T> cap, @Nullable net.minecraft.core.Direction side);
+	/** The item handler capability on a side (null for all of it), or null for none; see HardLib's capability registration. */
+	@Nullable
+	public abstract IItemHandler getItemHandler(@Nullable Direction side);
 
 	public double getLevelX() {
 		return (double)worldPosition.getX() + 0.5D;

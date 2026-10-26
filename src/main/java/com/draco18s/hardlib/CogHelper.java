@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
 /**
  * Installs CustomOreGen modules shipped in this jar (under cog_config/) into CustomOreGen's

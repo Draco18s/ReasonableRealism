@@ -6,7 +6,7 @@ import com.draco18s.hardlib.HardLib;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.generators.ModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelProvider;
 
 public class OreNameHelper {
 	private static String[] oreNames = {

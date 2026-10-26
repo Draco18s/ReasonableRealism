@@ -2,24 +2,24 @@ package com.draco18s.flowers;
 
 import com.draco18s.hardlib.api.internal.OreFlowerDictator;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /** config/oreflowers-common.toml */
 public class FlowersConfig {
-	public static final ForgeConfigSpec SPEC;
-	public static final ForgeConfigSpec.IntValue scanDepthSlices;
-	public static final ForgeConfigSpec.BooleanValue poopBonemealFlowers;
+	public static final ModConfigSpec SPEC;
+	public static final ModConfigSpec.IntValue scanDepthSlices;
+	public static final ModConfigSpec.BooleanValue poopBonemealFlowers;
 	private static final Dictator DEFAULT, CLOSE, RARE, CLOSE_RARE, COMMON, CLOSE_COMMON;
 
 	/** A dictator's settings: 1-in-chance per ore block of a flower cluster, up to distance blocks away. */
-	private record Dictator(ForgeConfigSpec.IntValue chance, ForgeConfigSpec.IntValue distance) {
+	private record Dictator(ModConfigSpec.IntValue chance, ModConfigSpec.IntValue distance) {
 		OreFlowerDictator build() {
 			return new OreFlowerDictator(chance.get(), distance.get());
 		}
 	}
 
 	static {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		builder.push("general");
 		scanDepthSlices = builder
 				.comment("How many 8-block slices below a bonemealed block are searched for ore (4 = 32 blocks)")
@@ -41,7 +41,7 @@ public class FlowersConfig {
 		SPEC = builder.build();
 	}
 
-	private static Dictator dictator(ForgeConfigSpec.Builder builder, String name, int chance, int distance) {
+	private static Dictator dictator(ModConfigSpec.Builder builder, String name, int chance, int distance) {
 		return new Dictator(
 				builder.comment("Chance of spawning flowers: 1/chance").defineInRange(name + "_chance", chance, 1, Integer.MAX_VALUE),
 				builder.comment("Flower spawn range (in blocks)").defineInRange(name + "_distance", distance, 0, 160));

@@ -6,17 +6,21 @@ import org.jetbrains.annotations.NotNull;
 
 import com.draco18s.farming.FarmingConfig;
 import com.draco18s.farming.HarderFarming;
+import com.draco18s.hardlib.HardLib;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.common.loot.LootModifier;
 
 /**
  * Animals drop rawhide instead of leather: 3-5 of it, plus one more per level of Looting, in place of whatever
@@ -43,7 +47,9 @@ public class RawLeatherModifier extends LootModifier {
 		if(!generatedLoot.removeIf(st -> st.is(Items.LEATHER))) {
 			return generatedLoot;
 		}
-		int count = 3 + context.getRandom().nextInt(3) + context.getRandom().nextInt(context.getLootingModifier() + 1);
+		int looting = context.getParamOrNull(LootContextParams.ATTACKING_ENTITY) instanceof LivingEntity killer
+				? HardLib.getEnchantmentLevel(context.getLevel().registryAccess(), Enchantments.LOOTING, killer.getMainHandItem()) : 0;
+		int count = 3 + context.getRandom().nextInt(3) + context.getRandom().nextInt(looting + 1);
 		generatedLoot.add(new ItemStack(HarderFarming.ModItems.raw_leather, count));
 		return generatedLoot;
 	}

@@ -3,8 +3,8 @@ package com.draco18s.hardlib.api.internal.inventory;
 import javax.annotation.Nullable;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SlotOutput extends SlotItemHandler {
 	

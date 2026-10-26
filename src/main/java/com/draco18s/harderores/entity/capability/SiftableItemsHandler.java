@@ -3,8 +3,8 @@ package com.draco18s.harderores.entity.capability;
 import com.draco18s.hardlib.api.HardLibAPI;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class SiftableItemsHandler extends ItemStackHandler {
 	public SiftableItemsHandler(int size) {

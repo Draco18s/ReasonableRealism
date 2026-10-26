@@ -31,9 +31,7 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class MillstoneBlock extends ModEntityBlock {
 
@@ -64,30 +62,29 @@ public class MillstoneBlock extends ModEntityBlock {
 		MillstoneOrientation mill = state.getValue(BlockProperties.MILL_ORIENTATION);
 		if(!mill.canAcceptInput || heldItem.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		BlockEntity be = world.getBlockEntity(pos);
-		LazyOptional<IItemHandler> handler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
-		return handler.map(inventory -> {
-			ItemStack stack = heldItem.copy();
-			stack.setCount(1);
-			stack = inventory.insertItem(0, stack, true);
-			if(stack.isEmpty()) {
-				inventory.insertItem(0, heldItem.split(1), false);
-				
-				MillstoneOrientation millpos = world.getBlockState(pos).getValue(BlockProperties.MILL_ORIENTATION);
-				MillstoneBlockEntity center = (MillstoneBlockEntity)world.getBlockEntity(be.getBlockPos().offset(millpos.offset.getX(), 0, millpos.offset.getZ()));
+		IItemHandler inventory = be instanceof MillstoneBlockEntity millstone ? millstone.getItemHandler(Direction.UP) : null;
+		if(inventory == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		ItemStack stack = heldItem.copy();
+		stack.setCount(1);
+		stack = inventory.insertItem(0, stack, true);
+		if(stack.isEmpty()) {
+			inventory.insertItem(0, heldItem.split(1), false);
+			
+			MillstoneOrientation millpos = world.getBlockState(pos).getValue(BlockProperties.MILL_ORIENTATION);
+			MillstoneBlockEntity center = (MillstoneBlockEntity)world.getBlockEntity(be.getBlockPos().offset(millpos.offset.getX(), 0, millpos.offset.getZ()));
 
-				if(center != null && center.getPower() > 0) {
-					if(player instanceof ServerPlayer sPlayer) {
-						LootParams.Builder bld = new LootParams.Builder(sPlayer.serverLevel())
-								.withParameter(MillstoneTrigger.POWER, center.getPower());
-						LootParams ctx = bld.create(MillstoneTrigger.requiredParams);
-						HardLibAPI.Advancements.MILL_BUILT.trigger(sPlayer, ctx);
-					}
+			if(center != null && center.getPower() > 0) {
+				if(player instanceof ServerPlayer sPlayer) {
+					LootParams.Builder bld = new LootParams.Builder(sPlayer.serverLevel())
+							.withParameter(MillstoneTrigger.POWER, center.getPower());
+					LootParams ctx = bld.create(MillstoneTrigger.requiredParams);
+					HardLibAPI.Advancements.MILL_BUILT.trigger(sPlayer, ctx);
 				}
-				
-				return ItemInteractionResult.CONSUME;
 			}
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-		}).orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+			
+			return ItemInteractionResult.CONSUME;
+		}
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	/*public static final VoxelShape CORNER_SE = box(0,0,0,10,16,10);
@@ -186,7 +183,9 @@ public class MillstoneBlock extends ModEntityBlock {
 	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockentity = world.getBlockEntity(pos);
-			InventoryUtils.dropItemHandlerContents(blockentity.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null), world, pos);
+			if(blockentity instanceof MillstoneBlockEntity mill) {
+				InventoryUtils.dropItemHandlerContents(mill.getItemHandler(null), world, pos);
+			}
 			super.onRemove(state, world, pos, newState, isMoving);
 		}
 	}

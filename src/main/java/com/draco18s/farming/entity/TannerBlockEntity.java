@@ -2,7 +2,6 @@ package com.draco18s.farming.entity;
 
 import java.util.ArrayList;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.draco18s.farming.HarderFarming;
@@ -22,12 +21,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 /**
  * Cures a rawhide on each side into leather in 2400 ticks, or 1200 while salted. One salt lasts 4800 ticks
@@ -40,11 +36,8 @@ public class TannerBlockEntity extends ModBlockEntity {
 	protected ItemStackHandler leftSlot = new LeatherSlotHandler();
 	protected ItemStackHandler rightSlot = new LeatherSlotHandler();
 	protected ItemStackHandler saltSlot = new SaltSlotHandler();
-	private final LazyOptional<IItemHandler> leftSlotholder = LazyOptional.of(() -> leftSlot);
-	private final LazyOptional<IItemHandler> rightSlotholder = LazyOptional.of(() -> rightSlot);
-	private final LazyOptional<IItemHandler> saltSlotholder = LazyOptional.of(() -> saltSlot);
-	private final LazyOptional<IItemHandler> outputSlots = LazyOptional.of(() -> new CombinedInvWrapper(leftSlot, rightSlot));
-	private final LazyOptional<IItemHandler> everything = LazyOptional.of(() -> new CombinedInvWrapper(leftSlot, rightSlot, saltSlot));
+	private final IItemHandler outputSlots = new CombinedInvWrapper(leftSlot, rightSlot);
+	private final IItemHandler everything = new CombinedInvWrapper(leftSlot, rightSlot, saltSlot);
 	protected int[] tanningTime = new int[]{0,0};
 	protected int saltTime;
 
@@ -127,29 +120,19 @@ public class TannerBlockEntity extends ModBlockEntity {
 	 * Top: the salt. Bottom: both hides (for hoppers to take leather out). Front and back: that side's hide.
 	 * With no side (or once the block is gone), everything.
 	 */
-	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if(cap != ForgeCapabilities.ITEM_HANDLER) return super.getCapability(cap, side);
+	@Nullable
+	public IItemHandler getItemHandler(@Nullable Direction side) {
 		if(side == null || level == null || level.getBlockState(worldPosition).getBlock() != getBlockState().getBlock()) {
-			return everything.cast();
+			return everything;
 		}
-		if(side == Direction.UP) return saltSlotholder.cast();
-		if(side == Direction.DOWN) return outputSlots.cast();
+		if(side == Direction.UP) return saltSlot;
+		if(side == Direction.DOWN) return outputSlots;
 		Direction facing = getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
-		if(facing == side) return leftSlotholder.cast();
-		if(facing.getOpposite() == side) return rightSlotholder.cast();
-		return super.getCapability(cap, side);
+		if(facing == side) return leftSlot;
+		if(facing.getOpposite() == side) return rightSlot;
+		return null;
 	}
 
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		leftSlotholder.invalidate();
-		rightSlotholder.invalidate();
-		outputSlots.invalidate();
-		saltSlotholder.invalidate();
-		everything.invalidate();
-	}
 
 	@Override
 	protected void modSave(CompoundTag tag, HolderLookup.Provider registries) {

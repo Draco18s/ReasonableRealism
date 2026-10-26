@@ -29,24 +29,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(HardLib.MODID)
 public class HardLib {
 	public static final String MODID = "hardlib";
 	public static final Logger LOGGER = LogManager.getLogger();
-	public static final IProxy PROXY = DistExecutor.safeRunForDist(()->ClientProxy::new, ()->ServerProxy::new);
+	public static final IProxy PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new ServerProxy();
 
 
-	public HardLib() {
-		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public HardLib(IEventBus modEventBus) {
 		EasyRegistry.registerEventBus(modEventBus);
 		HardLibAPI.Advancements.MILL_BUILT = EasyRegistry.registerAdvancementTrigger(MillstoneTrigger.ID, new MillstoneTrigger());
 		HardLibAPI.Advancements.FOUND_ORE = EasyRegistry.registerAdvancementTrigger(FoundOreTrigger.ID, new FoundOreTrigger());
@@ -55,9 +52,9 @@ public class HardLib {
 		HardLibAPI.Advancements.DISTANCE_TRAVELED = EasyRegistry.registerAdvancementTrigger(DistanceTraveledTrigger.ID, new DistanceTraveledTrigger());
 		HardLibAPI.Advancements.ADVANCEMENT_EARNED = EasyRegistry.registerAdvancementTrigger(AdvancementEarnedTrigger.ID, new AdvancementEarnedTrigger());
 		modEventBus.addListener((FMLCommonSetupEvent event) -> CogHelper.unpackConfigs());
-		EasyRegistry.registerOther(ForgeRegistries.Keys.RECIPE_SERIALIZERS, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
+		EasyRegistry.registerOther(Registries.RECIPE_SERIALIZER, new Tuple<ResourceLocation, Supplier<RecipeSerializer<?>>>(getRL("tag_output"),() -> new RecipeTagOutput.Serializer()));
 
-		IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+		IEventBus forgeBus = NeoForge.EVENT_BUS;
 		forgeBus.addListener(HardLib::onAddDebugReloadListener);
 	}
 
