@@ -65,6 +65,7 @@ import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.Tier;
@@ -430,6 +431,10 @@ public class HarderOres {
 				}
 				output.accept(ModBlocks.ore_limonite);
 				output.accept(ModItems.orechunk_limonite);
+				// What the hard ores drop.
+				output.accept(Items.RAW_IRON);
+				output.accept(Items.RAW_GOLD);
+				output.accept(Items.RAW_COPPER);
 				output.accept(ModItems.tinydust_iron);
 				output.accept(ModItems.largedust_iron);
 				output.accept(ModItems.tinydust_gold);
