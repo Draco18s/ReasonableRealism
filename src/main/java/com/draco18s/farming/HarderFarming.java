@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import com.draco18s.farming.block.CropWeedsBlock;
+import com.draco18s.farming.block.MulchedFarmlandBlock;
+import com.draco18s.farming.block.WeedyFarmlandBlock;
 import com.draco18s.farming.block.CropWinterWheatBlock;
 import com.draco18s.farming.block.SaltOreBlock;
 import com.draco18s.farming.block.TannerBlock;
@@ -13,6 +15,7 @@ import com.draco18s.farming.entity.TannerBlockEntity;
 import com.draco18s.farming.integration.HarvestcraftIntegration;
 import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.farming.item.ClimateGaugeItem;
+import com.draco18s.farming.item.WeedSeedsItem;
 import com.draco18s.farming.item.WinterSeedsItem;
 import com.draco18s.farming.loot.GrassLootModifier;
 import com.draco18s.farming.loot.RawLeatherModifier;
@@ -79,9 +82,12 @@ public class HarderFarming {
 		DeferredHolder<Block, Block> wheat = EasyRegistry.registerBlock(CropWinterWheatBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.WHEAT), getRL("crop_winter_wheat"));
 		EasyRegistry.registerItem(props -> new ButcherKnife(ToolMaterial.IRON, props), getRL("butcher_knife"));
 		EasyRegistry.registerItem(props -> new WinterSeedsItem(wheat.get(), props), getRL("winter_wheat_seeds"));
-		DeferredHolder<Block, Block> weeds = EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
-		// Seeds are named as items, not after their crop block.
-		EasyRegistry.registerItem(props -> new BlockItem(weeds.get(), props.useItemDescriptionPrefix()), getRL("weed_seeds"));
+		EasyRegistry.registerBlock(CropWeedsBlock::new, getRL("crop_weeds"));
+		// Weeds grow in the farmland, under any crop (crop_weeds is only kept for worlds that have some).
+		EasyRegistry.registerBlock(WeedyFarmlandBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND), getRL("weedy_farmland"));
+		// Carpet or leaf litter laid among a crop.
+		EasyRegistry.registerBlock(MulchedFarmlandBlock::new, () -> BlockBehaviour.Properties.ofFullCopy(Blocks.FARMLAND), getRL("mulched_farmland"));
+		EasyRegistry.registerItem(WeedSeedsItem::new, getRL("weed_seeds"));
 		DeferredHolder<Block, Block> tanner = EasyRegistry.registerBlock(TannerBlock::new, getRL("tanner"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> new BlockEntityType<>(TannerBlockEntity::new, tanner.get()), getRL("tanner"));
 		EasyRegistry.registerItem(ClimateGaugeItem.Thermometer::new, getRL("thermometer"));
@@ -134,6 +140,10 @@ public class HarderFarming {
 		public static Block crop_weeds;
 		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"tanner")
 		public static Block tanner;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"weedy_farmland")
+		public static Block weedy_farmland;
+		@ObjectHolder(registryName = "minecraft:block", value = MODID+":"+"mulched_farmland")
+		public static Block mulched_farmland;
 	}
 
 	public static class ModBlockEntities {

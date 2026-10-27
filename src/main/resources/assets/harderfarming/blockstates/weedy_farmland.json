@@ -1,0 +1,84 @@
+{
+	"multipart": [
+		{
+			"when": {
+				"moisture": "0|1|2|3|4|5|6"
+			},
+			"apply": {
+				"model": "minecraft:block/farmland"
+			}
+		},
+		{
+			"when": {
+				"moisture": "7"
+			},
+			"apply": {
+				"model": "minecraft:block/farmland_moist"
+			}
+		},
+		{
+			"when": {
+				"age": "0"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_0"
+			}
+		},
+		{
+			"when": {
+				"age": "1"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_1"
+			}
+		},
+		{
+			"when": {
+				"age": "2"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_2"
+			}
+		},
+		{
+			"when": {
+				"age": "3"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_3"
+			}
+		},
+		{
+			"when": {
+				"age": "4"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_4"
+			}
+		},
+		{
+			"when": {
+				"age": "5"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_5"
+			}
+		},
+		{
+			"when": {
+				"age": "6"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_6"
+			}
+		},
+		{
+			"when": {
+				"age": "7"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_weeds_7"
+			}
+		}
+	]
+}

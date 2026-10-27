@@ -1,0 +1,172 @@
+{
+	"multipart": [
+		{
+			"when": {
+				"moisture": "0|1|2|3|4|5|6"
+			},
+			"apply": {
+				"model": "minecraft:block/farmland"
+			}
+		},
+		{
+			"when": {
+				"moisture": "7"
+			},
+			"apply": {
+				"model": "minecraft:block/farmland_moist"
+			}
+		},
+		{
+			"when": {
+				"mulch": "white"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_white"
+			}
+		},
+		{
+			"when": {
+				"mulch": "orange"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_orange"
+			}
+		},
+		{
+			"when": {
+				"mulch": "magenta"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_magenta"
+			}
+		},
+		{
+			"when": {
+				"mulch": "light_blue"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_light_blue"
+			}
+		},
+		{
+			"when": {
+				"mulch": "yellow"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_yellow"
+			}
+		},
+		{
+			"when": {
+				"mulch": "lime"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_lime"
+			}
+		},
+		{
+			"when": {
+				"mulch": "pink"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_pink"
+			}
+		},
+		{
+			"when": {
+				"mulch": "gray"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_gray"
+			}
+		},
+		{
+			"when": {
+				"mulch": "light_gray"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_light_gray"
+			}
+		},
+		{
+			"when": {
+				"mulch": "cyan"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_cyan"
+			}
+		},
+		{
+			"when": {
+				"mulch": "purple"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_purple"
+			}
+		},
+		{
+			"when": {
+				"mulch": "blue"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_blue"
+			}
+		},
+		{
+			"when": {
+				"mulch": "brown"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_brown"
+			}
+		},
+		{
+			"when": {
+				"mulch": "green"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_green"
+			}
+		},
+		{
+			"when": {
+				"mulch": "red"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_red"
+			}
+		},
+		{
+			"when": {
+				"mulch": "black"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_black"
+			}
+		},
+		{
+			"when": {
+				"mulch": "moss"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_moss"
+			}
+		},
+		{
+			"when": {
+				"mulch": "pale_moss"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_carpet_pale_moss"
+			}
+		},
+		{
+			"when": {
+				"mulch": "leaves"
+			},
+			"apply": {
+				"model": "harderfarming:block/farmland_leaf_litter"
+			}
+		}
+	]
+}

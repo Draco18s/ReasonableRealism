@@ -1,0 +1,221 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:dirt"
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "white"
+            }
+          },
+          "name": "minecraft:white_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "orange"
+            }
+          },
+          "name": "minecraft:orange_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "magenta"
+            }
+          },
+          "name": "minecraft:magenta_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "light_blue"
+            }
+          },
+          "name": "minecraft:light_blue_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "yellow"
+            }
+          },
+          "name": "minecraft:yellow_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "lime"
+            }
+          },
+          "name": "minecraft:lime_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "pink"
+            }
+          },
+          "name": "minecraft:pink_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "gray"
+            }
+          },
+          "name": "minecraft:gray_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "light_gray"
+            }
+          },
+          "name": "minecraft:light_gray_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "cyan"
+            }
+          },
+          "name": "minecraft:cyan_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "purple"
+            }
+          },
+          "name": "minecraft:purple_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "blue"
+            }
+          },
+          "name": "minecraft:blue_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "brown"
+            }
+          },
+          "name": "minecraft:brown_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "green"
+            }
+          },
+          "name": "minecraft:green_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "red"
+            }
+          },
+          "name": "minecraft:red_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "black"
+            }
+          },
+          "name": "minecraft:black_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "moss"
+            }
+          },
+          "name": "minecraft:moss_carpet"
+        },
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "harderfarming:mulched_farmland",
+            "state": {
+              "mulch": "pale_moss"
+            }
+          },
+          "name": "minecraft:pale_moss_carpet"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "harderfarming:blocks/mulched_farmland"
+}

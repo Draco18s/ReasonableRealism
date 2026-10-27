@@ -74,10 +74,11 @@ public class ModModelProvider extends ModelProvider {
 		this.modid = modid;
 	}
 
-	/** The tanning rack's block state is written by hand (it's a multipart). */
+	/** The tanning rack's and the farmland variants' block states are written by hand (they're multiparts). */
 	@Override
 	protected Stream<? extends Holder<Block>> getKnownBlocks() {
-		return super.getKnownBlocks().filter(block -> block.value() != HarderFarming.ModBlocks.tanner);
+		return super.getKnownBlocks().filter(block -> block.value() != HarderFarming.ModBlocks.tanner
+				&& block.value() != HarderFarming.ModBlocks.weedy_farmland && block.value() != HarderFarming.ModBlocks.mulched_farmland);
 	}
 
 	@Override
@@ -208,11 +209,20 @@ public class ModModelProvider extends ModelProvider {
 		return ModelTemplates.CROP.create(id, TextureMapping.crop(tex(id)), blocks.modelOutput);
 	}
 
+	/**
+	 * A model per water level (9 is drawn as 8, its water is no deeper), turned to the flow: the models slope down
+	 * to the south, with the riffles across x. Facing is the way the water flows out.
+	 */
 	private void sluice(Block block) {
 		blocks.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
-				.with(PropertyDispatch.initial(SluiceBlock.LEVEL).generate(level -> {
-					int h = Math.max(((level + 1) / 2) * 2 - 1, 1);
-					return variant(HarderOres.getRL("block/sluice-" + h));
+				.with(PropertyDispatch.initial(SluiceBlock.LEVEL, BlockStateProperties.HORIZONTAL_FACING).generate((level, facing) -> {
+					Identifier model = HarderOres.getRL("block/sluice_" + Math.min(level, 8));
+					return switch(facing) {
+						case NORTH -> rotated(model, 0, 180);
+						case EAST -> rotated(model, 0, 270);
+						case WEST -> rotated(model, 0, 90);
+						default -> variant(model);
+					};
 				})));
 	}
 

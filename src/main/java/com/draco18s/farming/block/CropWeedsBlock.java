@@ -1,7 +1,5 @@
 package com.draco18s.farming.block;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.draco18s.farming.HarderFarming;
 
@@ -33,9 +31,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Weeds: show up on bare farmland next to crops, grow tall, and spread to nearby farmland (or as grass onto
- * grass blocks). They are slow to clear by hand and wear down the tool used. Carpet over farmland keeps them
- * out entirely: they neither spawn nor spread under it, and can't push it off.
+ * Weeds as a block of their own, which they were until they moved into the farmland (WeedyFarmlandBlock). Any left
+ * in a world move there on their next random tick. They are slow to clear by hand and wear down the tool used.
  */
 public class CropWeedsBlock extends CropBlock {
 	public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
@@ -71,53 +68,25 @@ public class CropWeedsBlock extends CropBlock {
 		return HarderFarming.ModItems.weed_seeds;
 	}
 
-	/** Grows to 7, spreads (pausing at 7 for one tick), then keeps growing to 15 and spreads every tick after. */
+	/** Moves into the farmland below (as weeds of the same growth), or just grows and spreads off farmland. */
 	@Override
 	public void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
 		if (!world.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-		if (world.getRawBrightness(pos, 0) >= 9 && random.nextBoolean()) {
+		BlockState below = world.getBlockState(pos.below());
+		if (below.is(Blocks.FARMLAND)) {
+			world.setBlock(pos.below(), HarderFarming.ModBlocks.weedy_farmland.defaultBlockState()
+					.setValue(WeedyFarmlandBlock.MOISTURE, below.getValue(WeedyFarmlandBlock.MOISTURE))
+					.setValue(WeedyFarmlandBlock.WEEDS, Math.min(this.getAge(state), WeedyFarmlandBlock.MAX_WEEDS)), 3);
+			world.removeBlock(pos, false);
+		}
+		else if (world.getRawBrightness(pos, 0) >= 9 && random.nextBoolean()) {
 			int i = this.getAge(state);
-			if (i < this.getMaxAge() && i != 7) {
+			if (i < this.getMaxAge()) {
 				world.setBlock(pos, this.getStateForAge(i + 1), 2);
 			} else {
-				weedSpread(world, pos, random);
-				world.setBlock(pos, this.getStateForAge(i == 7 ? 8 : 7), 2);
+				WeedyFarmlandBlock.weedSpread(world, pos.below(), random);
 			}
 		}
-	}
-
-	public static void weedSpread(Level world, BlockPos pos, RandomSource rand) {
-		List<BlockPos> validPlacements = new ArrayList<BlockPos>();
-		for(BlockPos p : BlockPos.betweenClosed(pos.offset(-5,0,-5), pos.offset(5,0,5))) {
-			BlockPos dwn = p.below();
-			if (world.getBlockState(dwn.below()).is(Blocks.FARMLAND)) {
-				if (canPlantWeeds(world, dwn)) validPlacements.add(dwn.immutable());
-			} else if (world.getBlockState(dwn).is(Blocks.FARMLAND)) {
-				if (canPlantWeeds(world, p)) validPlacements.add(p.immutable());
-			} else if (world.getBlockState(p).is(Blocks.FARMLAND)) {
-				if (canPlantWeeds(world, p.above())) validPlacements.add(p.above());
-			}
-			else if(world.getBlockState(dwn.below()).is(Blocks.GRASS_BLOCK) && rand.nextInt(10) == 0) {
-				if(world.getBlockState(dwn).isAir()) validPlacements.add(dwn.immutable());
-			}
-			else if(world.getBlockState(dwn).is(Blocks.GRASS_BLOCK) && rand.nextInt(10) == 0) {
-				if(world.getBlockState(p).isAir()) validPlacements.add(p.immutable());
-			}
-			else if(world.getBlockState(p).is(Blocks.GRASS_BLOCK) && rand.nextInt(10) == 0) {
-				if(world.getBlockState(p.above()).isAir()) validPlacements.add(p.above());
-			}
-		}
-		if(validPlacements.isEmpty()) return;
-		BlockPos p = validPlacements.get(rand.nextInt(validPlacements.size()));
-		if(world.getBlockState(p.below()).is(Blocks.FARMLAND))
-			world.setBlock(p, HarderFarming.ModBlocks.crop_weeds.defaultBlockState(), 3);
-		else
-			world.setBlock(p, Blocks.SHORT_GRASS.defaultBlockState(), 3);
-	}
-
-	/** Only open farmland: a carpet (or anything else) over it keeps weeds out. */
-	private static boolean canPlantWeeds(Level world, BlockPos pos) {
-		return world.getBlockState(pos).isAir();
 	}
 
 	/** Tough to pull: fast only with a good tool, and a slow grind by hand. */

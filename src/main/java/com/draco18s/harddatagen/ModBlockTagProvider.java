@@ -50,6 +50,15 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(key(HarderOres.ModBlocks.machine_millstone));
 		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(key(HarderFarming.ModBlocks.ore_salt));
 		tag(BlockTags.MINEABLE_WITH_AXE).add(key(HarderFarming.ModBlocks.tanner));
+		// Weedy farmland is farmland to everything but the weeds.
+		tag(BlockTags.MINEABLE_WITH_SHOVEL).add(key(HarderFarming.ModBlocks.weedy_farmland));
+		tag(BlockTags.SUPPORTS_CROPS).add(key(HarderFarming.ModBlocks.weedy_farmland));
+		tag(BlockTags.SUPPORTS_VEGETATION).add(key(HarderFarming.ModBlocks.weedy_farmland));
+		tag(BlockTags.GROWS_CROPS).add(key(HarderFarming.ModBlocks.weedy_farmland));
+		tag(BlockTags.MINEABLE_WITH_SHOVEL).add(key(HarderFarming.ModBlocks.mulched_farmland));
+		tag(BlockTags.SUPPORTS_CROPS).add(key(HarderFarming.ModBlocks.mulched_farmland));
+		tag(BlockTags.SUPPORTS_VEGETATION).add(key(HarderFarming.ModBlocks.mulched_farmland));
+		tag(BlockTags.GROWS_CROPS).add(key(HarderFarming.ModBlocks.mulched_farmland));
 
 		tag(BlockTags.MINEABLE_WITH_AXE).add(key(ExpandedIndustry.ModBlocks.machine_distributor));
 		tag(BlockTags.MINEABLE_WITH_AXE).add(key(ExpandedIndustry.ModBlocks.machine_wood_hopper));

@@ -1,0 +1,6 @@
+{
+	"parent": "harderfarming:block/farmland_leaves",
+	"textures": {
+		"texture": "minecraft:block/leaf_litter"
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"parent": "harderfarming:block/farmland_weeds",
+	"textures": {
+		"weeds": "harderfarming:block/weeds_stage_4"
+	}
+}

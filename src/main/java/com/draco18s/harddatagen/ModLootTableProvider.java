@@ -9,6 +9,7 @@ import com.draco18s.flowers.OreFlowers;
 import com.draco18s.harderores.HarderOres;
 import com.draco18s.harderores.loot.function.HarderSetCount;
 import com.draco18s.hardlib.api.block.state.BlockProperties;
+import com.draco18s.hardlib.api.blockproperties.farming.Mulch;
 import com.draco18s.industry.ExpandedIndustry;
 
 import net.minecraft.advancements.predicates.StatePropertiesPredicate;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -58,6 +60,8 @@ public class ModLootTableProvider {
 			knownBlocks.add(HarderFarming.ModBlocks.crop_winter_wheat);
 			knownBlocks.add(HarderFarming.ModBlocks.ore_salt);
 			knownBlocks.add(HarderFarming.ModBlocks.crop_weeds);
+			knownBlocks.add(HarderFarming.ModBlocks.weedy_farmland);
+			knownBlocks.add(HarderFarming.ModBlocks.mulched_farmland);
 			knownBlocks.add(HarderFarming.ModBlocks.tanner);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.rail_bridge);
 			knownBlocks.add(ExpandedIndustry.ModBlocks.powered_rail_bridge);
@@ -80,6 +84,17 @@ public class ModLootTableProvider {
 			knownBlocks.add(HarderOres.ModBlocks.sluice);
 			OreFlowers.FLOWERS.values().forEach(flower -> knownBlocks.add(flower.get()));
 			return knownBlocks;
+		}
+
+		/** Dirt, as farmland, and the carpet back (leaves are spent). */
+		private void mulchedFarmland(Block block) {
+			LootPool.Builder carpet = LootPool.lootPool().setRolls(ContextIntProviders.exactly(1));
+			for(Mulch mulch : Mulch.values()) {
+				if(!mulch.retrievable()) continue;
+				carpet.add(LootItem.lootTableItem(mulch.item()).when(MatchBlock.blockMatches(this.blocks, block,
+						StatePropertiesPredicate.Builder.properties().hasProperty(BlockProperties.MULCH, mulch))));
+			}
+			add(block, createSingleItemTable(Blocks.DIRT).withPool(carpet));
 		}
 
 		@Override
@@ -111,6 +126,9 @@ public class ModLootTableProvider {
 			LootItemCondition.Builder cropMinAge = MatchBlock.blockMatches(this.blocks, HarderFarming.ModBlocks.crop_winter_wheat, StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, 7));
 			add(HarderFarming.ModBlocks.crop_winter_wheat, createCropDrops(HarderFarming.ModBlocks.crop_winter_wheat, Items.WHEAT, HarderFarming.ModItems.winter_wheat_seeds, cropMinAge));
 			dropOther(HarderFarming.ModBlocks.crop_weeds, HarderFarming.ModItems.weed_seeds);
+			// As farmland: dirt (the weeds are pulled with a hoe).
+			dropOther(HarderFarming.ModBlocks.weedy_farmland, Blocks.DIRT);
+			mulchedFarmland(HarderFarming.ModBlocks.mulched_farmland);
 			dropSelf(HarderFarming.ModBlocks.tanner);
 
 			for(DeferredHolder<Block, Block> flower : OreFlowers.FLOWERS.values()) {

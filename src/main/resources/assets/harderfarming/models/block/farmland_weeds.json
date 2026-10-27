@@ -1,0 +1,94 @@
+{
+	"ambientocclusion": false,
+	"textures": {
+		"particle": "#weeds"
+	},
+	"elements": [
+		{
+			"from": [
+				0.8,
+				15,
+				8
+			],
+			"to": [
+				15.2,
+				31,
+				8
+			],
+			"rotation": {
+				"origin": [
+					8,
+					23,
+					8
+				],
+				"axis": "y",
+				"angle": 45,
+				"rescale": true
+			},
+			"shade_direction_override": "up",
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#weeds"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#weeds"
+				}
+			}
+		},
+		{
+			"from": [
+				8,
+				15,
+				0.8
+			],
+			"to": [
+				8,
+				31,
+				15.2
+			],
+			"rotation": {
+				"origin": [
+					8,
+					23,
+					8
+				],
+				"axis": "y",
+				"angle": 45,
+				"rescale": true
+			},
+			"shade_direction_override": "up",
+			"faces": {
+				"west": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#weeds"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#weeds"
+				}
+			}
+		}
+	]
+}

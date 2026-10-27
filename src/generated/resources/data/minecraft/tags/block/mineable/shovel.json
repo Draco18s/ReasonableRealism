@@ -1,5 +1,7 @@
 {
   "values": [
+    "harderfarming:weedy_farmland",
+    "harderfarming:mulched_farmland",
     "harderores:ore_limonite"
   ]
 }

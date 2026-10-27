@@ -1,6 +1,7 @@
 package com.draco18s.hardlib.api.block.state;
 
 import com.draco18s.hardlib.api.blockproperties.farming.LeatherStatus;
+import com.draco18s.hardlib.api.blockproperties.farming.Mulch;
 import com.draco18s.hardlib.api.blockproperties.ores.AxelOrientation;
 import com.draco18s.hardlib.api.blockproperties.ores.MillstoneOrientation;
 
@@ -19,6 +20,8 @@ public class BlockProperties {
 	public static final IntegerProperty SALT_LEVEL = IntegerProperty.create("salt_level",0,6);
 	public static final EnumProperty<LeatherStatus> LEFT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_left", LeatherStatus.class);
 	public static final EnumProperty<LeatherStatus> RIGHT_LEATHER_STATE = EnumProperty.<LeatherStatus>create("leather_right", LeatherStatus.class);
+	/** Mulched farmland: what it's mulched with. */
+	public static final EnumProperty<Mulch> MULCH = EnumProperty.<Mulch>create("mulch", Mulch.class);
 	/** Only used by Horsetail **/
 	public static final BooleanProperty BLOOM_PHASE = BooleanProperty.create("bloom");
 	

@@ -1,9 +1,11 @@
 {
 	"achievement.killWeeds": "Gardening",
-	"achievement.killWeeds.desc": "Break a Weed block",
+	"achievement.killWeeds.desc": "Pull weeds with a hoe",
 	"itemGroup.harderfarming": "Farming",
 	"block.harderfarming.crop_winter_wheat": "Winter Wheat",
 	"block.harderfarming.crop_weeds": "Weeds",
+	"block.harderfarming.weedy_farmland": "Weedy Farmland",
+	"block.harderfarming.mulched_farmland": "Mulched Farmland",
 	"block.harderfarming.tanner": "Tanning Rack",
 	"block.harderfarming.ore_salt": "Salt Ore",
 	"item.harderfarming.winter_wheat_seeds": "Winter Wheat Seeds",

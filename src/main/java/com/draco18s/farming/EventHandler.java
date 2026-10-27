@@ -1,14 +1,32 @@
 package com.draco18s.farming;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import com.draco18s.farming.block.CropWeedsBlock;
+import com.draco18s.farming.block.MulchedFarmlandBlock;
+import com.draco18s.farming.block.WeedyFarmlandBlock;
 import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.hardlib.api.HardLibAPI;
+import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
+import com.draco18s.hardlib.api.blockproperties.farming.Mulch;
 import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -16,12 +34,19 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 
@@ -63,12 +88,102 @@ public class EventHandler {
 		BlockPos pos = event.getPos();
 		for(BlockPos p : BlockPos.betweenClosed(pos.offset(-1, 0, -1), pos.offset(1, 0, 1))) {
 			BlockState state = world.getBlockState(p);
-			if((state.getBlock() instanceof CropWeedsBlock || state.isAir()) && world.getBlockState(p.below()).is(Blocks.FARMLAND)) return;
+			if((state.getBlock() instanceof CropWeedsBlock || state.isAir()) && isBareFarmland(world.getBlockState(p.below()))) return;
+			if(world.getBlockState(p.below()).getBlock() instanceof WeedyFarmlandBlock) return;
 		}
 		boolean rowNS = world.getBlockState(pos.north()).is(crop) && world.getBlockState(pos.south()).is(crop);
 		boolean rowEW = world.getBlockState(pos.east()).is(crop) && world.getBlockState(pos.west()).is(crop);
 		if(rowNS ^ rowEW) {
 			HarderFarming.ModTriggers.crop_rotation.trigger(player);
+		}
+	}
+
+	/**
+	 * Where each player last pulled weeds, and when: holding the button down mustn't go on to break the crop. One
+	 * map per side, since a single player game runs both in one process (and each side sees the same click).
+	 */
+	private static final Map<UUID, Pair<BlockPos, Long>> lastWeededClient = new HashMap<UUID, Pair<BlockPos, Long>>();
+	private static final Map<UUID, Pair<BlockPos, Long>> lastWeededServer = new HashMap<UUID, Pair<BlockPos, Long>>();
+
+	/**
+	 * A hoe pulls weeds out from among a crop (or from bare farmland) without disturbing it. Runs on both sides:
+	 * the client must not predict the crop breaking, and the server does the weeding.
+	 */
+	@SubscribeEvent
+	public static void onHoeWeeds(PlayerInteractEvent.LeftClickBlock event) {
+		if(event.getAction() != PlayerInteractEvent.LeftClickBlock.Action.START) return;
+		Player player = event.getEntity();
+		ItemStack hoe = player.getMainHandItem();
+		if(!hoe.is(ItemTags.HOES)) return;
+		Level world = event.getLevel();
+		BlockPos pos = event.getPos();
+		BlockPos farmland = world.getBlockState(pos).getBlock() instanceof WeedyFarmlandBlock ? pos : pos.below();
+		BlockState soil = world.getBlockState(farmland);
+		long now = world.getGameTime();
+		Map<UUID, Pair<BlockPos, Long>> lastWeeded = world.isClientSide() ? lastWeededClient : lastWeededServer;
+		Pair<BlockPos, Long> last = lastWeeded.get(player.getUUID());
+		if(last != null && last.getFirst().equals(pos) && now - last.getSecond() < 10) {
+			// Just weeded here: still swinging.
+			event.setCanceled(true);
+			return;
+		}
+		if(!(soil.getBlock() instanceof WeedyFarmlandBlock)) return;
+		event.setCanceled(true);
+		lastWeeded.put(player.getUUID(), Pair.of(pos.immutable(), now));
+		if(world instanceof ServerLevel level && player instanceof ServerPlayer splayer) {
+			WeedyFarmlandBlock.clearWeeds(level, farmland, soil);
+			level.playSound(null, farmland.above(), SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1, 1);
+			level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, farmland.above(), Block.getId(HarderFarming.ModBlocks.crop_weeds.defaultBlockState()));
+			if(!player.isCreative()) {
+				hoe.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+			}
+			// Gardening: pulling weeds counts as breaking the old weeds block.
+			if(HardLibAPI.Advancements.BLOCK_BREAK != null) {
+				LootParams ctx = new LootParams.Builder(level)
+						.withParameter(LootContextParams.BLOCK_STATE, HarderFarming.ModBlocks.crop_weeds.defaultBlockState())
+						.create(BreakBlockTrigger.requiredParams);
+				HardLibAPI.Advancements.BLOCK_BREAK.trigger(splayer, ctx);
+			}
+		}
+	}
+
+	/**
+	 * Mulching: a carpet (or leaf litter, under a crop) used on farmland, or on the crop growing in it, is laid at
+	 * the crop's base; weeds are smothered. Shears take a carpet back off. Runs on both sides so the client doesn't
+	 * place the carpet as a block; the server does the work.
+	 */
+	@SubscribeEvent
+	public static void onMulch(PlayerInteractEvent.RightClickBlock event) {
+		Level world = event.getLevel();
+		BlockPos pos = event.getPos();
+		ItemStack stack = event.getItemStack();
+		Player player = event.getEntity();
+		BlockState clicked = world.getBlockState(pos);
+		BlockPos farmland = clicked.getBlock() instanceof FarmlandBlock ? pos : pos.below();
+		BlockState soil = world.getBlockState(farmland);
+		if(!(soil.getBlock() instanceof FarmlandBlock)) return;
+		Mulch mulch = Mulch.fromItem(stack);
+		if(mulch != null && (soil.is(Blocks.FARMLAND) || soil.getBlock() instanceof WeedyFarmlandBlock)) {
+			// Leaves only go down among a crop: with nothing growing they'd be gone at once.
+			if(mulch == Mulch.LEAVES && world.getBlockState(farmland.above()).isAir()) return;
+			event.setCanceled(true);
+			event.setCancellationResult(InteractionResult.SUCCESS);
+			if(!world.isClientSide()) {
+				MulchedFarmlandBlock.mulch(world, farmland, mulch);
+				SoundType sound = Block.byItem(mulch.item()).defaultBlockState().getSoundType();
+				world.playSound(null, farmland.above(), sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch() * 0.8f);
+				stack.consume(1, player);
+			}
+		}
+		else if(stack.is(Tags.Items.TOOLS_SHEAR) && soil.getBlock() instanceof MulchedFarmlandBlock && soil.getValue(MulchedFarmlandBlock.MULCH).retrievable()) {
+			event.setCanceled(true);
+			event.setCancellationResult(InteractionResult.SUCCESS);
+			if(!world.isClientSide()) {
+				Block.popResource(world, farmland.above(), MulchedFarmlandBlock.retrieve(soil));
+				world.setBlock(farmland, MulchedFarmlandBlock.unmulched(soil), 3);
+				world.playSound(null, farmland.above(), SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1, 1);
+				stack.hurtAndBreak(1, player, event.getHand().asEquipmentSlot());
+			}
 		}
 	}
 
@@ -101,15 +216,27 @@ public class EventHandler {
 		return null;
 	}
 
+	/** Open farmland, for the crop-growth rules: plain or mulched (mulch only keeps weeds out). */
+	private static boolean isBareFarmland(BlockState soil) {
+		return soil.is(Blocks.FARMLAND) || soil.getBlock() instanceof MulchedFarmlandBlock;
+	}
+
 	private static CropGrowEvent.Pre.Result handleCrops(LevelAccessor world, BlockPos pos, BlockState state, Biome bio, IntegerProperty ageProp) {
 		int maxAge = ageProp.getPossibleValues().stream().max(Integer::compare).orElse(0);
 		int cropage = state.getValue(ageProp);
 		if(cropage >= maxAge) {
 			return CropGrowEvent.Pre.Result.DEFAULT;
 		}
+		BlockState soil = world.getBlockState(pos.below());
+		if(soil.getBlock() instanceof WeedyFarmlandBlock && world instanceof Level level) {
+			// Weeds among the crop take its growth for themselves.
+			WeedyFarmlandBlock.growWeeds(level, pos.below(), soil, world.getRandom());
+			return CropGrowEvent.Pre.Result.DO_NOT_GROW;
+		}
 		int inc = 0;
 		Block block = state.getBlock();
 		Block weeds = HarderFarming.ModBlocks.crop_weeds;
+		List<BlockPos> younger = new ArrayList<BlockPos>();
 		if(block != Blocks.SUGAR_CANE) {
 			for(BlockPos p : BlockPos.betweenClosed(pos.offset(-1,0,-1), pos.offset(1,0,1))) {
 				int ox = p.getX() - pos.getX();
@@ -118,36 +245,40 @@ public class EventHandler {
 				BlockState n = world.getBlockState(p);
 				Block bl = n.getBlock();
 				boolean ortho = (ox == 0 || oz == 0);
-				if(block != weeds && bl == weeds && ortho) {
-					// Weeds next to a crop crowd it out, and grow along with it.
+				if(block != weeds && (bl == weeds || world.getBlockState(p.below()).getBlock() instanceof WeedyFarmlandBlock) && ortho) {
+					// Weeds next to a crop crowd it out.
 					inc += 2;
-					world.scheduleTick(p.immutable(), bl, 1);
 				}
 				else if(bl == block && ortho) {
-					// Rows of the same crop a stage or two apart (planted in turn) grow better together.
+					// Rows of the same crop keep pace: a plant a stage or two ahead of its neighbor hands its
+					// growth over (it's slowed, and the neighbor gets a growth tick of its own).
 					int a = n.getValue(ageProp);
 					if(a+1 == cropage || a+2 == cropage) {
 						inc += 2;
-						world.scheduleTick(p.immutable(), bl, 1);
+						younger.add(p.immutable());
 					}
 				}
-				else if(block != weeds && n.isAir() && world.getBlockState(p.below()).is(Blocks.FARMLAND)) {
-					// Bare farmland beside a crop sometimes sprouts: usually weeds, sometimes the crop itself.
+				else if(block != weeds && n.isAir() && isBareFarmland(world.getBlockState(p.below()))) {
+					// Bare farmland beside a crop sometimes sprouts: usually weeds (not through mulch), sometimes the crop itself.
 					if(world.getRandom().nextInt(3500) == 0) {
 						if(world.getRandom().nextInt(3) == 0) {
 							world.setBlock(p, block.defaultBlockState(), 3);
 						}
-						else if(world instanceof Level level) {
-							CropWeedsBlock.weedSpread(level, pos, world.getRandom());
-						}
-						else {
-							world.setBlock(p, weeds.defaultBlockState(), 3);
+						else if(world instanceof Level level && world.getBlockState(p.below()).is(Blocks.FARMLAND)) {
+							WeedyFarmlandBlock.plantWeeds(level, p.below());
 						}
 					}
 				}
 				else if(bl == Blocks.SHORT_GRASS || bl == Blocks.TALL_GRASS || bl instanceof CropBlock) {
 					inc += 1;
 				}
+			}
+		}
+		// (Crops only grow on random ticks now: a scheduled tick, as 1.14 gave the neighbor, does nothing.)
+		if(world instanceof ServerLevel level) {
+			for(BlockPos p : younger) {
+				BlockState n = level.getBlockState(p);
+				if(n.is(block)) n.randomTick(level, p, level.getRandom());
 			}
 		}
 		int rr = 0;

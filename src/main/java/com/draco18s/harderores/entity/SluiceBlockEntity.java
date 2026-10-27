@@ -160,7 +160,8 @@ public class SluiceBlockEntity extends ModBlockEntity {
 		
 		if(level.isClientSide()) return;
 		float rx = 0.4F + rand.nextFloat()*0.2f;
-		float ry = rand.nextFloat() * 0.25F + 0.25F;
+		// On the floor, among the ridges.
+		float ry = (float)(SluiceBlock.floorHeight(getBlockState().getValue(SluiceBlock.LEVEL)) / 16) + 0.05F;
 		float rz = 0.4F + rand.nextFloat()*0.2f;
 
 		// Doesn't float off in the sluice's water.
@@ -190,7 +191,8 @@ public class SluiceBlockEntity extends ModBlockEntity {
 
 	private AABB getAABB(BlockPos p) {
 		double height = this.getBlockState().getShape(level, p).bounds().maxY;
-		return new AABB(p.getX(), p.getY(), p.getZ(), p.getX()+height+0.1, p.getY()+1, p.getZ()+1);
+		// Anything on the floor or floating in the water over it.
+		return new AABB(p.getX(), p.getY(), p.getZ(), p.getX()+1, p.getY()+height+0.25, p.getZ()+1);
 	}
 
 	@Override

@@ -39,6 +39,13 @@ public class SluiceBlock extends ModEntityBlock {
 	public static final VoxelShape MOST_BLOCK = box(0,0,0,16,10,16);
 	public static final VoxelShape NEARLY_BLOCK = box(0,0,0,16,15,16);
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 9);
+	/** Each level's floor, solid from the bottom of the block (see floorHeight). */
+	private static final VoxelShape[] FLOORS = new VoxelShape[10];
+	static {
+		for(int level = 0; level <= 9; level++) {
+			FLOORS[level] = box(0, 0, 0, 16, floorHeight(level), 16);
+		}
+	}
 
 	public SluiceBlock(Properties props) {
 		super(props.mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava());
@@ -66,7 +73,9 @@ public class SluiceBlock extends ModEntityBlock {
 		Direction outDir = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
 		int outamt = state.getValue(LEVEL) - 1;
 		BlockPos outside = pos.relative(outDir);
-		if(world.getBlockState(outside).canBeReplaced(Fluids.WATER)) {
+		BlockState outsideState = world.getBlockState(outside);
+		// Water washes away anything that isn't solid, which a sluice isn't: don't wash away the next one.
+		if(!outsideState.is(this) && outsideState.canBeReplaced(Fluids.WATER)) {
 			BlockState waterstate = Fluids.WATER.getFlowing(outamt, false).createLegacyBlock();
 			FluidType flty = world.getBlockState(outside).getFluidState().getFluidType();
 			if(flty == Fluids.WATER.getFluidType() || flty == Fluids.FLOWING_WATER.getFluidType()) {
@@ -132,27 +141,20 @@ public class SluiceBlock extends ModEntityBlock {
 		else return super.getFluidState(state);
 	}
 
+	/**
+	 * How high (in pixels) the floor stands at a level: a pixel under the water's surface (the water is
+	 * level/9 of a block deep, at most 8/9), so the ridges on it sit just under water. At least a pixel.
+	 * The block models (sluice_0 to sluice_8) are built from the same numbers.
+	 */
+	public static double floorHeight(int level) {
+		int amount = Math.min(level, 8);
+		return Math.max(1, Math.floor((amount * 16 / 9.0 - 1) * 2) / 2);
+	}
+
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-		switch(state.getValue(LEVEL)) {
-			case 0:
-			case 1:
-				return THIN_SLAB;
-			case 2:
-			case 3:
-				return FLAT_SLAB;
-			case 4:
-			case 5:
-				return THICK_SLAB;
-			case 6:
-			case 7:
-			case 8:
-				return MOST_BLOCK;
-			case 9:
-				return NEARLY_BLOCK;
-		}
-		return FLAT_SLAB;
+	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+		return FLOORS[state.getValue(LEVEL)];
 	}
 
 	@Override

@@ -1,0 +1,6 @@
+{
+	"parent": "harderfarming:block/farmland_carpet",
+	"textures": {
+		"wool": "minecraft:block/light_blue_wool"
+	}
+}
