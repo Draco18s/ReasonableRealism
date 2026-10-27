@@ -112,29 +112,32 @@ public class EasyRegistry {
 	// Except for one
 	@SuppressWarnings({ "unchecked" })
 	public static <T> DeferredHolder<T, T> registerOther(ResourceKey<Registry<T>> registryKey, Tuple<ResourceLocation, Supplier<T>> supplier) {
-		if(!miscReg.containsKey(registryKey)) {
-			List<Tuple<ResourceLocation, Supplier<T>>> list = new ArrayList<Tuple<ResourceLocation, Supplier<T>>>();
-			// As the stars start to align
-			// I hope you'll take it as a sign
-			// Th'chu will be okay
-			// Everything will be okay
+		// Mods are constructed in parallel, so two can get here at once: make (and fill) each list one at a time.
+		synchronized(miscReg) {
+			if(!miscReg.containsKey(registryKey)) {
+				List<Tuple<ResourceLocation, Supplier<T>>> list = Collections.synchronizedList(new ArrayList<Tuple<ResourceLocation, Supplier<T>>>());
+				// As the stars start to align
+				// I hope you'll take it as a sign
+				// Th'chu will be okay
+				// Everything will be okay
+				@SuppressWarnings("rawtypes")
+				List t = list;
+				// And if the seven hells collapse
+				// Although the day could be my last
+				// You will be okay
+				// When I'm gone, you'll be okay
+				@SuppressWarnings("rawtypes")
+				ResourceKey r = registryKey;
+				miscReg.put(r, t);
+			}
+			// And when creation goes to die
+			// You can find me in the sky
+			// Upon the last day
+			// And you will be okay
 			@SuppressWarnings("rawtypes")
-			List t = list;
-			// And if the seven hells collapse
-			// Although the day could be my last
-			// You will be okay
-			// When I'm gone, you'll be okay
-			@SuppressWarnings("rawtypes")
-			ResourceKey r = registryKey;
-			miscReg.put(r, t);
+			Tuple s = supplier;
+			miscReg.get(registryKey).add(s);
 		}
-		// And when creation goes to die
-		// You can find me in the sky
-		// Upon the last day
-		// And you will be okay
-		@SuppressWarnings("rawtypes")
-		Tuple s = supplier;
-		miscReg.get(registryKey).add(s);
 		DeferredHolder<T, T> ret = DeferredHolder.create(registryKey, supplier.getA());
 		return ret;
 	}
