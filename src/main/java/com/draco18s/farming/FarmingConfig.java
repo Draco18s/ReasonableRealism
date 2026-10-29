@@ -9,6 +9,7 @@ public class FarmingConfig {
 	public static final ModConfigSpec.BooleanValue doSlowCrops;
 	public static final ModConfigSpec.BooleanValue doBiomeCrops;
 	public static final ModConfigSpec.IntValue cropsWorst;
+	public static final ModConfigSpec.BooleanValue doGrazingMilk;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -31,6 +32,12 @@ public class FarmingConfig {
 				.comment("The most a poor climate can slow growth: 1 in (10 + this) growth ticks succeeds")
 				.translation(HarderFarming.MODID + ".config.cropsWorst")
 				.defineInRange("cropsWorst", 16, 0, 100);
+		builder.pop();
+		builder.push("animals");
+		doGrazingMilk = builder
+				.comment("If cows (and mooshrooms) only make milk (and stew) while grazing near grass or leaves")
+				.translation(HarderFarming.MODID + ".config.doGrazingMilk")
+				.define("doGrazingMilk", true);
 		builder.pop();
 		SPEC = builder.build();
 	}

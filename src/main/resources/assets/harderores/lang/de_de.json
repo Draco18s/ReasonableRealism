@@ -31,7 +31,8 @@
   "item.harderores.largedust_flour": "Mehl",
 
   "item.harderores.iron_nugget": "Eisennugget",
-  "item.harderores.orecart": "Erzlore",
+  "item.harderores.ore_cart": "Erzlore",
+  "entity.harderores.ore_cart": "Erzlore",
 
   "item.harderores.diamond_studded_pick": "Diamantbesetzte Spitzhacke",
   "item.harderores.diamond_studded_axe": "Diamantbesetzte Axt",

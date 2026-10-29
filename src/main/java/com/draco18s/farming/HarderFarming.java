@@ -11,6 +11,7 @@ import com.draco18s.farming.block.WeedyFarmlandBlock;
 import com.draco18s.farming.block.CropWinterWheatBlock;
 import com.draco18s.farming.block.SaltOreBlock;
 import com.draco18s.farming.block.TannerBlock;
+import com.draco18s.farming.entity.MilkSupply;
 import com.draco18s.farming.entity.TannerBlockEntity;
 import com.draco18s.farming.integration.HarvestcraftIntegration;
 import com.draco18s.farming.item.ButcherKnife;
@@ -36,6 +37,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -59,6 +61,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -98,9 +101,13 @@ public class HarderFarming {
 		EasyRegistry.registerOther(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS,
 			new Tuple<Identifier,Supplier<MapCodec<? extends IGlobalLootModifier>>>(getRL("raw_leather"),RawLeatherModifier.CODEC::get)
 		);
-		ModLootConditionTypes.can_snow = EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<Identifier,Supplier<MapCodec<? extends LootItemCondition>>>(
+		EasyRegistry.registerOther(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, new Tuple<Identifier, Supplier<AttachmentType<?>>>(getRL("milk"), () -> MilkSupply.MILK));
+		ModLootConditionTypes.can_snow =EasyRegistry.registerOther(Registries.LOOT_CONDITION_TYPE, new Tuple<Identifier,Supplier<MapCodec<? extends LootItemCondition>>>(
 				getRL("can_snow"),() -> TemperatureCheck.CODEC));
 		
+		// Milk keeps (and stacks) as cheese: a bucket of milk and salt.
+		EasyRegistry.registerItem(props -> new Item(props.food(new FoodProperties.Builder().nutrition(1).saturationModifier(1.5f).build())), getRL("cheese"));
+
 		String[] itemNames = {
 				"tinydust_sugar",
 				"tinydust_flour", "largedust_flour",
@@ -115,6 +122,10 @@ public class HarderFarming {
 	public static class Tags {
 		public static class Blocks{
 			public static final TagKey<Block> MINABLE_WITH_KNIFE = new TagKey<Block>(Registries.BLOCK, HardLib.getRL("minecraft", "mineable/knife"));
+			/** What a cow grazes on to make milk (see MilkSupply). */
+			public static final TagKey<Block> COW_FORAGE = new TagKey<Block>(Registries.BLOCK, getRL("cow_forage"));
+			/** A mooshroom also grazes on mycelium. */
+			public static final TagKey<Block> MOOSHROOM_FORAGE = new TagKey<Block>(Registries.BLOCK, getRL("mooshroom_forage"));
 		}
 		public static class Items {
 			/** What a tanning rack accepts as salt. */
@@ -168,6 +179,8 @@ public class HarderFarming {
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"salt")
 		public static Item salt;
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"cheese")
+		public static Item cheese;
 		
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"butcher_knife")
 		public static Item butcher_knife;
@@ -191,7 +204,7 @@ public class HarderFarming {
 			.displayItems((params, output) -> {
 				Set<Item> items = new LinkedHashSet<Item>();
 				Collections.addAll(items, ModItems.winter_wheat_seeds, ModItems.weed_seeds, ModItems.tinydust_flour, ModItems.largedust_flour,
-						ModItems.tinydust_sugar, ModBlocks.ore_salt.asItem(), ModItems.salt_chunk, ModItems.salt, ModItems.tanner, ModItems.raw_leather,
+						ModItems.tinydust_sugar, ModBlocks.ore_salt.asItem(), ModItems.salt_chunk, ModItems.salt, ModItems.cheese, ModItems.tanner, ModItems.raw_leather,
 						ModItems.butcher_knife, ModItems.thermometer, ModItems.hydrometer);
 				// Then the rest of farming: tools, bone meal, and every plantable crop (vanilla's and other mods'), then produce.
 				Collections.addAll(items, Items.WOODEN_HOE, Items.STONE_HOE, Items.IRON_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE,
@@ -224,6 +237,7 @@ public class HarderFarming {
 			event.accept(ModItems.tinydust_sugar);
 			event.accept(ModItems.tinydust_flour);
 			event.accept(ModItems.largedust_flour);
+			event.accept(ModItems.cheese);
 		}
 		if(tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			event.accept(ModItems.thermometer);

@@ -34,7 +34,8 @@
   "item.harderores.largedust_flour": "Flour",
 
   "item.harderores.iron_nugget": "Iron Nugget",
-  "item.harderores.orecart": "Ore Minecart",
+  "item.harderores.ore_cart": "Ore Minecart",
+  "entity.harderores.ore_cart": "Ore Minecart",
 
   "item.harderores.diamond_studded_pick": "Diamond Studded Pickaxe",
   "item.harderores.diamond_studded_axe": "Diamond Studded Axe",

@@ -151,6 +151,12 @@ public class ModRecipeProvider extends RecipeProvider {
 	}
 	
 	private void Machines(RecipeOutput finishedRecipeConsumer) {
+		// 1.12's: the bucket is the chute.
+		shapeless(RecipeCategory.TRANSPORTATION, HarderOres.ModItems.ore_cart)
+			.requires(Items.MINECART)
+			.requires(Items.BUCKET)
+			.unlockedBy("has_item", has(Items.MINECART))
+			.save(finishedRecipeConsumer);
 		shaped(RecipeCategory.REDSTONE, HarderOres.ModBlocks.packager)
 			.define('s', Tags.BlockItems.STONES.item())
 			.define('p', Items.PISTON)
@@ -267,6 +273,12 @@ public class ModRecipeProvider extends RecipeProvider {
 	}
 
 	private void Dusts(RecipeOutput finishedRecipeConsumer) {
+		// The milk bucket's crafting remainder gives the bucket back.
+		shapeless(RecipeCategory.FOOD, HarderFarming.ModItems.cheese, 2)
+			.requires(Items.MILK_BUCKET)
+			.requires(HarderFarming.Tags.Items.SALT)
+			.unlockedBy("has_item", has(Items.MILK_BUCKET))
+			.save(finishedRecipeConsumer);
 		shapeless(RecipeCategory.MISC, Items.SUGAR, 1)
 			.requires(HarderFarming.ModItems.tinydust_sugar, 9)
 			.unlockedBy("has_item", has(HarderFarming.ModItems.tinydust_sugar))

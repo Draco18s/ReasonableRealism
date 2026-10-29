@@ -1,6 +1,7 @@
 package com.draco18s.harderores.client;
 
 import com.draco18s.harderores.HarderOres;
+import com.draco18s.harderores.client.gui.OreCartScreen;
 import com.draco18s.harderores.client.gui.PackagerScreen;
 import com.draco18s.harderores.client.gui.SifterScreen;
 import com.draco18s.hardlib.HardLib;
@@ -14,6 +15,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.RandomSource;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -77,6 +79,18 @@ public class ClientEventHandler {
 	public static void registerScreens(final RegisterMenuScreensEvent event) {
 		event.register(HarderOres.ModContainerTypes.machine_sifter, SifterScreen::new);
 		event.register(HarderOres.ModContainerTypes.packager, PackagerScreen::new);
+		event.register(HarderOres.ModContainerTypes.ore_cart, OreCartScreen::new);
+	}
+
+	@SubscribeEvent
+	public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+		event.registerLayerDefinition(OreCartModel.LAYER, OreCartModel::createBodyLayer);
+		event.registerLayerDefinition(OreCartModel.CHUTE_LAYER, OreCartModel::createChuteLayer);
+	}
+
+	@SubscribeEvent
+	public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+		event.registerEntityRenderer(HarderOres.ModEntities.ore_cart, OreCartRenderer::new);
 	}
 
 	@SubscribeEvent

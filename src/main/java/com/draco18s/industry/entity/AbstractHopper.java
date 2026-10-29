@@ -58,6 +58,11 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 		return this.cooldownTime > 8;
 	}
 
+	/** How many items move in one transfer, in or out (a vanilla hopper moves one). */
+	protected int getTransferAmount() {
+		return 1;
+	}
+
 	public static void pushItemsTick(Level level, BlockPos pos, BlockState state, AbstractHopper hopper) {
 		--hopper.cooldownTime;
 		//hopper.tickedGameTime = level.getGameTime();
@@ -101,7 +106,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 			}
 			else {
 				for(int i = 0; i < hopper.inventory.size(); ++i) {
-					if (moveOne(hopper.inventory, i, iinventory)) {
+					if (move(hopper.inventory, i, iinventory, hopper.getTransferAmount())) {
 						return true;
 					}
 				}
@@ -122,7 +127,7 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 			Direction direction = Direction.DOWN;
 			ResourceHandler<ItemResource> hopperInven = hopper.inventory;
 			return isInventoryEmpty(sourceInven) ? false : getSlotStream(sourceInven, direction).anyMatch((slot) -> {
-				return pullItemFromSlot(hopperInven, sourceInven, slot);
+				return move(sourceInven, slot, hopperInven, hopper.getTransferAmount());
 			});
 		}
 		else {
@@ -140,10 +145,17 @@ public abstract class AbstractHopper extends RandomizableContainerBlockEntity im
 
 	/** Moves one item from a slot into any slot of the destination; nothing moves if it doesn't fit. */
 	protected static boolean moveOne(ResourceHandler<ItemResource> source, int slot, ResourceHandler<ItemResource> destination) {
+		return move(source, slot, destination, 1);
+	}
+
+	/** Moves up to max items from a slot into the destination, as many as it has room for. */
+	protected static boolean move(ResourceHandler<ItemResource> source, int slot, ResourceHandler<ItemResource> destination, int max) {
 		ItemResource resource = source.getResource(slot);
 		if(resource.isEmpty()) return false;
+		int amount = Math.min(max, source.getAmountAsInt(slot));
 		try (Transaction tx = Transaction.openRoot()) {
-			if(source.extract(slot, resource, 1, tx) == 1 && destination.insert(resource, 1, tx) == 1) {
+			int inserted = destination.insert(resource, amount, tx);
+			if(inserted > 0 && source.extract(slot, resource, inserted, tx) == inserted) {
 				tx.commit();
 				return true;
 			}

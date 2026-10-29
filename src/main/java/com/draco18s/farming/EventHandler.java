@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.draco18s.farming.block.CropWeedsBlock;
 import com.draco18s.farming.block.MulchedFarmlandBlock;
 import com.draco18s.farming.block.WeedyFarmlandBlock;
+import com.draco18s.farming.entity.MilkSupply;
 import com.draco18s.farming.item.ButcherKnife;
 import com.draco18s.hardlib.api.HardLibAPI;
 import com.draco18s.hardlib.api.advancement.BreakBlockTrigger;
@@ -17,6 +18,7 @@ import com.draco18s.hardlib.api.internal.CropWeatherOffsets;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -26,8 +28,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.cow.AbstractCow;
+import net.minecraft.world.entity.animal.cow.MushroomCow;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
@@ -49,6 +54,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @EventBusSubscriber(modid = HarderFarming.MODID)
 public class EventHandler {
@@ -109,6 +115,36 @@ public class EventHandler {
 	 * A hoe pulls weeds out from among a crop (or from bare farmland) without disturbing it. Runs on both sides:
 	 * the client must not predict the crop breaking, and the server does the weeding.
 	 */
+	/** Cows (and mooshrooms) build up milk while grazing (see MilkSupply); staggered so they don't all look at once. */
+	@SubscribeEvent
+	public static void onCowTick(EntityTickEvent.Post event) {
+		if(!(event.getEntity() instanceof AbstractCow cow) || cow.level().isClientSide()) return;
+		if((cow.tickCount + cow.getId()) % MilkSupply.INTERVAL != 0 || !FarmingConfig.doGrazingMilk.get()) return;
+		MilkSupply.graze(cow);
+	}
+
+	/**
+	 * A bucket (or a mooshroom's bowl) only fills from a cow that has grazed enough. Runs on both sides (the milkable
+	 * state is synced) so the client doesn't fill the bucket either.
+	 */
+	@SubscribeEvent
+	public static void onMilking(PlayerInteractEvent.EntityInteract event) {
+		if(!(event.getTarget() instanceof AbstractCow cow) || cow.isBaby() || !FarmingConfig.doGrazingMilk.get()) return;
+		ItemStack stack = event.getItemStack();
+		if(!stack.is(Items.BUCKET) && !(stack.is(Items.BOWL) && cow instanceof MushroomCow)) return;
+		if(!MilkSupply.isMilkable(cow)) {
+			event.setCanceled(true);
+			event.setCancellationResult(InteractionResult.FAIL);
+			if(!event.getLevel().isClientSide()) {
+				event.getEntity().sendOverlayMessage(Component.translatable("message.harderfarming.needs_grazing", cow.getDisplayName()));
+			}
+			return;
+		}
+		if(!event.getLevel().isClientSide()) {
+			MilkSupply.milk(cow);
+		}
+	}
+
 	@SubscribeEvent
 	public static void onHoeWeeds(PlayerInteractEvent.LeftClickBlock event) {
 		if(event.getAction() != PlayerInteractEvent.LeftClickBlock.Action.START) return;

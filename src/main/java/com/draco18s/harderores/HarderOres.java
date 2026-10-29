@@ -16,9 +16,11 @@ import com.draco18s.harderores.block.ore.HardOreBlock;
 import com.draco18s.harderores.block.ore.LimoniteBlock;
 import com.draco18s.harderores.entity.AxelBlockEntity;
 import com.draco18s.harderores.entity.MillstoneBlockEntity;
+import com.draco18s.harderores.entity.OreMinecart;
 import com.draco18s.harderores.entity.PackagerBlockEntity;
 import com.draco18s.harderores.entity.SifterBlockEntity;
 import com.draco18s.harderores.entity.SluiceBlockEntity;
+import com.draco18s.harderores.inventory.OreCartMenu;
 import com.draco18s.harderores.inventory.PackagerContainerMenu;
 import com.draco18s.harderores.inventory.SifterContainerMenu;
 import com.draco18s.harderores.item.HardOreItem;
@@ -57,6 +59,12 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.MinecartItem;
+import net.minecraft.core.dispenser.MinecartDispenseItemBehavior;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -84,6 +92,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -159,6 +168,13 @@ public class HarderOres {
 		DeferredHolder<Block, Block> packager = EasyRegistry.registerBlock(PackagerBlock::new, getRL("packager"), new Item.Properties());
 		EasyRegistry.registerTileEntity(() -> new BlockEntityType<>(PackagerBlockEntity::new, packager.get()), getRL("packager"));
 		EasyRegistry.registerMenuType(getRL("packager"),() -> new MenuType<>(PackagerContainerMenu::new, FeatureFlags.DEFAULT_FLAGS));
+
+		// The ore cart (1.12's): empties out a chute on activator rails, waits under hoppers to be loaded.
+		DeferredHolder<EntityType<?>, EntityType<?>> oreCart = EasyRegistry.registerOther(Registries.ENTITY_TYPE, new Tuple<Identifier,Supplier<EntityType<?>>>(getRL("ore_cart"),
+				() -> EntityType.Builder.<OreMinecart>of(OreMinecart::new, MobCategory.MISC).noLootTable().sized(0.98F, 0.7F).passengerAttachments(0.1875F).clientTrackingRange(8)
+						.build(ResourceKey.create(Registries.ENTITY_TYPE, getRL("ore_cart")))));
+		EasyRegistry.registerItem(props -> new MinecartItem(oreCartType(oreCart), props), getRL("ore_cart"), new Item.Properties().stacksTo(1));
+		EasyRegistry.registerMenuType(getRL("ore_cart"),() -> new MenuType<>(OreCartMenu::new, FeatureFlags.DEFAULT_FLAGS));
 		
 		
 		EasyRegistry.registerOther(Registries.PARTICLE_TYPE, new Tuple<Identifier,Supplier<ParticleType<?>>>(getRL("prospector_dust"), () -> getBlockParticleType(false)));
@@ -336,6 +352,8 @@ public class HarderOres {
 	}
 
 	public static class ModItems {
+		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"ore_cart")
+		public static Item ore_cart;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_pick")
 		public static Item diamond_studded_pick;
 		@ObjectHolder(registryName = "minecraft:item", value = MODID+":"+"diamond_studded_axe")
@@ -388,7 +406,24 @@ public class HarderOres {
 		public static ParticleType<BlockParticleOption> prospector_radar;
 	}
 
+	@SuppressWarnings("unchecked")
+	private static EntityType<OreMinecart> oreCartType(DeferredHolder<EntityType<?>, EntityType<?>> holder) {
+		return (EntityType<OreMinecart>)holder.get();
+	}
+
+	@SubscribeEvent
+	public static void onCommonSetup(final FMLCommonSetupEvent event) {
+		event.enqueueWork(() -> DispenserBlock.registerBehavior(ModItems.ore_cart, new MinecartDispenseItemBehavior(ModEntities.ore_cart)));
+	}
+
+	public static class ModEntities {
+		@ObjectHolder(registryName = "minecraft:entity_type", value = MODID+":"+"ore_cart")
+		public static EntityType<OreMinecart> ore_cart;
+	}
+
 	public static class ModContainerTypes {
+		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"ore_cart")
+		public static MenuType<OreCartMenu> ore_cart;
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"machine_sifter")
 		public static MenuType<SifterContainerMenu> machine_sifter;
 		@ObjectHolder(registryName = "minecraft:menu", value = MODID+":"+"packager")
@@ -432,6 +467,7 @@ public class HarderOres {
 				output.accept(ModBlocks.machine_sifter);
 				output.accept(ModBlocks.packager);
 				output.accept(ModBlocks.sluice);
+				output.accept(ModItems.ore_cart);
 				for(Block ore : new Block[] {ModBlocks.ore_hardiron, ModBlocks.ore_hardgold, ModBlocks.ore_hardcopper, ModBlocks.ore_harddiamond,
 						ModBlocks.ore_harddeepslate_iron, ModBlocks.ore_harddeepslate_gold, ModBlocks.ore_harddeepslate_copper, ModBlocks.ore_harddeepslate_diamond}) {
 					output.accept(HardOreBlock.setNbtOnStack(new ItemStack(ore), BlockProperties.ORE_DENSITY, 16));
@@ -474,6 +510,9 @@ public class HarderOres {
 	@SubscribeEvent
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.machine_sifter, SifterBlockEntity::getItemHandler);
+		// As NeoForge does for the vanilla container carts, so modded hoppers and pipes can fill and empty it.
+		event.registerEntity(Capabilities.Item.ENTITY, ModEntities.ore_cart, (cart, ctx) -> VanillaContainerWrapper.of(cart));
+		event.registerEntity(Capabilities.Item.ENTITY_AUTOMATION, ModEntities.ore_cart, (cart, ctx) -> VanillaContainerWrapper.of(cart));
 		event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.packager, PackagerBlockEntity::getItemHandler);
 		event.registerBlockEntity(Capabilities.Item.BLOCK, ModBlockEntities.machine_millstone, MillstoneBlockEntity::getItemHandler);
 		event.registerBlockEntity(IMechanicalPower.MECHANICAL_POWER_CAPABILITY, ModBlockEntities.machine_millstone, MillstoneBlockEntity::getMechanicalPower);
@@ -497,6 +536,9 @@ public class HarderOres {
         	event.accept(ModBlocks.machine_sifter);
         	event.accept(ModBlocks.packager);
         	event.accept(ModBlocks.sluice);
+        }
+        if (tab == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+        	event.insertAfter(new ItemStack(Items.HOPPER_MINECART), new ItemStack(ModItems.ore_cart), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         }
         if (tab == CreativeModeTabs.INGREDIENTS) {
         	event.accept(new ItemStack(ModItems.orechunk_limonite, 1));

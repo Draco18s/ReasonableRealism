@@ -98,5 +98,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
 		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(key(Blocks.PUMPKIN));
 		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(key(Blocks.CARVED_PUMPKIN));
 		tag(HarderFarming.Tags.Blocks.MINABLE_WITH_KNIFE).add(key(Blocks.MELON));
+
+		tag(HarderFarming.Tags.Blocks.COW_FORAGE).add(key(Blocks.GRASS_BLOCK), key(Blocks.SHORT_GRASS), key(Blocks.TALL_GRASS),
+				key(Blocks.FERN), key(Blocks.LARGE_FERN), key(Blocks.HAY_BLOCK)).addTag(BlockTags.LEAVES);
+		tag(HarderFarming.Tags.Blocks.MOOSHROOM_FORAGE).addTag(HarderFarming.Tags.Blocks.COW_FORAGE).add(key(Blocks.MYCELIUM));
 	}
 }

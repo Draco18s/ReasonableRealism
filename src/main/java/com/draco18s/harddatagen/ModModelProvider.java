@@ -114,6 +114,7 @@ public class ModModelProvider extends ModelProvider {
 		axel(HarderOres.ModBlocks.machine_axel);
 		windvane(HarderOres.ModBlocks.machine_windvane);
 
+		flatItem(HarderOres.ModItems.ore_cart);
 		flatItem(HarderOres.ModItems.diamond_studded_pick, "diamond_stud_pickaxe");
 		flatItem(HarderOres.ModItems.diamond_studded_axe, "diamond_stud_axe");
 		flatItem(HarderOres.ModItems.diamond_studded_shovel, "diamond_stud_shovel");
@@ -145,6 +146,7 @@ public class ModModelProvider extends ModelProvider {
 		flatItem(HarderFarming.ModItems.winter_wheat_seeds);
 		flatItem(HarderFarming.ModItems.salt);
 		flatItem(HarderFarming.ModItems.salt_chunk);
+		flatItem(HarderFarming.ModItems.cheese);
 		flatItem(HarderFarming.ModItems.weed_seeds, "seeds_weeds");
 		flatItem(HarderFarming.ModItems.raw_leather, "leather");
 		// The gauges show a frame per reading (their models are written by hand).

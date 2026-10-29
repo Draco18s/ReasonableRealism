@@ -24,6 +24,12 @@ public class WoodenHopperBlockEntity extends AbstractHopper implements ICustomCo
 		inventory = new MaxSizeItemStackHandler(5, 16);
 	}
 
+	/** Its slots only hold 16, but it moves a whole one at a time. */
+	@Override
+	protected int getTransferAmount() {
+		return 16;
+	}
+
 	@Override
 	protected AbstractContainerMenu createMenu(int p_58627_, Inventory p_58628_) {
 		return new WoodHopperContainerMenu(p_58627_, p_58628_, inventory, this);
